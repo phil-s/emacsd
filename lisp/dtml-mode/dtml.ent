@@ -1,0 +1,133 @@
+<!-- Really we need XML syntax to cope with the underscores in attributes -->
+
+<!ENTITY % dtml "DTML-VAR | DTML-IF | DTML-CALL |
+                 DTML-WITH | | DTML-LET | | DTML-CALENDAR | DTML-IN |
+                 DTML-UNLESS | DTML-RAISE | DTML-TRY|
+                 DTML-COMMENT | DTML-TREE | DTML-SQL-VAR | DTML-SQL-TEST |
+                 DTML-SENDMAIL | DTML-MIME | DTML-ELIF | DTML-ELSE">
+
+
+<!ENTITY % dtmlattrs 
+  "name         CDATA          #IMPLIED -- name of the variable data --
+   expr         CDATA          #IMPLIED -- Python call --"
+   >
+
+<!ELEMENT DTML-VAR - O EMPTY                 -- DTML variable -->
+<!ATTLIST DTML-VAR
+  %dtmlattrs;                                   -- generic DTML attrs -- 
+  capitalize       (capitalize)       #IMPLIED	-- capitalize first letter --
+  fmt		   CDATA	      #IMPLIED	-- string formatting --
+  null		   CDATA	      #IMPLIED	-- string for null values --
+  lower		   (lower)	      #IMPLIED	-- convert all tolower --
+  upper		   (upper)	      #IMPLIED	-- convert all to upper --
+  spacify	   (spacify)	      #IMPLIED	-- underscores to spaces --
+  thousands_commas (thousands_commas) #IMPLIED  -- commas every three digits --
+  html_quote	   (html_quote)	      #IMPLIED	-- convert HTML characters --
+  url_quote	   (url_quote)	      #IMPLIED	-- convert for URLs --
+  sql_quote	   (sql_quote)	      #IMPLIED	-- convert for SQL --
+  newline_to_br    (newline_to_br)    #IMPLIED  -- add <BR> tags --
+  size		   NUMBER	      #IMPLIED	-- truncate to size --
+  etc		   CDATA	      #IMPLIED	-- string for truncation --
+  >
+
+<!ELEMENT DTML-ELIF - - ANY                     -- DTML control construct -->
+<!ATTLIST DTML-ELIF
+  %dtmlattrs;                                   -- generic DTML attrs --
+  >
+
+<!ELEMENT DTML-ELSE - - ANY                     -- DTML control construct -->
+<!ATTLIST DTML-ELSE
+  >
+
+<!ELEMENT DTML-CALL - O EMPTY                   -- DTML variable -->
+<!ATTLIST DTML-CALL
+  >
+
+<!ELEMENT DTML-EXCEPT - - ANY                   -- DTML control construct -->
+<!ATTLIST DTML-EXCEPT
+  >
+
+<!ELEMENT DTML-SQL-VAR - O EMPTY                -- DTML variable -->
+<!ATTLIST DTML-SQL-VAR
+  >
+
+<!ELEMENT DTML-SQL-TEST - - ANY                 -- DTML control construct -->
+<!ATTLIST DTML-SQL-TEST
+  >
+
+<!ELEMENT DTML-MIME - - ANY                     -- DTML control construct -->
+<!ATTLIST DTML-MIME
+  >
+
+
+<!ELEMENT DTML-IF - - ANY                       -- DTML control construct -->
+<!ATTLIST DTML-IF
+  %dtmlattrs;                                   -- generic DTML attrs --
+  >
+
+<!ELEMENT DTML-WITH - - ANY                     -- DTML control construct -->
+<!ATTLIST DTML-WITH
+ %dtmlattrs;    
+  >
+
+<!ELEMENT DTML-LET - - ANY                      -- DTML control construct -->
+<!ATTLIST DTML-LET
+ %dtmlattrs;    
+  >
+
+<!ELEMENT DTML-CALENDAR - - ANY                 -- DTML control construct -->
+<!ATTLIST DTML-CALENDAR
+ %dtmlattrs;    
+  >
+
+<!ELEMENT DTML-IN - - ANY                       -- DTML control construct -->
+<!ATTLIST DTML-IN
+  %dtmlattrs;                                   -- generic DTML attrs --
+  mapping  CDATA	#IMPLIED 
+  reverse (reverse)	#IMPLIED
+  sort     CDATA	#IMPLIED
+  start    CDATA	#IMPLIED
+  size     NUMBER	#IMPLIED
+  -- skip_unauthorized --
+  orphan   CDATA	#IMPLIED
+  overlap  CDATA	#IMPLIED
+  previous (previous)   #IMPLIED
+  next     (next)       #IMPLIED
+  >
+
+<!ELEMENT DTML-UNLESS - - ANY                  -- DTML control construct -->
+<!ATTLIST DTML-UNLESS
+  >
+
+<!ELEMENT DTML-RAISE - - ANY                   -- DTML control construct -->
+<!ATTLIST DTML-RAISE
+  >
+
+<!ELEMENT DTML-TRY - - ANY                     -- DTML control construct -->
+<!ATTLIST DTML-TRY
+  >
+
+<!ELEMENT DTML-COMMENT - - ANY                 -- DTML comment construct -->
+<!ATTLIST DTML-COMMENT
+  >
+
+<!ELEMENT DTML-TREE - - ANY                   -- DTML comment construct -->
+<!ATTLIST DTML-TREE
+  %dtmlattrs;                                 -- generic DTML attrs --
+  branches CDATA	#IMPLIED 
+  id       CDATA	#IMPLIED
+  url      CDATA	#IMPLIED
+  leaves   CDATA	#IMPLIED 
+  header   CDATA	#IMPLIED
+  footer   CDATA	#IMPLIED
+  nowrap   CDATA	#IMPLIED
+  sort     CDATA	#IMPLIED
+  assume   CDATA	#IMPLIED
+  single   CDATA	#IMPLIED
+  -- skip_unauthorized --
+  >
+
+<!ELEMENT DTML-SENDMAIL - - ANY              -- DTML comment construct -->
+<!ATTLIST DTML-SENDMAIL
+  >
+

@@ -1,0 +1,162 @@
+;; Functions/keys for moving within and switching between
+;; buffers and windows
+
+(defun expand-other-window ()
+  "Move to and expand the next window"
+  (interactive)
+  (other-window 1)
+  (delete-other-windows))
+
+(defun kill-other-buffer ()
+  "Kill the next buffer, and expand the current one"
+  (interactive)
+  (other-window 1)
+  (kill-buffer nil)
+  (other-window -1)
+  (delete-other-windows))
+
+(defun split-window-vertically-change-buffer ()
+  "Split the window vertically, and switch to the next buffer"
+  (interactive)
+  (split-window-vertically)
+  (other-window 1)
+  (switch-to-buffer (other-buffer)))
+
+(defun scroll-one-line-ahead ()
+  "Scroll ahead one line"
+  (interactive)
+  (scroll-up 1)
+  (forward-line 1))
+
+(defun scroll-one-line-back ()
+  "Scroll back one line"
+  (interactive)
+  (scroll-down 1)
+  (forward-line -1))
+
+;; Provide a simpler backwards zap-to-char (than prefixing with C-u -1)
+(defun zap-to-char-backwards (arg char)
+  (interactive "p\ncZap backwards to char: ")
+  (zap-to-char (- arg) char))
+(global-set-key (kbd "C-M-z") 'zap-to-char-backwards)
+
+
+;; Uniqify region (alternative to "C-u M-| uniq RET")
+(defun uniquify-region ()
+  "remove duplicate adjacent lines in the given region"
+  (interactive)
+  (narrow-to-region (region-beginning) (region-end))
+  (goto-char (point-min))
+  (while (re-search-forward "\\(.*\n\\)\\1+" nil t)
+    (replace-match "\\1" nil nil))
+  (widen)
+  nil)
+
+;; Uniqify region (alternative to "C-u M-| sort | uniq RET")
+(defun uniquify-region-sorted ()
+  "sort and remove duplicate lines in the given region"
+  (interactive)
+  (sort-lines nil (region-beginning) (region-end))
+  (uniquify-region))
+
+;; Rename file and buffer together
+(defun rename-file-and-buffer ()
+  "Renames current buffer and file it is visiting."
+  (interactive)
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (message "Buffer '%s' is not visiting a file!" name)
+      (let ((new-name (read-file-name "New name: " filename)))
+        (cond ((get-buffer new-name)
+               (message "A buffer named '%s' already exists!" new-name))
+              (t
+               (rename-file name new-name 1)
+               (rename-buffer new-name)
+               (set-visited-file-name new-name)
+               (set-buffer-modified-p nil)))))))
+
+;; Find housing (hnzc) file at point in other window
+(require 'ffap)
+(defun my-find-housing-file-at-point-other-window ()
+  "Find file at point, in other window."
+  (interactive)
+  (find-file-other-window
+   (concat "/scpc:phil@hnzc-dev-5:" (ffap-string-at-point))))
+(global-set-key (kbd "C-c f")   'my-find-housing-file-at-point-other-window)
+
+
+;; Convert file's EOL style to Unix
+(defun to-unix-eol (fpath)
+  "Change file's line ending to unix convention."
+  (let (mybuffer)
+    (setq mybuffer (find-file fpath))
+    (set-buffer-file-coding-system 'unix) ; or 'mac or 'dos
+    (save-buffer)
+    (kill-buffer mybuffer)))
+
+;; Bulk-convert EOL style to Unix (for marked files in Dired).
+(defun dired-2unix-marked-files ()
+  "Change to unix line ending for marked (or next arg) files."
+  (interactive)
+  (mapc 'to-unix-eol (dired-get-marked-files)))
+
+;;
+;; Diff the current buffer with the file contents
+;;
+
+(defun diff-current-buffer-with-disk ()
+  "Compare the current buffer with it's disk file."
+  (interactive)
+  (diff-buffer-with-file (current-buffer)))
+
+
+;;(defun ediff-file-with-buffer (file-A buf-B &optional startup-hooks job-name merge-buffer-file)
+;;  (let (buf-A buf-C)
+;;    (message "Reading file %s ... " file-A)
+;;    ;;(sit-for 0)
+;;    (ediff-find-file 'file-A 'buf-A 'ediff-last-dir-A 'startup-hooks)
+;;    (ediff-setup buf-B file-B
+;;       startup-hooks
+;;       (list (cons 'ediff-job-name job-name))
+;;       merge-buffer-file)))
+;;
+;; see defun ediff-setup (ediff-utils.el)
+;; see defun ediff-files-internal (ediff.el)
+
+
+;; (defadvice kill-buffer (around my-kill-buffer-check activate)
+;;   "Prompt when a buffer is about to be killed."
+;;   (let* ((buffer-file-name (buffer-file-name))
+;;          backup-file)
+;;     ;; see 'backup-buffer
+;;     (if (and (buffer-modified-p)
+;;              buffer-file-name
+;;              (file-exists-p buffer-file-name)
+;;              (setq backup-file (car (find-backup-file-name buffer-file-name))))
+;;         (let ((answer (completing-read (format "Buffer modified %s, (d)iff, (s)ave, (k)ill? " (buffer-name))
+;;                                        '("d" "s" "k") nil t)))
+;;           (cond ((equal answer "d")
+;;                  (set-buffer-modified-p nil)
+;;                  (let ((orig-buffer (current-buffer))
+;;                        (file-to-diff (if (file-newer-than-file-p buffer-file-name backup-file)
+;;                                          buffer-file-name
+;;                                        backup-file)))
+;;                    (set-buffer (get-buffer-create (format "%s last-revision" (file-name-nondirectory file-to-diff))))
+;;                    (buffer-disable-undo)
+;;                    (insert-file-contents file-to-diff nil nil nil t)
+;;                    (set-buffer-modified-p nil)
+;;                    (setq buffer-read-only t)
+;;                    (ediff-buffers (current-buffer) orig-buffer)))
+;;                 ((equal answer "k")
+;;                  (set-buffer-modified-p nil)
+;;                  ad-do-it)
+;;                 (t
+;;                  (save-buffer)
+;;                  ad-do-it)))
+;;       ad-do-it)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide 'my-utilities)
+
