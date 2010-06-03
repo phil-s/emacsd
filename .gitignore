@@ -1,0 +1,12 @@
+# Ignore all emacs backup files
+*~
+
+# Ignore system-specific files and directories
+/auto-save-list/
+/backup/
+/bookmarks.bmk
+/desktop/*
+/eshell/*
+/server/
+/tramp
+
