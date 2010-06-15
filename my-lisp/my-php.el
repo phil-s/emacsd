@@ -32,7 +32,7 @@
   ;; electric key like `{' is pressed (or an electric keyword like
   ;; `else').
   (setq c-electric-flag nil)
-  ;; electric behaviours appear are bad/unwanted in php-mode
+  ;; electric behaviours appear to be bad/unwanted in php-mode
 
   ;; Add the index creation function to the php-mode-hook
   (php-imenu-setup)
@@ -66,7 +66,10 @@
   (c-set-offset 'case-label '+)
   (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
   (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
-  ;; More Drupal-specific customizations here...
+
+  ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
+  (setq paragraph-start (concat paragraph-start "\\| \\* @[a-z]+")
+        paragraph-separate "$")
   )
 
 (provide 'my-php)
