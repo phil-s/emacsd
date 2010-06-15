@@ -103,6 +103,9 @@
 ;; Use hippie-expand instead of dabbrev-expand
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+;; Alias 'M-x find-dired' to simply 'M-x find'
+(defalias 'find 'find-dired)
+
 ;; Better buffer naming when filenames conflict
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
