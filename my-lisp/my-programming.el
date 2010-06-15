@@ -128,8 +128,14 @@ context-help to false"
 (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 
 
-;; PHP / Drupal
-(require 'my-php)
+;; PHP (see my-php.el)
+(autoload 'php-mode "my-php" "PHP Mode." t)
+(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
+;; Drupal mode
+(autoload 'drupal-mode "my-php" "Drupal Mode." t)
+(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
 
 
 ;; Python / Plone / Zope
