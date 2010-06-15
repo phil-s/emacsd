@@ -145,7 +145,13 @@ context-help to false"
 
 
 ;; PHP (see my-php.el)
-(require 'my-php)
+(autoload 'php-mode "my-php" "PHP Mode." t)
+(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
+;; Drupal mode
+(autoload 'drupal-mode "my-php" "Drupal Mode." t)
+(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
 
 
 
