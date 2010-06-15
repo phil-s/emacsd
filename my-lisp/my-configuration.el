@@ -1,7 +1,6 @@
 ;; Put other files and dirs into .emacs.d
-(set-variable 'bookmark-default-file "~/.emacs.d/bookmarks.bmk")
-(set-variable 'eshell-directory-name "~/.emacs.d/eshell/")
-(set-variable 'desktop-dirname       "~/.emacs.d/desktop/")
+(setq bookmark-default-file "~/.emacs.d/bookmarks.bmk")
+(setq eshell-directory-name "~/.emacs.d/eshell/")
 
 ;; Write backups to ~/.emacs.d/backup
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
@@ -12,11 +11,13 @@
       kept-old-versions    5  ; and how many of the old
       )
 
-;; Save session when closing
-;; M-x desktop-read to restore
+;; Automatically save and restore sessions
+(setq desktop-dirname "~/.emacs.d/desktop/")
+(setq desktop-base-file-name "emacs.desktop")
+(setq desktop-base-lock-name "lock")
+(setq desktop-path (list desktop-dirname))
 (setq desktop-save t)
 (setq desktop-files-not-to-save "^$")
-(setq desktop-path '("." desktop-dirname))
 (desktop-save-mode 1)
 
 ;; No splash screen
