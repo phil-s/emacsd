@@ -42,16 +42,16 @@
 ;; C-x 6 ... : 2C (two columns) operations
 
 ;; Load or evaluate .emacs
-(defun load_dot_emacs ()
+(defun load-dot-emacs ()
   "load ~/.emacs"
   (interactive)
   (load user-init-file))
-(defun find_dot_emacs ()
+(defun find-dot-emacs ()
   "find-file ~/.emacs"
   (interactive)
   (find-file user-init-file))
-(defalias 'll 'load_dot_emacs)
-(defalias 'lll 'find_dot_emacs)
+(defalias 'll 'load-dot-emacs)
+(defalias 'lll 'find-dot-emacs)
 
 ;; Find my third-party and custom lisp libraries
 (add-to-list 'load-path
@@ -82,6 +82,7 @@
  '(history-length 100)
  '(ibuffer-formats (quote ((mark modified read-only " " (name 30 30 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
  '(inhibit-eol-conversion nil)
+ '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(tool-bar-mode nil)
  '(vc-svn-global-switches (quote ("--username phils" "--password password"))))
@@ -90,22 +91,26 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- )
+ '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil))))
 
 ;; Basic configuration
 (require 'my-configuration)
 
 ;; Custom utilities
 (require 'my-utilities)
-(global-set-key (kbd "C-x M-b") 'bury-buffer)
-(global-set-key (kbd "C-o")     'other-window)
-(global-set-key (kbd "M-o")     'expand-other-window)
-(global-set-key (kbd "C-x M-k") 'kill-other-buffer)
-(global-set-key (kbd "C-x M-2") 'split-window-vertically-change-buffer)
-(global-set-key (kbd "M-l")     'goto-line)
-(global-set-key (kbd "M-n")     'scroll-one-line-ahead)
-(global-set-key (kbd "M-p")     'scroll-one-line-back)
-(global-set-key (kbd "C-c r")   'rename-file-and-buffer)
+(global-set-key (kbd "C-c r")     'rename-file-and-buffer)
+(global-set-key (kbd "C-x M-b")   'bury-buffer)
+(global-set-key (kbd "C-o")       'other-window)
+(global-set-key (kbd "M-o")       'expand-other-window)
+(global-set-key (kbd "C-x M-k")   'kill-other-buffer)
+(global-set-key (kbd "C-x M-2")   'split-window-vertically-change-buffer)
+(global-set-key (kbd "M-l")       'goto-line)
+(global-set-key (kbd "M-n")       'scroll-one-line-ahead)
+(global-set-key (kbd "M-p")       'scroll-one-line-back)
+(global-set-key (kbd "<S-left>")  'windmove-left)
+(global-set-key (kbd "<S-right>") 'windmove-right)
+(global-set-key (kbd "<S-up>")    'windmove-up)
+(global-set-key (kbd "<S-down>")  'windmove-down)
 
 ;; Indentation and white space
 (require 'my-indentation)
