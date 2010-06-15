@@ -2,30 +2,29 @@
 ;; Programming language support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun my-coding-hook ()
+(defun my-coding-config ()
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
   (if window-system (hl-line-mode t))
-  (idle-highlight))
+  (idle-highlight)
+  (turn-on-eldoc-mode)
+  (imenu-add-menubar-index))
 
-(add-hook 'cperl-mode-hook 'my-coding-hook)
-(add-hook 'emacs-lisp-mode-hook 'my-coding-hook)
-(add-hook 'ielm-mode-hook 'my-coding-hook)
-(add-hook 'lisp-interaction-mode-hook 'my-coding-hook)
-(add-hook 'perl-mode-hook 'my-coding-hook)
-(add-hook 'php-mode-hook 'my-coding-hook)
-(add-hook 'python-mode-hook 'my-coding-hook)
+(mapcar
+ (function (lambda (language-mode-hook)
+             (add-hook language-mode-hook 'my-coding-config)))
+ '(cperl-mode-hook
+   emacs-lisp-mode-hook
+   ielm-mode-hook
+   lisp-interaction-mode-hook
+   perl-mode-hook
+   php-mode-hook
+   python-mode-hook))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eldoc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'cperl-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'python-mode-hook 'turn-on-eldoc-mode)
 
 ;; Highlight the eldoc echo area text
 (defun frob-eldoc-argument-list (string)
@@ -69,9 +68,9 @@ context-help to false"
 (defadvice eldoc-print-current-symbol-info
   (around eldoc-show-c-tag activate)
   (cond
-   ((eq major-mode 'emacs-lisp-mode) (rgr/context-help) ad-do-it)
+   ((eq major-mode 'emacs-lisp-mode)       (rgr/context-help) ad-do-it)
    ((eq major-mode 'lisp-interaction-mode) (rgr/context-help) ad-do-it)
-   ((eq major-mode 'apropos-mode) (rgr/context-help) ad-do-it)
+   ((eq major-mode 'apropos-mode)          (rgr/context-help) ad-do-it)
    (t ad-do-it)))
 
 
@@ -97,25 +96,9 @@ context-help to false"
 
 ;; nXHTML
 (load "nxhtml/autostart.el")
-;; OLD nXML CONFIG:
-;; XML - nXMLmode
-;(load "nxml-mode-20041004/rng-auto")
-;(setq auto-mode-alist
-;     (append '(("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode))
-;           auto-mode-alist))
 
 
-; ;; CSS
-; ;; emacs-22.2 has its own CSS mode
-; ;;
-; (autoload 'css-mode "css-mode_shinn" "Mode for editing CSS files" t)
-; ;;(autoload 'css-mode "css-mode_garshol" "Mode for editing CSS files" t)
-; (setq auto-mode-alist
-;        (append '(("\\.css$" . css-mode))
-;                auto-mode-alist))
-; (setq cssm-indent-function #'cssm-c-style-indenter)
-
-
+;; CSS
 ;; small tool, used with regex search and replace
 ;; replace the start of CSS properties with \,(insert-selector)
 (defun insert-selector ()
@@ -135,6 +118,7 @@ context-help to false"
 (add-hook 'html-helper-load-hook '(lambda () (require 'html-font)))
 (add-hook 'html-helper-mode-hook '(lambda () (font-lock-mode 1)))
 
+
 ;; Wrap-region minor mode for mark-up
 (autoload 'wrap-region-mode "wrap-region" "Wrap region with stuff." t)
 
@@ -144,101 +128,12 @@ context-help to false"
 (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 
 
-;; PHP (see my-php.el)
+;; PHP / Drupal
 (require 'my-php)
 
 
-
-;;;; Python
-
-;;;; python-mode-1.0
-;;(setq load-path (append load-path (list "c:/emacs/emacs-23.1/site-lisp/python-mode-1.0")))
-;;(autoload 'python-mode "python-mode" "Python Mode." t)
-;;(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-;;(add-to-list 'interpreter-mode-alist '("python" . python-mode))
-
-;; Zope / Plone
-(add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
-
-;;;; python-mode.el
-(setq auto-mode-alist (cons '("\\.py$" . python-mode) auto-mode-alist))
-(setq interpreter-mode-alist (cons '("python" . python-mode)
-                                   interpreter-mode-alist))
-(autoload 'python-mode "python-mode" "Python editing mode." t)
-(add-hook 'python-mode-hook
-          (function (lambda ()
-                      (hide-trailing-whitespace)
-                      (setq indent-tabs-mode nil))))
-
-;		(setq ipython-command "/usr/bin/ipython")
-;		(require 'ipython)
-;		(global-set-key [(f6)] 'ipython-complete)
-
-;; (defconst py-pdbtrack-input-prompt "\n[(<]*[Pp]db[>)]+ "
-;;   "Regular expression pdbtrack uses to recognize a pdb prompt.")
-;; (make-variable-buffer-local 'py-pdbtrack-input-prompt)
-;; (add-hook 'shell-mode-hook
-;;           (function (lambda()
-;;                       (setq py-pdbtrack-input-prompt
-;;                             "\n[(<]*[Ii]?[Pp]db[>)]+ "))))
-
-
-;; Make the Python shell line-buffered
-;; http://stackoverflow.com/questions/2881346/emacs-python-running-python-shell-in-line-buffered-vs-block-buffered-mode
-(setenv "PYTHONUNBUFFERED" "x")
-
-;		;; Support pdbtrack over TRAMP
-;		(defadvice py-pdbtrack-get-source-buffer (around py-pdbtrack-tramp-device activate)
-;		  "Prefix the tramp device to the file path in pdbtrack."
-;		  (let ((block (ad-get-arg 0)))
-;		    (if (string-match py-pdbtrack-stack-entry-regexp block)
-;		        (let ((newblock
-;		               (replace-regexp-in-string
-;		                py-pdbtrack-stack-entry-regexp
-;		                (concat
-;		                 "> "
-;		                 (tramp-make-tramp-file-name ; WARNING:
-;		                  tramp-current-method       ; These variables are the most recently-generated
-;		                  tramp-current-user         ; values. Accessing a new server via TRAMP will
-;		                  tramp-current-host         ; cause them to change, and break pdbtracking.
-;		                  (match-string 1 block))    ; (It should be possible to solve this, but I don't
-;		                 "(\\2)\\3()")               ; want to spend time investigating that right now...)
-;		                block)))
-;		          (ad-set-arg 0 newblock)
-;		          ad-do-it))))
-
-;; (defun my-housing-shell-output-filter (string)
-;;   "Add in TRAMP prefix for file paths."
-;;   (when (string-match "^([> ]) (/home)" string)
-;;     (setq string (replace-match "\1 /scpc:phil@hnzc-dev-5:\2" t t string))))
-
-
-
-
-
-;;;; python.el
-;;(autoload 'python-mode "python" "Python Mode." t)
-;;(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-;;(add-to-list 'interpreter-mode-alist '("python" . python-mode))
-
-;;;; Pylint
-;;(autoload 'python-pylint "python-pylint")
-;;(autoload 'pylint "python-pylint")
-;;;; Pep8
-;;(autoload 'python-pep8 "python-pep8")
-;;(autoload 'pep8 "python-pep8")
-
-;;;; PSGML mode (required by DTML mode)
-(add-to-list 'load-path (file-name-as-directory (expand-file-name "~/.emacs.d/lisp/psgml-1.3.2")))
-
-;;;; DTML (Zope)
-(add-to-list 'load-path (file-name-as-directory (expand-file-name "~/.emacs.d/lisp/dtml-mode")))
-(autoload 'dtml-mode "dtml-mode" "" t)
-(add-to-list 'auto-mode-alist '("\\.dtml\\'" . dtml-mode))
-(setq sgml-local-catalogs `(,(expand-file-name "~/.emacs.d/lisp/dtml-mode/dtml.catalog")))
-(setq dtml-auto-insert-mode-declaration nil)
-;;(autoload 'dtml-edit-via-ftp "dtml-mode" "" t)
-;;(autoload 'dtml-browse-via-http "dtml-mode" "" t)
+;; Python / Plone / Zope
+(require 'my-python)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

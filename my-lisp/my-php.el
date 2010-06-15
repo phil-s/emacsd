@@ -34,7 +34,7 @@
   (setq c-electric-flag nil)
   ;; electric behaviours appear are bad/unwanted in php-mode
 
-  ;; Add the index creation function to the php-mode-hook
+  ;; Configure imenu
   (php-imenu-setup)
 
   ;; Find documentation online
