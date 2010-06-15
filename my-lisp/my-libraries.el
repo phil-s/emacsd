@@ -7,7 +7,8 @@ expression REGEX
 
 This command hides all lines from the current buffer except those
 containing the regular expression REGEX. A second call of the function
-unhides lines again" t)
+unhides lines again"
+  t)
 (autoload 'loccur-current "loccur" "Call `loccur' for the current word." t)
 (autoload 'loccur-previous-match "loccur" "Call `loccur' for the previously found word." t)
 
@@ -28,19 +29,7 @@ unhides lines again" t)
 ;; Start the svn interface with M-x svn-status
 
 
-;;; ;; Colour Theme
-;;; (add-to-list 'load-path "~/lisp/color-theme/color-theme.el")
-;;; ;;(require 'color-theme)
-;;; ;;(eval-after-load "color-theme"
-;;; ;;  '(progn
-;;; ;;     (color-theme-initialize)
-;;; ;;     (color-theme-hober)))
-;;; (require 'zenburn)
-;;; (unless (zenburn-format-spec-works-p)
-;;;   (zenburn-define-format-spec))
-;;; (eval-after-load "color-theme"
-;;;   '(progn
-;;;      (color-theme-initialize)
-;;;      (color-theme-zenburn)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-libraries)
+
