@@ -17,10 +17,9 @@ unhides lines again"
 (global-set-key (kbd "M-s C-S-l") 'loccur-previous-match) ; loccur of the previously-found word
 
 ;; Use framemove, integrated with windmove.
-(require 'framemove)
 (windmove-default-keybindings) ;default modifier is <SHIFT>
-(setq framemove-hook-into-windmove t)
-
+(when (require 'framemove nil :noerror)
+  (setq framemove-hook-into-windmove t))
 
 ;; Follow mode for compilation/output buffers
 ;; http://www.anc.ed.ac.uk/~stephen/emacs/fm.el
@@ -33,6 +32,16 @@ unhides lines again"
 ;;(require 'psvn)
 ;; Start the svn interface with M-x svn-status
 
+
+;; Icicles
+(add-to-list 'load-path
+             (file-name-as-directory
+              (expand-file-name "~/.emacs.d/lisp/icicles")))
+(autoload 'icicle-mode "icicle-mode"
+  "Icicle mode: Toggle minibuffer input completion and cycling.
+Non-nil prefix ARG turns mode on if ARG > 0, else turns it off.
+Icicle mode is a global minor mode.  It binds keys in the minibuffer."
+  t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
