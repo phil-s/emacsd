@@ -16,6 +16,11 @@ unhides lines again"
 (global-set-key (kbd "M-s C-l") 'loccur-current) ; loccur of the current word
 (global-set-key (kbd "M-s C-S-l") 'loccur-previous-match) ; loccur of the previously-found word
 
+;; Use framemove, integrated with windmove.
+(require 'framemove)
+(windmove-default-keybindings) ;default modifier is <SHIFT>
+(setq framemove-hook-into-windmove t)
+
 
 ;; Follow mode for compilation/output buffers
 ;; http://www.anc.ed.ac.uk/~stephen/emacs/fm.el

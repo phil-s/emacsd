@@ -112,6 +112,22 @@
     (apply file-major-mode '())
     (other-window 1))) ;; back to ediff panel
 
+;; Kill ring / Yank assistance
+(global-set-key (kbd "C-c y") '(lambda ()
+                                 (interactive)
+                                 (popup-menu 'yank-menu)))
+
+(when (require 'browse-kill-ring nil 'noerror)
+  ;; Either...
+  ;; make it the default behaviour:
+  ;;(browse-kill-ring-default-keybindings)
+  ;;
+  ;; or use a custom key binding:
+  (global-set-key (kbd "C-c k") 'browse-kill-ring)
+  )
+
+
+
 ;;
 ;; Diff the current buffer with the file contents
 ;;

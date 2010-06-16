@@ -97,19 +97,15 @@
 
 ;; Custom utilities
 (require 'my-utilities)
-(global-set-key (kbd "C-c r")     'rename-file-and-buffer)
-(global-set-key (kbd "C-x M-b")   'bury-buffer)
-(global-set-key (kbd "C-o")       'other-window)
-(global-set-key (kbd "M-o")       'expand-other-window)
-(global-set-key (kbd "C-x M-k")   'kill-other-buffer)
-(global-set-key (kbd "C-x M-2")   'split-window-vertically-change-buffer)
-(global-set-key (kbd "M-l")       'goto-line)
-(global-set-key (kbd "M-n")       'scroll-one-line-ahead)
-(global-set-key (kbd "M-p")       'scroll-one-line-back)
-(global-set-key (kbd "<S-left>")  'windmove-left)
-(global-set-key (kbd "<S-right>") 'windmove-right)
-(global-set-key (kbd "<S-up>")    'windmove-up)
-(global-set-key (kbd "<S-down>")  'windmove-down)
+(global-set-key (kbd "C-c r")   'rename-file-and-buffer)
+(global-set-key (kbd "C-x M-b") 'bury-buffer)
+(global-set-key (kbd "C-o")     'other-window)
+(global-set-key (kbd "M-o")     'expand-other-window)
+(global-set-key (kbd "C-x M-k") 'kill-other-buffer)
+(global-set-key (kbd "C-x M-2") 'split-window-vertically-change-buffer)
+(global-set-key (kbd "M-l")     'goto-line)
+(global-set-key (kbd "M-n")     'scroll-one-line-ahead)
+(global-set-key (kbd "M-p")     'scroll-one-line-back)
 
 ;; Indentation and white space
 (require 'my-indentation)
