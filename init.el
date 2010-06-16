@@ -136,4 +136,3 @@
 ;; (defvar workspace-dir "/scpc:phil@hnzc-dev-5:/home/phil/Plone/")
 ;; (load "ifind-mode.el")
 
-(put 'dired-find-alternate-file 'disabled nil)

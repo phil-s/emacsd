@@ -24,10 +24,11 @@
 (setq inhibit-startup-screen t)
 
 ;; Enable disabled commands
-(put 'narrow-to-region  'disabled nil)
-(put 'scroll-left       'disabled nil)
-(put 'downcase-region   'disabled nil)
-(put 'upcase-region     'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
+(put 'downcase-region           'disabled nil)
+(put 'narrow-to-region          'disabled nil)
+(put 'scroll-left               'disabled nil)
+(put 'upcase-region             'disabled nil)
 
 ;; Stop the cursor blinking
 ;; Cursor stretches to the current glyph's width
