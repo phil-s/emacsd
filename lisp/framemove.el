@@ -60,6 +60,8 @@
 
 (defun fm-frame-is-to-dir-of (refframe dir otherframe)
   (cond
+   ((not (eq (frame-parameter refframe 'display) (frame-parameter otherframe 'display)))
+    nil)
    ((eq refframe otherframe)
     nil)
    ((memq dir '(left up))
