@@ -20,6 +20,14 @@
 (setq desktop-files-not-to-save "^$")
 (desktop-save-mode 1)
 
+;; Also save minibuffer/variable histories
+;; n.b. savehist-mode defaults to saving the vars listed in
+;; savehist-minibuffer-history-variables, which gets added to
+;; as individual features are utilised.
+(setq savehist-additional-variables
+      '(kill-ring))
+(savehist-mode 1)
+
 ;; No splash screen
 (setq inhibit-startup-screen t)
 
