@@ -139,7 +139,7 @@ context-help to false"
 
 
 ;; Python / Plone / Zope
-(require 'my-python)
+;(require 'my-python)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

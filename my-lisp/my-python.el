@@ -7,6 +7,14 @@
 ;; Zope / Plone
 (add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
 
+;; ;; buildout
+;; (define-derived-mode conf-buildout-mode conf-mode "Conf[Buildout]"
+;;   "Conf Mode starter for Python Buildout files.
+;; Comments start with `#', and may ONLY appear on the first character of a line.
+;; For details see `conf-mode'."
+;;   (conf-mode-initialize "#"))
+
+
 ;;;; python-mode.el
 (setq auto-mode-alist (cons '("\\.py$" . python-mode) auto-mode-alist))
 (setq interpreter-mode-alist (cons '("python" . python-mode)

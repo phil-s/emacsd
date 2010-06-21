@@ -160,21 +160,6 @@ disabled.")))
 ;; export PS1="\n\u@\h \w\n\$ "
 ;; into ~/.emacs.d/init_bash.sh
 
-;; Kill ring / Yank assistance
-(global-set-key (kbd "C-c y") '(lambda ()
-                                 (interactive)
-                                 (popup-menu 'yank-menu)))
-
-(when (require 'browse-kill-ring nil 'noerror)
-  ;; Either...
-  ;; make it the default behaviour:
-  ;;(browse-kill-ring-default-keybindings)
-  ;;
-  ;; or use a custom key binding:
-  (global-set-key (kbd "C-c k") 'browse-kill-ring)
-  )
-
-
 ;; Don't truncate echo area output
 ;; (setq eval-expression-print-length nil)
 
