@@ -84,6 +84,7 @@
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(tool-bar-mode nil)
+ '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=$PATH:~/bin")))
  '(vc-svn-global-switches (quote ("--username phils" "--password password"))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
@@ -97,19 +98,6 @@
 
 ;; Custom utilities
 (require 'my-utilities)
-(global-set-key (kbd "C-c r")     'rename-file-and-buffer)
-(global-set-key (kbd "C-x M-b")   'bury-buffer)
-(global-set-key (kbd "C-o")       'other-window)
-(global-set-key (kbd "M-o")       'expand-other-window)
-(global-set-key (kbd "C-x M-k")   'kill-other-buffer)
-(global-set-key (kbd "C-x M-2")   'split-window-vertically-change-buffer)
-(global-set-key (kbd "M-l")       'goto-line)
-(global-set-key (kbd "M-n")       'scroll-one-line-ahead)
-(global-set-key (kbd "M-p")       'scroll-one-line-back)
-(global-set-key (kbd "<S-left>")  'windmove-left)
-(global-set-key (kbd "<S-right>") 'windmove-right)
-(global-set-key (kbd "<S-up>")    'windmove-up)
-(global-set-key (kbd "<S-down>")  'windmove-down)
 
 ;; Indentation and white space
 (require 'my-indentation)
@@ -125,6 +113,8 @@
 ;; Win32 / Cygwin integration
 (when (eq system-type 'windows-nt)
   (require 'my-win32))
+;; Note also the window-system variable. This is useful when you want to
+;; choose between some x only option, or a terminal, or macos setting.
 
 ;; Configure other miscellaneous libraries
 (require 'my-libraries)
@@ -136,3 +126,15 @@
 ;; (defvar workspace-dir "/scpc:phil@hnzc-dev-5:/home/phil/Plone/")
 ;; (load "ifind-mode.el")
 
+;; Key-bindings
+(global-set-key (kbd "C-c r")   'rename-file-and-buffer)
+(global-set-key (kbd "C-x M-b") 'bury-buffer)
+(global-set-key (kbd "C-o")     'other-window)
+(global-set-key (kbd "M-o")     'expand-other-window)
+(global-set-key (kbd "C-x M-k") 'kill-other-buffer)
+(global-set-key (kbd "C-x M-2") 'split-window-vertically-change-buffer)
+(global-set-key (kbd "M-l")     'goto-line)
+(global-set-key (kbd "M-n")     'scroll-one-line-ahead)
+(global-set-key (kbd "M-p")     'scroll-one-line-back)
+(global-set-key (kbd "M-?")     'etags-select-find-tag-at-point)
+(global-set-key (kbd "M-.")     'etags-select-find-tag)
