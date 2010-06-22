@@ -4,9 +4,13 @@
 ;;(when (eq system-type 'windows-nt)
 ;;  (require 'my-win32))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Win32 and Cygwin
+;; Win32 basics
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; We can't use --daemon with NTEmacs, so start a server here.
+(server-start)
 
 ;; Use Unix-style line endings.
 (setq-default buffer-file-coding-system 'undecided-unix)
@@ -22,7 +26,39 @@
 (dir-locals-set-class-variables 'read-only '((nil (buffer-read-only . t))))
 (dir-locals-set-directory-class (getenv "emacs_dir") 'read-only)
 
+(defadvice server-create-window-system-frame
+  (after my-after-server-create-window-system-frame)
+  "Attempt to raise new client frames."
+
+  ;; (This doesn't actually help, AFAICT)
+
+  ;; See 3.10 (Window operations) in the GNU Emacs FAQ for MS Windows:
+  ;; http://www.gnu.org/software/emacs/windows/
+  ;;
+  ;; "The function w32-send-sys-command can be used to simulate
+  ;; choosing commands from the system menu (in the top left corner of
+  ;; the Window) and a few other system wide functions. It takes an
+  ;; integer argument, the value of which should be a valid
+  ;; WM_SYSCOMMAND message as documented in Microsoft's API
+  ;; documentation."
+
+  ;; See the following for WM_SYSCOMMAND values:
+  ;; http://msdn.microsoft.com/en-us/library/ms646360%28VS.85%29.aspx
+
+  ;; SC_MAXIMIZE (0xF030)
+  ;; Maximizes the window.
+  (w32-send-sys-command ?\xf030)
+  ;; SC_HOTKEY (0xF150)
+  ;; Activates the window associated with the application-specified
+  ;; hot key. The lParam parameter identifies the window to activate.
+  (w32-send-sys-command ?\xf150)
+  )
+(ad-activate 'server-create-window-system-frame)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Cygwin integration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defcustom my-cygwin-root "c:/cygwin"
   "Cygwin directory"
@@ -124,6 +160,9 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Miscellaneous
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; My hacky way of opening temporary files from 7-zip's archive browser...
 ;; Changes URLs like file:C%3a/foo into c:/foo (such URLs can be generated when
@@ -140,7 +179,6 @@
 
 
 ;; (load "w32-utl")
-
 
 
 ;; Anti-Word
@@ -163,4 +201,69 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-win32)
+
+
+
+;; Emacs can be used as the editor for Firefox by using the "It's All Text"
+;; extension ( https://addons.mozilla.org/en-US/firefox/addon/4125/ ), and
+;; the following three scripts:
+;;
+;; runemacsclient.bat
+;; emacsclient.bat
+;; emacsclient.sh
+;;
+;; Point the extension at runemacsclient.bat for the editor. (This may need
+;; to be done using the Firefox about:config screen, as the default browser
+;; does not enable batch files to be selected.)
+
+;; REM runemacsclient.bat:
+;; REM - Call the shell script.
+;; REM - Uses Cygwin's run.exe to run a Windows program
+;; REM - without leaving the cmd window open.
+;;
+;; @echo off
+;; C:\cygwin\bin\run.exe C:\cygwin\home\Phil\bin\emacsclient.bat %1 %2 %3 %4 %5 %6 %7 %8 %9
+
+;; REM emacsclient.bat:
+;; REM - Run the shell script
+;;
+;; @echo off
+;; C:\cygwin\bin\bash.exe -c '/home/Phil/bin/emacsclient.sh %1 %2 %3 %4 %5 %6 %7 %8 %9'
+
+;; # emacsclient.sh:
+;; # Either start a new client, or run a new server.
+;; # n.b. does not --login, and so bypasses the bash_profile,
+;; # to avoid potentially hanging on a hidden ssh-add
+;;
+;; #!/bin/bash
+;; PATH="~/bin:$PATH:/usr/bin"
+;; PATH="`ls -1d /cygdrive/c/emacs/emacs-*/bin | tail -1`:$PATH"
+;;
+;; # Try emacsclient first
+;; emacsclient -display --create-frame "$@"
+;;
+;; # If that failed, start a new server
+;; if test $? -eq 1; then
+;; 	# Quote the args with escaped double-quotes, for insertion
+;; 	# in command string
+;; 	args=""
+;; 	for arg in "$@"; do
+;; 		args="$args \"$arg\"";
+;; 	done
+;; 	# Execute command
+;; 	bash -c " \
+;; 		env HOME=\"`cygpath \"$APPDATA\"`\" \
+;; 			emacs --eval \"(server-start)\" $args \
+;; 	";
+;; fi
+
+
+;; NOTE:
+;; The following *may* provide for a simpler approach:
+;; Starting Server With Emacs 23 : Easy Way
+;; http://www.emacswiki.org/emacs/EmacsClient#toc2
+;; It didn't work immediately, however, so I didn't pursue it.
+
