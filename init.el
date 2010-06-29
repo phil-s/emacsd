@@ -138,4 +138,5 @@
 (global-set-key (kbd "M-p")     'scroll-one-line-back)
 (global-set-key (kbd "M-?")     'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.")     'etags-select-find-tag)
-(global-set-key (kbd "C-c i")   'imenu)
+(global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
+
