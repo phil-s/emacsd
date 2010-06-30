@@ -126,7 +126,15 @@
   (global-set-key (kbd "C-c k") 'browse-kill-ring)
   )
 
-
+;; Add a 'F'ind marked files keybinding to dired
+(eval-after-load "dired"
+  '(progn
+     (define-key dired-mode-map "F" 'my-dired-find-file)
+     (defun my-dired-find-file (&optional arg)
+       "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
+       (interactive "P")
+       (let* ((fn-list (dired-get-marked-files nil arg)))
+         (mapc 'find-file fn-list)))))
 
 ;;
 ;; Diff the current buffer with the file contents
