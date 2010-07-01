@@ -76,6 +76,9 @@
                (set-visited-file-name new-name)
                (set-buffer-modified-p nil)))))))
 
+
+
+
 ;; Find housing (hnzc) file at point in other window
 (require 'ffap)
 (defun my-find-housing-file-at-point-other-window ()
@@ -113,9 +116,10 @@
     (other-window 1))) ;; back to ediff panel
 
 ;; Kill ring / Yank assistance
-(global-set-key (kbd "C-c y") '(lambda ()
-                                 (interactive)
-                                 (popup-menu 'yank-menu)))
+(global-set-key (kbd "C-c y")
+                (function (lambda ()
+                            (interactive)
+                            (popup-menu 'yank-menu))))
 
 (when (require 'browse-kill-ring nil 'noerror)
   ;; Either...

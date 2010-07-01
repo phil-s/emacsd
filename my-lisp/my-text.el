@@ -7,5 +7,9 @@
 (autoload 'csv-mode "csv-mode"
   "Major mode for editing comma-separated value files." t)
 
+;; Enable spelling correction
+(setq text-mode-hook (function (lambda () (flyspell-mode t))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-text)

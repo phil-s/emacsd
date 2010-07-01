@@ -36,4 +36,7 @@
 ;  (interactive)
 ;  (whitespace-mode (not (or whitespace-mode global-whitespace-mode))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-whitespace)
+

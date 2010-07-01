@@ -80,11 +80,13 @@
  '(global-font-lock-mode t nil (font-lock))
  '(history-length 100)
  '(ibuffer-formats (quote ((mark modified read-only " " (name 30 30 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
+ '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(inhibit-eol-conversion nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(tool-bar-mode nil)
- '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=$PATH:~/bin")))
+ '(tramp-remote-path (quote ("~/bin" "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")))
+ '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=~/bin:$PATH")))
  '(vc-svn-global-switches (quote ("--username phils" "--password password"))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
@@ -136,7 +138,7 @@
 (global-set-key (kbd "M-l")     'goto-line)
 (global-set-key (kbd "M-n")     'scroll-one-line-ahead)
 (global-set-key (kbd "M-p")     'scroll-one-line-back)
-(global-set-key (kbd "M-?")     'etags-select-find-tag-at-point)
 (global-set-key (kbd "M-.")     'etags-select-find-tag)
+(global-set-key (kbd "M-?")     'etags-stack-show)
+(global-set-key (kbd "M-s /")   'multi-occur-in-matching-buffers)
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
-

@@ -134,6 +134,21 @@ disabled.")))
 (add-hook 'find-file-hooks
           'my-find-file-check-make-large-file-read-only-hook)
 
+;; Interactively Do Things
+(require 'ido)
+(ido-mode t)
+(setq ido-enable-flex-matching t) ;; enable fuzzy matching
+
+;; Enable dired buffers to be filtered in ibuffer
+(require 'ibuffer)
+(define-ibuffer-filter filename
+  "Toggle current view to buffers with filename matching QUALIFIER."
+  (:description "filename"
+   :reader (read-from-minibuffer "Filter by filename (regexp): "))
+  (ibuffer-awhen (or (buffer-local-value 'buffer-file-name buf)
+                     (buffer-local-value 'dired-directory buf))
+    (string-match qualifier it)))
+
 ;; Don't allow dragging and dropping files into dired
 (setq dired-dnd-protocol-alist nil)
 
