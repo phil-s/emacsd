@@ -58,9 +58,20 @@
 ;; Use ibuffer-list-buffers in place of list-buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-;; Advise ibuffer
-(defadvice ibuffer (around ibuffer-point-to-most-recent) ()
-  "Open ibuffer with cursor pointed to most recent buffer name"
+;; Enable ibuffer-filter-by-filename to filter on directory names too.
+(eval-after-load "ibuf-ext"
+  '(define-ibuffer-filter filename
+     "Toggle current view to buffers with file or directory name matching QUALIFIER."
+     (:description "filename"
+                   :reader (read-from-minibuffer "Filter by file/directory name (regexp): "))
+     (ibuffer-awhen (or (buffer-local-value 'buffer-file-name buf)
+                        (buffer-local-value 'dired-directory buf))
+                    (string-match qualifier it))))
+
+;; Ensure ibuffer opens with point at the current buffer's entry.
+(defadvice ibuffer
+  (around ibuffer-point-to-most-recent) ()
+  "Open ibuffer with cursor pointed to most recent buffer name."
   (let ((recent-buffer-name (buffer-name)))
     ad-do-it
     (ibuffer-jump-to-buffer recent-buffer-name)))
@@ -134,20 +145,10 @@ disabled.")))
 (add-hook 'find-file-hooks
           'my-find-file-check-make-large-file-read-only-hook)
 
-;; Interactively Do Things
-(require 'ido)
-(ido-mode t)
-(setq ido-enable-flex-matching t) ;; enable fuzzy matching
-
-;; Enable dired buffers to be filtered in ibuffer
-(require 'ibuffer)
-(define-ibuffer-filter filename
-  "Toggle current view to buffers with filename matching QUALIFIER."
-  (:description "filename"
-   :reader (read-from-minibuffer "Filter by filename (regexp): "))
-  (ibuffer-awhen (or (buffer-local-value 'buffer-file-name buf)
-                     (buffer-local-value 'dired-directory buf))
-    (string-match qualifier it)))
+;; ;; Interactively Do Things
+;; (require 'ido)
+;; (ido-mode t)
+;; (setq ido-enable-flex-matching t) ;; enable fuzzy matching
 
 ;; Don't allow dragging and dropping files into dired
 (setq dired-dnd-protocol-alist nil)
