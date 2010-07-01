@@ -50,8 +50,13 @@
   "find-file ~/.emacs"
   (interactive)
   (find-file user-init-file))
+(defun find-my-lisp ()
+  "dired ~/.emacs.d/my-lisp"
+  (interactive)
+  (dired (concat (file-name-directory user-init-file) "my-lisp/")))
 (defalias 'll 'load-dot-emacs)
 (defalias 'lll 'find-dot-emacs)
+(defalias 'llll 'find-my-lisp)
 
 ;; Find my third-party and custom lisp libraries
 (add-to-list 'load-path
