@@ -41,7 +41,7 @@
       (while (progn
                (imenu--cleanup)
                (setq imenu--index-alist nil)
-               (ido-goto-symbol (imenu--make-index-alist))
+               (imenu-ido-goto-symbol (imenu--make-index-alist))
                (setq selected-symbol
                      (ido-completing-read "Symbol? " symbol-names))
                (string= (car imenu--rescan-item) selected-symbol)))
@@ -58,7 +58,7 @@
       (let (name position)
         (cond
          ((and (listp symbol) (imenu--subalist-p symbol))
-          (ido-goto-symbol symbol))
+          (imenu-ido-goto-symbol symbol))
          ((listp symbol)
           (setq name (car symbol))
           (setq position (cdr symbol)))
