@@ -52,4 +52,6 @@
 ;; Smart Tabs does the Right Thing when I press the TAB key
 (require 'smart-tab)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-indentation)
