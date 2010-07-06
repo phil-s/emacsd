@@ -51,6 +51,7 @@
 
 ;; Smart Tabs does the Right Thing when I press the TAB key
 (require 'smart-tab)
+(global-smart-tab-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
