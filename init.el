@@ -58,13 +58,13 @@
 (defalias 'lll 'find-dot-emacs)
 (defalias 'llll 'find-my-lisp)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Find my third-party and custom lisp libraries
-(add-to-list 'load-path
-             (file-name-as-directory
-              (expand-file-name "~/.emacs.d/lisp")))
-(add-to-list 'load-path
-             (file-name-as-directory
-              (expand-file-name "~/.emacs.d/my-lisp")))
+(add-to-list 'load-path (file-name-as-directory
+                         (expand-file-name "~/.emacs.d/lisp")))
+(add-to-list 'load-path (file-name-as-directory
+                         (expand-file-name "~/.emacs.d/my-lisp")))
 
 ;; ELPA -- Emacs Lisp Package Archive
 (require 'my-elpa)
@@ -147,3 +147,4 @@
 (global-set-key (kbd "M-?")     'etags-stack-show)
 (global-set-key (kbd "M-s /")   'multi-occur-in-matching-buffers)
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
+(global-set-key (kbd "C-c c")   'clone-line)
