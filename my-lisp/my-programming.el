@@ -8,7 +8,8 @@
   (if window-system (hl-line-mode t))
   (idle-highlight)
   (turn-on-eldoc-mode)
-  (imenu-add-menubar-index))
+  ;;(imenu-add-menubar-index)
+  )
 
 (mapcar
  (function (lambda (language-mode-hook)

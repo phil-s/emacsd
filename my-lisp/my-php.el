@@ -28,8 +28,11 @@
   (setq c-electric-flag nil)
   ;; electric behaviours appear to be bad/unwanted in php-mode
 
+  ;; This is bugging out recently. Not sure why. Thought it
+  ;; was a conflict with (my-coding-config), but not certain
+  ;; any longer. Commenting out for now.
   ;; Configure imenu
-  (php-imenu-setup)
+  ;; (php-imenu-setup)
 
   ;; Find documentation online
   (local-set-key (kbd "<f1>") 'my-php-symbol-lookup))
@@ -38,11 +41,7 @@
   (setq imenu-create-index-function (function php-imenu-create-index))
   ;; uncomment if you prefer speedbar:
   ;;(setq php-imenu-alist-postprocessor (function reverse))
-  
-  ;; n.b. my-php-mode executes before my-coding-hook.
-  ;; Therefore comment the following, so it is not called twice.
-  ;;(imenu-add-menubar-index)
-  )
+  (imenu-add-menubar-index))
 
 (defun my-php-symbol-lookup ()
   "Find the symbol at point in the online PHP documentation."
