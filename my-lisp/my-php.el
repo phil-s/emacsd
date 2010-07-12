@@ -38,7 +38,11 @@
   (setq imenu-create-index-function (function php-imenu-create-index))
   ;; uncomment if you prefer speedbar:
   ;;(setq php-imenu-alist-postprocessor (function reverse))
-  (imenu-add-menubar-index))
+  
+  ;; n.b. my-php-mode executes before my-coding-hook.
+  ;; Therefore comment the following, so it is not called twice.
+  ;;(imenu-add-menubar-index)
+  )
 
 (defun my-php-symbol-lookup ()
   "Find the symbol at point in the online PHP documentation."
