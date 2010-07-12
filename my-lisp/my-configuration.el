@@ -18,6 +18,7 @@
 (setq desktop-path (list desktop-dirname))
 (setq desktop-save t)
 (setq desktop-files-not-to-save "^$")
+(setq desktop-load-locked-desktop nil)
 (desktop-save-mode 1)
 
 ;; Also save minibuffer/variable histories

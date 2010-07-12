@@ -76,7 +76,7 @@
                (set-visited-file-name new-name)
                (set-buffer-modified-p nil)))))))
 
-;; Duplicate the current line.
+;; Duplicate / clone the current line.
 (defun clone-line ()
   "Duplicate line at cursor, leaving the latter intact."
   (interactive "*")
@@ -92,18 +92,6 @@
         (kill-whole-line)
         (toggle-read-only 0)
         (yank)))))
-
-
-
-;; Find housing (hnzc) file at point in other window
-(require 'ffap)
-(defun my-find-housing-file-at-point-other-window ()
-  "Find file at point, in other window."
-  (interactive)
-  (find-file-other-window
-   (concat "/scpc:phil@hnzc-dev-5:" (ffap-string-at-point))))
-(global-set-key (kbd "C-c f")   'my-find-housing-file-at-point-other-window)
-
 
 ;; Convert file's EOL style to Unix
 (defun to-unix-eol (fpath)

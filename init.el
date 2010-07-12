@@ -129,9 +129,8 @@
 ;; Configure visual theme
 (require 'my-theme)
 
-;; Housing
-;; (defvar workspace-dir "/scpc:phil@hnzc-dev-5:/home/phil/Plone/")
-;; (load "ifind-mode.el")
+;; Support for development on local machine
+(require 'my-local)
 
 ;; Key-bindings
 (global-set-key (kbd "C-c r")   'rename-file-and-buffer)
