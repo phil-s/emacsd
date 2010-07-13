@@ -2,6 +2,10 @@
 ;; Colour theme and faces
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Disable mumamo chunk background colours
+(setq mumamo-background-colors nil)
+
+
 ;; hl-sexp-mode
 ;; See my-programming.el
 (set-face-background 'hl-sexp-face "#090909")
@@ -24,7 +28,6 @@
 
 ;; hl-line-mode
 (set-face-background 'hl-line "#333333")
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
