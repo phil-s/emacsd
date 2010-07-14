@@ -145,6 +145,19 @@
          (mapc 'find-file fn-list)))))
 
 ;;
+;; Ediff with autosave file
+;;
+(defun ediff-auto-save ()
+  "Ediff current file and its auto-save pendant."
+  (interactive)
+  (let ((auto-file-name (make-auto-save-file-name))
+        (file-major-mode major-mode))
+    (ediff-files buffer-file-name auto-file-name)
+    (switch-to-buffer-other-window (file-name-nondirectory auto-file-name))
+    (apply file-major-mode '())
+    (other-window 1))) ;; back to ediff panel
+
+;;
 ;; Diff the current buffer with the file contents
 ;;
 
