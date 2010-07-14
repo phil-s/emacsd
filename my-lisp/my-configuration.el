@@ -19,7 +19,31 @@
 (setq desktop-save t)
 (setq desktop-files-not-to-save "^$")
 (setq desktop-load-locked-desktop nil)
-(desktop-save-mode 1)
+(desktop-save-mode 0)
+
+;; Save desktop when idle
+(add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
+(defun my-auto-desktop-save-in-desktop-dir ()
+  "Save the desktop in directory `desktop-dirname'."
+  (and desktop-dirname
+       (desktop-save desktop-dirname)
+       (message "Desktop saved in %s"
+                (abbreviate-file-name desktop-dirname))))
+
+;; Save desktop whenever idle for 15 minutes.
+;; TODO: Make this smarter. Shorten the timespan, but don't
+;; save unnecessarily. Rotate the files to provide backups.
+;; (run-with-idle-timer 900 t 'my-auto-desktop-save-in-desktop-dir)
+;; (defun my-auto-desktop-save-in-desktop-dir ()
+;;   "Save the desktop in directory `desktop-dirname'."
+;;   (run-with-idle-timer
+;;    10 nil ; once idle for 10 seconds, no repeats.
+;;    (function
+;;     (lambda ()
+;;       (and desktop-dirname
+;;            (desktop-save desktop-dirname)
+;;            (message "Desktop saved in %s"
+;;                     (abbreviate-file-name desktop-dirname)))))))
 
 ;; Also save minibuffer/variable histories
 ;; n.b. savehist-mode defaults to saving the vars listed in
