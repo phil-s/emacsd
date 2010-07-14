@@ -118,12 +118,12 @@ context-help to false"
 
 (defadvice eldoc-print-current-symbol-info
   (around eldoc-show-c-tag activate)
-  (cond
-   ((eq major-mode 'emacs-lisp-mode)       (rgr/context-help) ad-do-it)
-   ((eq major-mode 'lisp-interaction-mode) (rgr/context-help) ad-do-it)
-   ((eq major-mode 'apropos-mode)          (rgr/context-help) ad-do-it)
-   (t ad-do-it)))
-
+  (if (memq major-mode
+            '(emacs-lisp-mode
+              lisp-interaction-mode
+              apropos-mode))
+      (rgr/context-help))
+  ad-do-it)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Modes
@@ -162,12 +162,12 @@ context-help to false"
   (match-string 0))
 
 
-;; HTML / ASP / VBSCRIPT
-(setq auto-mode-alist (cons '("\\.html$" . html-helper-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.asp$" . html-helper-mode) auto-mode-alist))
-(add-hook 'html-helper-load-hook '(lambda () (require 'visual-basic-mode)))
-(add-hook 'html-helper-load-hook '(lambda () (require 'html-font)))
-(add-hook 'html-helper-mode-hook '(lambda () (font-lock-mode 1)))
+;; HTML ;;/ ASP / VBSCRIPT
+(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
+;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
+;;(add-hook 'html-helper-load-hook (function (lambda () (require 'visual-basic-mode))))
+(add-hook 'html-helper-load-hook (function (lambda () (require 'html-font))))
+(add-hook 'html-helper-mode-hook (function (lambda () (font-lock-mode 1))))
 
 
 ;; Wrap-region minor mode for mark-up
