@@ -98,7 +98,11 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil))))
+ )
+;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
+;; for the 'user theme, to set the default font face. Custom faces set
+;; in the above call will be over-ridden in Win32.
+
 
 ;; Basic configuration
 (require 'my-configuration)
