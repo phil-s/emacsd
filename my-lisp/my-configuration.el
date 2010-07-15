@@ -137,7 +137,7 @@
 ;; set new key-bindings for various other apropos commands.
 (setq apropos-do-all t)
 (global-set-key (kbd "C-h a") 'apropos-command)
-(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,v,C-v)")
+(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,l,v,C-v)")
 (global-set-key (kbd "C-h C-a") 'Apropos-Prefix)
 (define-key Apropos-Prefix (kbd "a")   'apropos)
 (define-key Apropos-Prefix (kbd "C-a") 'apropos)
