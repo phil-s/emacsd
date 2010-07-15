@@ -118,12 +118,12 @@ context-help to false"
 
 (defadvice eldoc-print-current-symbol-info
   (around eldoc-show-c-tag activate)
-  (cond
-   ((eq major-mode 'emacs-lisp-mode)       (rgr/context-help) ad-do-it)
-   ((eq major-mode 'lisp-interaction-mode) (rgr/context-help) ad-do-it)
-   ((eq major-mode 'apropos-mode)          (rgr/context-help) ad-do-it)
-   (t ad-do-it)))
-
+  (if (memq major-mode
+            '(emacs-lisp-mode
+              lisp-interaction-mode
+              apropos-mode))
+      (rgr/context-help))
+  ad-do-it)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Modes
