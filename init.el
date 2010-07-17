@@ -14,17 +14,21 @@
 ;; These are the only sequences reserved for users.
 
 ;; Macros
-;;   C-x (       or F3      Begins recording
-;;                  F3      Insert counter (if recording has already commenced)
-;;   C-x )       or F4      Ends recording
-;;   C-x e       or F4      Executes the last recorded keyboard macro
-;;   C-x C-k e              Edit a keyboard macro (RET for most recent)
+;;   C-x (       or F3     Begins recording.
+;;                  F3     Insert counter (if recording has already commenced).
+;;   C-x )       or F4     Ends recording.
+;;   C-x e       or F4     Executes the last recorded keyboard macro.
+;;                         Repeated e or F4 presses repeats the macro.
+;;   C-x C-k e             Edit a keyboard macro (RET for most recent).
+;;   C-x C-k b             Set a key-binding.
 ;;
-;; If find yourself using lots of macros, you can even save them to your
-;; .emacs and name them (for later use).
+;; If find yourself using lots of macros, you can even name them
+;; for later use, and save them to your init file.
+;;   M-x name-last-kbd-macro (name) RET
+;;   M-x insert-kbd-macro (name) RET
 ;;
 ;; For more documentation, see the info page:
-;;   C-h K C-x (
+;;   C-h k C-x (
 
 ;; Registers
 ;;   C-x r x a           Copy region to register 'a'
