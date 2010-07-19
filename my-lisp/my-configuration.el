@@ -71,6 +71,9 @@
 ;; Scroll-bar on the right-hand side
 (menu-bar-right-scroll-bar)
 
+;; Show time in mode line
+(display-time-mode 1)
+
 ;; Highlight current line
 (global-hl-line-mode 1)
 
