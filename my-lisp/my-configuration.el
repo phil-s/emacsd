@@ -25,7 +25,8 @@
 (add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
 (defun my-auto-desktop-save-in-desktop-dir ()
   "Save the desktop in directory `desktop-dirname'."
-  (and desktop-dirname
+  (and desktop-save-mode
+       desktop-dirname
        (desktop-save desktop-dirname)
        (message "Desktop saved in %s"
                 (abbreviate-file-name desktop-dirname))))
