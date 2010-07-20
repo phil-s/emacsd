@@ -66,6 +66,5 @@
 
   ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
   (setq paragraph-start (concat paragraph-start "\\| \\* @[a-z]+")
-        paragraph-separate "$")
-  )
+        paragraph-separate "$"))
 

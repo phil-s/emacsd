@@ -97,9 +97,9 @@
     (setq explicit-shell-file-name shell-file-name)
 
     ;; Ediff
-    (setq ediff-diff-program (concat cygwin-bin "/diff"))
-    (setq ediff-diff3-program (concat cygwin-bin "/diff3"))
-    (setq ediff-patch-program (concat cygwin-bin "/patch"))
+    (setq ediff-diff-program  (concat cygwin-bin "/diff")
+          ediff-diff3-program (concat cygwin-bin "/diff3")
+          ediff-patch-program (concat cygwin-bin "/patch"))
 
     ;; Remove C-m () characters that appear in output
     (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
