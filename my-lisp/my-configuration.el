@@ -1,31 +1,31 @@
 ;; Put other files and dirs into .emacs.d
-(setq bookmark-default-file "~/.emacs.d/bookmarks.bmk")
-(setq eshell-directory-name "~/.emacs.d/eshell/")
+(setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
+      eshell-directory-name "~/.emacs.d/eshell/")
 
 ;; Write backups to ~/.emacs.d/backup
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
-      backup-by-copying    t  ; Don't de-link hard links
-      version-control      t  ; Use version numbers on backups
-      delete-old-versions  t  ; Automatically delete excess backups:
-      kept-new-versions    20 ; how many of the newest versions to keep
-      kept-old-versions    5  ; and how many of the old
-      )
+      backup-by-copying      t  ; Don't de-link hard links
+      version-control        t  ; Use version numbers on backups
+      delete-old-versions    t  ; Automatically delete excess backups:
+      kept-new-versions      20 ; how many of the newest versions to keep
+      kept-old-versions      5) ; and how many of the old
 
 ;; Automatically save and restore sessions
-(setq desktop-dirname "~/.emacs.d/desktop/")
-(setq desktop-base-file-name "emacs.desktop")
-(setq desktop-base-lock-name "lock")
-(setq desktop-path (list desktop-dirname))
-(setq desktop-save t)
-(setq desktop-files-not-to-save "^$")
-(setq desktop-load-locked-desktop nil)
+(setq desktop-dirname             "~/.emacs.d/desktop/"
+      desktop-base-file-name      "emacs.desktop"
+      desktop-base-lock-name      "lock"
+      desktop-path                (list desktop-dirname)
+      desktop-save                t
+      desktop-files-not-to-save   "^$"
+      desktop-load-locked-desktop nil)
 (desktop-save-mode 0)
 
 ;; Save desktop when idle
 (add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
 (defun my-auto-desktop-save-in-desktop-dir ()
   "Save the desktop in directory `desktop-dirname'."
-  (and desktop-dirname
+  (and desktop-save-mode
+       desktop-dirname
        (desktop-save desktop-dirname)
        (message "Desktop saved in %s"
                 (abbreviate-file-name desktop-dirname))))
@@ -70,6 +70,9 @@
 
 ;; Scroll-bar on the right-hand side
 (menu-bar-right-scroll-bar)
+
+;; Show time in mode line
+(display-time-mode 1)
 
 ;; Highlight current line
 (global-hl-line-mode 1)
@@ -155,10 +158,10 @@
 
 ;; Better buffer naming when filenames conflict
 (require 'uniquify)
-(setq uniquify-buffer-name-style 'reverse)
-(setq uniquify-separator "|")
-(setq uniquify-after-kill-buffer-p t) ; rename after killing uniquified
-(setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+(setq uniquify-buffer-name-style   'reverse
+      uniquify-separator           "|"
+      uniquify-after-kill-buffer-p t ; rename after killing uniquified
+      uniquify-ignore-buffers-re   "^\\*") ; don't muck with special buffers
 
 ;; Make large files read-only, and disable undo for the buffer
 (defun my-find-file-check-make-large-file-read-only-hook ()
@@ -180,8 +183,8 @@ disabled.")))
 (setq dired-dnd-protocol-alist nil)
 
 ;; Use ControlMaster with TRAMP by default
-(setq tramp-default-method "scpc")
-(setq tramp-default-user "phil")
+(setq tramp-default-method "scpc"
+      tramp-default-user   "phil")
 
 ;; Align with spaces only
 (defadvice align-regexp (around align-regexp-with-spaces)

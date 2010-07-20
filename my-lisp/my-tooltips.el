@@ -18,9 +18,9 @@
         (setq curline "")
         (while (and words (< (length curline) limit))
           (progn
-            (setq word (car words))
-            (setq words (cdr words))
-            (setq curline (concat curline " " word))))
+            (setq word (car words)
+                  words (cdr words)
+                  curline (concat curline " " word))))
         (setq modified (concat modified curline "\n"))))
     (setq modified (concat modified " \n")))
   )
@@ -29,9 +29,7 @@
                          flymake-csharp-fixup-tooltip
                          (arg &optional use-echo-area)
                          activate compile)
-  (progn
-    (if (and (not use-echo-area)
-             (eq major-mode 'csharp-mode))
-        (let ((orig (ad-get-arg 0)))
-          (ad-set-arg 0 (cheeso-reform-string 72 orig))
-          ))))
+  (if (and (not use-echo-area)
+           (eq major-mode 'csharp-mode))
+      (let ((orig (ad-get-arg 0)))
+        (ad-set-arg 0 (cheeso-reform-string 72 orig)))))
