@@ -117,6 +117,10 @@
 ;; Prevent C-z minimizing frames
 ;(defun iconify-or-deiconify-frame nil)
 
+;; By default, raise an existing frame with buffer B in
+;; preference to opening another copy in the current buffer.
+(setq-default display-buffer-reuse-frames t)
+
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq default-indicate-empty-lines t)
 
