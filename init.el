@@ -152,6 +152,6 @@
 (global-set-key (kbd "M-p")     'scroll-one-line-back)
 (global-set-key (kbd "M-.")     'etags-select-find-tag)
 (global-set-key (kbd "M-?")     'etags-stack-show)
-(global-set-key (kbd "M-s /")   'multi-occur-in-matching-buffers)
+(global-set-key (kbd "M-s /")   'my-multi-occur-in-matching-buffers)
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
 (global-set-key (kbd "C-c c")   'clone-line)

@@ -1,3 +1,6 @@
+;; Set a preferred coding system?
+;; (prefer-coding-system 'utf-8)
+
 ;; Put other files and dirs into .emacs.d
 (setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
       eshell-directory-name "~/.emacs.d/eshell/")
@@ -18,32 +21,26 @@
       desktop-save                t
       desktop-files-not-to-save   "^$"
       desktop-load-locked-desktop nil)
-(desktop-save-mode 0)
+;;(desktop-save-mode 0) ; using desktop-recover instead...
 
-;; Save desktop when idle
-(add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
-(defun my-auto-desktop-save-in-desktop-dir ()
-  "Save the desktop in directory `desktop-dirname'."
-  (and desktop-save-mode
-       desktop-dirname
-       (desktop-save desktop-dirname)
-       (message "Desktop saved in %s"
-                (abbreviate-file-name desktop-dirname))))
+;; Use the desktop-recover library to load and auto-save the desktop.
+(require 'desktop-recover)
+(setq desktop-recover-location
+      (desktop-recover-fixdir desktop-dirname))
+;; Brings up the interactive buffer restore menu
+(desktop-recover-interactive)
+;; Note that after using this menu, your desktop will be saved
+;; automatically (triggered by the auto-save mechanism).
 
-;; Save desktop whenever idle for 15 minutes.
-;; TODO: Make this smarter. Shorten the timespan, but don't
-;; save unnecessarily. Rotate the files to provide backups.
-;; (run-with-idle-timer 900 t 'my-auto-desktop-save-in-desktop-dir)
-;; (defun my-auto-desktop-save-in-desktop-dir ()
-;;   "Save the desktop in directory `desktop-dirname'."
-;;   (run-with-idle-timer
-;;    10 nil ; once idle for 10 seconds, no repeats.
-;;    (function
-;;     (lambda ()
-;;       (and desktop-dirname
-;;            (desktop-save desktop-dirname)
-;;            (message "Desktop saved in %s"
-;;                     (abbreviate-file-name desktop-dirname)))))))
+;;;; ;; Save desktop when idle
+;;;; (add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
+;;;; (defun my-auto-desktop-save-in-desktop-dir ()
+;;;;   "Save the desktop in directory `desktop-dirname'."
+;;;;   (and desktop-save-mode
+;;;;        desktop-dirname
+;;;;        (desktop-save desktop-dirname)
+;;;;        (message "Desktop saved in %s"
+;;;;                 (abbreviate-file-name desktop-dirname))))
 
 ;; Also save minibuffer/variable histories
 ;; n.b. savehist-mode defaults to saving the vars listed in
@@ -119,6 +116,10 @@
 
 ;; Prevent C-z minimizing frames
 ;(defun iconify-or-deiconify-frame nil)
+
+;; By default, raise an existing frame with buffer B in
+;; preference to opening another copy in the current buffer.
+(setq-default display-buffer-reuse-frames t)
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq default-indicate-empty-lines t)
