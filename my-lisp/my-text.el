@@ -8,7 +8,7 @@
   "Major mode for editing comma-separated value files." t)
 
 ;; Enable spelling correction
-(setq text-mode-hook (function (lambda () (flyspell-mode t))))
+(setq text-mode-hook #'(lambda () (flyspell-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
