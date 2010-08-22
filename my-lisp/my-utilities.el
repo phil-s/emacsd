@@ -45,6 +45,20 @@
   (zap-to-char (- arg) char))
 (global-set-key (kbd "C-M-z") 'zap-to-char-backwards)
 
+;; Enable apply-macro-to-region-lines with named macros
+(defun apply-named-macro-to-region-lines (top bottom)
+  "Apply named keyboard macro to all lines in the region."
+  (interactive "r")
+  (let ((macro (intern
+                (completing-read "kbd macro (name): "
+                                 obarray
+                                 (lambda (elt)
+                                   (and (fboundp elt)
+                                        (or (stringp (symbol-function elt))
+                                            (vectorp (symbol-function elt))
+                                            (get elt 'kmacro))))
+                                 t))))
+    (apply-macro-to-region-lines top bottom macro)))
 
 ;; Uniqify region (alternative to "C-u M-| uniq RET")
 (defun uniquify-region ()
@@ -98,6 +112,31 @@
         (toggle-read-only 0)
         (yank)))))
 
+;; Display non-critical messages (probably) with minimal interference.
+(defun my-unimportant-notification (format-string &optional args delay attempts)
+  "Display a message temporarily, unless minibuffer is active."
+  (let ((delay (or delay 5)) ;; seconds to postpone by default
+        (attempts (or attempts 0)))
+    (if (< attempts 32) ;; bail out eventually
+        (if (minibufferp (current-buffer))
+            ;; postpone by an ever-increasing delay
+            (run-with-timer
+             delay nil #'(lambda ()
+                           (my-unimportant-notification
+                            format-string args (+ 5 delay) (1+ attempts))))
+          ;; otherwise
+          (let ((backup-message (current-message))
+                (tmp-message (format format-string args)))
+            ;; TODO: add notice of how delayed the message was.
+            (message tmp-message) ; show message briefly,
+            (run-with-timer       ; then revert.
+             3 nil #'(lambda ()
+                       ;; revert to the backup message, unless something
+                       ;; else has already over-written our temporary one
+                       (if (string= tmp-message (current-message))
+                           ;;(message backup-message)))))))))
+                           (message nil)))))))))
+
 ;; Convert file's EOL style to Unix
 (defun to-unix-eol (fpath)
   "Change file's line ending to unix convention."
@@ -125,10 +164,9 @@
     (other-window 1))) ;; back to ediff panel
 
 ;; Kill ring / Yank assistance
-(global-set-key (kbd "C-c y")
-                (function (lambda ()
-                            (interactive)
-                            (popup-menu 'yank-menu))))
+(global-set-key (kbd "C-c y") #'(lambda ()
+                                  (interactive)
+                                  (popup-menu 'yank-menu)))
 
 (when (require 'browse-kill-ring nil 'noerror)
   ;; Either...
