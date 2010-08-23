@@ -131,13 +131,13 @@
             (message tmp-message) ; show message briefly,
             (run-with-timer       ; then revert.
              3 nil
-             #'(lambda (tmp-message)
+             #'(lambda (tmp-message backup-message)
                  ;; revert to the backup message, unless something
                  ;; else has already over-written our temporary one
                  (if (string= tmp-message (current-message))
-                     ;;(message backup-message)))))))))
-                     (message nil)))
-             tmp-message))))))
+                     (message backup-message)))
+             tmp-message
+             backup-message))))))
 
 ;; Convert file's EOL style to Unix
 (defun to-unix-eol (fpath)
