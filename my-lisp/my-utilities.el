@@ -112,32 +112,37 @@
         (toggle-read-only 0)
         (yank)))))
 
+
 ;; Display non-critical messages (probably) with minimal interference.
-(defun my-unimportant-notification (format-string &optional args delay attempts)
+(defun my-unimportant-notification (format-string &rest args)
+  (my--unimportant-notification format-string args
+   0 ; seed the attempt counter
+   5 ; default seconds to postpone when minibuffer is active
+   ))
+
+(defun my--unimportant-notification (format-string args attempts delay)
   "Display a message temporarily, unless minibuffer is active."
-  (let ((delay (or delay 5)) ;; seconds to postpone by default
-        (attempts (or attempts 0)))
-    (if (< attempts 32) ;; bail out eventually
-        (if (minibufferp (current-buffer))
-            ;; postpone by an ever-increasing delay
-            (run-with-timer
-             delay nil #'(lambda ()
-                           (my-unimportant-notification
-                            format-string args (+ 5 delay) (1+ attempts))))
-          ;; otherwise
-          (let ((backup-message (current-message))
-                (tmp-message (format format-string args)))
-            ;; TODO: add notice of how delayed the message was.
-            (message tmp-message) ; show message briefly,
-            (run-with-timer       ; then revert.
-             3 nil
-             #'(lambda (tmp-message backup-message)
-                 ;; revert to the backup message, unless something
-                 ;; else has already over-written our temporary one
-                 (if (string= tmp-message (current-message))
-                     (message backup-message)))
-             tmp-message
-             backup-message))))))
+  (if (< attempts 32) ;; bail out eventually
+      (if (minibufferp (current-buffer))
+          ;; postpone by an ever-increasing delay
+          (run-with-timer
+           delay nil #'(lambda ()
+                         (my--unimportant-notification format-string args
+                          (1+ attempts) (+ 5 delay))))
+        ;; otherwise
+        (let ((backup-message (current-message))
+              (tmp-message (apply 'format format-string args)))
+          ;; TODO: add notice of how delayed the message was.
+          (message tmp-message) ; show message briefly,
+          (run-with-timer       ; then revert.
+           3 nil
+           #'(lambda (tmp-message backup-message)
+               ;; revert to the backup message, unless something
+               ;; else has already over-written our temporary one
+               (if (string= tmp-message (current-message))
+                   (message backup-message)))
+           tmp-message
+           backup-message)))))
 
 ;; Convert file's EOL style to Unix
 (defun to-unix-eol (fpath)
