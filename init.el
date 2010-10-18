@@ -73,6 +73,10 @@
 ;; ELPA -- Emacs Lisp Package Archive
 (require 'my-elpa)
 
+;; Other packages, via el-get
+;; TODO: Make el-get take care of itself? (And ELPA too?)
+(require 'my-externals)
+
 ;;
 ;; Basic customisations
 ;;
