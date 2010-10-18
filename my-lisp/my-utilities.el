@@ -279,3 +279,7 @@
 
 (provide 'my-utilities)
 
+;;; Local Variables:
+;;; mode:outline-minor
+;;; my-safe-eval:(hide-body)
+;;; End:
