@@ -179,6 +179,12 @@ disabled.")))
     ad-do-it))
 (ad-activate 'align-regexp)
 
+;; Enable <backtab> (kbd "S-TAB") for toggling visibility
+;; in outline-minor-mode
+(add-hook 'outline-minor-mode-hook 'my-outline-minor-mode-hook)
+(defun my-outline-minor-mode-hook ()
+  (local-set-key (kbd "<backtab>") 'outline-toggle-children))
+
 ;; Shell mode
 (add-hook 'shell-mode-hook  #'(lambda ()
                                 "Custom shell-mode hook"
