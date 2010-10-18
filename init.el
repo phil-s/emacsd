@@ -89,6 +89,7 @@
  '(confirm-kill-emacs (quote y-or-n-p))
  '(current-language-environment "Latin-1")
  '(default-input-method "latin-1-prefix")
+ '(display-time-mode t)
  '(dnd-protocol-alist (quote (("^file:///" . dnd-open-local-file) ("^file://" . dnd-open-file) ("^file:[A-Za-z]%3a" . dnd-open-local-file-fix-url) ("^file:" . dnd-open-local-file) ("^\\(https?\\|ftp\\|file\\|nfs\\)://" . dnd-open-file))))
  '(global-font-lock-mode t nil (font-lock))
  '(history-length 100)
