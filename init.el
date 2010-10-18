@@ -73,10 +73,6 @@
 ;; ELPA -- Emacs Lisp Package Archive
 (require 'my-elpa)
 
-;; Other packages, via el-get
-;; TODO: Make el-get take care of itself? (And ELPA too?)
-(require 'my-externals)
-
 ;;
 ;; Basic customisations
 ;;
@@ -87,51 +83,31 @@
   ;; If there is more than one, they won't work right.
  '(case-fold-search t)
  '(confirm-kill-emacs (quote y-or-n-p))
- '(cua-mode t nil (cua-base))
  '(current-language-environment "Latin-1")
  '(default-input-method "latin-1-prefix")
- '(display-time-mode t)
  '(dnd-protocol-alist (quote (("^file:///" . dnd-open-local-file) ("^file://" . dnd-open-file) ("^file:[A-Za-z]%3a" . dnd-open-local-file-fix-url) ("^file:" . dnd-open-local-file) ("^\\(https?\\|ftp\\|file\\|nfs\\)://" . dnd-open-file))))
  '(global-font-lock-mode t nil (font-lock))
  '(history-length 100)
  '(ibuffer-formats (quote ((mark modified read-only " " (name 30 60 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
- '(ibuffer-saved-filter-groups (quote (("housing" ("HNZC website" (filename . "site/website")) ("HNZC-dev5:~/Plone" (filename . "/scpc:phil@hnzc-dev-5:/home/phil/Plone")) ("HNZC-dev5 other" (filename . "/scpc:phil@hnzc-dev-5:")) ("Emacs" (filename . "emacs"))))))
  '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(inhibit-eol-conversion nil)
- '(js-indent-level 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(recentf-max-menu-items 20)
- '(recentf-save-file "~/.emacs.d/recentf")
- '(safe-local-variable-values (quote ((my-safe-eval hide-body))))
- '(scroll-bar-mode (quote right))
- '(show-paren-mode t)
- '(size-indication-mode t)
  '(tool-bar-mode nil)
+ '(tramp-remote-path (quote ("~/bin" "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")))
+ '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=~/bin:$PATH")))
  '(vc-svn-global-switches (quote ("--username phils" "--password password"))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))
  '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
  '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
 ;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
 ;; for the 'user theme, to set the default font face. Custom faces set
 ;; in the above call will be over-ridden in Win32.
 
-;; Local variable helpers
-(defun my-safe-eval ()
-  "Files can specify a my-safe-eval local variable to avoid
-always being asked for eval confirmation. Emacs will ask once
-for a given value, which is all we need. Usage example:
-;;; Local Variables:
-;;; mode:outline-minor
-;;; my-safe-eval:(hide-body)
-;;; End:"
-  (eval (bound-and-true-p my-safe-eval)))
-(add-hook 'find-file-hook 'my-safe-eval)
 
 ;; Basic configuration
 (require 'my-configuration)
