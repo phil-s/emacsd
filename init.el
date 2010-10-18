@@ -184,6 +184,7 @@ for a given value, which is all we need. Usage example:
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
 (global-set-key (kbd "C-c c")   'clone-line)
 (global-set-key (kbd "C-h C-f") 'find-function)
+(global-set-key (kbd "C-x C-j") 'dired-jump)
 
 
 
