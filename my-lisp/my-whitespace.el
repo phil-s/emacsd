@@ -26,6 +26,11 @@
         (tab-mark 9 [187 9] [92 9])
         ))
 
+;; Use ws-trim mode to strip trailing whitespace automatically
+;; from edited lines (the default ws-trim-level).
+(require 'ws-trim)
+(global-ws-trim-mode t)
+
 ;; Strip trailing whitespace
 (defun strip-trailing-whitespace ()
   "Remove trailing spaces and tabs from lines."
