@@ -67,7 +67,11 @@
                          (expand-file-name "~/.emacs.d/my-lisp")))
 
 ;; ELPA -- Emacs Lisp Package Archive
+;; TODO: Make el-get take care of ELPA?
 (require 'my-elpa)
+
+;; Other packages, via el-get
+(require 'my-externals)
 
 ;;
 ;; Basic customisations
@@ -82,6 +86,7 @@
  '(current-language-environment "Latin-1")
  '(default-input-method "latin-1-prefix")
  '(dnd-protocol-alist (quote (("^file:///" . dnd-open-local-file) ("^file://" . dnd-open-file) ("^file:[A-Za-z]%3a" . dnd-open-local-file-fix-url) ("^file:" . dnd-open-local-file) ("^\\(https?\\|ftp\\|file\\|nfs\\)://" . dnd-open-file))))
+ '(fic-highlighted-words (quote ("FIXME" "TODO" "KLUDGE")))
  '(global-font-lock-mode t nil (font-lock))
  '(history-length 100)
  '(ibuffer-formats (quote ((mark modified read-only " " (name 30 30 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
@@ -148,6 +153,6 @@
 (global-set-key (kbd "M-p")     'scroll-one-line-back)
 (global-set-key (kbd "M-.")     'etags-select-find-tag)
 (global-set-key (kbd "M-?")     'etags-stack-show)
-(global-set-key (kbd "M-s /")   'multi-occur-in-matching-buffers)
+(global-set-key (kbd "M-s /")   'my-multi-occur-in-matching-buffers)
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
 (global-set-key (kbd "C-c c")   'clone-line)
