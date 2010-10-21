@@ -13,47 +13,6 @@
       kept-new-versions      20 ; how many of the newest versions to keep
       kept-old-versions      5) ; and how many of the old
 
-;; Automatically save and restore sessions
-(setq desktop-dirname             "~/.emacs.d/desktop/"
-      desktop-base-file-name      "emacs.desktop"
-      desktop-base-lock-name      "lock"
-      desktop-path                (list desktop-dirname)
-      desktop-save                t
-      desktop-files-not-to-save   "^$"
-      desktop-load-locked-desktop nil)
-(desktop-save-mode 0) ; [no longer] using desktop-recover instead...
-
-;; Remember vars between sessions
-(add-to-list 'desktop-globals-to-save 'whitespace-line-column)
-(add-to-list 'desktop-globals-to-save 'whitespace-style)
-
-;;;; ;; Use the desktop-recover library to load and auto-save the desktop.
-;;;; (require 'desktop-recover)
-;;;; (setq desktop-recover-location
-;;;;       (desktop-recover-fixdir desktop-dirname))
-;;;; ;; Brings up the interactive buffer restore menu
-;;;; (desktop-recover-interactive)
-;;;; ;; Note that after using this menu, your desktop will be saved
-;;;; ;; automatically (triggered by the auto-save mechanism).
-
-;; Save desktop when idle
-(add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
-(defun my-auto-desktop-save-in-desktop-dir ()
-  "Save the desktop in directory `desktop-dirname'."
-  (and desktop-save-mode
-       desktop-dirname
-       (desktop-save desktop-dirname)
-       (message "Desktop saved in %s"
-                (abbreviate-file-name desktop-dirname))))
-
-;; Also save minibuffer/variable histories
-;; n.b. savehist-mode defaults to saving the vars listed in
-;; savehist-minibuffer-history-variables, which gets added to
-;; as individual features are utilised.
-(setq savehist-additional-variables
-      '(kill-ring))
-(savehist-mode 1)
-
 ;; No splash screen
 (setq inhibit-startup-screen t)
 
@@ -84,8 +43,15 @@
 ;; Move by entire lines, not visual lines
 (setq line-move-visual nil)
 
-;; Use ibuffer-list-buffers in place of list-buffers
+;; Do not overwrite the region by typing
+(setq delete-active-region nil)
+
+;; Use ibuffer in place of list-buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+
+;; TODO: Idea: Implement a "recently-closed files" group in ibuffer.
+;; Collapsed by default. Selecting a buffer from this list will
+;; re-visit the file.
 
 ;; Enable ibuffer-filter-by-filename to filter on directory names too.
 (eval-after-load "ibuf-ext"
@@ -107,6 +73,7 @@
 (ad-activate 'ibuffer)
 
 ;; Use CUA selection mode (enhanced rectangle editing)
+(setq cua-delete-selection nil) ; typing should not delete the region.
 (cua-selection-mode t)
 ;; C-RET + cursor movement
 ;; RET to cycle corners
@@ -115,11 +82,29 @@
 ;; M-n to generate sequence
 ;; http://trey-jackson.blogspot.com/2008/10/emacs-tip-26-cua-mode-specifically.html
 
+;; Deleting should not delete the region.
+(delete-selection-mode 0) ;; doesn't stop cua-selection-mode :/ Undo its changes:
+(add-hook 'cua-mode-hook 'my-cua-mode-hook)
+;;(remove-hook 'cua-mode-hook 'my-cua-mode-hook)
+(defun my-cua-mode-hook ()
+  (define-key cua--region-keymap
+    [remap delete-backward-char] 'delete-backward-char)
+  (define-key cua--region-keymap
+    [remap backward-delete-char] 'backward-delete-char)
+  (define-key cua--region-keymap
+    [remap backward-delete-char-untabify] 'backward-delete-char-untabify)
+  (define-key cua--region-keymap
+    [remap delete-char] 'delete-char))
+
 ;; titlebar = buffer unless filename
 (setq frame-title-format '(buffer-name "%f" ("%b")))
 
 ;; Prevent C-z minimizing frames
 ;(defun iconify-or-deiconify-frame nil)
+
+;; By default, raise an existing frame with buffer B in
+;; preference to opening another copy in the current buffer.
+(setq-default display-buffer-reuse-frames t)
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq default-indicate-empty-lines t)
@@ -194,13 +179,17 @@ disabled.")))
     ad-do-it))
 (ad-activate 'align-regexp)
 
+;; Enable <backtab> (kbd "S-TAB") for toggling visibility
+;; in outline-minor-mode
+(add-hook 'outline-minor-mode-hook 'my-outline-minor-mode-hook)
+(defun my-outline-minor-mode-hook ()
+  (local-set-key (kbd "<backtab>") 'outline-toggle-children))
+
 ;; Shell mode
-(add-hook
- 'shell-mode-hook
- (function (lambda ()
-             "Custom shell-mode hook"
-             (hide-trailing-whitespace)
-             (ansi-color-for-comint-mode-on))))
+(add-hook 'shell-mode-hook  #'(lambda ()
+                                "Custom shell-mode hook"
+                                (hide-trailing-whitespace)
+                                (ansi-color-for-comint-mode-on)))
 
 ;; Also, emacs doesn't deal with my usual cygwin prompt, so put:
 ;; export PS1="\n\u@\h \w\n\$ "

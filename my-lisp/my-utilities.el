@@ -45,6 +45,20 @@
   (zap-to-char (- arg) char))
 (global-set-key (kbd "C-M-z") 'zap-to-char-backwards)
 
+;; Enable apply-macro-to-region-lines with named macros
+(defun apply-named-macro-to-region-lines (top bottom)
+  "Apply named keyboard macro to all lines in the region."
+  (interactive "r")
+  (let ((macro (intern
+                (completing-read "kbd macro (name): "
+                                 obarray
+                                 (lambda (elt)
+                                   (and (fboundp elt)
+                                        (or (stringp (symbol-function elt))
+                                            (vectorp (symbol-function elt))
+                                            (get elt 'kmacro))))
+                                 t))))
+    (apply-macro-to-region-lines top bottom macro)))
 
 ;; Uniqify region (alternative to "C-u M-| uniq RET")
 (defun uniquify-region ()
@@ -98,6 +112,57 @@
         (toggle-read-only 0)
         (yank)))))
 
+;; Display non-critical messages with minimal interference.
+;; See also the following:
+;; (minibuffer-message)
+;; (with-temp-message)
+(defun my-unimportant-notification (format-string &rest args)
+  "Display a message temporarily, if/when minibuffer isn't active."
+  (my--unimportant-notification
+   format-string args
+   6 ;; seed the remaining attempts counter (maximum)
+   5 ;; number of seconds to increase delay by when minibuffer is active
+   ))
+
+(defun my--unimportant-notification
+  (format-string args attempts increment &optional delay total)
+  "Private logic for \\[my-unimportant-notification]"
+  (let ((delay (or delay 0))
+        (total (or total 0)))
+    (if (and (eq (selected-window) (minibuffer-window))
+             (> attempts 0))   ; ^^ or: (minibufferp (current-buffer)) ?
+                               ; and: (not cursor-in-echo-area) ?
+                               ; see: (eldoc-display-message-no-interference-p)
+
+        ;; if the minibuffer is active, then postpone the message by an
+        ;; ever-increasing delay, until we exceed our available attempt
+        ;; limit (at which point we display the message regardless).
+        (let* ((delay (+ increment delay))
+               (total (+ total delay)))
+          (run-with-timer
+           delay nil
+           'my--unimportant-notification
+           format-string args (1- attempts) increment delay total))
+      ;; otherwise show the message
+      (let* ((backup-message (current-message))
+             (delay-message " (message delayed %d seconds)")
+             (delay-arg (or (and (zerop total) "")
+                            (format delay-message total)))
+             (args (append args (list delay-arg) nil))
+             (format-string (concat format-string "%s"))
+             (tmp-message (apply 'format format-string args)))
+        ;; show message briefly, then revert.
+        (message tmp-message)
+        (run-with-timer
+         3 nil
+         #'(lambda (tmp-message backup-message)
+             ;; revert to the backup message, unless something
+             ;; else has already over-written our temporary one
+             (if (string= tmp-message (current-message))
+                 (message backup-message)))
+         tmp-message
+         backup-message)))))
+
 ;; Convert file's EOL style to Unix
 (defun to-unix-eol (fpath)
   "Change file's line ending to unix convention."
@@ -125,10 +190,9 @@
     (other-window 1))) ;; back to ediff panel
 
 ;; Kill ring / Yank assistance
-(global-set-key (kbd "C-c y")
-                (function (lambda ()
-                            (interactive)
-                            (popup-menu 'yank-menu))))
+(global-set-key (kbd "C-c y") #'(lambda ()
+                                  (interactive)
+                                  (popup-menu 'yank-menu)))
 
 (when (require 'browse-kill-ring nil 'noerror)
   ;; Either...
@@ -221,3 +285,7 @@
 
 (provide 'my-utilities)
 
+;;; Local Variables:
+;;; mode:outline-minor
+;;; my-safe-eval:(hide-body)
+;;; End:

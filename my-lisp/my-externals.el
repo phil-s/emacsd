@@ -34,6 +34,10 @@
           :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
           :features fic-mode)
 
+   (:name ws-trim
+          :type http
+          :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
+
    ;; (:name color-theme
    ;;        :type http
    ;;        :url "http://download.savannah.nongnu.org/releases/color-theme/"
@@ -53,7 +57,18 @@
    ;; (:name dictionary-el    :type apt-get)
    ))
 
-(el-get)
+;;;;(require 'el-get)
+(if (not (functionp 'el-get))
+    (let ((el-get
+           (expand-file-name (concat
+                              user-emacs-directory
+                              "el-get/el-get/el-get.el"))))
+      (if (file-exists-p el-get)
+	  (load el-get))))
+
+;; Execute
+(if (functionp 'el-get)
+    (el-get))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

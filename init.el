@@ -14,17 +14,21 @@
 ;; These are the only sequences reserved for users.
 
 ;; Macros
-;;   C-x (       or F3      Begins recording
-;;                  F3      Insert counter (if recording has already commenced)
-;;   C-x )       or F4      Ends recording
-;;   C-x e       or F4      Executes the last recorded keyboard macro
-;;   C-x C-k e              Edit a keyboard macro (RET for most recent)
+;;   C-x (       or F3     Begins recording.
+;;                  F3     Insert counter (if recording has already commenced).
+;;   C-x )       or F4     Ends recording.
+;;   C-x e       or F4     Executes the last recorded keyboard macro.
+;;                         Repeated e or F4 presses repeats the macro.
+;;   C-x C-k e             Edit a keyboard macro (RET for most recent).
+;;   C-x C-k b             Set a key-binding.
 ;;
-;; If find yourself using lots of macros, you can even save them to your
-;; .emacs and name them (for later use).
+;; If find yourself using lots of macros, you can even name them
+;; for later use, and save them to your init file.
+;;   M-x name-last-kbd-macro (name) RET
+;;   M-x insert-kbd-macro (name) RET
 ;;
 ;; For more documentation, see the info page:
-;;   C-h K C-x (
+;;   C-h k C-x (
 
 ;; Registers
 ;;   C-x r x a           Copy region to register 'a'
@@ -90,10 +94,12 @@
  '(global-font-lock-mode t nil (font-lock))
  '(history-length 100)
  '(ibuffer-formats (quote ((mark modified read-only " " (name 30 30 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
+ '(ibuffer-saved-filter-groups (quote (("ssc" ("Google CSE Advanced-CVS" (filename . "www/google_cse")) ("Google Mini" (filename . "google_appliance")) ("SSC-phil" (filename . "SSC-phil"))) ("SSC" ("Google CSE Advanced-CVS" (filename . "www/google_cse")) ("Google Mini" (filename . "google_appliance")) ("SSC-phil" (filename . "SSC-phil"))) ("housing" ("HNZC-phil" (filename . "hnzc-dev-5/phil/Plone")) ("HNZC other" (filename . "hnzc-dev-5")) ("Emacs" (filename . "emacs"))))))
  '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(inhibit-eol-conversion nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
+ '(safe-local-variable-values (quote ((my-safe-eval hide-body))))
  '(tool-bar-mode nil)
  '(tramp-remote-path (quote ("~/bin" "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")))
  '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=~/bin:$PATH")))
@@ -103,11 +109,22 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New")))))
 ;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
 ;; for the 'user theme, to set the default font face. Custom faces set
 ;; in the above call will be over-ridden in Win32.
 
+;; Local variable helpers
+(defun my-safe-eval ()
+  "Files can specify a my-safe-eval local variable to avoid
+always being asked for eval confirmation. Emacs will ask once
+for a given value, which is all we need. Usage example:
+;;; Local Variables:
+;;; mode:outline-minor
+;;; my-safe-eval:(hide-body)
+;;; End:"
+  (eval (bound-and-true-p my-safe-eval)))
+(add-hook 'find-file-hook 'my-safe-eval)
 
 ;; Basic configuration
 (require 'my-configuration)
@@ -138,6 +155,9 @@
 ;; Configure visual theme
 (require 'my-theme)
 
+;; Session management
+(require 'my-session)
+
 ;; Support for development on local machine
 (require 'my-local)
 
@@ -156,3 +176,56 @@
 (global-set-key (kbd "M-s /")   'my-multi-occur-in-matching-buffers)
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
 (global-set-key (kbd "C-c c")   'clone-line)
+(global-set-key (kbd "C-h C-f") 'find-function)
+(global-set-key (kbd "C-x C-j") 'dired-jump)
+
+
+
+
+;; Determining running environment and platform capabilities in Emacs.
+;; http://brain-break.blogspot.com/2010/08/determining-running-environment-and.html
+
+;;;; Check variables:
+;;;;
+;;emacs-major-version
+;;emacs-minor-version
+;;window-system            ;'nil' if in terminal, 'w32' if native Windows build,
+;;                         ;'x' if under X Window
+;;window-system-version    ;for windows only
+;;operating-system-release ;release of the operating system Emacs is running on
+;;system-configuration     ;like configuration triplet: cpu-manufacturer-os
+;;system-name              ;host name of the machine you are running on
+;;system-time-locale
+;;system-type              ;indicating the type of operating system:
+;;                         ;'gnu' (GNU Hurd), 'gnu/linux', 'gnu/kfreebsd'
+;;                         ;(FreeBSD), 'darwin' (GNU-Darwin, Mac OS X),
+;;                         ;'ms-dos', 'windows-nt', 'cygwin'
+;;system-uses-terminfo
+;;window-size-fixed
+
+;;;; Check functions:
+;;;;
+;;(fboundp ...)            ;return t if SYMBOL's function definition is not void
+;;(featurep ...)           ;returns t if FEATURE is present in this Emacs
+;;(display-graphic-p)      ;return non-nil if DISPLAY is a graphic display;
+;;                         ;graphical displays are those which are capable of
+;;                         ;displaying several frames and several different
+;;                         ;fonts at once
+;;(display-multi-font-p)   ;same as 'display-graphic-p'
+;;(display-multi-frame-p)  ;same as 'display-graphic-p'
+;;(display-color-p)        ;return t if DISPLAY supports color
+;;(display-images-p)       ;return non-nil if DISPLAY can display images
+;;(display-grayscale-p)    ;return non-nil if frames on DISPLAY can display
+;;                         ;shades of gray
+;;(display-mouse-p)        ;return non-nil if DISPLAY has a mouse available
+;;(display-popup-menus-p)  ;return non-nil if popup menus are supported on
+;;                         ;DISPLAY
+;;(display-selections-p)   ;return non-nil if DISPLAY supports selections
+
+;;;; Run those checks as below:
+;;;;
+;;(when window-system ...)
+;;(when (eq window-system 'x) ...)
+;;(when (>= emacs-major-version 22) ...)
+;;(when (fboundp '...) ...)
+;;(when (featurep '...) ...)
