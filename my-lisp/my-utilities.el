@@ -34,6 +34,11 @@
   (scroll-down 1)
   (forward-line -1))
 
+(defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
+  "Show all lines matching REGEXP in all buffers."
+  (interactive (occur-read-primary-args))
+  (multi-occur-in-matching-buffers ".*" regexp))
+
 ;; Provide a simpler backwards zap-to-char (than prefixing with C-u -1)
 (defun zap-to-char-backwards (arg char)
   (interactive "p\ncZap backwards to char: ")

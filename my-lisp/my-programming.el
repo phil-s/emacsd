@@ -8,6 +8,7 @@
   (if window-system (hl-line-mode t))
   (idle-highlight)
   (turn-on-eldoc-mode)
+  ;;(turn-on-fic-mode)
   ;;(imenu-add-menubar-index)
   )
 
@@ -150,6 +151,11 @@ context-help to false"
 
 
 ;; CSS
+(add-hook 'css-mode-hook 'my-css-mode-hook)
+(autoload 'rainbow-mode "rainbow" nil t)
+(defun my-css-mode-hook ()
+  (rainbow-mode 1))
+
 ;; small tool, used with regex search and replace
 ;; replace the start of CSS properties with \,(insert-selector)
 (defun insert-selector ()
@@ -191,6 +197,7 @@ context-help to false"
 
 ;; Python / Plone / Zope
 ;(require 'my-python)
+(add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

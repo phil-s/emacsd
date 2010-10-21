@@ -21,26 +21,30 @@
       desktop-save                t
       desktop-files-not-to-save   "^$"
       desktop-load-locked-desktop nil)
-;;(desktop-save-mode 0) ; using desktop-recover instead...
+(desktop-save-mode 0) ; [no longer] using desktop-recover instead...
 
-;; Use the desktop-recover library to load and auto-save the desktop.
-(require 'desktop-recover)
-(setq desktop-recover-location
-      (desktop-recover-fixdir desktop-dirname))
-;; Brings up the interactive buffer restore menu
-(desktop-recover-interactive)
-;; Note that after using this menu, your desktop will be saved
-;; automatically (triggered by the auto-save mechanism).
+;; Remember vars between sessions
+(add-to-list 'desktop-globals-to-save 'whitespace-line-column)
+(add-to-list 'desktop-globals-to-save 'whitespace-style)
 
-;;;; ;; Save desktop when idle
-;;;; (add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
-;;;; (defun my-auto-desktop-save-in-desktop-dir ()
-;;;;   "Save the desktop in directory `desktop-dirname'."
-;;;;   (and desktop-save-mode
-;;;;        desktop-dirname
-;;;;        (desktop-save desktop-dirname)
-;;;;        (message "Desktop saved in %s"
-;;;;                 (abbreviate-file-name desktop-dirname))))
+;;;; ;; Use the desktop-recover library to load and auto-save the desktop.
+;;;; (require 'desktop-recover)
+;;;; (setq desktop-recover-location
+;;;;       (desktop-recover-fixdir desktop-dirname))
+;;;; ;; Brings up the interactive buffer restore menu
+;;;; (desktop-recover-interactive)
+;;;; ;; Note that after using this menu, your desktop will be saved
+;;;; ;; automatically (triggered by the auto-save mechanism).
+
+;; Save desktop when idle
+(add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)
+(defun my-auto-desktop-save-in-desktop-dir ()
+  "Save the desktop in directory `desktop-dirname'."
+  (and desktop-save-mode
+       desktop-dirname
+       (desktop-save desktop-dirname)
+       (message "Desktop saved in %s"
+                (abbreviate-file-name desktop-dirname))))
 
 ;; Also save minibuffer/variable histories
 ;; n.b. savehist-mode defaults to saving the vars listed in
