@@ -113,6 +113,9 @@
         (yank)))))
 
 ;; Display non-critical messages with minimal interference.
+;; See also the following:
+;; (minibuffer-message)
+;; (with-temp-message)
 (defun my-unimportant-notification (format-string &rest args)
   "Display a message temporarily, if/when minibuffer isn't active."
   (my--unimportant-notification
@@ -126,8 +129,11 @@
   "Private logic for \\[my-unimportant-notification]"
   (let ((delay (or delay 0))
         (total (or total 0)))
-    (if (and (minibufferp (current-buffer))
-             (> attempts 0))
+    (if (and (eq (selected-window) (minibuffer-window))
+             (> attempts 0))   ; ^^ or: (minibufferp (current-buffer)) ?
+                               ; and: (not cursor-in-echo-area) ?
+                               ; see: (eldoc-display-message-no-interference-p)
+
         ;; if the minibuffer is active, then postpone the message by an
         ;; ever-increasing delay, until we exceed our available attempt
         ;; limit (at which point we display the message regardless).
@@ -328,3 +334,7 @@ Does not set point.  Does nothing if mark ring is empty."
 
 (provide 'my-utilities)
 
+;;; Local Variables:
+;;; mode:outline-minor
+;;; my-safe-eval:(hide-body)
+;;; End:

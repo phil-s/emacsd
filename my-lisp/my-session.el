@@ -8,6 +8,17 @@
       desktop-load-locked-desktop nil)
 (desktop-save-mode 0)
 
+(defun my-desktop ()
+  "Load the desktop and enable autosaving"
+  (interactive)
+  (let ((desktop-load-locked-desktop "ask"))
+    (desktop-read)
+    (desktop-save-mode 1)))
+
+;; Remember vars between sessions
+(add-to-list 'desktop-globals-to-save 'whitespace-line-column)
+(add-to-list 'desktop-globals-to-save 'whitespace-style)
+
 ;; ;; Use the desktop-recover library to load and auto-save the desktop.
 ;; ;; Does not work for emacs --daemon
 ;; (require 'desktop-recover)

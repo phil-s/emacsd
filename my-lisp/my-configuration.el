@@ -43,6 +43,9 @@
 ;; Move by entire lines, not visual lines
 (setq line-move-visual nil)
 
+;; Do not overwrite the region by typing
+(setq delete-active-region nil)
+
 ;; Use ibuffer in place of list-buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
@@ -70,6 +73,7 @@
 (ad-activate 'ibuffer)
 
 ;; Use CUA selection mode (enhanced rectangle editing)
+(setq cua-delete-selection nil) ; typing should not delete the region.
 (cua-selection-mode t)
 ;; C-RET + cursor movement
 ;; RET to cycle corners
@@ -77,6 +81,20 @@
 ;; C-RET to exit
 ;; M-n to generate sequence
 ;; http://trey-jackson.blogspot.com/2008/10/emacs-tip-26-cua-mode-specifically.html
+
+;; Deleting should not delete the region.
+(delete-selection-mode 0) ;; doesn't stop cua-selection-mode :/ Undo its changes:
+(add-hook 'cua-mode-hook 'my-cua-mode-hook)
+;;(remove-hook 'cua-mode-hook 'my-cua-mode-hook)
+(defun my-cua-mode-hook ()
+  (define-key cua--region-keymap
+    [remap delete-backward-char] 'delete-backward-char)
+  (define-key cua--region-keymap
+    [remap backward-delete-char] 'backward-delete-char)
+  (define-key cua--region-keymap
+    [remap backward-delete-char-untabify] 'backward-delete-char-untabify)
+  (define-key cua--region-keymap
+    [remap delete-char] 'delete-char))
 
 ;; titlebar = buffer unless filename
 (setq frame-title-format '(buffer-name "%f" ("%b")))
@@ -160,6 +178,12 @@ disabled.")))
   (let ((indent-tabs-mode nil))
     ad-do-it))
 (ad-activate 'align-regexp)
+
+;; Enable <backtab> (kbd "S-TAB") for toggling visibility
+;; in outline-minor-mode
+(add-hook 'outline-minor-mode-hook 'my-outline-minor-mode-hook)
+(defun my-outline-minor-mode-hook ()
+  (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook  #'(lambda ()
