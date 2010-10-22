@@ -1,5 +1,3 @@
-(require 'el-get)
-
 (setq
  el-get-sources
  '(
