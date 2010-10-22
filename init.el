@@ -93,8 +93,7 @@
  '(fic-highlighted-words (quote ("FIXME" "TODO" "KLUDGE")))
  '(global-font-lock-mode t nil (font-lock))
  '(history-length 100)
- '(ibuffer-formats (quote ((mark modified read-only " " (name 30 30 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
- '(ibuffer-saved-filter-groups (quote (("ssc" ("Google CSE Advanced-CVS" (filename . "www/google_cse")) ("Google Mini" (filename . "google_appliance")) ("SSC-phil" (filename . "SSC-phil"))) ("SSC" ("Google CSE Advanced-CVS" (filename . "www/google_cse")) ("Google Mini" (filename . "google_appliance")) ("SSC-phil" (filename . "SSC-phil"))) ("housing" ("HNZC-phil" (filename . "hnzc-dev-5/phil/Plone")) ("HNZC other" (filename . "hnzc-dev-5")) ("Emacs" (filename . "emacs"))))))
+ '(ibuffer-formats (quote ((mark modified read-only " " (name 30 60 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename))))
  '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(inhibit-eol-conversion nil)
  '(read-buffer-completion-ignore-case t)
@@ -109,7 +108,8 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New")))))
+ '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
+ '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
 ;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
 ;; for the 'user theme, to set the default font face. Custom faces set
 ;; in the above call will be over-ridden in Win32.
@@ -178,7 +178,7 @@ for a given value, which is all we need. Usage example:
 (global-set-key (kbd "C-c c")   'clone-line)
 (global-set-key (kbd "C-h C-f") 'find-function)
 (global-set-key (kbd "C-h C-v") 'find-variable)
-(global-set-key (kbd "C-c \\")   'toggle-window-split)
+(global-set-key (kbd "C-c \\")  'toggle-window-split)
 (global-set-key (kbd "C-x C-j") 'dired-jump)
 
 
