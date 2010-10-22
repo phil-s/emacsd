@@ -96,13 +96,17 @@
     (setenv "SHELL" shell-file-name)
     (setq explicit-shell-file-name shell-file-name)
 
+    ;; Remove C-m () characters that appear in output
+    (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+
     ;; Ediff
     (setq ediff-diff-program  (concat cygwin-bin "/diff")
           ediff-diff3-program (concat cygwin-bin "/diff3")
           ediff-patch-program (concat cygwin-bin "/patch"))
 
-    ;; Remove C-m () characters that appear in output
-    (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+    ;; Use Cygwin's info path
+    (add-to-list 'Info-default-directory-list
+                 (concat my-cygwin-root "/usr/share/info/"))
 
     ;; Prevent issues with NUL when rgrepping.
     ;; We use cygwin find, so the null device should be "/dev/null"

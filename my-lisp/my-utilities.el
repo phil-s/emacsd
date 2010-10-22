@@ -172,6 +172,29 @@
   (interactive)
   (mapc 'to-unix-eol (dired-get-marked-files)))
 
+;; pop-to-mark-command in the opposite direction
+;; around the local mark-ring
+(defun unpop-to-mark-command ()
+  "Unpop off mark ring into the buffer's actual mark.
+Does not set point.  Does nothing if mark ring is empty."
+  (interactive)
+  (let ((num-times
+         (if (equal last-command 'pop-to-mark-command) 2
+           (if (equal last-command 'unpop-to-mark-command) 1
+             (error "Previous command was not a (un)pop-to-mark-command")))))
+    (dotimes (x num-times)
+      (when mark-ring
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) (+ 0 (car (last mark-ring))) (current-buffer))
+        (when (null (mark t)) (ding))
+        (setq mark-ring (nbutlast mark-ring))
+        (goto-char (mark t)))
+      (deactivate-mark))))
+
+;; (defadvice set-mark-command (before my-before-set-mark activate)
+
+;;   )
+
 ;; Diff file with autosave backup
 (defun ediff-auto-save ()
   "Ediff the current file with its auto-save."
@@ -206,6 +229,32 @@
        (interactive "P")
        (let* ((fn-list (dired-get-marked-files nil arg)))
          (mapc 'find-file fn-list)))))
+
+;; Toggle between a vertical and horizontal window split
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+	     (next-win-buffer (window-buffer (next-window)))
+	     (this-win-edges (window-edges (selected-window)))
+	     (next-win-edges (window-edges (next-window)))
+	     (this-win-2nd (not (and (<= (car this-win-edges)
+					 (car next-win-edges))
+				     (<= (cadr this-win-edges)
+					 (cadr next-win-edges)))))
+	     (splitter
+	      (if (= (car this-win-edges)
+		     (car (window-edges (next-window))))
+		  'split-window-horizontally
+		'split-window-vertically)))
+	(delete-other-windows)
+	(let ((first-win (selected-window)))
+	  (funcall splitter)
+	  (if this-win-2nd (other-window 1))
+	  (set-window-buffer (selected-window) this-win-buffer)
+	  (set-window-buffer (next-window) next-win-buffer)
+	  (select-window first-win)
+	  (if this-win-2nd (other-window 1))))))
 
 ;;
 ;; Ediff with autosave file

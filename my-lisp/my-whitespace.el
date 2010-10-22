@@ -6,7 +6,9 @@
 (setq-default show-trailing-whitespace t)
 (global-set-key (kbd "C-x M-w") 'toggle-show-trailing-whitespace)
 
-(global-set-key (kbd "C-x M-C-S-w") 'strip-trailing-whitespace)
+;(global-set-key (kbd "C-x M-C-S-w") 'strip-trailing-whitespace)
+(global-set-key (kbd "C-x M-C-S-w") 'delete-trailing-whitespace)
+
 ;(global-set-key (kbd "C-x M-w") 'toggle-whitespace-mode)
 
 ;(global-whitespace-mode t)
@@ -26,14 +28,14 @@
         (tab-mark 9 [187 9] [92 9])
         ))
 
-;; Strip trailing whitespace
-(defun strip-trailing-whitespace ()
-  "Remove trailing spaces and tabs from lines."
-  (interactive "*")
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "[ \t]+$" nil t)
-      (replace-match "" nil nil))))
+;; ;; Strip trailing whitespace
+;; (defun strip-trailing-whitespace ()
+;;   "Remove trailing spaces and tabs from lines."
+;;   (interactive "*")
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "[ \t]+$" nil t)
+;;       (replace-match "" nil nil))))
 
 (defun toggle-show-trailing-whitespace ()
   "Toggle the show-trailing-whitespace variable."

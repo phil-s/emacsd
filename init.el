@@ -127,8 +127,8 @@
 (require 'my-text)
 
 ;; Win32 / Cygwin integration
-(when (eq system-type 'windows-nt)
-  (require 'my-win32))
+(cond ((eq system-type 'windows-nt)
+       (require 'my-win32)))
 ;; Note also the window-system variable. This is useful when you want to
 ;; choose between some x only option, or a terminal, or macos setting.
 
@@ -160,7 +160,8 @@
 (global-set-key (kbd "C-c i")   'imenu-ido-goto-symbol)
 (global-set-key (kbd "C-c c")   'clone-line)
 (global-set-key (kbd "C-h C-f") 'find-function)
-
+(global-set-key (kbd "C-h C-v") 'find-variable)
+(global-set-key (kbd "C-c \\")   'toggle-window-split)
 
 
 
