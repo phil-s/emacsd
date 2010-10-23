@@ -107,7 +107,9 @@
 (setq-default display-buffer-reuse-frames t)
 
 ;; Show a marker in the left fringe for lines not in the buffer
-(setq default-indicate-empty-lines t)
+(if (version< emacs-version "23.2")
+    (setq default-indicate-empty-lines t) ; deprecated
+  (setq-default indicate-empty-lines t))
 
 ;; Show approx buffer size in modeline
 (size-indication-mode t)
