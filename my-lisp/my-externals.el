@@ -1,3 +1,17 @@
+;;;;(require 'el-get)
+(if (not (functionp 'el-get))
+    (let ((el-get
+           (expand-file-name (concat
+                              user-emacs-directory
+                              "el-get/el-get/el-get.el"))))
+      (if (file-exists-p el-get)
+          (load el-get))))
+
+;; Install, if necessary
+(if (not (functionp 'el-get))
+    (install-el-get))
+
+;; Define external sources
 (setq
  el-get-sources
  '(
@@ -55,7 +69,11 @@
    ;; (:name dictionary-el    :type apt-get)
    ))
 
+;; Execute el-get
+(if (functionp 'el-get)
+    (el-get))
 
+;; Copy of the *scratch* Installer
 (defun install-el-get ()
   "So the idea is that you copy/paste this code into your *scratch* buffer, hit C-j, and you have a working el-get."
   (let* ((el-get-dir        (expand-file-name "~/.emacs.d/el-get/"))
@@ -83,22 +101,6 @@
             (goto-char (point-max))
             (insert "\nCongrats, el-get is installed and ready to serve!"))))))
   )
-
-;;;;(require 'el-get)
-(if (not (functionp 'el-get))
-    (let ((el-get
-           (expand-file-name (concat
-                              user-emacs-directory
-                              "el-get/el-get/el-get.el"))))
-      (if (file-exists-p el-get)
-          (load el-get))))
-
-;; Execute
-(if (not (functionp 'el-get))
-    (install-el-get))
-
-(if (functionp 'el-get)
-    (el-get))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
