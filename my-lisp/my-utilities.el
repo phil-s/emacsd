@@ -40,21 +40,20 @@
   (multi-occur-in-matching-buffers ".*" regexp))
 
 (defun my-forward-word-or-buffer (&optional arg)
-  "Enable C-right to call next-buffer if the last command was next-buffer or previous-buffer"
+  "Enable <C-right> to call next-buffer if the last command was next-buffer or previous-buffer"
   (interactive "p")
-  (message (symbol-name last-command))
-  (if (memq last-command (list 'next-buffer 'previous-buffer))
-      (progn (next-buffer)
-             (setq this-command 'next-buffer))
-    (forward-word arg)))
+  (if (not (memq last-command (list 'next-buffer 'previous-buffer)))
+      (forward-word arg)
+    (next-buffer)
+    (setq this-command 'next-buffer)))
 
 (defun my-backward-word-or-buffer (&optional arg)
-  "Enable C-left to call previous-buffer if the last command was next-buffer or previous-buffer"
+  "Enable <C-left> to call previous-buffer if the last command was next-buffer or previous-buffer"
   (interactive "p")
-  (if (memq last-command (list 'next-buffer 'previous-buffer))
-      (progn (previous-buffer)
-             (setq this-command 'previous-buffer))
-    (backward-word arg)))
+  (if (not (memq last-command (list 'next-buffer 'previous-buffer)))
+      (backward-word arg)
+    (previous-buffer)
+    (setq this-command 'previous-buffer)))
 
 ;; Provide a simpler backwards zap-to-char (than prefixing with C-u -1)
 (defun zap-to-char-backwards (arg char)
