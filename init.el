@@ -45,6 +45,56 @@
 ;; C-x 5 ... : Operations on other-frame
 ;; C-x 6 ... : 2C (two columns) operations
 
+;; Determining running environment and platform capabilities in Emacs.
+;; http://brain-break.blogspot.com/2010/08/determining-running-environment-and.html
+
+;;;; Check variables:
+;;;;
+;;emacs-major-version
+;;emacs-minor-version
+;;window-system            ;'nil' if in terminal, 'w32' if native Windows build,
+;;                         ;'x' if under X Window
+;;window-system-version    ;for windows only
+;;operating-system-release ;release of the operating system Emacs is running on
+;;system-configuration     ;like configuration triplet: cpu-manufacturer-os
+;;system-name              ;host name of the machine you are running on
+;;system-time-locale
+;;system-type              ;indicating the type of operating system:
+;;                         ;'gnu' (GNU Hurd), 'gnu/linux', 'gnu/kfreebsd'
+;;                         ;(FreeBSD), 'darwin' (GNU-Darwin, Mac OS X),
+;;                         ;'ms-dos', 'windows-nt', 'cygwin'
+;;system-uses-terminfo
+;;window-size-fixed
+
+;;;; Check functions:
+;;;;
+;;(fboundp ...)            ;return t if SYMBOL's function definition is not void
+;;(featurep ...)           ;returns t if FEATURE is present in this Emacs
+;;(display-graphic-p)      ;return non-nil if DISPLAY is a graphic display;
+;;                         ;graphical displays are those which are capable of
+;;                         ;displaying several frames and several different
+;;                         ;fonts at once
+;;(display-multi-font-p)   ;same as 'display-graphic-p'
+;;(display-multi-frame-p)  ;same as 'display-graphic-p'
+;;(display-color-p)        ;return t if DISPLAY supports color
+;;(display-images-p)       ;return non-nil if DISPLAY can display images
+;;(display-grayscale-p)    ;return non-nil if frames on DISPLAY can display
+;;                         ;shades of gray
+;;(display-mouse-p)        ;return non-nil if DISPLAY has a mouse available
+;;(display-popup-menus-p)  ;return non-nil if popup menus are supported on
+;;                         ;DISPLAY
+;;(display-selections-p)   ;return non-nil if DISPLAY supports selections
+
+;;;; Run those checks as below:
+;;;;
+;;(when window-system ...)
+;;(when (eq window-system 'x) ...)
+;;(when (>= emacs-major-version 22) ...)
+;;(when (fboundp '...) ...)
+;;(when (featurep '...) ...)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Load or evaluate .emacs
 (defun load-dot-emacs ()
   "load ~/.emacs"
@@ -161,73 +211,7 @@ for a given value, which is all we need. Usage example:
 ;; Support for development on local machine
 (require 'my-local)
 
-;; Key-bindings
-(global-set-key (kbd "C-c r")     'rename-file-and-buffer)
-(global-set-key (kbd "C-x M-b")   'bury-buffer)
-(global-set-key (kbd "C-o")       'other-window)
-(global-set-key (kbd "M-o")       'expand-other-window)
-(global-set-key (kbd "C-x M-k")   'kill-other-buffer)
-(global-set-key (kbd "C-x M-2")   'split-window-vertically-change-buffer)
-(global-set-key (kbd "M-l")       'goto-line)
-(global-set-key (kbd "M-n")       'scroll-one-line-ahead)
-(global-set-key (kbd "M-p")       'scroll-one-line-back)
-(global-set-key (kbd "<C-left>")  'my-backward-word-or-buffer)
-(global-set-key (kbd "<C-right>") 'my-forward-word-or-buffer)
-(global-set-key (kbd "M-.")       'etags-select-find-tag)
-(global-set-key (kbd "M-?")       'etags-stack-show)
-(global-set-key (kbd "M-s /")     'my-multi-occur-in-matching-buffers)
-(global-set-key (kbd "C-c i")     'imenu-ido-goto-symbol)
-(global-set-key (kbd "C-c c")     'clone-line)
-(global-set-key (kbd "C-h C-f")   'find-function)
-(global-set-key (kbd "C-h C-v")   'find-variable)
-(global-set-key (kbd "C-c \\")    'toggle-window-split)
-(global-set-key (kbd "C-x C-j")   'dired-jump)
-
-
-;; Determining running environment and platform capabilities in Emacs.
-;; http://brain-break.blogspot.com/2010/08/determining-running-environment-and.html
-
-;;;; Check variables:
-;;;;
-;;emacs-major-version
-;;emacs-minor-version
-;;window-system            ;'nil' if in terminal, 'w32' if native Windows build,
-;;                         ;'x' if under X Window
-;;window-system-version    ;for windows only
-;;operating-system-release ;release of the operating system Emacs is running on
-;;system-configuration     ;like configuration triplet: cpu-manufacturer-os
-;;system-name              ;host name of the machine you are running on
-;;system-time-locale
-;;system-type              ;indicating the type of operating system:
-;;                         ;'gnu' (GNU Hurd), 'gnu/linux', 'gnu/kfreebsd'
-;;                         ;(FreeBSD), 'darwin' (GNU-Darwin, Mac OS X),
-;;                         ;'ms-dos', 'windows-nt', 'cygwin'
-;;system-uses-terminfo
-;;window-size-fixed
-
-;;;; Check functions:
-;;;;
-;;(fboundp ...)            ;return t if SYMBOL's function definition is not void
-;;(featurep ...)           ;returns t if FEATURE is present in this Emacs
-;;(display-graphic-p)      ;return non-nil if DISPLAY is a graphic display;
-;;                         ;graphical displays are those which are capable of
-;;                         ;displaying several frames and several different
-;;                         ;fonts at once
-;;(display-multi-font-p)   ;same as 'display-graphic-p'
-;;(display-multi-frame-p)  ;same as 'display-graphic-p'
-;;(display-color-p)        ;return t if DISPLAY supports color
-;;(display-images-p)       ;return non-nil if DISPLAY can display images
-;;(display-grayscale-p)    ;return non-nil if frames on DISPLAY can display
-;;                         ;shades of gray
-;;(display-mouse-p)        ;return non-nil if DISPLAY has a mouse available
-;;(display-popup-menus-p)  ;return non-nil if popup menus are supported on
-;;                         ;DISPLAY
-;;(display-selections-p)   ;return non-nil if DISPLAY supports selections
-
-;;;; Run those checks as below:
-;;;;
-;;(when window-system ...)
-;;(when (eq window-system 'x) ...)
-;;(when (>= emacs-major-version 22) ...)
-;;(when (fboundp '...) ...)
-;;(when (featurep '...) ...)
+;; Custom key-bindings.
+;; (this should be the last thing we do, so that my-keys-minor-mode
+;; is first in minor-mode-map-alist).
+(require 'my-keybindings)
