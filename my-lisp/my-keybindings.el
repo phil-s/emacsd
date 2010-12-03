@@ -25,8 +25,10 @@
 (define-key my-keys-minor-mode-map (kbd "C-x C-j")   'dired-jump)
 
 (define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  t " my-keys" 'my-keys-minor-mode-map)
+  "A minor mode so that my custom key bindings take precedence over major modes.
+
+\\{my-keys-minor-mode-map}"
+  t nil 'my-keys-minor-mode-map)
 
 (my-keys-minor-mode 1)
 
