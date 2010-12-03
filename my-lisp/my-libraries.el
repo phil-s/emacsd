@@ -51,9 +51,9 @@ unhides lines again"
 
 ;; Follow mode for compilation/output buffers
 ;; http://www.anc.ed.ac.uk/~stephen/emacs/fm.el
-;(require 'fm)
-;(add-hook 'occur-mode-hook 'fm-start)
-;(add-hook 'compilation-mode-hook 'fm-start)
+;; (when (require 'fm nil 'noerror)
+;;   (add-hook 'occur-mode-hook 'fm-start)
+;;   (add-hook 'compilation-mode-hook 'fm-start))
 
 
 ;; SVN (Subversion)
