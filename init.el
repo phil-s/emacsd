@@ -98,7 +98,7 @@
  '(inhibit-eol-conversion nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values (quote ((my-safe-eval hide-body))))
+ '(safe-local-variable-values (quote ((eval hide-body))))
  '(tool-bar-mode nil)
  '(tramp-remote-path (quote ("~/bin" "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")))
  '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=~/bin:$PATH")))
@@ -113,18 +113,6 @@
 ;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
 ;; for the 'user theme, to set the default font face. Custom faces set
 ;; in the above call will be over-ridden in Win32.
-
-;; Local variable helpers
-(defun my-safe-eval ()
-  "Files can specify a my-safe-eval local variable to avoid
-always being asked for eval confirmation. Emacs will ask once
-for a given value, which is all we need. Usage example:
-;;; Local Variables:
-;;; mode:outline-minor
-;;; my-safe-eval:(hide-body)
-;;; End:"
-  (eval (bound-and-true-p my-safe-eval)))
-(add-hook 'find-file-hook 'my-safe-eval)
 
 ;; Basic configuration
 (require 'my-configuration)

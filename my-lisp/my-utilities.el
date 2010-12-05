@@ -352,5 +352,5 @@ Does not set point.  Does nothing if mark ring is empty."
 
 ;;; Local Variables:
 ;;; mode:outline-minor
-;;; my-safe-eval:(hide-body)
+;;; eval:(hide-body)
 ;;; End:
