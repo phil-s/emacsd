@@ -50,8 +50,13 @@
 (add-hook 'emacs-lisp-mode-hook '(lambda () (set-variable 'indent-tabs-mode nil)))
 
 ;; Smart Tabs does the Right Thing when I press the TAB key
-(require 'smart-tab)
-(global-smart-tab-mode 1)
+(when (require 'smart-tab nil 'noerror)
+  ;; ;; Completion can be annoying. Go with indentation only.
+  ;; (global-set-key (kbd "TAB") 'smart-tab-default)
+  ;; (global-set-key (kbd "<tab>") 'smart-tab-default)
+  ;; ;; This being the case, do I even want smart-tab??
+  ;; ;; n.b. without smart-tab, TAB will currently be bound to yas/expand)
+  (global-smart-tab-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
