@@ -170,6 +170,16 @@ disabled.")))
 ;; Don't allow dragging and dropping files into dired
 (setq dired-dnd-protocol-alist nil)
 
+;; Enable RET during an isearch in dired to immediately visit the file.
+;; http://stackoverflow.com/questions/4471835/emacs-dired-mode-and-isearch
+(add-hook 'isearch-mode-end-hook 'my-isearch-mode-end-hook)
+(defun my-isearch-mode-end-hook ()
+  "Make RET, during an isearch in dired, visit the file at point."
+  (when (and (eq major-mode 'dired-mode)
+             (not isearch-mode-end-hook-quit)
+             (eq last-input-event ?\r))
+    (dired-find-file)))
+
 ;; Use ControlMaster with TRAMP by default
 (setq tramp-default-method "scpc"
       tramp-default-user   "phil")
