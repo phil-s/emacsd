@@ -65,7 +65,7 @@
 
 ;; Ensure ibuffer opens with point at the current buffer's entry.
 (defadvice ibuffer
-  (around ibuffer-point-to-most-recent) ()
+  (around ibuffer-point-to-most-recent)
   "Open ibuffer with cursor pointed to most recent buffer name."
   (let ((recent-buffer-name (buffer-name)))
     ad-do-it
