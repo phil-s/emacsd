@@ -187,6 +187,14 @@ disabled.")))
 (defun my-outline-minor-mode-hook ()
   (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
+;; Org mode
+(defadvice smart-tab-mode-on
+  (after disable-smart-tab-for-modes)
+  "Disable smart-tab-mode in the specified major modes (to counter-act global-smart-tab-mode)."
+  (if (equal major-mode 'org-mode)
+      (smart-tab-mode-off)))
+(ad-activate 'smart-tab-mode-on)
+
 ;; Shell mode
 (add-hook 'shell-mode-hook  #'(lambda ()
                                 "Custom shell-mode hook"
