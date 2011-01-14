@@ -4,10 +4,6 @@
 
 ;; Highlight trailing whitespace by default
 (setq-default show-trailing-whitespace t)
-(global-set-key (kbd "C-x M-w") 'toggle-show-trailing-whitespace)
-
-;(global-set-key (kbd "C-x M-C-S-w") 'strip-trailing-whitespace)
-(global-set-key (kbd "C-x M-C-S-w") 'delete-trailing-whitespace)
 
 ;(global-set-key (kbd "C-x M-w") 'toggle-whitespace-mode)
 

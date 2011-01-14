@@ -39,27 +39,40 @@
   (interactive (occur-read-primary-args))
   (multi-occur-in-matching-buffers ".*" regexp))
 
-(defun my-forward-word-or-buffer (&optional arg)
-  "Enable <C-right> to call next-buffer if the last command was next-buffer or previous-buffer"
+(defun my-forward-word-or-buffer-or-windows (&optional arg)
+  "Enable <C-left> to call next-buffer if the last command was
+next-buffer or previous-buffer, and winner-redo if the last
+command was winner-undo or winner-redo."
   (interactive "p")
-  (if (not (memq last-command (list 'next-buffer 'previous-buffer)))
-      (forward-word arg)
-    (next-buffer)
-    (setq this-command 'next-buffer)))
+  (cond ((memq last-command (list 'next-buffer 'previous-buffer))
+         (progn (next-buffer)
+                (setq this-command 'next-buffer)))
+        ((memq last-command (list 'winner-redo 'winner-undo))
+         (progn (winner-redo)
+                (setq this-command 'winner-redo)))
+        (t ;else
+         (progn (forward-word arg)
+                (setq this-command 'forward-word)))))
 
-(defun my-backward-word-or-buffer (&optional arg)
-  "Enable <C-left> to call previous-buffer if the last command was next-buffer or previous-buffer"
+(defun my-backward-word-or-buffer-or-windows (&optional arg)
+  "Enable <C-left> to call previous-buffer if the last command
+was next-buffer or previous-buffer, and winner-undo if the last
+command was winner-undo or winner-redo."
   (interactive "p")
-  (if (not (memq last-command (list 'next-buffer 'previous-buffer)))
-      (backward-word arg)
-    (previous-buffer)
-    (setq this-command 'previous-buffer)))
+  (cond ((memq last-command (list 'next-buffer 'previous-buffer))
+         (progn (previous-buffer)
+                (setq this-command 'previous-buffer)))
+        ((memq last-command (list 'winner-redo 'winner-undo))
+         (progn (winner-undo)
+                (setq this-command 'winner-undo)))
+        (t ;else
+         (progn (backward-word arg)
+                (setq this-command 'backward-word)))))
 
 ;; Provide a simpler backwards zap-to-char (than prefixing with C-u -1)
 (defun zap-to-char-backwards (arg char)
   (interactive "p\ncZap backwards to char: ")
   (zap-to-char (- arg) char))
-(global-set-key (kbd "C-M-z") 'zap-to-char-backwards)
 
 ;; Enable apply-macro-to-region-lines with named macros
 (defun apply-named-macro-to-region-lines (top bottom)
@@ -112,9 +125,9 @@
                (set-buffer-modified-p nil)))))))
 
 ;; Duplicate / clone the current line.
-(defun clone-line ()
-  "Duplicate line at cursor, leaving the latter intact."
-  (interactive "*")
+(defun clone-line (&optional arg)
+  "Duplicate the line at point (arg times)."
+  (interactive "*p")
   (save-excursion
     ;; The last line of the buffer cannot be killed
     ;; if it is empty. Instead, simply add a new line.
@@ -126,7 +139,9 @@
         (toggle-read-only 1)
         (kill-whole-line)
         (toggle-read-only 0)
-        (yank)))))
+	(while (> arg 0)
+	  (yank)
+	  (setq arg (1- arg)))))))
 
 ;; Display non-critical messages with minimal interference.
 ;; See also the following:
@@ -229,9 +244,10 @@ Does not set point.  Does nothing if mark ring is empty."
     (other-window 1))) ;; back to ediff panel
 
 ;; Kill ring / Yank assistance
-(global-set-key (kbd "C-c y") #'(lambda ()
-                                  (interactive)
-                                  (popup-menu 'yank-menu)))
+(defun my-yank-menu ()
+  "Select text to yank from a pop-up menu of recently killed items."
+  (interactive)
+  (popup-menu 'yank-menu))
 
 (when (require 'browse-kill-ring nil 'noerror)
   ;; Either...
