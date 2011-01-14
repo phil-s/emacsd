@@ -37,6 +37,9 @@
 ;; Highlight current line
 (global-hl-line-mode 1)
 
+;; Use subword-mode
+(global-subword-mode 1)
+
 ;; Enable winner mode
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
