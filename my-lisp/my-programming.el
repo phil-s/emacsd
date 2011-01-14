@@ -8,6 +8,8 @@
   (if window-system (hl-line-mode t))
   (idle-highlight)
   (turn-on-eldoc-mode)
+  (setq indent-tabs-mode nil)
+  ;;(whitespace-mode 1)
   ;;(turn-on-fic-mode)
   ;;(imenu-add-menubar-index)
   )
@@ -143,6 +145,14 @@ context-help to false"
 ;; nXHTML
 (load "nxhtml/autostart.el")
 
+;; XML
+(defun my-xml-hook ()
+  (make-local-variable 'column-number-mode)
+  (column-number-mode t)
+  (if window-system (hl-line-mode t))
+  (idle-highlight)
+  (setq indent-tabs-mode nil))
+(add-hook 'nxml-mode-hook 'my-xml-hook)
 
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)
