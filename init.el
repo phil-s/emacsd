@@ -161,17 +161,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Custom key-bindings.
-;; Do this first, so that our keymap is available to other config files.
-(require 'my-keybindings)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Find my third-party and custom lisp libraries
 (add-to-list 'load-path (file-name-as-directory
                          (expand-file-name "~/.emacs.d/lisp")))
 (add-to-list 'load-path (file-name-as-directory
                          (expand-file-name "~/.emacs.d/my-lisp")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Custom key-bindings.
+;; Do this first, so that our keymap is available to other config files.
+(require 'my-keybindings)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
