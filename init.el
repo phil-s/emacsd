@@ -13,6 +13,11 @@
 ;; without modifier keys are also reserved for users to define.
 ;; These are the only sequences reserved for users.
 
+;; On non-standard terminals, the input-decode-map keymap can be used
+;; to define mappings between terminal codes and normal emacs keys.
+;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Translation-Keymaps.html
+;; http://stackoverflow.com/questions/4351044/binding-m-up-m-down-in-emacs-23-1-1/4360658#4360658
+
 ;; Macros
 ;;   C-x (       or F3     Begins recording.
 ;;                  F3     Insert counter (if recording has already commenced).
@@ -164,6 +169,10 @@
 ;; for the 'user theme, to set the default font face. Custom faces set
 ;; in the above call will be over-ridden in Win32.
 
+;; Custom key-bindings.
+;; Do this first, so that our keymap is available to other config files.
+(require 'my-keybindings)
+
 ;; Basic configuration
 (require 'my-configuration)
 
@@ -198,8 +207,3 @@
 
 ;; Support for development on local machine
 (require 'my-local)
-
-;; Custom key-bindings.
-;; (this should be the last thing we do, so that my-keys-minor-mode
-;; is first in minor-mode-map-alist).
-(require 'my-keybindings)

@@ -24,16 +24,28 @@
 (define-key my-keys-minor-mode-map (kbd "C-c \\")    'toggle-window-split)
 (define-key my-keys-minor-mode-map (kbd "C-x C-j")   'dired-jump)
 
-(define-minor-mode my-keys-minor-mode
-  "A minor mode so that my custom key bindings take precedence over major modes.
+(defun my-keybindings-after-init-hook ()
+  "Define and enable our minor mode after the init file has been loaded.
+   We want this to be our final initialisation step, to ensure that
+   my-keys-minor-mode is first in minor-mode-map-alist, and therefore
+   takes precedence over other minor mode keymaps.
+
+   TODO: Dynamically rearrange minor-mode-map-alist  if/when other
+   minor modes are subsequently defined? (Advise define-minor-mode)."
+
+  (define-minor-mode my-keys-minor-mode
+    "A minor mode so that my custom key bindings take precedence over major modes.
 
 \\{my-keys-minor-mode-map}"
-  t nil 'my-keys-minor-mode-map)
+    t nil 'my-keys-minor-mode-map)
 
-(my-keys-minor-mode 1)
+  (my-keys-minor-mode 1)
 
-;; Disable my custom keys in the minibuffer
-(add-hook 'minibuffer-setup-hook (lambda () (my-keys-minor-mode 0)))
+  ;; Disable my custom keys in the minibuffer
+  (add-hook 'minibuffer-setup-hook (lambda () (my-keys-minor-mode 0)))
+  )
+
+(add-hook 'after-init-hook 'my-keybindings-after-init-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
