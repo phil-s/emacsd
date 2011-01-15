@@ -16,29 +16,38 @@
   ;; Apropos
   (define-key keymap (kbd "C-h a")     'apropos-command)
   (define-key keymap (kbd "C-h C-a")   'Apropos-Prefix)
+
   ;; Use ibuffer in place of list-buffers
   (define-key keymap (kbd "C-x C-b")   'ibuffer)
+
   ;; Use hippie-expand in place of dabbrev-expand
   (define-key keymap (kbd "M-/")       'hippie-expand)
+
   ;; Whitespace
   (define-key keymap (kbd "C-x M-w")   'toggle-show-trailing-whitespace)
   (define-key keymap (kbd "C-x M-C-S-w") 'delete-trailing-whitespace)
+
   ;; Local occur
   (define-key keymap (kbd "M-s l")     'loccur) ; interactive loccur command
   (define-key keymap (kbd "M-s C-l")   'loccur-current) ; loccur of the current word
   (define-key keymap (kbd "M-s C-S-l") 'loccur-previous-match) ; loccur of the previously-found word
+
   ;; Context-sensitive *Help* buffer
   (define-key keymap (kbd "C-c h")     'rgr/toggle-context-help)
+
   ;; ELisp debugger
   (define-key keymap (kbd "C-c d")     'debug-on-entry)
   (define-key keymap (kbd "C-c D")     'cancel-debug-on-entry)
+
   ;; Kill ring / Yank assistance
   ;; (TODO: 'browse-kill-ring' in my-utilities)
   (define-key keymap (kbd "C-c y")     'my-yank-menu)
+
   ;; winner-mode. Add to default bindings, and integrate with
   ;; my-(backward|forward)-word-or-buffer-or-windows.
   (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
+
   ;; Miscellaneous
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)

@@ -1,11 +1,11 @@
-;;;; Keybinding reference
-;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
-
-;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
+;;;; Useful links
+;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
 ;; http://www.todesschaf.org/files/browse-kill-ring.el
 ;; http://www-sop.inria.fr/mimosa/Manuel.Serrano/flyspell/flyspell.html
 ;; http://stackoverflow.com/users/6148?sort=stats#sort-top
 
+;;;; Keybinding reference
+;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
 ;; Don't define C-c <letter>, or F5-F9 as keys in Lisp programs.
 ;; Sequences consisting of C-c and a letter (either upper or lower
@@ -38,6 +38,8 @@
 ;;;; Registers
 ;;   C-x r x a           Copy region to register 'a'
 ;;   C-x r g a           Insert contents of register 'a'
+;;   C-x r SPC a         point-to-register 'a'
+;;   C-x r j a           jump-to-register 'a'
 ;;
 ;; Remember that killing doesn't affect the registers, which
 ;; can make this useful for killing and replacing.
@@ -118,6 +120,20 @@
 (defalias 'llll 'find-my-lisp)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Quick notes:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; M-s w     : isearch-forward-word
+;; M-m       : back-to-indentation
+;; C-x r x   : Copy region to register
+;; C-x r g   : Insert contents of register
+;; C-x r SPC : point-to-register
+;; C-x r j   : jump-to-register
+;; C-x 4 ... : Operations on other-window
+;; C-x 5 ... : Operations on other-frame
+;; C-x 6 ... : 2C (two columns) operations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -145,7 +161,7 @@
  '(js-indent-level 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values (quote ((eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 5)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
+ '(safe-local-variable-values (quote ((eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 6)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
  '(tool-bar-mode nil)
  '(vc-svn-global-switches (quote ("--username phils" "--password password"))))
 (custom-set-faces
@@ -181,6 +197,8 @@
 
 ;; Note also the window-system variable. This is useful when you want to
 ;; choose between some x only option, or a terminal, or macos setting.
+;; (if (equal (window-system) 'x)
+;;     (require 'my-x-window-system))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -225,5 +243,5 @@
 (require 'my-local)
 
 ;;; Local Variables:
-;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 5)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
+;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 6)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
 ;;; End:
