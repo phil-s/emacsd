@@ -76,6 +76,18 @@
     (ibuffer-jump-to-buffer recent-buffer-name)))
 (ad-activate 'ibuffer)
 
+;; Enable find-file-at-point key-bindings.
+(ffap-bindings) ; see variable `ffap-bindings'
+(setq ffap-url-regexp nil) ; disable URL features in ffap
+(defadvice ffap-alternate-file (around my-ffap-alternate-file-fallback)
+  "Provide fall-back to old C-x C-v behaviour, if no fap.
+n.b. ffap-alternate-file is intended for interactive use only.
+See also: `my-copy-buffer-file-name'."
+  (if (ffap-guesser)
+      ad-do-it
+    (call-interactively 'find-alternate-file)))
+(ad-activate 'ffap-alternate-file)
+
 ;; Use CUA selection mode (enhanced rectangle editing)
 (setq cua-delete-selection nil) ; typing should not delete the region.
 (cua-selection-mode t)

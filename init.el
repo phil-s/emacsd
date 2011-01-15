@@ -123,6 +123,7 @@
 ;;;; Quick notes:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; M-s w     : isearch-forward-word
+;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
 ;; C-x r x   : Copy region to register
 ;; C-x r g   : Insert contents of register
