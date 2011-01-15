@@ -4,6 +4,7 @@
 (define-key Apropos-Prefix (kbd "C-a") 'apropos)
 (define-key Apropos-Prefix (kbd "d")   'apropos-documentation)
 (define-key Apropos-Prefix (kbd "f")   'apropos-command)
+(define-key Apropos-Prefix (kbd "c")   'apropos-command)
 (define-key Apropos-Prefix (kbd "l")   'apropos-library)
 (define-key Apropos-Prefix (kbd "v")   'apropos-variable)
 (define-key Apropos-Prefix (kbd "C-v") 'apropos-value)
