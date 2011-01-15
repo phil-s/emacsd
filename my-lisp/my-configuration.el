@@ -187,6 +187,14 @@ disabled.")))
 (setq tramp-default-method "scpc"
       tramp-default-user   "phil")
 
+;; Enable directory local variables with remote files.
+(defadvice hack-dir-local-variables (around my-remote-dir-local-variables)
+  "Allow dir-locals.el with remote files, by temporarily redefining
+`file-remote-p' to return nil unconditionally."
+  (flet ((file-remote-p (&rest) nil))
+    ad-do-it))
+(ad-activate 'hack-dir-local-variables)
+
 ;; Align with spaces only
 (defadvice align-regexp (around align-regexp-with-spaces)
   "Never use tabs for alignment."
