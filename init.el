@@ -116,19 +116,6 @@
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Find my third-party and custom lisp libraries
-(add-to-list 'load-path (file-name-as-directory
-                         (expand-file-name "~/.emacs.d/lisp")))
-(add-to-list 'load-path (file-name-as-directory
-                         (expand-file-name "~/.emacs.d/my-lisp")))
-
-;; ELPA -- Emacs Lisp Package Archive
-;; TODO: Make el-get take care of ELPA?
-(require 'my-elpa)
-
-;; Other packages, via el-get
-(require 'my-externals)
-
 ;;
 ;; Basic customisations.
 ;;
@@ -169,6 +156,34 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Find my third-party and custom lisp libraries
+(add-to-list 'load-path (file-name-as-directory
+                         (expand-file-name "~/.emacs.d/lisp")))
+(add-to-list 'load-path (file-name-as-directory
+                         (expand-file-name "~/.emacs.d/my-lisp")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; System-specific configuration
+(cond ((eq system-type 'windows-nt) ; Win32 / Cygwin integration
+       (require 'my-win32))) ; Assumes Emacs was launched via Cygwin!
+
+;; Note also the window-system variable. This is useful when you want to
+;; choose between some x only option, or a terminal, or macos setting.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Initialise third-party packages
+
+;; ELPA -- Emacs Lisp Package Archive
+;; TODO: Make el-get take care of ELPA?
+(require 'my-elpa)
+
+;; Other packages, via el-get
+(require 'my-externals)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Basic configuration
 (require 'my-configuration)
 
@@ -185,12 +200,6 @@
 
 ;; Non-programming text modes
 (require 'my-text)
-
-;; Win32 / Cygwin integration
-(cond ((eq system-type 'windows-nt)
-       (require 'my-win32)))
-;; Note also the window-system variable. This is useful when you want to
-;; choose between some x only option, or a terminal, or macos setting.
 
 ;; Configure other miscellaneous libraries
 (require 'my-libraries)
