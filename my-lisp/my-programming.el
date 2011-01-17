@@ -1,3 +1,82 @@
+;;;; ;; directory-local config
+;;;;
+;;;; (add-hook 'nxml-mode-hook 'my-nxml-mode-hook)
+;;;; (defun my-nxml-mode-hook ()
+;;;;   (if (buffer-file-name)
+;;;;       (if (string-match "\\.tpl.php\\'" (buffer-file-name))
+;;;;           (rng-validate-mode 0))))
+;;;;
+;;;; ;; (defun my-dir-locals-php-hook ()
+;;;; ;;   (and (buffer-file-name)
+;;;; ;;        (string-match "\\.php\\'" (buffer-file-name))
+;;;; ;;        (cdr (assoc 'drupal-p dir-local-variables-alist))
+;;;; ;;        (my--drupal-mode)))
+;;;; ;; (add-hook 'php-mode-hook 'my-dir-locals-php-hook t)
+;;;;
+;;;; (dir-locals-set-class-variables
+;;;;  'drupal
+;;;;  '((nil . ((indent-tabs-mode . nil)
+;;;;            (fill-column . 80)))
+;;;;    (php-mode . ((drupal-p . t)))
+;;;;    ))
+;;;;
+;;;; (dir-locals-set-directory-class "//lucas/sites/" 'drupal)
+;;;; (dir-locals-set-directory-class "//sagan/sites/" 'drupal)
+;;;; (dir-locals-set-directory-class "//welles/sites/" 'drupal)
+;;;;
+;;;;
+;;;;
+;;;; (dir-locals-set-class-variables
+;;;;  'plone-core
+;;;;  '((nil . ((buffer-read-only . t)))))
+;;;;
+;;;; (dir-locals-set-class-variables
+;;;;  'plone-instance
+;;;;  '((nil . ((indent-tabs-mode . nil)
+;;;;            (fill-column . 80)))
+;;;;    ;; (python-mode . (()))
+;;;;    ;; (nxhtml-mode . (()))
+;;;;    ))
+;;;;
+;;;; (dir-locals-set-directory-class
+;;;;  "/scpc:phil@hnzc-dev-5:/home/phil/Plone/" 'plone-core)
+;;;; (dir-locals-set-directory-class
+;;;;  "/scpc:phil@hnzc-dev-5:/home/phil/hnzc-web/" 'plone-core)
+;;;;
+;;;; (dir-locals-set-directory-class
+;;;;  "/scpc:phil@hnzc-dev-5:/home/phil/Plone/zinstance/" 'plone-instance)
+;;;; (dir-locals-set-directory-class
+;;;;  "/scpc:phil@hnzc-dev-5:/home/phil/Plone/hnzc/site/intranet/" 'plone-instance)
+;;;; (dir-locals-set-directory-class
+;;;;  "/scpc:phil@hnzc-dev-5:/home/phil/hnzc-web/website/" 'plone-instance)
+;;;;
+;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; (fset 'ipdb-set-trace
+;;;;    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([105 109 112 111 114 116 32 105 112 100 98 59 32 105 112 100 98 46 115 101 116 95 116 114 97 99 101 40 41] 0 "%d")) arg)))
+;;;;
+;;;; (defun my-local-python-hook ()
+;;;;   (setq show-trailing-whitespace nil)
+;;;;   (setq indent-tabs-mode nil)
+;;;;   (local-set-key (kbd "C-x C-k i") 'ipdb-set-trace))
+;;;;
+;;;; (add-hook 'python-mode-hook 'my-local-python-hook)
+;;;;
+;;;; ;; Zope / Plone
+;;;; (add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
+;;;; (add-to-list 'auto-mode-alist '("\\.pt\\'" . nxhtml-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming language support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -213,4 +292,3 @@ context-help to false"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-programming)
-
