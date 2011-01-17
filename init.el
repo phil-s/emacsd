@@ -1,4 +1,4 @@
-;; Keybinding reference
+;;;; Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 
 ;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
@@ -13,7 +13,7 @@
 ;; without modifier keys are also reserved for users to define.
 ;; These are the only sequences reserved for users.
 
-;; Macros
+;;;; Macros
 ;;   C-x (       or F3     Begins recording.
 ;;                  F3     Insert counter (if recording has already commenced).
 ;;   C-x )       or F4     Ends recording.
@@ -30,14 +30,14 @@
 ;; For more documentation, see the info page:
 ;;   C-h k C-x (
 
-;; Registers
+;;;; Registers
 ;;   C-x r x a           Copy region to register 'a'
 ;;   C-x r g a           Insert contents of register 'a'
 ;;
 ;; Remember that killing doesn't affect the registers, which
 ;; can make this useful for killing and replacing.
 
-;; Multiple windows and frames
+;;;; Multiple windows and frames
 ;; C-x 1     : Single window on this buffer
 ;; C-x 2     : Split windows horizontally
 ;; C-x 3     : Split windows vertically
@@ -45,57 +45,57 @@
 ;; C-x 5 ... : Operations on other-frame
 ;; C-x 6 ... : 2C (two columns) operations
 
-;; Determining running environment and platform capabilities in Emacs.
+;;;; Determining running environment and platform capabilities in Emacs.
 ;; http://brain-break.blogspot.com/2010/08/determining-running-environment-and.html
 
-;;;; Check variables:
-;;;;
-;;emacs-major-version
-;;emacs-minor-version
-;;window-system            ;'nil' if in terminal, 'w32' if native Windows build,
-;;                         ;'x' if under X Window
-;;window-system-version    ;for windows only
-;;operating-system-release ;release of the operating system Emacs is running on
-;;system-configuration     ;like configuration triplet: cpu-manufacturer-os
-;;system-name              ;host name of the machine you are running on
-;;system-time-locale
-;;system-type              ;indicating the type of operating system:
-;;                         ;'gnu' (GNU Hurd), 'gnu/linux', 'gnu/kfreebsd'
-;;                         ;(FreeBSD), 'darwin' (GNU-Darwin, Mac OS X),
-;;                         ;'ms-dos', 'windows-nt', 'cygwin'
-;;system-uses-terminfo
-;;window-size-fixed
+;; ;; Check variables:
+;; ;;
+;; emacs-major-version
+;; emacs-minor-version
+;; window-system            ;'nil' if in terminal, 'w32' if native Windows build,
+;;                          ;'x' if under X Window
+;; window-system-version    ;for windows only
+;; operating-system-release ;release of the operating system Emacs is running on
+;; system-configuration     ;like configuration triplet: cpu-manufacturer-os
+;; system-name              ;host name of the machine you are running on
+;; system-time-locale
+;; system-type              ;indicating the type of operating system:
+;;                          ;'gnu' (GNU Hurd), 'gnu/linux', 'gnu/kfreebsd'
+;;                          ;(FreeBSD), 'darwin' (GNU-Darwin, Mac OS X),
+;;                          ;'ms-dos', 'windows-nt', 'cygwin'
+;; system-uses-terminfo
+;; window-size-fixed
+;;
+;; ;; Check functions:
+;; ;;
+;; (fboundp ...)            ;return t if SYMBOL's function definition is not void
+;; (featurep ...)           ;returns t if FEATURE is present in this Emacs
+;; (display-graphic-p)      ;return non-nil if DISPLAY is a graphic display;
+;;                          ;graphical displays are those which are capable of
+;;                          ;displaying several frames and several different
+;;                          ;fonts at once
+;; (display-multi-font-p)   ;same as 'display-graphic-p'
+;; (display-multi-frame-p)  ;same as 'display-graphic-p'
+;; (display-color-p)        ;return t if DISPLAY supports color
+;; (display-images-p)       ;return non-nil if DISPLAY can display images
+;; (display-grayscale-p)    ;return non-nil if frames on DISPLAY can display
+;;                          ;shades of gray
+;; (display-mouse-p)        ;return non-nil if DISPLAY has a mouse available
+;; (display-popup-menus-p)  ;return non-nil if popup menus are supported on
+;;                          ;DISPLAY
+;; (display-selections-p)   ;return non-nil if DISPLAY supports selections
 
-;;;; Check functions:
-;;;;
-;;(fboundp ...)            ;return t if SYMBOL's function definition is not void
-;;(featurep ...)           ;returns t if FEATURE is present in this Emacs
-;;(display-graphic-p)      ;return non-nil if DISPLAY is a graphic display;
-;;                         ;graphical displays are those which are capable of
-;;                         ;displaying several frames and several different
-;;                         ;fonts at once
-;;(display-multi-font-p)   ;same as 'display-graphic-p'
-;;(display-multi-frame-p)  ;same as 'display-graphic-p'
-;;(display-color-p)        ;return t if DISPLAY supports color
-;;(display-images-p)       ;return non-nil if DISPLAY can display images
-;;(display-grayscale-p)    ;return non-nil if frames on DISPLAY can display
-;;                         ;shades of gray
-;;(display-mouse-p)        ;return non-nil if DISPLAY has a mouse available
-;;(display-popup-menus-p)  ;return non-nil if popup menus are supported on
-;;                         ;DISPLAY
-;;(display-selections-p)   ;return non-nil if DISPLAY supports selections
+;; ;; Run those checks as below:
+;; ;;
+;; (when window-system ...)
+;; (when (eq window-system 'x) ...)
+;; (when (>= emacs-major-version 22) ...)
+;; (when (fboundp '...) ...)
+;; (when (featurep '...) ...)
 
-;;;; Run those checks as below:
-;;;;
-;;(when window-system ...)
-;;(when (eq window-system 'x) ...)
-;;(when (>= emacs-major-version 22) ...)
-;;(when (fboundp '...) ...)
-;;(when (featurep '...) ...)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Load or evaluate .emacs
+;;;; Load or evaluate this file
 (defun load-dot-emacs ()
   "load ~/.emacs"
   (interactive)
@@ -112,7 +112,9 @@
 (defalias 'lll 'find-dot-emacs)
 (defalias 'llll 'find-my-lisp)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Initialisation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Find my third-party and custom lisp libraries
 (add-to-list 'load-path (file-name-as-directory
@@ -128,7 +130,7 @@
 (require 'my-externals)
 
 ;;
-;; Basic customisations
+;; Basic customisations.
 ;;
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
@@ -148,7 +150,7 @@
  '(inhibit-eol-conversion nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values (quote ((eval hide-body))))
+ '(safe-local-variable-values (quote ((eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 5)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
  '(tool-bar-mode nil)
  '(tramp-remote-path (quote ("~/bin" "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")))
  '(tramp-remote-process-environment (quote ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.2.5,tramp:2.1.18-23.2" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" "correct=" "PATH=~/bin:$PATH")))
@@ -158,11 +160,14 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New"))))
  '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
  '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
 ;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
 ;; for the 'user theme, to set the default font face. Custom faces set
 ;; in the above call will be over-ridden in Win32.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Basic configuration
 (require 'my-configuration)
@@ -203,3 +208,7 @@
 ;; (this should be the last thing we do, so that my-keys-minor-mode
 ;; is first in minor-mode-map-alist).
 (require 'my-keybindings)
+
+;;; Local Variables:
+;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 5)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
+;;; End:
