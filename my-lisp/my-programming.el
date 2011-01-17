@@ -191,13 +191,20 @@ context-help to false"
 
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
-(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
-;; Drupal mode
+;;(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
+;; (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . drupal-mode))
+
+;; Drupal mode (see my-php.el)
 (autoload 'drupal-mode "my-php" "Drupal Mode." t)
-(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)$" . drupal-mode))
-(add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)\\'" . drupal-mode))
 (add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
 
+;; ;; Default to Drupal mode for PHP files
+;; (delete '("\\.php\\'" . nxhtml-mumamo-mode) auto-mode-alist)
+;; (delete '("\\.php\\'" . html-mumamo-mode) auto-mode-alist)
+;; (delete '("\\.inc\\'" . php-mode) auto-mode-alist)
+;; (delete '("\\.php[s34]?\\'" . php-mode) auto-mode-alist)
+;; (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . drupal-mode))
 
 ;; Python / Plone / Zope
 (require 'my-python)

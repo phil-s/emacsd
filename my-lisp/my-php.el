@@ -6,7 +6,21 @@
 (load "php-mode") ;load the real php-mode
 
 ;; Custom php-mode configuration
-(add-hook 'php-mode-hook 'my-php-mode)
+(add-hook 'php-mode-hook 'my-php-mode t)
+
+;; .php files use nxhtml-mumamo-mode
+(add-hook 'nxhtml-mumamo-mode-hook 'my-nxhtml-mumamo-mode-hook t)
+(defun my-nxhtml-mumamo-mode-hook ()
+  ;; (and (buffer-file-name)
+  ;;      (string-match "\\.php\\'" (buffer-file-name))
+  ;;      ;; If this is a Drupal site, .php files need to be in Drupal
+  ;;      ;; mode as well.
+  ;;      (cdr (assoc 'drupal-p dir-local-variables-alist))
+  ;;      (drupal-mode)))
+  (and (buffer-file-name)
+       (string-match "\\.php\\'" (buffer-file-name))
+       (not (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
+       (drupal-mode)))
 
 (defconst my-php-style
   '((c-offsets-alist . ((arglist-close . c-lineup-close-paren))))
@@ -34,6 +48,12 @@
   ;; Configure imenu
   ;; (php-imenu-setup)
 
+  ;; ;; If this is a Drupal site, .php files need to be in Drupal
+  ;; ;; mode as well.
+  ;; (if (cdr (assoc 'drupal-p dir-local-variables-alist))
+  ;;     (my--drupal-mode))
+  (my--drupal-mode);; the other code is not working
+
   ;; Find documentation online
   (local-set-key (kbd "<f1>") 'my-php-symbol-lookup))
 
@@ -56,7 +76,11 @@
   "PHP mode configured for Drupal development."
   (interactive)
   (php-mode)
-  (message "Drupal mode activated.")
+  (my--drupal-mode)
+  (message "Drupal mode activated."))
+
+(defun my--drupal-mode ()
+  "PHP mode customisations for Drupal development."
   (set 'tab-width 2)
   (set 'c-basic-offset 2)
   (set 'indent-tabs-mode nil)

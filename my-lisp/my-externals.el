@@ -37,6 +37,12 @@
             :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
             :features fic-mode)
 
+     ;; ;; support ack as a replacement for rgrep
+     ;; (:name ack
+     ;;        :type http
+     ;;        :url "http://repo.or.cz/w/ShellArchive.git?a=blob_plain&hb=HEAD&f=ack.el"
+     ;;        :features ack)
+
      ;; (:name ws-trim
      ;;        :type ftp
      ;;        :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")

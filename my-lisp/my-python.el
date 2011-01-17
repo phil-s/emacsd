@@ -54,9 +54,9 @@
 
 ;;;; ipython
 
-(setq ipython-command "/usr/bin/ipython")
+;; (setq ipython-command "/usr/bin/ipython")
 ;; (require 'ipython)
-(global-set-key [(f6)] 'ipython-complete)
+;; (global-set-key [(f6)] 'ipython-complete)
 
 ;; (defconst py-pdbtrack-input-prompt "\n[(<]*[Pp]db[>)]+ "
 ;;   "Regular expression pdbtrack uses to recognize a pdb prompt.")
