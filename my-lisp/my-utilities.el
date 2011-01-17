@@ -112,9 +112,9 @@
                (set-buffer-modified-p nil)))))))
 
 ;; Duplicate / clone the current line.
-(defun clone-line ()
-  "Duplicate line at cursor, leaving the latter intact."
-  (interactive "*")
+(defun clone-line (&optional arg)
+  "Duplicate the line at point (arg times)."
+  (interactive "*p")
   (save-excursion
     ;; The last line of the buffer cannot be killed
     ;; if it is empty. Instead, simply add a new line.
@@ -126,7 +126,9 @@
         (toggle-read-only 1)
         (kill-whole-line)
         (toggle-read-only 0)
-        (yank)))))
+	(while (> arg 0)
+	  (yank)
+	  (setq arg (1- arg)))))))
 
 ;; Display non-critical messages with minimal interference.
 ;; See also the following:
