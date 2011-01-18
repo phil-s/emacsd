@@ -33,9 +33,12 @@
   (define-key keymap (kbd "C-c d")     'debug-on-entry)
   (define-key keymap (kbd "C-c D")     'cancel-debug-on-entry)
   ;; Kill ring / Yank assistance
-  (define-key keymap (kbd "C-c y")     'my-yank-menu)
   ;; (TODO: 'browse-kill-ring' in my-utilities)
-
+  (define-key keymap (kbd "C-c y")     'my-yank-menu)
+  ;; winner-mode. Add to default bindings, and integrate with
+  ;; my-(backward|forward)-word-or-buffer-or-windows.
+  (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
+  (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
   ;; Miscellaneous
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
@@ -46,8 +49,8 @@
   (define-key keymap (kbd "M-l")       'goto-line)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
   (define-key keymap (kbd "M-p")       'scroll-one-line-back)
-  (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer)
-  (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer)
+  (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
+  (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
   (define-key keymap (kbd "M-.")       'etags-select-find-tag)
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "M-s /")     'my-multi-occur-in-matching-buffers)

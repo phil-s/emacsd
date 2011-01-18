@@ -37,6 +37,10 @@
 ;; Highlight current line
 (global-hl-line-mode 1)
 
+;; Enable winner mode
+;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
+(winner-mode 1)
+
 ;; Always add a final newline
 (setq require-trailing-newline t)
 
