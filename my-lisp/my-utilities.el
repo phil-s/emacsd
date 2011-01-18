@@ -59,7 +59,6 @@
 (defun zap-to-char-backwards (arg char)
   (interactive "p\ncZap backwards to char: ")
   (zap-to-char (- arg) char))
-(global-set-key (kbd "C-M-z") 'zap-to-char-backwards)
 
 ;; Enable apply-macro-to-region-lines with named macros
 (defun apply-named-macro-to-region-lines (top bottom)
@@ -231,9 +230,10 @@ Does not set point.  Does nothing if mark ring is empty."
     (other-window 1))) ;; back to ediff panel
 
 ;; Kill ring / Yank assistance
-(global-set-key (kbd "C-c y") #'(lambda ()
-                                  (interactive)
-                                  (popup-menu 'yank-menu)))
+(defun my-yank-menu ()
+  "Select text to yank from a pop-up menu of recently killed items."
+  (interactive)
+  (popup-menu 'yank-menu))
 
 (when (require 'browse-kill-ring nil 'noerror)
   ;; Either...

@@ -85,9 +85,6 @@
               'face 'font-lock-variable-name-face))
 (setq eldoc-argument-case 'frob-eldoc-argument-list)
 
-;; Context-sensitive *Help* buffer
-(global-set-key (kbd "C-c h") 'rgr/toggle-context-help)
-
 (defun rgr/toggle-context-help ()
   "Turn on or off the context help.
 Note that if ON and you hide the help buffer then you need to
@@ -131,9 +128,6 @@ context-help to false"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Emacs Lisp
-;; ELisp debugger
-(global-set-key (kbd "C-c d") 'debug-on-entry)
-(global-set-key (kbd "C-c D") 'cancel-debug-on-entry)
 
 ;; Parenthesis / sexp matching
 (require 'hl-sexp)

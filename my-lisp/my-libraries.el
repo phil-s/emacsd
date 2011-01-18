@@ -12,10 +12,6 @@ unhides lines again"
 (autoload 'loccur-current "loccur" "Call `loccur' for the current word." t)
 (autoload 'loccur-previous-match "loccur" "Call `loccur' for the previously found word." t)
 
-(global-set-key (kbd "M-s l") 'loccur) ; interactive loccur command
-(global-set-key (kbd "M-s C-l") 'loccur-current) ; loccur of the current word
-(global-set-key (kbd "M-s C-S-l") 'loccur-previous-match) ; loccur of the previously-found word
-
 ;; Use framemove, integrated with windmove.
 (windmove-default-keybindings) ;default modifier is <SHIFT>
 (when (require 'framemove nil :noerror)
