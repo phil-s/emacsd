@@ -55,7 +55,7 @@
 ;;;; ipython
 
 (setq ipython-command "/usr/bin/ipython")
-(require 'ipython)
+;; (require 'ipython)
 (global-set-key [(f6)] 'ipython-complete)
 
 ;; (defconst py-pdbtrack-input-prompt "\n[(<]*[Pp]db[>)]+ "
