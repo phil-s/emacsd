@@ -38,7 +38,7 @@
             :features fic-mode)
 
      ;; (:name ws-trim
-     ;;        :type http
+     ;;        :type ftp
      ;;        :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
 
      ;; (:name color-theme
