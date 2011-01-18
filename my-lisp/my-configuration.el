@@ -210,6 +210,9 @@ disabled.")))
 ;; (setq x-max-tooltip-size '(80 . 40))
 ;; (require 'my-tooltips.el)
 
+;; Format completion lists in columns rather than rows
+(setq completions-format 'vertical)
+
 ;; Make emacs consistent with xkcd :)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
 
