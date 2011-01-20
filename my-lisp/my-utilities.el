@@ -258,6 +258,13 @@ Does not set point.  Does nothing if mark ring is empty."
   (global-set-key (kbd "C-c k") 'browse-kill-ring)
   )
 
+;; Grab copy of the current buffer's filename.
+(defun my-copy-buffer-file-name ()
+  "Copy the buffer's filename to the kill ring."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if filename (kill-new filename))))
+
 ;; Add a 'F'ind marked files keybinding to dired
 (eval-after-load "dired"
   '(progn

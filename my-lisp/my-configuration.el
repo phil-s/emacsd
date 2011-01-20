@@ -81,7 +81,8 @@
 (setq ffap-url-regexp nil) ; disable URL features in ffap
 (defadvice ffap-alternate-file (around my-ffap-alternate-file-fallback)
   "Provide fall-back to old C-x C-v behaviour, if no fap.
-n.b. ffap-alternate-file is intended for interactive use only."
+n.b. ffap-alternate-file is intended for interactive use only.
+See also: `my-copy-buffer-file-name'."
   (if (ffap-guesser)
       ad-do-it
     (call-interactively 'find-alternate-file)))
