@@ -121,6 +121,8 @@
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; (ibuffer) M-s a C-s: isearch across all marked buffers. (M-C-s for regexps)
+
 ;;
 ;; Basic customisations.
 ;;
