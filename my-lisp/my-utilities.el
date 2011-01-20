@@ -266,7 +266,10 @@ With a prefix arg, use the file's truename."
   (let ((filename (if arg
                       (file-truename (buffer-file-name))
                     (buffer-file-name))))
-    (if filename (kill-new filename))))
+    (if (not filename)
+        (message "No buffer filename")
+      (message filename)
+      (kill-new filename))))
 
 ;; Add a 'F'ind marked files keybinding to dired
 (eval-after-load "dired"
