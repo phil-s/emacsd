@@ -37,6 +37,13 @@
 ;; Highlight current line
 (global-hl-line-mode 1)
 
+;; Use subword-mode
+(global-subword-mode 1)
+
+;; Enable winner mode
+;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
+(winner-mode 1)
+
 ;; Always add a final newline
 (setq require-trailing-newline t)
 
@@ -45,9 +52,6 @@
 
 ;; Do not overwrite the region by typing
 (setq delete-active-region nil)
-
-;; Use ibuffer in place of list-buffers
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; TODO: Idea: Implement a "recently-closed files" group in ibuffer.
 ;; Collapsed by default. Selecting a buffer from this list will
@@ -71,6 +75,18 @@
     ad-do-it
     (ibuffer-jump-to-buffer recent-buffer-name)))
 (ad-activate 'ibuffer)
+
+;; Enable find-file-at-point key-bindings.
+(ffap-bindings) ; see variable `ffap-bindings'
+(setq ffap-url-regexp nil) ; disable URL features in ffap
+(defadvice ffap-alternate-file (around my-ffap-alternate-file-fallback)
+  "Provide fall-back to old C-x C-v behaviour, if no fap.
+n.b. ffap-alternate-file is intended for interactive use only.
+See also: `my-copy-buffer-file-name'."
+  (if (ffap-guesser)
+      ad-do-it
+    (call-interactively 'find-alternate-file)))
+(ad-activate 'ffap-alternate-file)
 
 ;; Use CUA selection mode (enhanced rectangle editing)
 (setq cua-delete-selection nil) ; typing should not delete the region.
@@ -124,22 +140,9 @@
 (show-paren-mode t)
 (require 'highlight-parentheses)
 
-;; Make apropos searches also find unbound symbols, and
-;; set new key-bindings for various other apropos commands.
+;; Make apropos searches also find unbound symbols.
+;; See my-keybindings.el for various custom apropos bindings.
 (setq apropos-do-all t)
-(global-set-key (kbd "C-h a") 'apropos-command)
-(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,l,v,C-v)")
-(global-set-key (kbd "C-h C-a") 'Apropos-Prefix)
-(define-key Apropos-Prefix (kbd "a")   'apropos)
-(define-key Apropos-Prefix (kbd "C-a") 'apropos)
-(define-key Apropos-Prefix (kbd "d")   'apropos-documentation)
-(define-key Apropos-Prefix (kbd "f")   'apropos-command)
-(define-key Apropos-Prefix (kbd "l")   'apropos-library)
-(define-key Apropos-Prefix (kbd "v")   'apropos-variable)
-(define-key Apropos-Prefix (kbd "C-v") 'apropos-value)
-
-;; Use hippie-expand instead of dabbrev-expand
-(global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; Alias 'M-x find-dired' to simply 'M-x find'
 (defalias 'find 'find-dired)
@@ -184,6 +187,14 @@ disabled.")))
 (setq tramp-default-method "scpc"
       tramp-default-user   "phil")
 
+;; Enable directory local variables with remote files.
+(defadvice hack-dir-local-variables (around my-remote-dir-local-variables)
+  "Allow dir-locals.el with remote files, by temporarily redefining
+`file-remote-p' to return nil unconditionally."
+  (flet ((file-remote-p (&rest) nil))
+    ad-do-it))
+(ad-activate 'hack-dir-local-variables)
+
 ;; Align with spaces only
 (defadvice align-regexp (around align-regexp-with-spaces)
   "Never use tabs for alignment."
@@ -221,6 +232,9 @@ disabled.")))
 ;; Re-format long tool-tips to make them readable
 ;; (setq x-max-tooltip-size '(80 . 40))
 ;; (require 'my-tooltips.el)
+
+;; Format completion lists in columns rather than rows
+(setq completions-format 'vertical)
 
 ;; Make emacs consistent with xkcd :)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)

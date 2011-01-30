@@ -27,7 +27,7 @@
 ;;
 
 ;; hl-line-mode
-(set-face-background 'hl-line "#333333")
+(set-face-background hl-line-face "#333333")
 
 
 ;; In Win32 NTEmacs, customize the default font

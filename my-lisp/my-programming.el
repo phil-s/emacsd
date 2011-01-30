@@ -8,6 +8,8 @@
   (if window-system (hl-line-mode t))
   (idle-highlight)
   (turn-on-eldoc-mode)
+  (setq indent-tabs-mode nil)
+  ;;(whitespace-mode 1)
   ;;(turn-on-fic-mode)
   ;;(imenu-add-menubar-index)
   )
@@ -85,9 +87,6 @@
               'face 'font-lock-variable-name-face))
 (setq eldoc-argument-case 'frob-eldoc-argument-list)
 
-;; Context-sensitive *Help* buffer
-(global-set-key (kbd "C-c h") 'rgr/toggle-context-help)
-
 (defun rgr/toggle-context-help ()
   "Turn on or off the context help.
 Note that if ON and you hide the help buffer then you need to
@@ -131,9 +130,6 @@ context-help to false"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Emacs Lisp
-;; ELisp debugger
-(global-set-key (kbd "C-c d") 'debug-on-entry)
-(global-set-key (kbd "C-c D") 'cancel-debug-on-entry)
 
 ;; Parenthesis / sexp matching
 (require 'hl-sexp)
@@ -149,6 +145,14 @@ context-help to false"
 ;; nXHTML
 (load "nxhtml/autostart.el")
 
+;; XML
+(defun my-xml-hook ()
+  (make-local-variable 'column-number-mode)
+  (column-number-mode t)
+  (if window-system (hl-line-mode t))
+  (idle-highlight)
+  (setq indent-tabs-mode nil))
+(add-hook 'nxml-mode-hook 'my-xml-hook)
 
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)

@@ -4,16 +4,12 @@
 
 ;; Highlight trailing whitespace by default
 (setq-default show-trailing-whitespace t)
-(global-set-key (kbd "C-x M-w") 'toggle-show-trailing-whitespace)
-
-;(global-set-key (kbd "C-x M-C-S-w") 'strip-trailing-whitespace)
-(global-set-key (kbd "C-x M-C-S-w") 'delete-trailing-whitespace)
 
 ;(global-set-key (kbd "C-x M-w") 'toggle-whitespace-mode)
 
-;(global-whitespace-mode t)
-;(setq whitespace-space-regexp "\\(  +\\)")
-;(setq whitespace-style (quote (tabs spaces trailing lines space-before-tab newline indentation empty space-after-tab tab-mark newline-mark)))
+;; (global-whitespace-mode t)
+;; (setq whitespace-space-regexp "\\(  +\\)")
+;; (setq whitespace-style (quote (tabs spaces trailing lines space-before-tab newline indentation empty space-after-tab tab-mark newline-mark)))
 
 ;; make whitespace-mode use “¶” for newline,
 ;; together with the rest of its defaults
@@ -56,6 +52,17 @@
 ;  "Toggle whitespace-mode."
 ;  (interactive)
 ;  (whitespace-mode (not (or whitespace-mode global-whitespace-mode))))
+
+(defun my-ignore-whitespace-long-lines ()
+  "Stop highlighting long lines in whitespace mode."
+  (interactive)
+  (set (make-local-variable 'whitespace-style)
+       (remq 'lines-tail (remq 'lines whitespace-style)))
+  (whitespace-mode 0)
+  (whitespace-mode 1))
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
