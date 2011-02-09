@@ -72,26 +72,34 @@
       (browse-url (concat "http://php.net/manual-lookup.php?pattern="
                           (symbol-name symbol))))))
 
-(defun drupal-mode ()
-  "PHP mode configured for Drupal development."
-  (interactive)
-  (php-mode)
-  (my--drupal-mode)
-  (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging)
-  (message "Drupal mode activated."))
-
 (defun my--drupal-mode ()
   "PHP mode customisations for Drupal development."
-  (set 'tab-width 2)
-  (set 'c-basic-offset 2)
-  (set 'indent-tabs-mode nil)
+  (setq tab-width 2
+        c-basic-offset 2
+        indent-tabs-mode nil
+        fill-column 78
+        show-trailing-whitespace t
+        ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
+        paragraph-start (concat paragraph-start "\\| \\* @[a-z]+")
+        paragraph-separate "$"
+        )
+
   (c-set-offset 'case-label '+)
+  (c-set-offset 'arglist-close 0)
   (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
   (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
 
-  ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
-  (setq paragraph-start (concat paragraph-start "\\| \\* @[a-z]+")
-        paragraph-separate "$"))
+  (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
+
+
+;;; drupal-mode.el --- major mode for Drupal coding
+
+;;;###autoload
+(define-derived-mode drupal-mode php-mode "Drupal"
+  "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
+  (my--drupal-mode)
+  ;;(add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (run-hooks 'drupal-mode-hook))
 
 (fset 'drupal-quick-and-dirty-debugging
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
