@@ -4,6 +4,9 @@
 ;; http://www-sop.inria.fr/mimosa/Manuel.Serrano/flyspell/flyspell.html
 ;; http://stackoverflow.com/users/6148?sort=stats#sort-top
 
+;; Example of running Emacs remotely with local display:
+;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
+
 ;;;; Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
