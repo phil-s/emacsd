@@ -7,16 +7,28 @@
 ;;;; Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
+;; http://www.masteringemacs.org/articles/2011/02/08/mastering-key-bindings-emacs/
+
 ;; Don't define C-c <letter>, or F5-F9 as keys in Lisp programs.
 ;; Sequences consisting of C-c and a letter (either upper or lower
 ;; case) are reserved for users; Function keys <F5> through <F9>
 ;; without modifier keys are also reserved for users to define.
 ;; These are the only sequences reserved for users.
 
+;; Remapping Commands:
+;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
+;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
+
 ;; On non-standard terminals, the input-decode-map keymap can be used
 ;; to define mappings between terminal codes and normal emacs keys.
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Translation-Keymaps.html
 ;; http://stackoverflow.com/questions/4351044/binding-m-up-m-down-in-emacs-23-1-1/4360658#4360658
+
+;; In Windows you can add this to to your .emacs to enable hyper and super:
+;; (setq w32-apps-modifier 'hyper)
+;; (setq w32-lwindow-modifier 'super)
+;; (setq w32-rwindow-modifier 'hyper)
+;; In X you'll have to play around with xmodmap or your own tool of choice.
 
 ;;;; Macros
 ;;   C-x (       or F3     Begins recording.
@@ -162,7 +174,7 @@
  '(js-indent-level 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values (quote ((eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 6)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
+ '(safe-local-variable-values (quote ((drupal-p . t) (eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 6)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
  '(tool-bar-mode nil)
  '(vc-svn-global-switches (quote ("--username phils" "--password password"))))
 (custom-set-faces
@@ -170,12 +182,11 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))
  '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
  '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
-;; Warning: Under Win32 (NTEmacs), my-theme.el over-rides custom-set-faces
-;; for the 'user theme, to set the default font face. Custom faces set
-;; in the above call will be over-ridden in Win32.
+;; WARNING: my-theme.el over-rides (custom-set-faces) for the 'user
+;; theme, to set the default font face. Custom faces set in the above
+;; call will be over-ridden.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
