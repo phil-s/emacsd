@@ -49,6 +49,8 @@
   (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
 
+  (define-key keymap (kbd "M-C-=")     'compare-windows)
+
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
