@@ -14,7 +14,7 @@
   ;;(imenu-add-menubar-index)
   )
 
-(mapcar
+(mapc
  #'(lambda (language-mode-hook)
      (add-hook language-mode-hook 'my-coding-config))
  '(cperl-mode-hook
