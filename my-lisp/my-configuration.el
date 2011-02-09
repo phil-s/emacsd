@@ -236,6 +236,72 @@ disabled.")))
 ;; Format completion lists in columns rather than rows
 (setq completions-format 'vertical)
 
+;; Use ediff instead of diff in `save-some-buffers'
+(eval-after-load "files"
+  '(progn
+     (setcdr (assq ?d save-some-buffers-action-alist)
+             `(,(lambda (buf)
+                  (if (null (buffer-file-name buf))
+                      (message "Not applicable: no file")
+                    (add-hook 'ediff-after-quit-hook-internal
+                              'my-save-some-buffers-with-ediff-quit t)
+                    (save-excursion
+                      (set-buffer buf)
+                      (let ((enable-recursive-minibuffers t))
+                        (ediff-current-file)
+                        (recursive-edit))))
+                  ;; Return nil to ask about BUF again.
+                  nil)
+               ,(purecopy "view changes in this buffer")))
+
+     (defun my-save-some-buffers-with-ediff-quit ()
+       "Remove ourselves from the ediff quit hook, and
+return to the save-some-buffers minibuffer prompt."
+       (remove-hook 'ediff-after-quit-hook-internal
+                    'my-save-some-buffers-with-ediff-quit)
+       (exit-recursive-edit))))
+
+
+;; Allow buffer reverts to be undone
+;; (defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)
+;;   "Revert buffer from file in an undo-able manner."
+;;   (interactive)
+;;   (when (buffer-file-name)
+;;     ;; Based upon `delphi-save-state':
+;;     ;; Ensure that any buffer modifications do not have any side
+;;     ;; effects beyond the actual content changes.
+;;     (let ((buffer-read-only nil)
+;;           (inhibit-read-only t)
+;;           (before-change-functions nil)
+;;           (after-change-functions nil)
+;;           (my-supersession-revert-buffer-active t))
+;;       ;; Disable any queries about editing obsolete files.
+;;       (unwind-protect
+;;           (progn
+;;             (widen)
+;;             (kill-region (point-min) (point-max))
+;;             (insert-file-contents (buffer-file-name)))))))
+
+;; (defadvice ask-user-about-supersession-threat
+;;   (around my-supersession-revert-buffer)
+;;   ;; Avoid re-entry, when my-revert-buffer makes changes
+;;   ;; to the buffer.
+;;   (if (not (boundp 'my-supersession-revert-buffer-active))
+;;       (let ((my-supersession-revert-buffer-active t)
+;;             (real-revert-buffer (symbol-function 'revert-buffer)))
+;;         (fset 'revert-buffer (symbol-function 'my-revert-buffer))
+;;         ;; Note that ask-user-about-supersession-threat calls
+;;         ;; (signal 'file-supersession ...), so we need to handle
+;;         ;; the error in order to restore revert-buffer
+;;         (unwind-protect
+;;             ad-do-it
+;;           (fset 'revert-buffer real-revert-buffer)))))
+
+;; (ad-activate 'ask-user-about-supersession-threat)
+
+
+
+
 ;; Make emacs consistent with xkcd :)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
 
