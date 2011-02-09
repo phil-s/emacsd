@@ -74,14 +74,14 @@
 
 (defun my--drupal-mode ()
   "PHP mode customisations for Drupal development."
-  (setq tab-width 2
-        c-basic-offset 2
-        indent-tabs-mode nil
-        fill-column 78
+  (setq tab-width                2
+        c-basic-offset           2
+        indent-tabs-mode         nil
+        fill-column              78
         show-trailing-whitespace t
         ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
-        paragraph-start (concat paragraph-start "\\| \\* @[a-z]+")
-        paragraph-separate "$"
+        paragraph-start          (concat paragraph-start "\\| \\* @[a-z]+")
+        paragraph-separate       "$"
         )
 
   (c-set-offset 'case-label '+)
