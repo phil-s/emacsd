@@ -57,6 +57,9 @@
 ;; Collapsed by default. Selecting a buffer from this list will
 ;; re-visit the file.
 
+;; Configure ibuffer columns
+(setq ibuffer-formats '((mark modified read-only " " (name 30 60 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename)))
+
 ;; Enable ibuffer-filter-by-filename to filter on directory names too.
 (eval-after-load "ibuf-ext"
   '(define-ibuffer-filter filename
