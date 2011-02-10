@@ -119,7 +119,7 @@ See also: `my-copy-buffer-file-name'."
 (setq frame-title-format '(buffer-name "%f" ("%b")))
 
 ;; Prevent C-z minimizing frames
-;(defun iconify-or-deiconify-frame nil)
+;;(defun iconify-or-deiconify-frame nil)
 
 ;; By default, raise an existing frame with buffer B in
 ;; preference to opening another copy in the current buffer.
@@ -194,6 +194,7 @@ disabled.")))
 (defadvice hack-dir-local-variables (around my-remote-dir-local-variables)
   "Allow dir-locals.el with remote files, by temporarily redefining
 `file-remote-p' to return nil unconditionally."
+  (require 'cl)
   (flet ((file-remote-p (&rest) nil))
     ad-do-it))
 (ad-activate 'hack-dir-local-variables)
@@ -220,10 +221,10 @@ disabled.")))
 (ad-activate 'smart-tab-mode-on)
 
 ;; Shell mode
-(add-hook 'shell-mode-hook  #'(lambda ()
-                                "Custom shell-mode hook"
-                                (hide-trailing-whitespace)
-                                (ansi-color-for-comint-mode-on)))
+(add-hook 'shell-mode-hook 'my-shell-mode-hook)
+(defun my-shell-mode-hook ()
+  (hide-trailing-whitespace)
+  (ansi-color-for-comint-mode-on))
 
 ;; Also, emacs doesn't deal with my usual cygwin prompt, so put:
 ;; export PS1="\n\u@\h \w\n\$ "
@@ -239,7 +240,8 @@ disabled.")))
 ;; Format completion lists in columns rather than rows
 (setq completions-format 'vertical)
 
-;; Use ediff instead of diff in `save-some-buffers'
+;; Use ediff instead of diff when typing 'd' in `save-some-buffers'
+;; See variable `save-some-buffers-action-alist'
 (eval-after-load "files"
   '(progn
      (setcdr (assq ?d save-some-buffers-action-alist)
@@ -263,7 +265,6 @@ return to the save-some-buffers minibuffer prompt."
        (remove-hook 'ediff-after-quit-hook-internal
                     'my-save-some-buffers-with-ediff-quit)
        (exit-recursive-edit))))
-
 
 ;; Allow buffer reverts to be undone
 ;; (defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)

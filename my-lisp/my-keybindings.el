@@ -49,7 +49,8 @@
   (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
 
-  (define-key keymap (kbd "M-C-=")     'compare-windows)
+  ;; compare-windows
+  (define-key keymap (kbd "C-M-=")     'compare-windows)
 
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
@@ -70,7 +71,6 @@
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
   ;; Miscellaneous (standard)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
-  (define-key keymap (kbd "C-o")       'other-window)
   (define-key keymap (kbd "M-l")       'goto-line)
   (define-key keymap (kbd "C-h C-f")   'find-function)
   (define-key keymap (kbd "C-h C-v")   'find-variable)

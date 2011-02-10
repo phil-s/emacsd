@@ -139,9 +139,9 @@ command was winner-undo or winner-redo."
         (toggle-read-only 1)
         (kill-whole-line)
         (toggle-read-only 0)
-	(while (> arg 0)
-	  (yank)
-	  (setq arg (1- arg)))))))
+        (while (> arg 0)
+          (yank)
+          (setq arg (1- arg)))))))
 
 ;; Display non-critical messages with minimal interference.
 ;; See also the following:
@@ -186,11 +186,11 @@ command was winner-undo or winner-redo."
         (message tmp-message)
         (run-with-timer
          3 nil
-         #'(lambda (tmp-message backup-message)
-             ;; revert to the backup message, unless something
-             ;; else has already over-written our temporary one
-             (if (string= tmp-message (current-message))
-                 (message backup-message)))
+         (lambda (tmp-message backup-message)
+           ;; revert to the backup message, unless something
+           ;; else has already over-written our temporary one
+           (if (string= tmp-message (current-message))
+               (message backup-message)))
          tmp-message
          backup-message)))))
 
@@ -286,26 +286,26 @@ With a prefix arg, use the file's truename."
   (interactive)
   (if (= (count-windows) 2)
       (let* ((this-win-buffer (window-buffer))
-	     (next-win-buffer (window-buffer (next-window)))
-	     (this-win-edges (window-edges (selected-window)))
-	     (next-win-edges (window-edges (next-window)))
-	     (this-win-2nd (not (and (<= (car this-win-edges)
-					 (car next-win-edges))
-				     (<= (cadr this-win-edges)
-					 (cadr next-win-edges)))))
-	     (splitter
-	      (if (= (car this-win-edges)
-		     (car (window-edges (next-window))))
-		  'split-window-horizontally
-		'split-window-vertically)))
-	(delete-other-windows)
-	(let ((first-win (selected-window)))
-	  (funcall splitter)
-	  (if this-win-2nd (other-window 1))
-	  (set-window-buffer (selected-window) this-win-buffer)
-	  (set-window-buffer (next-window) next-win-buffer)
-	  (select-window first-win)
-	  (if this-win-2nd (other-window 1))))))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
 
 ;;
 ;; Ediff with autosave file

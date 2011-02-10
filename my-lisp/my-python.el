@@ -10,8 +10,8 @@
 ;; ;; buildout
 ;; (define-derived-mode conf-buildout-mode conf-mode "Conf[Buildout]"
 ;;   "Conf Mode starter for Python Buildout files.
-;; Comments start with `#', and may ONLY appear on the first character of a line.
-;; For details see `conf-mode'."
+;; Comments start with "#", and may ONLY appear on the first character
+;; of a line. For details see `conf-mode'."
 ;;   (conf-mode-initialize "#"))
 
 
@@ -128,4 +128,3 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-python)
-

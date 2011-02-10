@@ -94,8 +94,8 @@
   )
 
 (mapc
- #'(lambda (language-mode-hook)
-     (add-hook language-mode-hook 'my-coding-config))
+ (lambda (language-mode-hook)
+   (add-hook language-mode-hook 'my-coding-config))
  '(cperl-mode-hook
    emacs-lisp-mode-hook
    ielm-mode-hook
@@ -212,8 +212,9 @@ context-help to false"
 
 ;; Parenthesis / sexp matching
 (require 'hl-sexp)
-(add-hook 'emacs-lisp-mode-hook
-          #'(lambda () "Enable hl-sexp-mode" (hl-sexp-mode 1)))
+(add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
+(defun my-emacs-lisp-mode-hook ()
+  (hl-sexp-mode 1))
 
 
 ;; Use cperl-mode instead of the default perl-mode
@@ -254,9 +255,9 @@ context-help to false"
 ;; HTML ;;/ ASP / VBSCRIPT
 (add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
-;;(add-hook 'html-helper-load-hook #'(lambda () (require 'visual-basic-mode)))
-(add-hook 'html-helper-load-hook #'(lambda () (require 'html-font)))
-(add-hook 'html-helper-mode-hook #'(lambda () (font-lock-mode 1)))
+;;(add-hook 'html-helper-load-hook (lambda () (require 'visual-basic-mode)))
+(add-hook 'html-helper-load-hook (lambda () (require 'html-font)))
+(add-hook 'html-helper-mode-hook (lambda () (font-lock-mode 1)))
 
 
 ;; Wrap-region minor mode for mark-up
