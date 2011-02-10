@@ -305,9 +305,6 @@ return to the save-some-buffers minibuffer prompt."
 
 (ad-activate 'ask-user-about-supersession-threat)
 
-;; Make emacs consistent with xkcd :)
-(global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-configuration)

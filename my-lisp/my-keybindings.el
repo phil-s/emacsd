@@ -75,6 +75,9 @@
   (define-key keymap (kbd "C-h C-f")   'find-function)
   (define-key keymap (kbd "C-h C-v")   'find-variable)
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
+
+  ;; Make emacs consistent with xkcd :)
+  (define-key keymap (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
 )
 
 (defun my-keybindings-after-init-hook ()
