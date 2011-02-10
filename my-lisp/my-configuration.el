@@ -267,44 +267,43 @@ return to the save-some-buffers minibuffer prompt."
        (exit-recursive-edit))))
 
 ;; Allow buffer reverts to be undone
-;; (defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)
-;;   "Revert buffer from file in an undo-able manner."
-;;   (interactive)
-;;   (when (buffer-file-name)
-;;     ;; Based upon `delphi-save-state':
-;;     ;; Ensure that any buffer modifications do not have any side
-;;     ;; effects beyond the actual content changes.
-;;     (let ((buffer-read-only nil)
-;;           (inhibit-read-only t)
-;;           (before-change-functions nil)
-;;           (after-change-functions nil)
-;;           (my-supersession-revert-buffer-active t))
-;;       ;; Disable any queries about editing obsolete files.
-;;       (unwind-protect
-;;           (progn
-;;             (widen)
-;;             (kill-region (point-min) (point-max))
-;;             (insert-file-contents (buffer-file-name)))))))
+(defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)
+  "Revert buffer from file in an undo-able manner."
+  (interactive)
+  (when (buffer-file-name)
+    ;; Based upon `delphi-save-state':
+    ;; Ensure that any buffer modifications do not have any side
+    ;; effects beyond the actual content changes.
+    (let ((buffer-read-only nil)
+          (inhibit-read-only t)
+          (before-change-functions nil)
+          (after-change-functions nil)
+          (my-supersession-revert-buffer-active t))
+      ;; Disable any queries about editing obsolete files.
+      (unwind-protect
+          (progn
+            (widen)
+            (kill-region (point-min) (point-max))
+            (insert-file-contents (buffer-file-name))
+            (set-visited-file-modtime)
+            (set-buffer-modified-p nil))))))
 
-;; (defadvice ask-user-about-supersession-threat
-;;   (around my-supersession-revert-buffer)
-;;   ;; Avoid re-entry, when my-revert-buffer makes changes
-;;   ;; to the buffer.
-;;   (if (not (boundp 'my-supersession-revert-buffer-active))
-;;       (let ((my-supersession-revert-buffer-active t)
-;;             (real-revert-buffer (symbol-function 'revert-buffer)))
-;;         (fset 'revert-buffer (symbol-function 'my-revert-buffer))
-;;         ;; Note that ask-user-about-supersession-threat calls
-;;         ;; (signal 'file-supersession ...), so we need to handle
-;;         ;; the error in order to restore revert-buffer
-;;         (unwind-protect
-;;             ad-do-it
-;;           (fset 'revert-buffer real-revert-buffer)))))
+(defadvice ask-user-about-supersession-threat
+  (around my-supersession-revert-buffer)
+  ;; Avoid re-entry, when my-revert-buffer makes changes
+  ;; to the buffer.
+  (if (not (boundp 'my-supersession-revert-buffer-active))
+      (let ((my-supersession-revert-buffer-active t)
+            (old-revert-buffer-function (symbol-function 'revert-buffer)))
+        (fset 'revert-buffer (symbol-function 'my-revert-buffer))
+        ;; Note that ask-user-about-supersession-threat calls
+        ;; (signal 'file-supersession ...), so we need to handle
+        ;; the error in order to restore revert-buffer
+        (unwind-protect
+            ad-do-it
+          (fset 'revert-buffer old-revert-buffer-function)))))
 
-;; (ad-activate 'ask-user-about-supersession-threat)
-
-
-
+(ad-activate 'ask-user-about-supersession-threat)
 
 ;; Make emacs consistent with xkcd :)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
