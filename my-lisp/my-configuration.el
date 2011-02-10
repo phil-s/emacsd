@@ -294,14 +294,14 @@ return to the save-some-buffers minibuffer prompt."
   ;; to the buffer.
   (if (not (boundp 'my-supersession-revert-buffer-active))
       (let ((my-supersession-revert-buffer-active t)
-            (old-revert-buffer-function (symbol-function 'revert-buffer)))
+            (real-revert-buffer (symbol-function 'revert-buffer)))
         (fset 'revert-buffer (symbol-function 'my-revert-buffer))
         ;; Note that ask-user-about-supersession-threat calls
         ;; (signal 'file-supersession ...), so we need to handle
         ;; the error in order to restore revert-buffer
         (unwind-protect
             ad-do-it
-          (fset 'revert-buffer old-revert-buffer-function)))))
+          (fset 'revert-buffer real-revert-buffer)))))
 
 (ad-activate 'ask-user-about-supersession-threat)
 
