@@ -3,6 +3,7 @@
 ;; http://www.todesschaf.org/files/browse-kill-ring.el
 ;; http://www-sop.inria.fr/mimosa/Manuel.Serrano/flyspell/flyspell.html
 ;; http://stackoverflow.com/users/6148?sort=stats#sort-top
+;; http://emacs-fu.blogspot.com/2011/02/keeping-your-secrets-secret.html
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"

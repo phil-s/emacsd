@@ -69,7 +69,8 @@
   (define-key keymap (kbd "M-.")       'etags-select-find-tag)
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
-  ;; Miscellaneous (standard)
+
+  ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
   (define-key keymap (kbd "M-l")       'goto-line)
   (define-key keymap (kbd "C-h C-f")   'find-function)
