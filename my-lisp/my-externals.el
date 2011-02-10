@@ -71,6 +71,17 @@
 
      ;; (:name asciidoc         :type elpa)
      ;; (:name dictionary-el    :type apt-get)
+
+
+     ;; Colour readability tool.
+     ;; Available by default in Emacs 24, so would need to restrict
+     ;; this to versions less than that.
+     ;; http://git.gnus.org/cgit/gnus.git/plain/lisp/color.el
+     ;; http://git.gnus.org/cgit/gnus.git/plain/lisp/shr-color.el
+     ;; (shr-color-visible "#ff0000" "#ff0000")
+     ;; ("#ff603a" "#ba0000")
+     ;; (shr-color-visible "#ff0000" "#ff0000" t)
+     ;; ("#ff0000" "#7c0000")
      ))
 
   ;; Execute el-get
