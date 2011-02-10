@@ -37,11 +37,18 @@
             :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
             :features fic-mode)
 
+     (:name ediff-trees
+            :type emacswiki)
+
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
      ;;        :url "http://repo.or.cz/w/ShellArchive.git?a=blob_plain&hb=HEAD&f=ack.el"
      ;;        :features ack)
+
+     ;; (:name espect
+     ;;        :type http
+     ;;        :url "https://github.com/rafl/espect/raw/master/espect.el")
 
      ;; (:name ws-trim
      ;;        :type ftp
