@@ -9,6 +9,8 @@
   (idle-highlight)
   (turn-on-eldoc-mode)
   (setq indent-tabs-mode nil)
+  (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
+  (local-set-key (kbd "<S-return>") 'newline)
   ;;(whitespace-mode 1)
   ;;(turn-on-fic-mode)
   ;;(imenu-add-menubar-index)
