@@ -79,28 +79,35 @@
 
   ;; Make emacs consistent with xkcd :)
   (define-key keymap (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
-)
+  )
 
 (defun my-keybindings-after-init-hook ()
   "Define and enable our minor mode after the init file has been loaded.
-   We want this to be our final initialisation step, to ensure that
-   my-keys-minor-mode is first in minor-mode-map-alist, and therefore
-   takes precedence over other minor mode keymaps.
+We want this to be our final initialisation step, to ensure that
+my-keys-minor-mode is first in minor-mode-map-alist, and therefore
+takes precedence over other minor mode keymaps.
 
-   TODO: Dynamically rearrange minor-mode-map-alist  if/when other
-   minor modes are subsequently defined? (Advise define-minor-mode)."
+We also advise define-minor-mode to try to retain this priority,
+subsequent to the future definition of other minor modes."
 
   (define-minor-mode my-keys-minor-mode
     "A minor mode so that my custom key bindings take precedence over major modes.
 
 \\{my-keys-minor-mode-map}"
-    t nil 'my-keys-minor-mode-map)
-
-  (my-keys-minor-mode 1)
+    :init-value t
+    :global     t
+    :keymap     'my-keys-minor-mode-map)
 
   ;; Disable my custom keys in the minibuffer
-  (add-hook 'minibuffer-setup-hook (lambda () (my-keys-minor-mode 0)))
-  )
+  (add-hook 'minibuffer-setup-hook
+            (lambda () (set (make-local-variable 'my-keys-minor-mode) 0)))
+
+  (defadvice define-minor-mode (after give-my-keybindings-priority)
+    "Try to ensure that my keybindings always have priority."
+    (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
+      (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
+      (add-to-list 'minor-mode-map-alist mykeys)))
+  (ad-activate 'define-minor-mode))
 
 (add-hook 'after-init-hook 'my-keybindings-after-init-hook)
 
