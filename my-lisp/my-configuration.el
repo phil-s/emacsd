@@ -211,10 +211,12 @@ disabled.")))
 
 ;; Org mode
 (defadvice smart-tab-mode-on
-  (after disable-smart-tab-for-modes)
-  "Disable smart-tab-mode in the specified major modes (to counter-act global-smart-tab-mode)."
-  (if (equal major-mode 'org-mode)
-      (smart-tab-mode-off)))
+  (around disable-smart-tab-for-modes)
+  "Disable smart-tab-mode in the specified major modes
+(to counter-act global-smart-tab-mode)."
+  (unless (memq major-mode
+                (list 'org-mode))
+      ad-do-it))
 (ad-activate 'smart-tab-mode-on)
 
 ;; Shell mode
@@ -274,31 +276,29 @@ return to the save-some-buffers minibuffer prompt."
     (let ((buffer-read-only nil)
           (inhibit-read-only t)
           (before-change-functions nil)
-          (after-change-functions nil)
-          (my-supersession-revert-buffer-active t))
-      ;; Disable any queries about editing obsolete files.
+          (after-change-functions nil))
       (unwind-protect
           (progn
+            ;; Prevent triggering `ask-user-about-supersession-threat'
+            (set-visited-file-modtime)
+            ;; Kill buffer contents and insert from associated file.
             (widen)
             (kill-region (point-min) (point-max))
             (insert-file-contents (buffer-file-name))
-            (set-visited-file-modtime)
+            ;; Mark buffer as unmodified.
             (set-buffer-modified-p nil))))))
 
 (defadvice ask-user-about-supersession-threat
   (around my-supersession-revert-buffer)
-  ;; Avoid re-entry, when my-revert-buffer makes changes
-  ;; to the buffer.
-  (if (not (boundp 'my-supersession-revert-buffer-active))
-      (let ((my-supersession-revert-buffer-active t)
-            (real-revert-buffer (symbol-function 'revert-buffer)))
-        (fset 'revert-buffer (symbol-function 'my-revert-buffer))
-        ;; Note that ask-user-about-supersession-threat calls
-        ;; (signal 'file-supersession ...), so we need to handle
-        ;; the error in order to restore revert-buffer
-        (unwind-protect
-            ad-do-it
-          (fset 'revert-buffer real-revert-buffer)))))
+  "Use my-revert-buffer in place of revert-buffer."
+  (let ((real-revert-buffer (symbol-function 'revert-buffer)))
+    (fset 'revert-buffer 'my-revert-buffer)
+    ;; Note that `ask-user-about-supersession-threat' calls
+    ;; (signal 'file-supersession ...), so we need to handle
+    ;; the error in order to restore revert-buffer.
+    (unwind-protect
+        ad-do-it
+      (fset 'revert-buffer real-revert-buffer))))
 
 (ad-activate 'ask-user-about-supersession-threat)
 
