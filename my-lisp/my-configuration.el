@@ -147,9 +147,6 @@ See also: `my-copy-buffer-file-name'."
 ;; See my-keybindings.el for various custom apropos bindings.
 (setq apropos-do-all t)
 
-;; Alias 'M-x find-dired' to simply 'M-x find'
-(defalias 'find 'find-dired)
-
 ;; Better buffer naming when filenames conflict
 (require 'uniquify)
 (setq uniquify-buffer-name-style   'reverse
