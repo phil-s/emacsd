@@ -256,7 +256,7 @@
 (require 'my-session)
 
 ;; Project support
-(provide 'my-projects)
+(require 'my-projects)
 
 ;; Support for development on local machine
 (require 'my-local)
