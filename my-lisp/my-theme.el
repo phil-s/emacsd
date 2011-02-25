@@ -39,6 +39,8 @@
 ;; If there is more than one, they won't work right."
 (cond
  ;; GNU/Linux
+ ;; apt-cache search "WenQuanYi Micro"
+ ;; sudo apt-get install ttf-wqy-microhei
  ((eq system-type 'gnu/linux)
   (apply 'custom-theme-set-faces 'user '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))))
  ;; Win32 NTEmacs
