@@ -216,9 +216,10 @@ command was winner-undo or winner-redo."
 Does not set point.  Does nothing if mark ring is empty."
   (interactive)
   (let ((num-times
-         (if (equal last-command 'pop-to-mark-command) 2
-           (if (equal last-command 'unpop-to-mark-command) 1
-             (error "Previous command was not a (un)pop-to-mark-command")))))
+         (if (equal last-command 'pop-to-mark-command) 2 1
+           ;; (if (equal last-command 'unpop-to-mark-command) 1
+           ;;   (error "Previous command was not a (un)pop-to-mark-command"))
+           )))
     (dotimes (x num-times)
       (when mark-ring
         (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
@@ -228,9 +229,28 @@ Does not set point.  Does nothing if mark ring is empty."
         (goto-char (mark t)))
       (deactivate-mark))))
 
-;; (defadvice set-mark-command (before my-before-set-mark activate)
-
-;;   )
+(defmacro activate-my-unpop-to-mark-advice ()
+  "Enable reversing direction with un/pop-to-mark."
+  `(defadvice ,(key-binding (kbd "C-SPC"))
+     (around my-unpop-to-mark-advice activate)
+     "Unpop-to-mark with negative arg"
+     (let* ((arg (ad-get-arg 0))
+            (num (prefix-numeric-value arg)))
+       (cond
+        ;; Enabled repeated un-pops with C-SPC
+        ((eq last-command 'unpop-to-mark-command)
+         (if (and arg (> num 0) (<= num 4))
+             ad-do-it ;; C-u C-SPC reverses back to normal direction
+           ;; Otherwise continue to un-pop
+           (setq this-command 'unpop-to-mark-command)
+           (unpop-to-mark-command)))
+        ;; Negative argument un-pops: C-- C-SPC
+        ((< num 0)
+         (setq this-command 'unpop-to-mark-command)
+         (unpop-to-mark-command))
+        (t
+         ad-do-it)))))
+(activate-my-unpop-to-mark-advice)
 
 ;; Diff file with autosave backup
 (defun ediff-auto-save ()
