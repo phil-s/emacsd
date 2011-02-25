@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: hook
+# key: hook
+# expand-env: ((module (replace-regexp-in-string "\\..*$" "" (file-name-nondirectory (buffer-file-name)))))
+# --
+/**
+ * Implementation of hook_$1().
+ */
+function `module`_$1($2) {
+  $0
+}
