@@ -89,7 +89,7 @@
   (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
   (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
 
-  (local-set-key (kbd "C-c C-k h") 'drupal-hook)
+  (local-set-key (kbd "C-x C-k h") 'drupal-hook)
   (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
 
 
@@ -106,6 +106,12 @@
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
 
 ;; Use etags and the API files to replace hook_(name) with
-;; the example code for that hook
-(fset 'drupal-hook
+;; the example code for that hook. For Drupal 6, you will need
+;; to grab the developer documentation before generating TAGS
+;; cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
+;; Old etags:
+;; $ find . -type f \( -name "*.php" -o -name "*.module" -o -name "*.install" -o -name "*.inc" \) | etags --language=php -
+;; Exuberant ctags:
+;; $ ctags -eR --langmap=php:+.module.install.inc --languages=php
+(fset 'drupal-hook ;; To edit: C-x C-k e M-x drupal-hook RET
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217848 101 116 97 103 115 45 115 101 108 101 99 116 45 102 105 110 100 45 116 97 103 13 13 1 67108896 5 left C-M-right 134217847 24 107 13 1 25 11 C-M-left 1 13 up 47 42 42 13 73 109 112 108 101 109 101 110 116 97 116 105 111 110 32 111 102 32 C-right right 67108896 19 40 left 134217847 1 left 32 25 40 41 46 13 127 47 down 5] 0 "%d")) arg)))
