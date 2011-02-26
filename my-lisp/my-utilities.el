@@ -291,6 +291,14 @@ With a prefix arg, use the file's truename."
       (message filename)
       (kill-new filename))))
 
+(defun my-parent-of-dir-in-buffer-file-name (dir)
+  "Return the path to the parent of the named directory (arg),
+within the current buffer-file-name."
+  (let* ((bfn-list (split-string (buffer-file-name) "/"))
+         (dir-list (reverse (cdr (member dir (reverse bfn-list))))))
+    (if dir-list
+        (mapconcat 'identity dir-list "/"))))
+
 ;; Add a 'F'ind marked files keybinding to dired
 (eval-after-load "dired"
   '(progn
