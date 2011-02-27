@@ -95,7 +95,7 @@
   (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
   (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
 
-  (local-set-key (kbd "C-x C-k h") 'drupal-hook)
+  (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
   (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
 
 
@@ -119,12 +119,13 @@
 ;; $ find . -type f \( -name "*.php" -o -name "*.module" -o -name "*.install" -o -name "*.inc" \) | etags --language=php -
 ;; Exuberant ctags:
 ;; $ ctags -eR --langmap=php:+.module.install.inc --languages=php
-(fset 'drupal-hook ;; To edit: C-x C-k e M-x drupal-hook RET
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217848 102 105 110 100 45 116 97 103 13 13 1 67108896 5 left C-M-right 134217847 24 107 13 1 11 134217848 101 118 97 108 45 101 120 112 114 101 115 115 105 111 110 13 40 115 119 105 116 99 104 45 116 111 45 98 117 102 102 101 114 40 103 101 110 101 114 97 116 101 45 110 101 119 45 98 117 102 102 101 114 34 42 116 101 109 112 42 34 41 41 13 25 134217849 C-M-left 1 13 up 47 42 42 13 32 42 32 73 109 112 108 101 109 101 110 116 97 116 105 111 110 32 111 102 32 C-right right 67108896 19 40 left 134217847 1 left 25 40 41 46 13 32 42 47 134217788 67108896 134217790 134217847 24 107 13 25 C-M-left down 134217837] 0 "%d")) arg)))
 
-;; (defun my-expand-drupal-hook ()
-;;   "Wrapper for the drupal-hook keyboard macro."
-;;   (interactive)
-;;   (with-temp-buffer
-;;     (insert "howdy")
-;;     (kill-region (point-min) (point-max))))
+(defun my-insert-drupal-hook (tagname)
+  "Wrapper for the drupal-hook keyboard macro."
+  (interactive (find-tag-interactive "Hook: "))
+  (kill-new (replace-regexp-in-string "\\..*$" "" (file-name-nondirectory (buffer-file-name))))
+  (kill-new tagname)
+  (my--insert-drupal-hook-macro))
+
+(fset 'my--insert-drupal-hook-macro
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([134217848 102 105 110 100 45 116 97 103 13 102 117 110 99 116 105 111 110 17 32 25 13 1 67108896 5 left C-M-right 134217847 24 107 13 134217848 101 118 97 108 45 101 120 112 114 101 115 115 105 111 110 13 40 115 119 105 116 99 104 45 116 111 45 98 117 102 102 101 114 32 40 103 101 110 101 114 97 116 101 45 110 101 119 45 98 117 102 102 101 114 32 34 42 116 101 109 112 42 34 41 41 13 25 C-M-left 1 13 up 47 42 42 13 32 42 32 73 109 112 108 101 109 101 110 116 97 116 105 111 110 32 111 102 32 C-right right 67108896 19 40 left 134217847 1 left 25 40 41 46 13 32 42 47 19 104 111 111 107 right left C-backspace 25 134217849 134217849 134217849 134217849 134217788 67108896 134217790 134217847 24 107 13 25 C-M-left down 134217837] 0 "%d")) arg)))
