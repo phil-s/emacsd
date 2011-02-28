@@ -111,15 +111,6 @@
 (fset 'drupal-quick-and-dirty-debugging
    (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
 
-;; Use etags and the API files to replace hook_(name) with
-;; the example code for that hook. For Drupal 6, you will need
-;; to grab the developer documentation before generating TAGS
-;; cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
-;; Old etags:
-;; $ find . -type f \( -name "*.php" -o -name "*.module" -o -name "*.install" -o -name "*.inc" \) | etags --language=php -
-;; Exuberant ctags:
-;; $ ctags -eR --langmap=php:+.module.install.inc --languages=php
-
 (defun my-insert-drupal-hook (tagname)
   "Clone the specified function as a new module hook implementation.
 
@@ -135,7 +126,8 @@ Old etags:
 $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' \\) | etags --language=php -
 "
   (interactive (find-tag-interactive "Hook: "))
-  (let ((module (replace-regexp-in-string "\\..*$" "" (file-name-nondirectory (buffer-file-name)))))
+  (let ((module (replace-regexp-in-string
+                 "\\..*$" "" (file-name-nondirectory (buffer-file-name)))))
     (find-tag (format "^function %s(" tagname) nil t)
     (let ((tmp-buffer (generate-new-buffer "*temp*"))
           (start (line-beginning-position)))
@@ -164,7 +156,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
       (insert module)
       (let ((function (filter-buffer-substring (point-min) (point-max))))
         (kill-buffer)
-        (insert function))
-      (backward-sexp)
-      (next-line)
-      (back-to-indentation))))
+        (insert function)))
+    (backward-sexp)
+    (next-line)
+    (back-to-indentation)))
+;; Use `c-mark-function' ?
