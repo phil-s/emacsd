@@ -121,41 +121,50 @@
 ;; $ ctags -eR --langmap=php:+.module.install.inc --languages=php
 
 (defun my-insert-drupal-hook (tagname)
-  "Wrapper for the drupal-hook keyboard macro."
+  "Clone the specified function as a new module hook implementation.
+
+For Drupal <= 6, you will need to grab the developer documentation
+before generating the TAGS file:
+
+cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
+
+Exuberant ctags:
+$ ctags -eR --langmap=php:+.module.install.inc --languages=php
+
+Old etags:
+$ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' \\) | etags --language=php -
+"
   (interactive (find-tag-interactive "Hook: "))
   (let ((module (replace-regexp-in-string "\\..*$" "" (file-name-nondirectory (buffer-file-name)))))
     (find-tag (format "^function %s(" tagname) nil t)
-    (move-beginning-of-line nil)
-    (set-mark (point))
-    (search-forward "{")
-    (backward-char)
-    (forward-sexp)
-    (copy-region-as-kill (point) (mark))
-    (kill-buffer)
-    (switch-to-buffer (generate-new-buffer "*temp*"))
-    (yank)
-    (backward-sexp)
-    (move-beginning-of-line nil)
-    (newline)
-    (previous-line)
-    (insert "/**\n * Implementation of ")
-    (forward-word)
-    (forward-char)
-    (set-mark (point))
-    (search-forward "(")
-    (backward-char)
-    (copy-region-as-kill (point) (mark))
-    (move-beginning-of-line nil)
-    (backward-char)
-    (yank)
-    (insert "().\n */")
-    (search-forward "_")
-    (backward-char)
-    (backward-kill-word 1)
-    (insert module)
-    (copy-region-as-kill (point-min) (point-max))
-    (kill-buffer)
-    (yank)
-    (backward-sexp)
-    (next-line)
-    (back-to-indentation)))
+    (let ((tmp-buffer (generate-new-buffer "*temp*"))
+          (start (line-beginning-position)))
+      (search-forward "{")
+      (backward-char)
+      (forward-sexp)
+      (copy-to-buffer tmp-buffer start (point))
+      (kill-buffer)
+      (switch-to-buffer tmp-buffer)
+      (newline)
+      (previous-line)
+      (insert "/**\n * Implementation of ")
+      (forward-word)
+      (forward-char)
+      (let ((start (point)))
+        (search-forward "(")
+        (backward-char)
+        (let ((funcname (filter-buffer-substring start (point))))
+          (move-beginning-of-line nil)
+          (backward-char)
+          (insert funcname)))
+      (insert "().\n */")
+      (search-forward "_")
+      (backward-char)
+      (delete-region (point) (progn (forward-word -1) (point)))
+      (insert module)
+      (let ((function (filter-buffer-substring (point-min) (point-max))))
+        (kill-buffer)
+        (insert function))
+      (backward-sexp)
+      (next-line)
+      (back-to-indentation))))
