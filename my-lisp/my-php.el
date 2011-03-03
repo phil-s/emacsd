@@ -78,7 +78,9 @@
   ;; Configure local TAGS
   (let ((tag-dir (my-parent-of-dir-in-buffer-file-name "htdocs")))
     (if tag-dir
-        (visit-tags-table (file-name-as-directory tag-dir) t)))
+        (let ((tag-file (concat tag-dir "/TAGS")))
+          (if (file-readable-p tag-file)
+              (visit-tags-table tag-file t)))))
 
   (setq tab-width                2
         c-basic-offset           2
