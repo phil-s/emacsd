@@ -53,7 +53,7 @@ unhides lines again"
 
 
 ;; SVN (Subversion)
-;;(require 'psvn)
+(require 'psvn)
 ;; Start the svn interface with M-x svn-status
 
 
