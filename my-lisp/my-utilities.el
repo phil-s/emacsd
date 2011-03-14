@@ -37,7 +37,13 @@
 (defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
   "Show all lines matching REGEXP in all buffers."
   (interactive (occur-read-primary-args))
-  (multi-occur-in-matching-buffers ".*" regexp))
+  (let* ((not-tags "\\([^T]\\|T[^A]\\|TA[^G]\\|TAG[^S]\\|TAGS.\\)")
+         (exclude-tags-pattern (if allbufs
+                                   (concat "^" not-tags)
+                                 (concat "/" not-tags "[^/]*$"))))
+    (multi-occur-in-matching-buffers
+     exclude-tags-pattern
+     regexp)))
 
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call next-buffer if the last command was
