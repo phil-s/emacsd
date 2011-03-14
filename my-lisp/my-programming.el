@@ -147,6 +147,11 @@ context-help to false"
 
 ;; nXHTML
 (load "nxhtml/autostart.el")
+;; Mumamo is making emacs 23.3 freak out:
+(if (and (equal emacs-major-version 23)
+         (equal emacs-minor-version 3))
+    (add-to-list 'byte-compile-not-obsolete-vars
+                 'font-lock-beginning-of-syntax-function))
 
 ;; XML
 (defun my-xml-hook ()
