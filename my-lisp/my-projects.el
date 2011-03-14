@@ -34,6 +34,12 @@
    ;; (nxhtml-mode . (()))
    ))
 
+
+;; Emacs
+(dir-locals-set-class-variables
+ 'emacs
+ '((emacs-lisp-mode . ((tab-width . 8)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-projects)
