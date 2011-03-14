@@ -9,6 +9,9 @@
 (define-key Apropos-Prefix (kbd "v")   'apropos-variable)
 (define-key Apropos-Prefix (kbd "C-v") 'apropos-value)
 
+;; Bind 'l' to [back] in Help mode, to match Info mode.
+(add-hook 'help-mode-hook (lambda () (local-set-key (kbd "l") 'help-go-back)))
+
 ;; Use a global minor mode in preference to using (global-set-key),
 ;; so that my custom keys take precedence over major mode keymaps.
 
