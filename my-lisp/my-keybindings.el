@@ -52,6 +52,12 @@
   (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
 
+  ;; Replicate windmove bindings, so that they don't get clobbered
+  (define-key keymap (kbd "<S-up>")  'windmove-up)
+  (define-key keymap (kbd "<S-down>")  'windmove-down)
+  (define-key keymap (kbd "<S-left>")  'windmove-left)
+  (define-key keymap (kbd "<S-right>") 'windmove-right)
+
   ;; compare-windows
   (define-key keymap (kbd "C-M-=")     'compare-windows)
 
