@@ -79,6 +79,13 @@
     (ibuffer-jump-to-buffer recent-buffer-name)))
 (ad-activate 'ibuffer)
 
+;; Make ibuffer text smaller by default
+(autoload 'text-scale-mode "face-remap")
+(add-hook 'ibuffer-mode-hook 'my-ibuffer-mode-hook)
+(defun my-ibuffer-mode-hook ()
+  (let ((text-scale-mode-amount -1))
+    (text-scale-mode)))
+
 ;; Enable find-file-at-point key-bindings.
 (ffap-bindings) ; see variable `ffap-bindings'
 (setq ffap-url-regexp nil) ; disable URL features in ffap
