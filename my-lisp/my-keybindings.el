@@ -111,12 +111,13 @@ subsequent to the future definition of other minor modes."
   (add-hook 'minibuffer-setup-hook
             (lambda () (set (make-local-variable 'my-keys-minor-mode) 0)))
 
-  (defadvice define-minor-mode (after give-my-keybindings-priority)
+  (defadvice load (after give-my-keybindings-priority)
     "Try to ensure that my keybindings always have priority."
-    (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
-      (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
-      (add-to-list 'minor-mode-map-alist mykeys)))
-  (ad-activate 'define-minor-mode))
+    (if (not (eq (car (car minor-mode-map-alist)) 'my-keys-minor-mode))
+        (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
+          (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
+          (add-to-list 'minor-mode-map-alist mykeys))))
+  (ad-activate 'load))
 
 (add-hook 'after-init-hook 'my-keybindings-after-init-hook)
 
