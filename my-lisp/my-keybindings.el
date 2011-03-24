@@ -53,7 +53,7 @@
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
 
   ;; Replicate windmove bindings, so that they don't get clobbered
-  (define-key keymap (kbd "<S-up>")  'windmove-up)
+  (define-key keymap (kbd "<S-up>")    'windmove-up)
   (define-key keymap (kbd "<S-down>")  'windmove-down)
   (define-key keymap (kbd "<S-left>")  'windmove-left)
   (define-key keymap (kbd "<S-right>") 'windmove-right)
@@ -93,11 +93,11 @@
 (defun my-keybindings-after-init-hook ()
   "Define and enable our minor mode after the init file has been loaded.
 We want this to be our final initialisation step, to ensure that
-my-keys-minor-mode is first in minor-mode-map-alist, and therefore
+`my-keys-minor-mode' is first in `minor-mode-map-alist', and therefore
 takes precedence over other minor mode keymaps.
 
-We also advise define-minor-mode to try to retain this priority,
-subsequent to the future definition of other minor modes."
+We also advise `load' to try to retain this priority, subsequent to the
+future definition of other minor modes."
 
   (define-minor-mode my-keys-minor-mode
     "A minor mode so that my custom key bindings take precedence over major modes.
