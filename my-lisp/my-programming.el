@@ -20,6 +20,7 @@
  (lambda (language-mode-hook)
    (add-hook language-mode-hook 'my-coding-config))
  '(cperl-mode-hook
+   css-mode-hook
    emacs-lisp-mode-hook
    ielm-mode-hook
    lisp-interaction-mode-hook
@@ -169,7 +170,6 @@ context-help to false"
 
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)
-(autoload 'rainbow-mode "rainbow" nil t)
 (defun my-css-mode-hook ()
   (rainbow-mode 1))
 

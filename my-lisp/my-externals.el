@@ -40,6 +40,8 @@
      (:name ediff-trees
             :type emacswiki)
 
+     (:name rainbow-mode)
+
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
