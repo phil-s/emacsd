@@ -5,6 +5,12 @@
 ;; (dir-locals-set-directory-class "/dir/path/" 'class-symbol)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Emacs
+(dir-locals-set-class-variables
+ 'emacs
+ '((nil . ((buffer-read-only . t)
+           (tab-width . 8)))))
+
 ;; Drupal
 (dir-locals-set-class-variables
  'drupal
@@ -20,7 +26,6 @@
 ;;        (my--drupal-mode)))
 ;; (add-hook 'php-mode-hook 'my-dir-locals-php-hook t)
 
-
 ;; Plone
 (dir-locals-set-class-variables
  'plone-core
@@ -33,12 +38,6 @@
    ;; (python-mode . (()))
    ;; (nxhtml-mode . (()))
    ))
-
-
-;; Emacs
-(dir-locals-set-class-variables
- 'emacs
- '((emacs-lisp-mode . ((tab-width . 8)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
