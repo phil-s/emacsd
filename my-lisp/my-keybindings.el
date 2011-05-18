@@ -68,6 +68,7 @@
   (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
   (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
+  (define-key keymap (kbd "C-a")       'my-beginning-of-line-or-indentation)
   (define-key keymap (kbd "M-p")       'scroll-one-line-back)
   (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
   (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
