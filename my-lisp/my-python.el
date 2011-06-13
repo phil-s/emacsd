@@ -6,6 +6,7 @@
 
 ;; Zope / Plone
 (add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.pt\\'" . nxml-mode))
 
 ;; ;; buildout
 ;; (define-derived-mode conf-buildout-mode conf-mode "Conf[Buildout]"
