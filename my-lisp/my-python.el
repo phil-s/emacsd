@@ -27,6 +27,8 @@
   (hide-trailing-whitespace)
   (setq indent-tabs-mode nil)
 
+  (local-set-key (kbd "C-x C-k i") "import ipdb; ipdb.set_trace()")
+
   ;; (require 'flymake)
 
   ;; (make-local-variable 'find-file-hook)

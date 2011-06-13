@@ -149,6 +149,14 @@ command was winner-undo or winner-redo."
           (yank)
           (setq arg (1- arg)))))))
 
+;; Toggle between BOL and beginning of code
+(defun my-beginning-of-line-or-indentation ()
+  "Move to beginning of line, or indentation."
+  (interactive)
+  (if (bolp)
+      (back-to-indentation)
+    (beginning-of-line)))
+
 ;; Display non-critical messages with minimal interference.
 ;; See also the following:
 ;; (minibuffer-message)
