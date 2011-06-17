@@ -40,6 +40,10 @@
 ;; Use subword-mode
 (global-subword-mode 1)
 
+;; Make scripts executable
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+
 ;; Enable winner mode
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
