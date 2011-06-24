@@ -168,6 +168,13 @@ context-help to false"
   (setq indent-tabs-mode nil))
 (add-hook 'nxml-mode-hook 'my-xml-hook)
 
+(defun my-templates-nxml-mode-hook ()
+  (if (buffer-file-name)
+      (if (or (string-match "\\.tpl.php\\'" (buffer-file-name))
+              (string-match "\\.pt\\'" (buffer-file-name)))
+          (rng-validate-mode 0))))
+(add-hook 'nxml-mode-hook 'my-templates-nxml-mode-hook)
+
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)
 (defun my-css-mode-hook ()
