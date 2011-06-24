@@ -174,7 +174,6 @@
  '(ibuffer-saved-filter-groups (quote (("housing" ("Scratch" (mode . lisp-interaction-mode)) ("Shells" (mode . shell-mode)) ("*Awooga*! SVN Externals!" (filename . "/phil/hnzc-web/hnzc/src")) ("HNZC intranet (r2) eggs" (filename . "hnzc-dev-5:/home/phil/hnzc-intranet/buildout-cache")) ("Find an expert" (filename . "housing.intranet.noticeboard")) ("Directory" (filename . "housing.intranet.directory")) ("Projects" (filename . "housing.intranet.projects")) ("HNZC intranet (r2)" (filename . "hnzc-dev-5:/home/phil/hnzc-intranet")) ("HNZC website (intranet files)" (filename . "/phil/hnzc-web/hnzc/site/intranet/")) ("HNZC website" (filename . "/phil/hnzc-web/")) ("HNZC-dev5 other" (filename . "/scpc:phil@hnzc-dev-5:")) ("Emacs" (filename . "emacs"))))))
  '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
  '(inhibit-eol-conversion nil)
- '(js-indent-level 2)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(safe-local-variable-values (quote ((css-indent-offset . 2) (js-indent-level . 2) (drupal-p . t) (eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 6)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
