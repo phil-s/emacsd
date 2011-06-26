@@ -138,8 +138,14 @@ context-help to false"
 (require 'hl-sexp)
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
   (hl-sexp-mode 1))
 
+(defun my-auto-byte-recompile ()
+  "Byte compile if a corresponding .elc file already exists.
+Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
+  (when (file-exists-p (byte-compile-dest-file buffer-file-name))
+    (byte-compile-file buffer-file-name)))
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
