@@ -35,7 +35,9 @@
   (forward-line -1))
 
 (defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
-  "Show all lines matching REGEXP in all buffers."
+  "Show all lines matching REGEXP in all buffers.
+Enhance this to ignore other known-bad files?
+http://stackoverflow.com/questions/2641211/emacs-interactively-search-open-buffers/2642655#2642655"
   (interactive (occur-read-primary-args))
   (let* ((not-tags "\\([^T]\\|T[^A]\\|TA[^G]\\|TAG[^S]\\|TAGS.\\)")
          (exclude-tags-pattern (if allbufs
@@ -266,17 +268,6 @@ Does not set point.  Does nothing if mark ring is empty."
          ad-do-it)))))
 (activate-my-unpop-to-mark-advice)
 
-;; Diff file with autosave backup
-(defun ediff-auto-save ()
-  "Ediff the current file with its auto-save."
-  (interactive)
-  (let ((auto-file-name (make-auto-save-file-name))
-        (file-major-mode major-mode))
-    (ediff-files buffer-file-name auto-file-name)
-    (switch-to-buffer-other-window (file-name-nondirectory auto-file-name))
-    (apply file-major-mode '())
-    (other-window 1))) ;; back to ediff panel
-
 ;; Kill ring / Yank assistance
 (defun my-yank-menu ()
   "Select text to yank from a pop-up menu of recently killed items."
@@ -350,10 +341,10 @@ within the current buffer-file-name."
           (if this-win-2nd (other-window 1))))))
 
 ;;
-;; Ediff with autosave file
+;; Ediff the current buffer's file with its auto-saved backup file.
 ;;
 (defun ediff-auto-save ()
-  "Ediff current file and its auto-save pendant."
+  "Compare the current buffer's file with its auto-saved backup file."
   (interactive)
   (let ((auto-file-name (make-auto-save-file-name))
         (file-major-mode major-mode))
@@ -365,12 +356,10 @@ within the current buffer-file-name."
 ;;
 ;; Diff the current buffer with the file contents
 ;;
-
 (defun diff-current-buffer-with-disk ()
   "Compare the current buffer with it's disk file."
   (interactive)
   (diff-buffer-with-file (current-buffer)))
-
 
 ;;(defun ediff-file-with-buffer (file-A buf-B &optional startup-hooks job-name merge-buffer-file)
 ;;  (let (buf-A buf-C)
