@@ -16,9 +16,10 @@
 (dir-locals-set-class-variables
  'drupal
  '((nil . ((indent-tabs-mode . nil)
-           (tab-width . 2)
+           (tab-width . 8)
            (fill-column . 76)))
-   (php-mode . ((drupal-p . t)))
+   (php-mode . ((drupal-p . t)
+                (c-basic-offset . 2)))
    (css-mode . ((css-indent-offset . 2)))
    (js-mode . ((js-indent-level . 2)))
    ))
