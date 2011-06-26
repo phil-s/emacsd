@@ -61,6 +61,9 @@
   ;; compare-windows
   (define-key keymap (kbd "C-M-=")     'compare-windows)
 
+  ;; Completions
+  (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
+
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
