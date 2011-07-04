@@ -11,7 +11,7 @@ The optional argument can be generated with `make-hippie-expand-function'."
     he-tried-table))
 
 (defun my-ido-hippie-expand (selection)
-  "Offer ido-based completion for the partial filename at point."
+  "Offer ido-based completion for the word at point."
   (interactive
    (let ((options (my-hippie-expand-completions)))
      (list (ido-completing-read "Completions: " options))))
