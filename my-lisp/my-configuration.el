@@ -32,6 +32,8 @@
 (menu-bar-right-scroll-bar)
 
 ;; Show time in mode line
+(require 'time)
+(setq display-time-24hr-format t)
 (display-time-mode 1)
 
 ;; Highlight current line
