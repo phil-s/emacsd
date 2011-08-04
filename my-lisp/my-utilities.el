@@ -323,6 +323,13 @@ within the current buffer-file-name."
     (if dir-list
         (mapconcat 'identity dir-list "/"))))
 
+(defun my-before-save-create-directory-maybe ()
+  "Offer to create the file's parent directories, if they do not exist."
+  (let ((dir (file-name-directory buffer-file-name)))
+    (when (and (not (file-exists-p dir))
+               (y-or-n-p (format "Directory %s does not exist. Create it? " dir)))
+      (make-directory dir t))))
+
 ;; Add a 'F'ind marked files keybinding to dired
 (eval-after-load "dired"
   '(progn
