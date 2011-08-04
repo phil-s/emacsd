@@ -2,7 +2,9 @@
 ;; Directory local variables
 ;;
 ;; Assign in my-local.el with:
-;; (dir-locals-set-directory-class "/dir/path/" 'class-symbol)
+;; (dir-locals-set-directory-class "/dir/path" 'class-symbol)
+;; or for individual files:
+;; (my-file-locals-set-directory-class "/file/path" 'class-symbol)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Emacs
@@ -44,6 +46,15 @@
    ;; (python-mode . (()))
    ;; (nxhtml-mode . (()))
    ))
+
+(defun my-file-locals-set-directory-class (file class &optional mtime)
+  "Enable 'directory local' classes for individual files,
+by allowing non-directories in `dir-locals-directory-cache'.
+Adapted from `dir-locals-set-directory-class'."
+  (setq file (expand-file-name file))
+  (unless (assq class dir-locals-class-alist)
+    (error "No such class `%s'" (symbol-name class)))
+  (push (list file class mtime) dir-locals-directory-cache))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
