@@ -257,8 +257,8 @@ command was winner-undo or winner-redo."
          (lambda (tmp-message backup-message)
            ;; revert to the backup message, unless something
            ;; else has already over-written our temporary one
-           (if (string= tmp-message (current-message))
-               (message backup-message)))
+           (when (string= tmp-message (current-message))
+             (message backup-message)))
          tmp-message
          backup-message)))))
 
@@ -353,8 +353,8 @@ With a prefix arg, use the file's truename."
 within the current buffer-file-name."
   (let* ((bfn-list (split-string (buffer-file-name) "/"))
          (dir-list (reverse (cdr (member dir (reverse bfn-list))))))
-    (if dir-list
-        (mapconcat 'identity dir-list "/"))))
+    (when dir-list
+      (mapconcat 'identity dir-list "/"))))
 
 (defun my-before-save-create-directory-maybe ()
   "Offer to create the file's parent directories, if they do not exist."
@@ -376,28 +376,28 @@ within the current buffer-file-name."
 ;; Toggle between a vertical and horizontal window split
 (defun toggle-window-split ()
   (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
+  (when (= (count-windows) 2)
+    (let* ((this-win-buffer (window-buffer))
+           (next-win-buffer (window-buffer (next-window)))
+           (this-win-edges (window-edges (selected-window)))
+           (next-win-edges (window-edges (next-window)))
+           (this-win-2nd (not (and (<= (car this-win-edges)
+                                       (car next-win-edges))
+                                   (<= (cadr this-win-edges)
+                                       (cadr next-win-edges)))))
+           (splitter
+            (if (= (car this-win-edges)
+                   (car (window-edges (next-window))))
+                'split-window-horizontally
+              'split-window-vertically)))
+      (delete-other-windows)
+      (let ((first-win (selected-window)))
+        (funcall splitter)
+        (when this-win-2nd (other-window 1))
+        (set-window-buffer (selected-window) this-win-buffer)
+        (set-window-buffer (next-window) next-win-buffer)
+        (select-window first-win)
+        (when this-win-2nd (other-window 1))))))
 
 ;;
 ;; Ediff the current buffer's file with its auto-saved backup file.
