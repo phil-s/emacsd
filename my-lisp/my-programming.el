@@ -223,7 +223,8 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; Drupal mode (see my-php.el)
 (autoload 'drupal-mode "my-php" "Drupal Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)\\'" . drupal-mode))
-(add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxhtml-mumamo-mode))
+(add-to-list 'auto-mode-alist '("\\.info\\'" . conf-windows-mode))
 
 ;; ;; Default to Drupal mode for PHP files
 ;; (delete '("\\.php\\'" . nxhtml-mumamo-mode) auto-mode-alist)
