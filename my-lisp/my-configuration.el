@@ -63,6 +63,22 @@
 ;; Collapsed by default. Selecting a buffer from this list will
 ;; re-visit the file.
 
+;; Fix bug in Emacs 23.3.
+;; This bug prevents ibuffer groups from working.
+;; http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-06/msg00117.html
+(when (and (equal emacs-major-version 23)
+           (equal emacs-minor-version 3))
+  (eval-after-load "ibuf-ext"
+    '(defun ibuffer-filter-disable ()
+       "Disable all filters currently in effect in this buffer."
+       (interactive)
+       (setq ibuffer-filtering-qualifiers nil
+             ) ;ibuffer-filter-groups nil
+       (let ((buf (ibuffer-current-buffer)))
+         (ibuffer-update nil t)
+         (when buf
+           (ibuffer-jump-to-buffer (buffer-name buf)))))))
+
 ;; Configure ibuffer columns
 (setq ibuffer-formats '((mark modified read-only " " (name 30 60 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename)))
 
@@ -86,9 +102,12 @@
 (ad-activate 'ibuffer)
 
 ;; Make ibuffer text smaller by default
-(autoload 'text-scale-mode "face-remap")
+;; TODO: Find how to make C-x 0 resets to this same smaller size.
+;; (an issue since fixing a previous bug)
+;;(autoload 'text-scale-mode "face-remap")
 (add-hook 'ibuffer-mode-hook 'my-ibuffer-mode-hook)
 (defun my-ibuffer-mode-hook ()
+  (require 'face-remap)
   (let ((text-scale-mode-amount -1))
     (text-scale-mode)))
 
