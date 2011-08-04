@@ -46,6 +46,9 @@
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
 
+;; Streamline parent directory creation when saving files.
+(add-hook 'before-save-hook 'my-before-save-create-directory-maybe)
+
 ;; Enable winner mode
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
