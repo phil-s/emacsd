@@ -14,6 +14,11 @@
            (show-trailing-whitespace . nil)
            (tab-width . 8)))))
 
+;; Generic read-only class
+(dir-locals-set-class-variables
+ 'read-only
+ '((nil (buffer-read-only . t))))
+
 ;; Drupal
 (dir-locals-set-class-variables
  'drupal
