@@ -467,6 +467,17 @@ within the current buffer-file-name."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Improved alternative to backward-up-list
+(defun backward-up-sexp (arg)
+  (interactive "p")
+  (let ((ppss (syntax-ppss)))
+    (cond ((elt ppss 3)
+           (goto-char (elt ppss 8))
+           (backward-up-sexp (1- arg)))
+          ((backward-up-list arg)))))
+
+(global-set-key [remap backward-up-list] 'backward-up-sexp)
+
 (provide 'my-utilities)
 
 ;;; Local Variables:
