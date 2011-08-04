@@ -10,7 +10,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; We can't use --daemon with NTEmacs, so start a server here.
-(server-start)
+(require 'server)
+(or (server-running-p)
+    (server-start))
 
 ;; Use Unix-style line endings.
 (setq-default buffer-file-coding-system 'undecided-unix)
@@ -23,8 +25,8 @@
 (require 'w32-symlinks)
 
 ;; Make the emacs source files read-only
-(dir-locals-set-class-variables 'read-only '((nil (buffer-read-only . t))))
-(dir-locals-set-directory-class (getenv "emacs_dir") 'read-only)
+(eval-after-load "my-projects"
+  '(dir-locals-set-directory-class (getenv "emacs_dir") 'emacs))
 
 (defadvice server-create-window-system-frame
   (after my-after-server-create-window-system-frame)
