@@ -56,6 +56,13 @@
   (define-key keymap (kbd "<S-left>")  'windmove-left)
   (define-key keymap (kbd "<S-right>") 'windmove-right)
 
+  ;; Miscellaneous window/buffer manipulation
+  (define-key keymap (kbd "M-o")       'expand-other-window)
+  (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
+  (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
+  (define-key keymap (kbd "C-c \\")    'toggle-window-split)
+  (define-key keymap (kbd "C-c C-\\")  'transpose-frame)
+
   ;; compare-windows
   (define-key keymap (kbd "C-M-=")     'compare-windows)
 
@@ -66,9 +73,6 @@
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
-  (define-key keymap (kbd "M-o")       'expand-other-window)
-  (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
-  (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
   (define-key keymap (kbd "C-a")       'my-beginning-of-line-or-indentation)
   (define-key keymap (kbd "M-p")       'scroll-one-line-back)
@@ -76,7 +80,6 @@
   (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
   (define-key keymap (kbd "M-s /")     'my-multi-occur-in-matching-buffers)
   (define-key keymap (kbd "C-c c")     'clone-line)
-  (define-key keymap (kbd "C-c \\")    'toggle-window-split)
   (define-key keymap (kbd "C-M-z")     'zap-to-char-backwards)
   (define-key keymap (kbd "M-.")       'etags-select-find-tag)
   (define-key keymap (kbd "M-?")       'etags-stack-show)

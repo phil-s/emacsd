@@ -42,6 +42,10 @@
 
      (:name rainbow-mode)
 
+     (:name transpose-frame
+            :type emacswiki
+            :features transpose-frame)
+
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
