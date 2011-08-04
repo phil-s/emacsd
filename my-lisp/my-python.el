@@ -6,6 +6,7 @@
 
 ;; Zope / Plone
 (add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.pt\\'" . nxml-mode))
 
 ;; ;; buildout
 ;; (define-derived-mode conf-buildout-mode conf-mode "Conf[Buildout]"
@@ -25,6 +26,8 @@
 (defun my-python-mode-hook ()
   (hide-trailing-whitespace)
   (setq indent-tabs-mode nil)
+
+  (local-set-key (kbd "C-x C-k i") "import ipdb; ipdb.set_trace()")
 
   ;; (require 'flymake)
 

@@ -20,6 +20,7 @@
  (lambda (language-mode-hook)
    (add-hook language-mode-hook 'my-coding-config))
  '(cperl-mode-hook
+   css-mode-hook
    emacs-lisp-mode-hook
    ielm-mode-hook
    lisp-interaction-mode-hook
@@ -137,8 +138,14 @@ context-help to false"
 (require 'hl-sexp)
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
   (hl-sexp-mode 1))
 
+(defun my-auto-byte-recompile ()
+  "Byte compile if a corresponding .elc file already exists.
+Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
+  (when (file-exists-p (byte-compile-dest-file buffer-file-name))
+    (byte-compile-file buffer-file-name)))
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
@@ -167,9 +174,15 @@ context-help to false"
   (setq indent-tabs-mode nil))
 (add-hook 'nxml-mode-hook 'my-xml-hook)
 
+(defun my-templates-nxml-mode-hook ()
+  (if (buffer-file-name)
+      (if (or (string-match "\\.tpl.php\\'" (buffer-file-name))
+              (string-match "\\.pt\\'" (buffer-file-name)))
+          (rng-validate-mode 0))))
+(add-hook 'nxml-mode-hook 'my-templates-nxml-mode-hook)
+
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)
-(autoload 'rainbow-mode "rainbow" nil t)
 (defun my-css-mode-hook ()
   (rainbow-mode 1))
 

@@ -53,13 +53,16 @@
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
 
   ;; Replicate windmove bindings, so that they don't get clobbered
-  (define-key keymap (kbd "<S-up>")  'windmove-up)
+  (define-key keymap (kbd "<S-up>")    'windmove-up)
   (define-key keymap (kbd "<S-down>")  'windmove-down)
   (define-key keymap (kbd "<S-left>")  'windmove-left)
   (define-key keymap (kbd "<S-right>") 'windmove-right)
 
   ;; compare-windows
   (define-key keymap (kbd "C-M-=")     'compare-windows)
+
+  ;; Completions
+  (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
 
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
@@ -68,6 +71,7 @@
   (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
   (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
+  (define-key keymap (kbd "C-a")       'my-beginning-of-line-or-indentation)
   (define-key keymap (kbd "M-p")       'scroll-one-line-back)
   (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
   (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
@@ -93,11 +97,11 @@
 (defun my-keybindings-after-init-hook ()
   "Define and enable our minor mode after the init file has been loaded.
 We want this to be our final initialisation step, to ensure that
-my-keys-minor-mode is first in minor-mode-map-alist, and therefore
+`my-keys-minor-mode' is first in `minor-mode-map-alist', and therefore
 takes precedence over other minor mode keymaps.
 
-We also advise define-minor-mode to try to retain this priority,
-subsequent to the future definition of other minor modes."
+We also advise `load' to try to retain this priority, subsequent to the
+future definition of other minor modes."
 
   (define-minor-mode my-keys-minor-mode
     "A minor mode so that my custom key bindings take precedence over major modes.
