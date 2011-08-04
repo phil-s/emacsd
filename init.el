@@ -4,6 +4,8 @@
 ;; http://www-sop.inria.fr/mimosa/Manuel.Serrano/flyspell/flyspell.html
 ;; http://stackoverflow.com/users/6148?sort=stats#sort-top
 ;; http://emacs-fu.blogspot.com/2011/02/keeping-your-secrets-secret.html
+;; http://obsidianrook.com/devnotes/elisp-for-perl-programmers.html
+;; http://stackoverflow.com/questions/5795451/how-to-detect-that-emacs-is-in-terminal-mode
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -118,6 +120,86 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;; Debugging, Tracing, and Profiling
+
+;; Standard debugger:
+;; M-x debug-on-entry FUNCTION
+;; M-x cancel-debug-on-entry &optional FUNCTION
+;; debug &rest DEBUGGER-ARGS
+
+;; Edebug -- a source-level debugger for Emacs Lisp
+;; M-x edebug-defun (C-u C-M-x) Cancel with eval-defun (C-M-x)
+;; M-x edebug-all-defs -- Toggle edebugging of all definitions
+;; M-x edebug-all-forms -- Toggle edebugging of all forms
+;; M-x edebug-eval-top-level-form
+
+;; Tracing:
+;; M-x trace-function FUNCTION &optional BUFFER
+;; M-x untrace-function FUNCTION
+;; M-x untrace-all
+
+;; Emacs Lisp Profiler (ELP)
+;; M-x elp-instrument-function
+;; M-x elp-instrument-list
+;; M-x elp-instrument-package
+;; M-x elp-results
+;;
+;; There's a built-in profiler called ELP. You can try something like
+;; M-x elp-instrument-package, enter "vc", and then try finding a
+;; file. Afterwards, M-x elp-results will show you a profile report.
+;; (Note that if the time is instead being spent in non-vc-related
+;; functions, this technique will not show it, but you can instrument
+;; further packages if you like.)
+;;
+;; See also:
+;; http://cx4a.org/hack/emacs-native-profiler.html
+
+;; Spinning:
+;; Set debug-on-quit to t
+;; When the problem happens, hit C-g for a backtrace.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;; Elisp executable scripts
+
+;; --batch vs --script
+;; M-: (info "(emacs) Initial Options") RET
+;; M-: (info "(elisp) Batch Mode") RET
+
+;; Passing additional command-line arguments to Emacs:
+;; http://stackoverflow.com/questions/6238331/#6259330
+;;
+;; #!/bin/sh
+;; ":"; exec emacs --no-site-file --script "$0" "$@" # -*-emacs-lisp-*-
+;; (print (+ 2 2))
+
+;; Processing with STDIN and STDOUT via --script:
+;; http://stackoverflow.com/questions/2879746/#2906967
+;;
+;; #!/usr/local/bin/emacs --script
+;; ;;-*- mode: emacs-lisp;-*-
+;;
+;; (defun process (string)
+;;   "just reverse the string"
+;;   (concat (nreverse (string-to-list string))))
+;;
+;; (condition-case nil
+;;     (let (line)
+;;       ;; commented out b/c not relevant for `cat`, but potentially useful
+;;       ;; (princ "argv is ")
+;;       ;; (princ argv)
+;;       ;; (princ "\n")
+;;       ;; (princ "command-line-args is" )
+;;       ;; (princ command-line-args)
+;;       ;; (princ "\n")
+;;
+;;       (while (setq line (read-from-minibuffer ""))
+;;         (princ (process line))
+;;         (princ "\n")))
+;;   (error nil))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;; Load or evaluate this file
 (defun load-dot-emacs ()
   "load ~/.emacs"
@@ -148,6 +230,8 @@
 ;; C-x 4 ... : Operations on other-window
 ;; C-x 5 ... : Operations on other-frame
 ;; C-x 6 ... : 2C (two columns) operations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Write/modify some Drupal YASnippets!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -263,5 +347,5 @@
 (require 'my-local)
 
 ;;; Local Variables:
-;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 6)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
+;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 8)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
 ;;; End:
