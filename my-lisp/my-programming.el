@@ -152,7 +152,7 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (setq cperl-indent-level 4)
 
 
-;; nXHTML
+;; nXHTML (also includes php-mode)
 (load "nxhtml/autostart.el")
 ;; Mumamo is making emacs 23.3 freak out:
 (when (and (equal emacs-major-version 23)
@@ -214,15 +214,15 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (autoload 'javascript-mode "javascript" nil t)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 
-
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
+;;(add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
-;; (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . drupal-mode))
+;;(add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . drupal-mode))
 
 ;; Drupal mode (see my-php.el)
 (autoload 'drupal-mode "my-php" "Drupal Mode." t)
-(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)\\'" . drupal-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\|engine\\)\\'" . drupal-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxhtml-mumamo-mode))
 (add-to-list 'auto-mode-alist '("\\.info\\'" . conf-windows-mode))
 
