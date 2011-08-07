@@ -92,6 +92,7 @@
   (define-key keymap (kbd "C-h C-f")   'find-function)
   (define-key keymap (kbd "C-h C-k")   'find-function-on-key)
   (define-key keymap (kbd "C-h C-v")   'find-variable)
+  (define-key keymap (kbd "C-h C-l")   'find-library)
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
   )
 
