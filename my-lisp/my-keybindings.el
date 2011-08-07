@@ -90,6 +90,7 @@
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
   (define-key keymap (kbd "M-l")       'goto-line)
   (define-key keymap (kbd "C-h C-f")   'find-function)
+  (define-key keymap (kbd "C-h C-k")   'find-function-on-key)
   (define-key keymap (kbd "C-h C-v")   'find-variable)
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
   )
