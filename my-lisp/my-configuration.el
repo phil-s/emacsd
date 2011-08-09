@@ -31,6 +31,9 @@
 ;; Scroll-bar on the right-hand side
 (menu-bar-right-scroll-bar)
 
+;; Place killed text into the clipboard
+(setq x-select-enable-clipboard t)
+
 ;; Show time in mode line
 (require 'time)
 (setq display-time-24hr-format t)
