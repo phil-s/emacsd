@@ -49,7 +49,7 @@
 ;; Disallow tabs in elisp indentation (it mixes tabs and spaces)
 (add-hook 'emacs-lisp-mode-hook '(lambda () (set-variable 'indent-tabs-mode nil)))
 
-;; Smart Tabs does the Right Thing when I press the TAB key
+;; Smart Tabs (usually) does the Right Thing when I press the TAB key
 (when (require 'smart-tab nil 'noerror)
   ;; ;; Completion can be annoying. Go with indentation only.
   ;; (global-set-key (kbd "TAB") 'smart-tab-default)
@@ -57,6 +57,17 @@
   ;; ;; This being the case, do I even want smart-tab??
   ;; ;; n.b. without smart-tab, TAB will currently be bound to yas/expand)
   (global-smart-tab-mode 1))
+
+;; Smart Tabs occasionally does the Wrong Thing,
+;; so disable smart-tab-mode for certain major modes
+(defadvice smart-tab-mode-on
+  (around disable-smart-tab-for-modes)
+  "Disable smart-tab-mode in the specified major modes
+(to counter-act global-smart-tab-mode)."
+  (unless (memq major-mode
+                (list 'org-mode 'term-mode))
+      ad-do-it))
+(ad-activate 'smart-tab-mode-on)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

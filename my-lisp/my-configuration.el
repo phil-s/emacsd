@@ -247,16 +247,6 @@ disabled.")))
 (defun my-outline-minor-mode-hook ()
   (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
-;; Org mode
-(defadvice smart-tab-mode-on
-  (around disable-smart-tab-for-modes)
-  "Disable smart-tab-mode in the specified major modes
-(to counter-act global-smart-tab-mode)."
-  (unless (memq major-mode
-                (list 'org-mode))
-      ad-do-it))
-(ad-activate 'smart-tab-mode-on)
-
 ;; erc-mode (for IRC)
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
