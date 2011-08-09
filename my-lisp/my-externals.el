@@ -60,10 +60,8 @@
      ;;        :type ftp
      ;;        :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
 
-     ;; (:name color-theme
-     ;;        :type http
-     ;;        :url "http://download.savannah.nongnu.org/releases/color-theme/"
-     ;;        :features color-theme)
+     (:name color-theme)
+     (:name color-theme-zenburn)
 
      ;; (:name magit
      ;;        :type git

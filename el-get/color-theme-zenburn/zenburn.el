@@ -1,20 +1,11 @@
 ;;; zenburn.el --- just some alien fruit salad to keep you in the zone
-;; Copyright (C) 2003, 2004, 2005, 2006  Daniel Brockman
+;; Copyright (C) 2003, 2004, 2005, 2006, 2010, 2011  Daniel Brockman
 ;; Copyright (C) 2009  Adrian C., Bastien Guerry
 
 ;; Author: Daniel Brockman <daniel@brockman.se>
-;; URL: http://www.brockman.se/software/zenburn/zenburn.el
-;; Updated: 2010-04-03 15:34
+;; URL: http://github.com/dbrock/zenburn-el
 
-;; Changes (2010-04), Dirk-Jan C. Binnema
-;;  - add Wanderlust faces, based on the work by *
-;;    change display of currently view mail (italic + underline),
-;;    make it distinctive from the highlighted line (hi-lock)
-;;  - don't change foreground in visible regions (selections)
-;;  - add elscreen, flyspell, hi-line, magit support
-;;  - set font-lock-function-name to blue
-
-;; Adrian C. and Bastien Guerry added org-mode faces.
+;; Jani Nurminen created the original Zenburn for Vim.
 
 ;; This file is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -31,40 +22,12 @@
 ;; Software Foundation, 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-;;; Commentary:
-
-;; Some packages ship with broken implementations of `format-spec';
-;; for example, stable versions of TRAMP and ERC do this.  To fix
-;; this, you can put the following at the end of your ~/.emacs:
-
-;;   (unless (zenburn-format-spec-works-p)
-;;     (zenburn-define-format-spec))
-
-;; Thanks to Jani Nurminen, who created the original zenburn color
-;; theme for vim.  I'm just copying him. :-)
-
-;;; Short-Term Wishlist:
-
-;; Theme the ansi-term faces `term-red', etc., and the ERC faces
-;; `fg:erc-color-face1', etc.
-
-;; Theme `gnus-server-offline-face', `gnus-server-opened-face', and
-;; `gnus-server-denied-face'.  First, find out what they hell they do.
-
-;; Theme `gnus-emphasis-highlight-words' after finding out what it
-;; does.
-
-;; Theme `emms-stream-name-face' and `emms-stream-url-face'.
-
-;; Theme `ido-indicator-face'.
-
 ;;; Code:
 
 (require 'color-theme)
 
 (defvar zenburn-fg "#dcdccc")
-
-(defvar zenburn-bg-1 "#2b2b2b")
+(defvar zenburn-bg-1 "#282828")
 (defvar zenburn-bg "#3f3f3f")
 (defvar zenburn-bg+1 "#4f4f4f")
 (defvar zenburn-bg+2 "#5f5f5f")
@@ -75,6 +38,7 @@
 (defvar zenburn-red-3 "#9c6363")
 (defvar zenburn-red-4 "#8c5353")
 (defvar zenburn-orange "#dfaf8f")
+(defvar zenburn-orange+1 "#ffc9a4")
 (defvar zenburn-yellow "#f0dfaf")
 (defvar zenburn-yellow-1 "#e0cf9f")
 (defvar zenburn-yellow-2 "#d0bf8f")
@@ -91,114 +55,10 @@
 (defvar zenburn-blue-2 "#6ca0a3")
 (defvar zenburn-blue-3 "#5c888b")
 (defvar zenburn-blue-4 "#4c7073")
-(defvar zenburn-blue-5 "#366060")
 (defvar zenburn-magenta "#dc8cc3")
-
-(eval-after-load 'term
-  '(setq ansi-term-color-vector
-         (vector 'unspecified zenburn-bg
-                 zenburn-red zenburn-green
-                 zenburn-yellow zenburn-blue+1
-                 zenburn-magenta zenburn-cyan)))
 
 (defvar font-lock-pseudo-keyword-face 'font-lock-pseudo-keyword-face)
 (defvar font-lock-operator-face 'font-lock-operator-face)
-
-(defun zenburn-format-spec-works-p ()
-  (and (fboundp 'format-spec)
-       (= (next-property-change
-           0 (format-spec #("<%x>" 0 4 (face (:weight bold)))
-                          '((?x . "foo"))) 4) 4)))
-
-(defun zenburn-format-spec (format specification)
-  "Return a string based on FORMAT and SPECIFICATION.
-FORMAT is a string containing `format'-like specs like \"bash %u %k\",
-while SPECIFICATION is an alist mapping from format spec characters
-to values."
-  (with-temp-buffer
-    (insert format)
-    (goto-char (point-min))
-    (while (search-forward "%" nil t)
-      (cond
-       ;; Quoted percent sign.
-       ((eq (char-after) ?%)
-        (delete-char 1))
-       ;; Valid format spec.
-       ((looking-at "\\([-0-9.]*\\)\\([a-zA-Z]\\)")
-        (let* ((num (match-string 1))
-               (spec (string-to-char (match-string 2)))
-               (val (cdr (assq spec specification))))
-          (unless val
-            (error "Invalid format character: %s" spec))
-          (let ((text (format (concat "%" num "s") val)))
-            (insert-and-inherit text)
-            ;; Delete the specifier body.
-            (delete-region (+ (match-beginning 0) (length text))
-                           (+ (match-end 0) (length text)))
-            ;; Delete the percent sign.
-            (delete-region (1- (match-beginning 0)) (match-beginning 0)))))
-       ;; Signal an error on bogus format strings.
-       (t
-        (error "Invalid format string"))))
-    (buffer-string)))
-
-(defun zenburn-define-format-spec ()
-  (interactive)
-  (fset 'format-spec #'zenburn-format-spec))
-
-(unless (zenburn-format-spec-works-p)
-  (zenburn-define-format-spec))
-
-(eval-after-load 'format-spec
-  '(unless (zenburn-format-spec-works-p)
-     (zenburn-define-format-spec)))
-
-(setq-default mode-line-buffer-identification
-              (list (propertize "%12b" 'face
-                                (list :weight 'bold
-                                      :foreground zenburn-yellow))))
-(setq-default mode-line-frame-identification "")
-(setq-default erc-mode-line-format
-              (concat (propertize "%t" 'face
-                                  (list :weight 'bold
-                                        :foreground zenburn-yellow))
-                      " %a"))
-
-
-(setq gnus-logo-colors `(,zenburn-bg+2 ,zenburn-bg+1)
-      gnus-mode-line-image-cache
-      '(image :type xpm :ascent center :data "/* XPM */
-static char *gnus-pointer[] = {
-/* width height num_colors chars_per_pixel */
-\"    18    11        2            1\",
-/* colors */
-\". c #dcdccc\",
-\"# c None s None\",
-/* pixels */
-\"######..##..######\",
-\"#####........#####\",
-\"#.##.##..##...####\",
-\"#...####.###...##.\",
-\"#..###.######.....\",
-\"#####.########...#\",
-\"###########.######\",
-\"####.###.#..######\",
-\"######..###.######\",
-\"###....####.######\",
-\"###..######.######\"};"))
-
-(defun zenburn-make-face-alias-clauses (alias-symbols)
-  (let (clauses)
-    (dolist (alias-symbol alias-symbols clauses)
-      (let ((alias-name (symbol-name alias-symbol)))
-        (if (not (string-match "-face" alias-name))
-            (error "Invalid face alias: %s" alias-name)
-          (let ((target-name (replace-regexp-in-string
-                              ".*\\(-face\\)" ""
-                              alias-name nil nil 1)))
-            (push `(,(intern alias-name)
-                    ((t (:inherit ,(intern target-name)))))
-                  clauses)))))))
 
 ;;;###autoload
 (defun color-theme-zenburn ()
@@ -210,7 +70,7 @@ static char *gnus-pointer[] = {
           `((background-color . ,zenburn-bg)
             (background-mode . dark)
             (border-color . ,zenburn-bg)
-	     (foreground-color . ,zenburn-fg)
+            (foreground-color . ,zenburn-fg)
             (mouse-color . ,zenburn-fg))
           `((emms-mode-line-icon-color . ,zenburn-fg)
             (goto-address-mail-face . italic)
@@ -230,9 +90,7 @@ static char *gnus-pointer[] = {
      '(fixed-pitch ((t (:weight bold))))
      '(italic ((t (:slant italic))))
      '(underline ((t (:underline t))))
-     ;; '(variable-pitch ((t (:font "-*-utopia-regular-r-*-*-12-*-*-*-*-*-*-*"))))
 
-      
      `(zenburn-background-1 ((t (:background ,zenburn-bg+1))))
      `(zenburn-background-2 ((t (:background ,zenburn-bg+2))))
 
@@ -266,6 +124,7 @@ static char *gnus-pointer[] = {
      `(zenburn-blue-2 ((t (:foreground ,zenburn-blue-2))))
      `(zenburn-blue-3 ((t (:foreground ,zenburn-blue-3))))
      `(zenburn-blue-4 ((t (:foreground ,zenburn-blue-4))))
+     `(zenburn-magenta ((t (:foreground ,zenburn-magenta))))
 
      '(zenburn-title ((t (:inherit variable-pitch :weight bold))))
 
@@ -280,7 +139,7 @@ static char *gnus-pointer[] = {
      '(font-lock-doc
        ((t (:inherit zenburn-green+1))))
      `(font-lock-function-name
-       ((t (:foreground ,zenburn-blue))))
+       ((t (:foreground ,zenburn-yellow))))
      '(font-lock-keyword
        ((t (:inherit zenburn-primary-1))))
      '(font-lock-negation-char
@@ -305,12 +164,12 @@ static char *gnus-pointer[] = {
      '(term-default-bg-inv ((t (nil))))
      '(term-default-fg ((t (nil))))
      '(term-default-fg-inv ((t (nil))))
-     '(term-invisible ((t (nil)))) ;; FIXME: Security risk?
+     '(term-invisible ((t (nil)))) ;; XXX: Security risk?
      '(term-invisible-inv  ((t (nil))))
      '(term-bold ((t (:weight bold))))
      '(term-underline ((t (:underline t))))
 
-     ;; FIXME: Map these to ansi-term's faces (`term-red', etc.).
+     ;; XXX: Map these to ansi-term's faces (`term-red', etc.)?
      '(zenburn-term-dark-gray      ((t (:foreground "#709080"))))
      '(zenburn-term-light-blue     ((t (:foreground "#94bff3"))))
      '(zenburn-term-light-cyan     ((t (:foreground "#93e0e3"))))
@@ -388,20 +247,22 @@ static char *gnus-pointer[] = {
                       :box (:color "#1e2320" :line-width 2)))))
      '(mode-line-inactive ((t (:background "#2e3330" :foreground "#88b090"
                                :box (:color "#2e3330" :line-width 2)))))
+     `(mode-line-buffer-id ((t (:foreground ,zenburn-yellow :weight bold))))
      `(minibuffer-prompt ((t (:foreground ,zenburn-yellow))))
      `(Buffer-menu-buffer ((t (:inherit zenburn-primary-1))))
 
-     '(region ((t (:foreground nil :background "#233323"))))
-     `(secondary-selection ((t (:foreground nil :background "#506070"))))
+     '(region ((t (:foreground "#71d3b4" :background "#233323"))))
+     `(secondary-selection
+       ((t (:foreground ,zenburn-fg :background "#506070"))))
 
      '(trailing-whitespace ((t (:inherit font-lock-warning))))
      '(highlight ((t (:underline t))))
      '(paren ((t (:inherit zenburn-lowlight-1))))
      '(show-paren-mismatch ((t (:inherit font-lock-warning))))
-     '(show-paren-match ((t (:inherit zenburn-highlight-damp))))
+     '(show-paren-match ((t (:inherit font-lock-keyword))))
      '(match ((t (:weight bold))))
 
-     `(cursor ((t (:background "#aaaaaa" :foreground nil))))
+     `(cursor ((t (:background ,zenburn-fg :foreground ,zenburn-bg))))
      '(hover-highlight ((t (:underline t :foreground "#f8f893"))))
      '(menu ((t nil)))
      '(mouse ((t (:inherit zenburn-foreground))))
@@ -455,7 +316,6 @@ static char *gnus-pointer[] = {
      '(compilation-info ((t (:inherit zenburn-primary-1))))
      '(compilation-warning ((t (:inherit font-lock-warning))))
 
-     ;; TODO
      '(cua-rectangle ((t (:inherit region))))
 
      '(custom-button
@@ -507,6 +367,7 @@ static char *gnus-pointer[] = {
      '(diff-added ((t (:inherit zenburn-primary-3))))
      '(diff-removed ((t (:inherit zenburn-blue))))
      '(diff-context ((t (:inherit font-lock-comment))))
+     '(diff-refine-change ((t (:inherit zenburn-background-2))))
 
      `(emms-pbi-song ((t (:foreground ,zenburn-yellow))))
      '(emms-pbi-current ((t (:inherit zenburn-primary-1))))
@@ -539,7 +400,8 @@ static char *gnus-pointer[] = {
 
      '(rcirc-my-nick ((t (:inherit zenburn-primary-1))))
      '(rcirc-other-nick ((t (:inherit bold))))
-     '(rcirc-bright-nick ((t (:foreground "white" :inherit rcirc-other-nick))))
+     '(rcirc-bright-nick
+       ((t (:foreground "white" :inherit rcirc-other-nick))))
      '(rcirc-dim-nick ((t (:inherit font-lock-comment))))
      '(rcirc-nick-in-message ((t (:inherit bold))))
      '(rcirc-server ((t (:inherit font-lock-comment))))
@@ -560,6 +422,14 @@ static char *gnus-pointer[] = {
      '(eshell-ls-special ((t (:inherit zenburn-primary-1))))
      `(eshell-ls-symlink ((t (:foreground ,zenburn-cyan :weight bold))))
 
+     '(elscreen-tab-current-screen
+       ((t (:inherit zenburn-primary-1))))
+     `(elscreen-tab-other-screen
+       ((t (:foreground ,zenburn-yellow :background ,zenburn-green))))
+     
+     '(flyspell-duplicate ((t (:inherit zenburn-primary-1))))
+     '(flyspell-incorrect ((t (:inherit zenburn-primary-2))))
+
      '(highlight-current-line ((t (:inherit zenburn-highlight-subtle))))
 
      '(ibuffer-deletion ((t (:inherit zenburn-primary-2))))
@@ -567,8 +437,9 @@ static char *gnus-pointer[] = {
      '(ibuffer-special-buffer ((t (:inherit font-lock-doc))))
      '(ibuffer-help-buffer ((t (:inherit font-lock-comment))))
 
-     '(message-cited-text ((t (:inherit font-lock-comment))))
-     ;;`(message-cited-text ((t (:foreground ,zenburn-blue))))
+     `(zenburn-citation ((t (:background ,zenburn-bg+1))))
+
+     `(message-cited-text ((t (:inherit (zenburn-citation font-lock-comment)))))
      '(message-header-name ((t (:inherit zenburn-green+1))))
      '(message-header-other ((t (:inherit zenburn-green))))
      '(message-header-to ((t (:inherit zenburn-primary-1))))
@@ -588,22 +459,17 @@ static char *gnus-pointer[] = {
 
      `(gnus-x-face ((t (:background ,zenburn-fg :foreground ,zenburn-bg))))
 
-     ;; (gnus-cite-1 ((t (:inherit message-cited-text))))
-     `(gnus-cite-1 ((t (:foreground ,zenburn-blue))))
-     `(gnus-cite-2 ((t (:foreground ,zenburn-blue-1))))
-     `(gnus-cite-3 ((t (:foreground ,zenburn-blue-2))))
-;;      (gnus-cite-4 ((t (:foreground ,zenburn-blue-3))))
-;;      (gnus-cite-5 ((t (:foreground ,zenburn-blue-4))))
-;;      (gnus-cite-6 ((t (:foreground ,zenburn-red-4))))
-;;      (gnus-cite-5 ((t (:foreground ,zenburn-red-3))))
-     `(gnus-cite-4 ((t (:foreground ,zenburn-green+2))))
-     `(gnus-cite-5 ((t (:foreground ,zenburn-green+1))))
-     `(gnus-cite-6 ((t (:foreground ,zenburn-green))))
-     `(gnus-cite-7 ((t (:foreground ,zenburn-red))))
-     `(gnus-cite-8 ((t (:foreground ,zenburn-red-1))))
-     `(gnus-cite-9 ((t (:foreground ,zenburn-red-2))))
-     `(gnus-cite-10 ((t (:foreground ,zenburn-yellow-1))))
-     `(gnus-cite-11 ((t (:foreground ,zenburn-yellow))))
+     `(gnus-cite-1 ((t (:foreground ,zenburn-blue :inherit zenburn-citation))))
+     `(gnus-cite-2 ((t (:foreground ,zenburn-blue-1 :inherit zenburn-citation))))
+     `(gnus-cite-3 ((t (:foreground ,zenburn-blue-2 :inherit zenburn-citation))))
+     `(gnus-cite-4 ((t (:foreground ,zenburn-green+2 :inherit zenburn-citation))))
+     `(gnus-cite-5 ((t (:foreground ,zenburn-green+1 :inherit zenburn-citation))))
+     `(gnus-cite-6 ((t (:foreground ,zenburn-green :inherit zenburn-citation))))
+     `(gnus-cite-7 ((t (:foreground ,zenburn-red :inherit zenburn-citation))))
+     `(gnus-cite-8 ((t (:foreground ,zenburn-red-1 :inherit zenburn-citation))))
+     `(gnus-cite-9 ((t (:foreground ,zenburn-red-2 :inherit zenburn-citation))))
+     `(gnus-cite-10 ((t (:foreground ,zenburn-yellow-1 :inherit zenburn-citation))))
+     `(gnus-cite-11 ((t (:foreground ,zenburn-yellow :inherit zenburn-citation))))
 
      `(gnus-group-news-1-empty ((t (:foreground ,zenburn-yellow))))
      `(gnus-group-news-2-empty ((t (:foreground ,zenburn-green+3))))
@@ -674,7 +540,6 @@ static char *gnus-pointer[] = {
 
      '(help-argument-name ((t (:weight bold))))
 
-     ;; See also the variable definitions at the top of this file
      '(imaxima-latex-error ((t (:inherit font-lock-warning))))
 
      `(info-xref ((t (:foreground ,zenburn-yellow :weight bold))))
@@ -741,10 +606,6 @@ static char *gnus-pointer[] = {
 
      '(makefile-space ((t (:inherit font-lock-warning))))
      '(makefile-shell ((t (nil))))
-     ;; This does not work very well because everything that's highlighted
-     ;; inside the shell region will get its own box.
-     ;; (makefile-shell ((t (:background "#4f4f4f"
-     ;;                           :box (:line-width 2 :color "#4f4f4f")))))
 
      '(nxml-delimited-data ((t (:inherit font-lock-string))))
      '(nxml-name ((t (:inherit zenburn-primary-1))))
@@ -800,41 +661,39 @@ static char *gnus-pointer[] = {
      '(nxml-namespace-attribute-colon
        ((t (:inherit nxml-attribute-colon))))
 
-     '(org-agenda-date-today ((t (:foreground "white" 
-                               :slant italic :weight bold))) t)       ;; white
-     '(org-agenda-structure ((t (:inherit font-lock-comment-face))))  ;; zenburn-green
-     '(org-archived ((t (:foreground "#8f8f8f"))))                    ;; zenburn-bg slight lighter
-     '(org-column ((t (:height 98 :family "DejaVu Sans Mono"))))      ;; n/a
-     '(org-checkbox ((t (:background "#5f5f5f" :foreground "white"    ;; zenburn-fg on zenburn-bg+2
-                      :box (:line-width 1 :style released-button))))) ;;   - turn checkboxes into buttons
-     '(org-date ((t (:foreground "#8cd0d3" :underline t))))           ;; zenburn-blue
-     '(org-deadline-announce ((t (:foreground "#bc8383"))))           ;; zenburn-red-1
-     '(org-done ((t (:bold t :weight bold :foreground "#afd8af"))))   ;; zenburn-green+3
-     '(org-formula ((t (:foreground "#d0bf8f"))))                     ;; zenburn-yellow-2
-     '(org-headline-done ((t (:foreground "#afd8af"))))               ;; zenburn-green+3
-     '(org-hide ((t (:foreground "#282828"))))                        ;; zenburn-bg slight darker
-     '(org-level-1 ((t (:foreground "#dfaf8f"))))                     ;; zenburn-orange
-     '(org-level-2 ((t (:foreground "#f0dfaf"))))                     ;; zenburn-yellow
-     '(org-level-3 ((t (:foreground "#8cd0d3"))))                     ;; zenburn-blue
-     '(org-level-4 ((t (:foreground "#93e0e3"))))                     ;; zenburn-cyan
-     '(org-level-5 ((t (:foreground "#7cb8bb"))))                     ;; zenburn-blue-1
-     '(org-level-6 ((t (:foreground "#6ca0a3"))))                     ;; zenburn-blue-2
-     '(org-level-7 ((t (:foreground "#5c888b"))))                     ;; zenburn-blue-3
-     '(org-level-8 ((t (:foreground "#4c7073"))))                     ;; zenburn-blue-4
-     '(org-link ((t (:foreground "#d0bf8f" :underline t))))           ;; zenburn-yellow-2
-     ;'(org-priority faces                                            TODO
-     '(org-scheduled ((t (:foreground "#bfebbf"))))                   ;; zenburn-green+4
-     '(org-scheduled-previously ((t (:foreground "#8c5353"))))        ;; zenburn-red-4
-     '(org-scheduled-today ((t (:foreground "#94bff3"))))             ;; zenburn-blue+1
-     '(org-special-keyword ((t (:foreground "#e0cf9f"))))             ;; zenburn-yellow-1
-     '(org-table ((t (:foreground "#9fc59f"))))                       ;; zenburn-green+2
-     '(org-tag ((t (:bold t :weight bold))))                          ;; n/a
-     '(org-time-grid ((t (:foreground "#ffc9a4"))))                   ;; zenburn-orange slight lighter
-     '(org-todo ((t (:bold t :foreground "#cc9393" :weight bold))))   ;; zenburn-red
-     '(org-upcoming-deadline ((t (:inherit font-lock-keyword-face)))) ;; zenburn-fg
-     '(org-warning ((t (:bold t :foreground "#cc9393" :weight bold))));; zenburn-red
+     '(org-agenda-date-today
+       ((t (:foreground "white" :slant italic :weight bold))) t)
+     '(org-agenda-structure
+       ((t (:inherit font-lock-comment-face))))
+     '(org-archived ((t (:foreground "#8f8f8f"))))
+     `(org-checkbox ((t (:background ,zenburn-bg+2 :foreground "white"
+                         :box (:line-width 1 :style released-button)))))
+     `(org-date ((t (:foreground ,zenburn-blue :underline t))))
+     `(org-deadline-announce ((t (:foreground ,zenburn-red-1))))
+     `(org-done ((t (:bold t :weight bold :foreground ,zenburn-green+3))))
+     `(org-formula ((t (:foreground ,zenburn-yellow-2))))
+     `(org-headline-done ((t (:foreground ,zenburn-green+3))))
+     `(org-hide ((t (:foreground ,zenburn-bg-1))))
+     `(org-level-1 ((t (:foreground ,zenburn-orange))))
+     `(org-level-2 ((t (:foreground ,zenburn-yellow))))
+     `(org-level-3 ((t (:foreground ,zenburn-blue))))
+     `(org-level-4 ((t (:foreground ,zenburn-cyan))))
+     `(org-level-5 ((t (:foreground ,zenburn-blue-1))))
+     `(org-level-6 ((t (:foreground ,zenburn-blue-2))))
+     `(org-level-7 ((t (:foreground ,zenburn-blue-3))))
+     `(org-level-8 ((t (:foreground ,zenburn-blue-4))))
+     `(org-link ((t (:foreground ,zenburn-yellow-2 :underline t))))
+     `(org-scheduled ((t (:foreground ,zenburn-green+4))))
+     `(org-scheduled-previously ((t (:foreground ,zenburn-red-4))))
+     `(org-scheduled-today ((t (:foreground ,zenburn-blue+1))))
+     `(org-special-keyword ((t (:foreground ,zenburn-yellow-1))))
+     `(org-table ((t (:foreground ,zenburn-green+2))))
+     '(org-tag ((t (:bold t :weight bold))))
+     `(org-time-grid ((t (:foreground ,zenburn-orange+1))))
+     `(org-todo ((t (:bold t :foreground ,zenburn-red :weight bold))))
+     '(org-upcoming-deadline ((t (:inherit font-lock-keyword-face))))
+     `(org-warning ((t (:bold t :foreground ,zenburn-red :weight bold))))
 
-     ;; TODO
      '(outline-8 ((t (:inherit default))))
      '(outline-7 ((t (:inherit outline-8 :height 1.0))))
      '(outline-6 ((t (:inherit outline-7 :height 1.0))))
@@ -851,6 +710,45 @@ static char *gnus-pointer[] = {
      '(speedbar-directory ((t (:inherit zenburn-primary-5))))
      '(speedbar-tag ((t (:inherit font-lock-function-name))))
      '(speedbar-highlight ((t (:underline t))))
+
+     '(sr-active-path-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-alt-marked-dir-face
+       ((t (:inherit zenburn-highlight-subtle :bold))))
+     '(sr-alt-marked-file-face
+       ((t (:inherit zenburn-highlight-subtle))))
+     '(sr-broken-link-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-clex-hotchar-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-compressed-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-directory-face
+       ((t (:inherit zenburn-blue))))
+     '(sr-editing-path-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-encrypted-face
+       ((t (:inherit zenburn-orange))))
+     '(sr-highlight-path-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-html-face
+       ((t (:inherit zenburn-green))))
+     '(sr-log-face
+       ((t (:inherit zenburn-magenta))))
+     '(sr-marked-dir-face
+       ((t (:inherit zenburn-highlight-alerting :bold))))
+     '(sr-marked-file-face
+       ((t (:inherit zenburn-highlight-alerting))))
+     '(sr-packaged-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-passive-path-face
+       ((t (:inherit zenburn-primary-1))))
+     '(sr-symlink-directory-face
+       ((t (:inherit zenburn-blue))))
+     '(sr-symlink-face
+       ((t (:inherit zenburn-blue-2))))
+     '(sr-xml-face
+       ((t (:inherit zenburn-green-1))))
 
      '(strokes-char ((t (:inherit font-lock-keyword))))
 
@@ -891,59 +789,12 @@ static char *gnus-pointer[] = {
      '(w3m-arrived-anchor
        ((t (:inherit zenburn-primary-2))))
      '(w3m-image
-       ((t (:inherit zenburn-primary-3))))
+       ((t (:inherit zenburn-primary-4))))
      '(w3m-form
-       ((t (:inherit widget-field))))
+       ((t (:inherit widget-field)))))
 
-     `(hl-line ((t (:background ,zenburn-bg-1))))
-
-     '(magit-section-title ((t (:inherit zenburn-primary-1))))
-     '(magit-branch ((t (:inherit zenburn-primary-2))))
-
-     '(flyspell-duplicate ((t (:inherit zenburn-primary-1))))
-     '(flyspell-incorrect ((t (:inherit font-lock-warning))))
-     
-     `(elscreen-tab-current-screen ((t (:inherit zenburn-primary-1))))
-     `(elscreen-tab-other-screen ((t (:foreground ,zenburn-yellow
-				   :background ,zenburn-green))))
-
-     '(wl-highlight-message-headers ((t (:inherit zenburn-red+1))))
-     '(wl-highlight-message-header-contents ((t (:inherit zenburn-green))))
-     '(wl-highlight-message-important-header-contents
-	((t (:inherit zenburn-yellow))))
-     '(wl-highlight-message-important-header-contents2
-	((t (:inherit zenburn-blue))))
-     '(wl-highlight-message-unimportant-header-contents
-	((t (:inherit zenburn-term-dark-gray))))   ;; reuse term
-     '(wl-highlight-message-citation-header ((t (:inherit zenburn-red))))
-
-     '(wl-highlight-message-cited-text-1 ((t (:inherit zenburn-green))))
-     '(wl-highlight-message-cited-text-2 ((t (:inherit zenburn-blue))))
-     '(wl-highlight-message-cited-text-3 ((t (:foreground "#8f8f8f")))) 
-     '(wl-highlight-message-cited-text-4 ((t (:inherit zenburn-green))))
-
-     '(wl-highlight-message-signature ((t (:inherit zenburn-yellow))))
-
-     '(wl-highlight-summary-answered ((t (:inherit zenburn-fg))))
-     '(wl-highlight-summary-new ((t (:foreground "#e89393"))))
-      
-     `(wl-highlight-summary-displaying ((t (:underline t
-					    :foreground ,zenburn-yellow-2))))
-      
-     '(wl-highlight-thread-indent ((t (:foreground "#ecbcec"))))
-     '(wl-highlight-summary-thread-top ((t (:foreground "#efdcbc"))))
-
-     '(wl-highlight-summary-normal ((t (:inherit zenburn-fg))))
-
-     '(wl-highlight-folder-zero ((t (:inherit zenburn-fg))))
-     '(wl-highlight-folder-few ((t (:inherit zenburn-red+1))))
-     '(wl-highlight-folder-many ((t (:inherit zenburn-red+1))))
-     '(wl-highlight-folder-unread ((t (:foreground "#e89393"))))
-
-     '(wl-highlight-folder-path ((t (:inherit zenburn-orange))))
-
-      )
-
+    ;; XXX: Updating this list is very tedious.
+    ;;      Are these aliases still necessary?
     (zenburn-make-face-alias-clauses
      '(Buffer-menu-buffer-face
        apt-utils-broken-face
@@ -989,6 +840,9 @@ static char *gnus-pointer[] = {
        diff-hunk-header-face
        diff-index-face
        diff-removed-face
+       diff-refine-change-face
+       elscreen-tab-current-screen-face
+       elscreen-tab-other-screen-face
        emms-pbi-current-face
        emms-pbi-mark-marked-face
        emms-pbi-song-face
@@ -1029,6 +883,8 @@ static char *gnus-pointer[] = {
        fancy-widget-field-face
        fancy-widget-inactive-face
        fancy-widget-single-line-field-face
+       flyspell-duplicate-face
+       flyspell-incorrect-face
        font-latex-bold-face
        font-latex-sedate-face
        font-latex-title-4-face
@@ -1156,7 +1012,6 @@ static char *gnus-pointer[] = {
        org-agenda-structure-face
        org-archived-face
        org-column-face
-       ;org-checkbox-face
        org-date-face
        org-deadline-announce-face
        org-done-face
@@ -1172,7 +1027,6 @@ static char *gnus-pointer[] = {
        org-level-7-face
        org-level-8-face
        org-link-face
-       ;org-priority-face
        org-scheduled-face
        org-scheduled-previously-face
        org-scheduled-today-face
@@ -1198,6 +1052,25 @@ static char *gnus-pointer[] = {
        speedbar-file-face
        speedbar-highlight-face
        speedbar-tag-face
+       sr-active-path-face
+       sr-alt-marked-dir-face
+       sr-alt-marked-file-face
+       sr-broken-link-face
+       sr-clex-hotchar-face
+       sr-compressed-face
+       sr-directory-face
+       sr-editing-path-face
+       sr-encrypted-face
+       sr-highlight-path-face
+       sr-html-face
+       sr-log-face
+       sr-marked-dir-face
+       sr-marked-file-face
+       sr-packaged-face
+       sr-passive-path-face
+       sr-symlink-directory-face
+       sr-symlink-face
+       sr-xml-face
        strokes-char-face
        todoo-item-assigned-header-face
        todoo-item-header-face
@@ -1226,46 +1099,53 @@ static char *gnus-pointer[] = {
        widget-field-face
        widget-inactive-face
        widget-single-line-field-face
-       flyspell-duplicate-face
-       flyspell-incorrect-face
-       wl-highlight-message-headers-face
-       wl-highlight-message-header-contents-face
-       wl-highlight-message-important-header-contents-face
-       wl-highlight-message-important-header-contents2-face
-       wl-highlight-message-unimportant-header-contents-face
-       wl-highlight-message-citation-header-face
-       wl-highlight-message-cited-text-1-face
-       wl-highlight-message-cited-text-2-face
-       wl-highlight-message-cited-text-3-face
-       wl-highlight-message-cited-text-4-face
-       wl-highlight-message-signature-face
-       wl-highlight-summary-answered-face
-       wl-highlight-summary-new-face
-       wl-highlight-summary-displaying-face
-       wl-highlight-thread-indent-face
-       wl-highlight-summary-thread-top-face
-       wl-highlight-summary-normal-face
-       wl-highlight-folder-zero-face
-       wl-highlight-folder-few-face
-       wl-highlight-folder-many-face
-       wl-highlight-folder-unread-face
-       wl-highlight-folder-path-face
-       elscreen-tab-background-face
-       elscreen-tab-control-face
-       elscreen-tab-current-screen-face
-       elscreen-tab-other-screen-face
-       identica-uri-face
-	))
-    )))
+       ))))
+
+  (eval-after-load 'term
+    '(setq ansi-term-color-vector
+           (vector 'unspecified zenburn-bg
+                   zenburn-red zenburn-green
+                   zenburn-yellow zenburn-blue+1
+                   zenburn-magenta zenburn-cyan
+                   ;; XXX: Not sure why this is sometimes needed.
+                   "white")))
+
+  (setq gnus-logo-colors `(,zenburn-bg+2 ,zenburn-bg+1)
+        gnus-mode-line-image-cache
+        '(image :type xpm :ascent center :data "/* XPM */
+static char *gnus-pointer[] = {
+/* width height num_colors chars_per_pixel */
+\"    18    11        2            1\",
+/* colors */
+\". c #dcdccc\",
+\"# c None s None\",
+/* pixels */
+\"######..##..######\",
+\"#####........#####\",
+\"#.##.##..##...####\",
+\"#...####.###...##.\",
+\"#..###.######.....\",
+\"#####.########...#\",
+\"###########.######\",
+\"####.###.#..######\",
+\"######..###.######\",
+\"###....####.######\",
+\"###..######.######\"};")))
+
+(defun zenburn-make-face-alias-clauses (alias-symbols)
+  (let (clauses)
+    (dolist (alias-symbol alias-symbols clauses)
+      (let ((alias-name (symbol-name alias-symbol)))
+        (if (not (string-match "-face" alias-name))
+            (error "Invalid face alias: %s" alias-name)
+          (let ((target-name (replace-regexp-in-string
+                              ".*\\(-face\\)" ""
+                              alias-name nil nil 1)))
+            (push `(,(intern alias-name)
+                    ((t (:inherit ,(intern target-name)))))
+                  clauses)))))))
 
 (defalias 'zenburn #'color-theme-zenburn)
 
 (provide 'zenburn)
-
-;; Local Variables:
-;; time-stamp-format: "%:y-%02m-%02d %02H:%02M"
-;; time-stamp-start: "Updated: "
-;; time-stamp-end: "$"
-;; End:
-
 ;;; zenburn.el ends here.
