@@ -94,6 +94,7 @@
   (define-key keymap (kbd "C-h C-v")   'find-variable)
   (define-key keymap (kbd "C-h C-l")   'find-library)
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
+  (define-key keymap (kbd "C-c q")     'query-replace-regexp)
   )
 
 ;; Make emacs consistent with xkcd :)
