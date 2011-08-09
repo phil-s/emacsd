@@ -257,6 +257,11 @@ disabled.")))
       ad-do-it))
 (ad-activate 'smart-tab-mode-on)
 
+;; erc-mode (for IRC)
+(add-hook 'erc-mode-hook 'my-erc-mode-hook)
+(defun my-erc-mode-hook ()
+  (hide-trailing-whitespace))
+
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
 (defun my-shell-mode-hook ()
