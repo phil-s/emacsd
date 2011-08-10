@@ -69,7 +69,6 @@
   ;; Completions
   (define-key keymap (kbd "M-/")       'hippie-expand) ; In place of dabbrev-expand
   (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
-  (define-key keymap (kbd "C-c C-f")   'my-ido-hippie-expand-filename)
 
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
@@ -85,6 +84,7 @@
   (define-key keymap (kbd "M-.")       'etags-select-find-tag)
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
+  (define-key keymap (kbd "C-c C-f")   'find-file-in-project)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
