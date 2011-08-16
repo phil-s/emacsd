@@ -136,8 +136,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
       (kill-buffer)
       (switch-to-buffer tmp-buffer))
     (newline)
-    (previous-line)
-    (insert "/**\n * Implementation of ")
+    (forward-line -1)
+    (insert "/**\n * Implements ")
     (forward-word)
     (forward-char)
     (let ((start (point)))
@@ -156,6 +156,6 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
       (kill-buffer)
       (insert function))
     (backward-sexp)
-    (next-line)
+    (forward-line)
     (back-to-indentation)))
 ;; Use `c-mark-function' ?
