@@ -202,15 +202,15 @@
 
 ;;;; Load or evaluate this file
 (defun load-dot-emacs ()
-  "load ~/.emacs"
+  "Load and evaluate init file."
   (interactive)
   (load user-init-file))
 (defun find-dot-emacs ()
-  "find-file ~/.emacs"
+  "Visit init file."
   (interactive)
   (find-file user-init-file))
 (defun find-my-lisp ()
-  "dired ~/.emacs.d/my-lisp"
+  "Dired ~/.emacs.d/my-lisp"
   (interactive)
   (dired (concat (file-name-directory user-init-file) "my-lisp/")))
 (defalias 'll 'load-dot-emacs)
