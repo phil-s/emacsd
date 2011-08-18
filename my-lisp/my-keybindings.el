@@ -74,7 +74,6 @@
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
-  (define-key keymap (kbd "C-a")       'my-beginning-of-line-or-indentation)
   (define-key keymap (kbd "M-p")       'scroll-one-line-back)
   (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
   (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
@@ -96,6 +95,9 @@
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
   (define-key keymap (kbd "C-c q")     'query-replace-regexp)
   )
+
+;; Global bindings, for when I'm happy for other modes to redefine them.
+(global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 
 ;; Make emacs consistent with xkcd :)
 ;; (Too many inferred prefixes to put this in the minor mode
