@@ -61,10 +61,6 @@
   (whitespace-mode 0)
   (whitespace-mode 1))
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-whitespace)
-
