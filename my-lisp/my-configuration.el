@@ -56,6 +56,13 @@
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
 
+;; Improve the dedicated window facility.
+;; See also: `toggle-window-dedicated'
+;; http://stackoverflow.com/questions/5151620
+(defadvice pop-to-buffer (before cancel-other-window first)
+  (ad-set-arg 1 nil))
+(ad-activate 'pop-to-buffer)
+
 ;; Always add a final newline
 (setq require-trailing-newline t)
 
