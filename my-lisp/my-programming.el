@@ -23,6 +23,7 @@
    css-mode-hook
    emacs-lisp-mode-hook
    ielm-mode-hook
+   js-mode-hook
    lisp-interaction-mode-hook
    perl-mode-hook
    php-mode-hook
