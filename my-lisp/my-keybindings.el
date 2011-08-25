@@ -67,7 +67,6 @@
   (define-key keymap (kbd "C-M-=")     'compare-windows)
 
   ;; Completions
-  (define-key keymap (kbd "M-/")       'hippie-expand) ; In place of dabbrev-expand
   (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
 
   ;; Miscellaneous (mine/third-party)
@@ -84,6 +83,7 @@
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
   (define-key keymap (kbd "C-c C-f")   'find-file-in-project)
+  (define-key keymap (kbd "C-c m")     'magit-status)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
 
   ;; Miscellaneous (standard commands)
@@ -99,6 +99,7 @@
 
 ;; Global bindings, for when I'm happy for other modes to redefine them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
+(global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 
 ;; Make emacs consistent with xkcd :)
 ;; (Too many inferred prefixes to put this in the minor mode
