@@ -185,6 +185,14 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)
 (defun my-css-mode-hook ()
+  ;; Treat clauses as paragraphs, regardless of newlines.
+  (set (make-local-variable 'paragraph-separate) "[} \t\f]*$")
+  (local-set-key (kbd "<C-down>")
+                 (lambda (&optional arg)
+                   (interactive "^p")
+                   (forward-paragraph arg)
+                   (forward-line)))
+  ;; Show colours
   (rainbow-mode 1))
 
 ;; small tool, used with regex search and replace
