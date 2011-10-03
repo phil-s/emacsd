@@ -123,6 +123,53 @@ The query function that disable deletion of buffers we protect.
 
 ;;;***
 
+;;;### (autoloads (magit-status) "magit" "magit/magit.el" (20068
+;;;;;;  18897))
+;;; Generated autoloads from magit/magit.el
+
+(autoload 'magit-status "magit" "\
+Open a Magit status buffer for the Git repository containing
+DIR.  If DIR is not within a Git repository, offer to create a
+Git repository in DIR.
+
+Interactively, a prefix argument means to ask the user which Git
+repository to use even if `default-directory' is under Git control.
+Two prefix arguments means to ignore `magit-repo-dirs' when asking for
+user input.
+
+\(fn DIR)" t nil)
+
+;;;***
+
+;;;### (autoloads (mo-git-blame-current mo-git-blame-file) "mo-git-blame"
+;;;;;;  "mo-git-blame/mo-git-blame.el" (20052 31423))
+;;; Generated autoloads from mo-git-blame/mo-git-blame.el
+
+(autoload 'mo-git-blame-file "mo-git-blame" "\
+Calls `git blame' for REVISION of FILE-NAME or `HEAD' if
+REVISION is not given. Initializes the two windows that will show
+the output of 'git blame' and the content.
+
+If FILE-NAME is missing it will be read with `find-file' in
+interactive mode.
+
+ORIGINAL-FILE-NAME defaults to FILE-NAME if not given. This is
+used for tracking renaming and moving of files during iterative
+re-blaming.
+
+With a numeric prefix argument or with NUM-LINES-TO-BLAME only
+the NUM-LINES-TO-BLAME lines before and after point are blamed by
+using git blame's `-L' option. Otherwise the whole file is
+blamed.
+
+\(fn &optional FILE-NAME REVISION ORIGINAL-FILE-NAME NUM-LINES-TO-BLAME)" t nil)
+
+(autoload 'mo-git-blame-current "mo-git-blame" "\
+Calls `mo-git-blame-file' for HEAD for the current buffer.
+
+\(fn)" t nil)
+
+;;;***
 ;;;### (autoloads (notify) "notify" "notify/notify.el" (20035 7410))
 ;;; Generated autoloads from notify/notify.el
 
@@ -134,6 +181,23 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
+;;;### (autoloads (rebase-mode) "rebase-mode" "magit/rebase-mode.el"
+;;;;;;  (20035 12561))
+;;; Generated autoloads from magit/rebase-mode.el
+
+(autoload 'rebase-mode "rebase-mode" "\
+Major mode for editing of a Git rebase file.
+
+Rebase files are generated when you run 'git rebase -i' or run
+`magit-interactive-rebase'.  They describe how Git should perform
+the rebase.  See the documentation for git-rebase (e.g., by
+running 'man git-rebase' at the command line) for details.
+
+\(fn)" t nil)
+
+(add-to-list 'auto-mode-alist '("git-rebase-todo" . rebase-mode))
+
+;;;***
 ;;;### (autoloads (color-theme-zenburn) "zenburn" "color-theme-zenburn/zenburn.el"
 ;;;;;;  (20032 36496))
 ;;; Generated autoloads from color-theme-zenburn/zenburn.el
@@ -148,6 +212,8 @@ Just some alien fruit salad to keep you in the zone.
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
 ;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20033 60655
 ;;;;;;  852902))
+;;;;;;  "magit/50magit.el" "magit/magit-bisect.el" "magit/magit-pkg.el"
+;;;;;;  "magit/magit-stgit.el" "magit/magit-svn.el" "magit/magit-topgit.el"
 
 ;;;***
 

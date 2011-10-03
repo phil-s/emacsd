@@ -72,13 +72,12 @@
             :type git
             :url "git://github.com/bbatsov/find-file-in-project.git")
 
-     ;; (:name magit
-     ;;        :type git
-     ;;        :url "http://github.com/philjackson/magit.git"
-     ;;        :info "."
-     ;;        :build ("./autogen.sh" "./configure" "make"))
      (:name notify)
 
+     (:name magit)
+
+     (:name mo-git-blame)
+     
      (:name geben
             :type http-tar
             :options ("zxf")
