@@ -275,6 +275,11 @@ disabled.")))
           :icon "emacs-snapshot"
           :timeout -1))
 
+;; Git
+(add-hook 'magit-mode-hook 'my-magit-mode-hook)
+(defun my-magit-mode-hook ()
+  (hide-trailing-whitespace))
+
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
 (defun my-shell-mode-hook ()
