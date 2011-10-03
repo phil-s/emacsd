@@ -114,7 +114,33 @@ static char * data[] = {
 ;; Icicle mode is a global minor mode.  It binds keys in the minibuffer."
 ;;   t)
 
+
+(eval-after-load 'geben
+  '(progn
+     ;; Evaluate word at point.
+     (define-key geben-mode-map (kbd "E") 'geben-eval-current-word)
+
+     (defadvice geben-dbgp-command-eval (before my-geben-eval-printr)
+       "Use print_r($var, TRUE); by default when evaluating $var."
+       (when (or (equal major-mode 'php-mode)
+                 (equal major-mode 'drupal-mode))
+         (let ((expr (ad-get-arg 1)))
+           (when (posix-string-match "^\\$" expr)
+             (ad-set-arg 1 (concat "print_r(" expr ", TRUE);"))))))
+     (ad-activate 'geben-dbgp-command-eval)
+
+     ;; Re-define `geben-dbgp-response-eval' to output to a temporary buffer,
+     ;; rather than using (message).
+     (defun geben-dbgp-response-eval (session cmd msg)
+       "A response message handler for \`eval\' command."
+       (with-output-to-temp-buffer "*GEBEN: eval*"
+         (when (string< "0.24" geben-version)
+           (print "GEBEN has been upgraded since geben-dbgp-response-eval was redefined."))
+         (print
+          (geben-dbgp-decode-value (car-safe (xml-get-children msg 'property)))))
+       ;; (select-window (display-buffer "*GEBEN: eval*"))
+       )))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-libraries)
-

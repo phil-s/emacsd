@@ -79,6 +79,11 @@
      ;;        :build ("./autogen.sh" "./configure" "make"))
      (:name notify)
 
+     (:name geben
+            :type http-tar
+            :options ("zxf")
+            :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
+
 
      ;; (:name yasnippet
      ;;        :type git-svn
