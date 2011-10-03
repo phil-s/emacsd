@@ -48,6 +48,16 @@ After unregistration, it kills the listener instance.
 \(fn PROXY)" nil nil)
 
 ;;;***
+
+;;;### (autoloads (deft) "deft" "deft/deft.el" (20078 30406))
+;;; Generated autoloads from deft/deft.el
+
+(autoload 'deft "deft" "\
+Switch to *Deft* buffer and load files.
+
+\(fn)" t nil)
+
+;;;***
 ;;;### (autoloads (find-file-in-project) "find-file-in-project" "find-file-in-project/find-file-in-project.el"
 ;;;;;;  (20033 60655))
 ;;; Generated autoloads from find-file-in-project/find-file-in-project.el

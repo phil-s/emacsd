@@ -85,6 +85,7 @@
   (define-key keymap (kbd "C-c C-f")   'find-file-in-project)
   (define-key keymap (kbd "C-c m")     'magit-status)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
+  (define-key keymap (kbd "C-c n")     'deft)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)

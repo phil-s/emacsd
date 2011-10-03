@@ -83,6 +83,9 @@
             :options ("zxf")
             :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
 
+     (:name deft
+            :type git
+            :url "git://jblevins.org/git/deft.git")
 
      ;; (:name yasnippet
      ;;        :type git-svn

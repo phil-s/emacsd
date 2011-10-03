@@ -12,6 +12,16 @@
 ;; (defun my-text-mode-hook ()
 ;;   (flyspell-mode t))
 
+;; Deft
+(setq deft-directory (expand-file-name "~/notes/")
+      deft-extension "org"
+      deft-text-mode 'org-mode
+      deft-auto-save-interval 5.0)
+(defun my-deft-mode-hook ()
+  (local-set-key (kbd "M-RET") 'deft-new-file-named)
+  (local-set-key (kbd "C-c f") 'deft-find-file))
+(add-hook 'deft-mode-hook 'my-deft-mode-hook)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-text)
