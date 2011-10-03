@@ -7,6 +7,9 @@
 ;; (my-file-locals-set-directory-class "/file/path" 'class-symbol)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Null class
+(dir-locals-set-class-variables 'null '(nil))
+
 ;; Emacs
 (dir-locals-set-class-variables
  'emacs

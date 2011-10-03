@@ -27,8 +27,8 @@
    lisp-interaction-mode-hook
    perl-mode-hook
    php-mode-hook
-   python-mode-hook))
-
+   python-mode-hook
+   sh-mode-hook))
 
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)

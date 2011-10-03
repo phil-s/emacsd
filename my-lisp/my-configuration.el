@@ -23,6 +23,9 @@
 (put 'scroll-left               'disabled nil)
 (put 'upcase-region             'disabled nil)
 
+;; Visible bell is much less annoying these days!
+(setq visible-bell t)
+
 ;; Stop the cursor blinking
 ;; Cursor stretches to the current glyph's width
 (blink-cursor-mode -1)
@@ -30,6 +33,9 @@
 
 ;; Scroll-bar on the right-hand side
 (menu-bar-right-scroll-bar)
+
+;; Retain point when scrolling off-screen and back
+(setq scroll-preserve-screen-position t)
 
 ;; Place killed text into the clipboard
 (setq x-select-enable-clipboard t)
@@ -230,6 +236,20 @@ disabled.")))
              (not isearch-mode-end-hook-quit)
              (eq last-input-event ?\r))
     (dired-find-file)))
+
+;; Enable dired-x by default
+(add-hook 'dired-load-hook
+          (lambda ()
+            (load "dired-x")
+            ;; Set dired-x global variables here.  For example:
+            ;; (setq dired-guess-shell-gnutar "gtar")
+            ;; (setq dired-x-hands-off-my-keys nil)
+            ))
+;; (add-hook 'dired-mode-hook
+;;           (lambda ()
+;;             ;; Set dired-x buffer-local variables here.  For example:
+;;             ;; (dired-omit-mode 1)
+;;             ))
 
 ;; Use ControlMaster with TRAMP by default
 (setq tramp-default-method "scpc"
