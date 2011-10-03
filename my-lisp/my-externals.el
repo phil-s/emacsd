@@ -46,6 +46,11 @@
             :type emacswiki
             :features transpose-frame)
 
+     (:name keep-buffers
+            :type http
+            :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
+            :features keep-buffers)
+
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
@@ -72,6 +77,8 @@
      ;;        :url "http://github.com/philjackson/magit.git"
      ;;        :info "."
      ;;        :build ("./autogen.sh" "./configure" "make"))
+     (:name notify)
+
 
      ;; (:name yasnippet
      ;;        :type git-svn

@@ -18,6 +18,28 @@ override this by locally setting the `ffip-project-root' variable.
 
 ;;;***
 
+;;;### (autoloads (keep-buffers-query) "keep-buffers" "keep-buffers/keep-buffers.el"
+;;;;;;  (20087 46707))
+;;; Generated autoloads from keep-buffers/keep-buffers.el
+
+(autoload 'keep-buffers-query "keep-buffers" "\
+The query function that disable deletion of buffers we protect.
+
+\(fn)" nil nil)
+
+;;;***
+
+;;;### (autoloads (notify) "notify" "notify/notify.el" (20035 7410))
+;;; Generated autoloads from notify/notify.el
+
+(autoload 'notify "notify" "\
+Notify TITLE, BODY via `notify-method'.
+ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
+
+\(fn TITLE BODY &rest ARGS)" nil nil)
+
+;;;***
+
 ;;;### (autoloads (color-theme-zenburn) "zenburn" "color-theme-zenburn/zenburn.el"
 ;;;;;;  (20032 36496))
 ;;; Generated autoloads from color-theme-zenburn/zenburn.el

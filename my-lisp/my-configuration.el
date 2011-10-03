@@ -45,6 +45,9 @@
 ;; Use subword-mode
 (global-subword-mode 1)
 
+;; Protect important buffers
+(keep-buffers-mode 1)
+
 ;; Make scripts executable
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
@@ -258,6 +261,19 @@ disabled.")))
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
   (hide-trailing-whitespace))
+
+(add-hook 'erc-text-matched-hook 'my-notify-erc)
+(defun my-notify-erc (match-type nickuserhost message)
+  "Notify when a message is received."
+  (notify (format "%s in %s"
+                  ;; Username of sender
+                  (car (split-string nickuserhost "!"))
+                  ;; Channel
+                  (or (erc-default-target) "#unknown"))
+          ;; Remove duplicate spaces
+          (replace-regexp-in-string " +" " " message)
+          :icon "emacs-snapshot"
+          :timeout -1))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
