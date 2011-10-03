@@ -300,6 +300,31 @@ disabled.")))
 (defun my-magit-mode-hook ()
   (hide-trailing-whitespace))
 
+;; Term mode
+(eval-after-load "term"
+  '(progn
+     ;; Enable terminal history in line mode.
+     (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
+     (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
+     ;; Disable killing and yanking in char mode.
+     (mapc
+      (lambda (func)
+        (eval `(define-key term-raw-map [remap ,func] 'my-interactive-ding)))
+      '(backward-kill-paragraph
+        backward-kill-sentence backward-kill-sexp backward-kill-word
+        bookmark-kill-line kill-backward-chars kill-backward-up-list
+        kill-forward-chars kill-line kill-paragraph kill-rectangle
+        kill-region kill-sentence kill-sexp kill-visual-line
+        kill-whole-line kill-word subword-backward-kill subword-kill
+        yank yank-pop yank-rectangle))
+     ;; Start in line mode.
+     (defadvice term (after my-advice-term-line-mode activate)
+       (term-line-mode)
+       (subword-mode 0))
+     (defadvice ansi-term (after my-advice-ansi-term-line-mode activate)
+       (term-line-mode)
+       (subword-mode 0))))
+
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
 (defun my-shell-mode-hook ()

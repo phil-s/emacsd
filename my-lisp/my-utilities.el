@@ -277,6 +277,10 @@ command was winner-undo or winner-redo."
          tmp-message
          backup-message)))))
 
+(defun my-interactive-ding ()
+  (interactive)
+  (ding))
+
 ;; Convert file's EOL style to Unix
 (defun to-unix-eol (fpath)
   "Change file's line ending to unix convention."
