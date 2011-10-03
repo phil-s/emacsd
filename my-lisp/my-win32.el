@@ -87,6 +87,7 @@
              (file-readable-p my-cygwin-root))
 
     ;; Initialise cygwin-mount package
+    (file-name-shadow-mode 0) ;; This conflicts when completing filenames.
     ;; Set the bin directory (not necessary with it already
     ;; in the exec-path, but it's more efficient to do so)
     (setq cygwin-mount-cygwin-bin-directory cygwin-bin)
