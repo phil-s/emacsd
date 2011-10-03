@@ -6,6 +6,7 @@
 ;; http://emacs-fu.blogspot.com/2011/02/keeping-your-secrets-secret.html
 ;; http://obsidianrook.com/devnotes/elisp-for-perl-programmers.html
 ;; http://stackoverflow.com/questions/5795451/how-to-detect-that-emacs-is-in-terminal-mode
+;; http://www.emacswiki.org/emacs/Reference_Sheet_by_Aaron_Hawley
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -24,6 +25,11 @@
 ;; Remapping Commands:
 ;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
+
+;; Interrogate bindings:
+;; (key-binding KEY &optional ACCEPT-DEFAULT NO-REMAP POSITION) ;; dominant binding
+;; (minor-mode-key-binding KEY &optional ACCEPT-DEFAULT) ;; discover keymap(s)
+;; (global-key-binding KEYS &optional ACCEPT-DEFAULT)
 
 ;; On non-standard terminals, the input-decode-map keymap can be used
 ;; to define mappings between terminal codes and normal emacs keys.
@@ -209,13 +215,20 @@
   "Visit init file."
   (interactive)
   (find-file user-init-file))
-(defun find-my-lisp ()
+(defun find-my-lisp-dir ()
   "Dired ~/.emacs.d/my-lisp"
   (interactive)
   (dired (concat (file-name-directory user-init-file) "my-lisp/")))
+(defun find-el-get-dir ()
+  "Dired ~/.emacs.d/my-lisp"
+  (interactive)
+  (dired (concat (file-name-directory user-init-file) "el-get/")))
 (defalias 'll 'load-dot-emacs)
 (defalias 'lll 'find-dot-emacs)
-(defalias 'llll 'find-my-lisp)
+(defalias 'llll 'find-my-lisp-dir)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defalias 'llle 'find-el-get-dir)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
