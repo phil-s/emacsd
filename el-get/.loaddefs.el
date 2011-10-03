@@ -3,7 +3,6 @@
 ;;; Code:
 
 
-
 ;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
 ;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
 ;;;;;;  "dbgp" "geben/dbgp.el" (19376 40618))
@@ -58,8 +57,9 @@ Switch to *Deft* buffer and load files.
 \(fn)" t nil)
 
 ;;;***
+
 ;;;### (autoloads (find-file-in-project) "find-file-in-project" "find-file-in-project/find-file-in-project.el"
-;;;;;;  (20033 60655))
+;;;;;;  (20106 18365))
 ;;; Generated autoloads from find-file-in-project/find-file-in-project.el
 
 (autoload 'find-file-in-project "find-file-in-project" "\
@@ -180,6 +180,7 @@ Calls `mo-git-blame-file' for HEAD for the current buffer.
 \(fn)" t nil)
 
 ;;;***
+
 ;;;### (autoloads (notify) "notify" "notify/notify.el" (20035 7410))
 ;;; Generated autoloads from notify/notify.el
 
@@ -188,6 +189,19 @@ Notify TITLE, BODY via `notify-method'.
 ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 \(fn TITLE BODY &rest ARGS)" nil nil)
+
+;;;***
+
+
+;;;### (autoloads (rainbow-mode) "rainbow-mode" "rainbow-mode/rainbow-mode.el"
+;;;;;;  (20035 17800))
+;;; Generated autoloads from rainbow-mode/rainbow-mode.el
+
+(autoload 'rainbow-mode "rainbow-mode" "\
+Colorize strings that represent colors.
+This will fontify with colors the string like \"#aabbcc\" or \"blue\".
+
+\(fn &optional ARG)" t nil)
 
 ;;;***
 
@@ -222,8 +236,12 @@ Just some alien fruit salad to keep you in the zone.
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
 ;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20033 60655
 ;;;;;;  852902))
+;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el" "el-get/el-get.el"
 ;;;;;;  "magit/50magit.el" "magit/magit-bisect.el" "magit/magit-pkg.el"
 ;;;;;;  "magit/magit-stgit.el" "magit/magit-svn.el" "magit/magit-topgit.el"
+;;;;;;  "scratch/el-get.el"
+;;;;;;  "scratch/scratch.el" "transpose-frame/transpose-frame.el"
+;;;;;;  "undo-tree/undo-tree.el") (20106 18366 202130))
 
 ;;;***
 

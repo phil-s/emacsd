@@ -21,10 +21,8 @@
             :loads "outline-copy-visible")
 
      (:name scratch
-            :type http
-            ;;:url "git@github.com:cbbrowne/scratch-el.git/master/scratch.el")
-            :url "http://github.com/ieure/scratch-el/raw/master/scratch.el"
-            :features scratch)
+            :type git
+            :url "http://github.com/ieure/scratch-el.git")
 
      (:name dtrt-indent
             :type git
