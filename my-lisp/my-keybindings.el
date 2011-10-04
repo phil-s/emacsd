@@ -98,13 +98,13 @@
   (define-key keymap (kbd "C-c q")     'query-replace-regexp)
   )
 
-;; Global bindings, for when I'm happy for other modes to redefine them.
+;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 
 ;; Make emacs consistent with xkcd :)
 ;; (Too many inferred prefixes to put this in the minor mode
-;; key map, as the map is printed with the documentation.)
+;; key map, as the map is displayed in the mode's docstring.)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
 
 (defun my-keybindings-after-init-hook ()

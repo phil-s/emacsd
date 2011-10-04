@@ -70,7 +70,7 @@
             :type git
             :url "git://github.com/bbatsov/find-file-in-project.git")
 
-     (:name notify)
+     ;; (:name notify)
 
      (:name magit)
 
@@ -127,14 +127,11 @@
 
 
 ;;;;(require 'el-get)
-(if (not (functionp 'el-get))
-    (let ((el-get
-           (expand-file-name (concat
-                              user-emacs-directory
-                              "el-get/el-get/el-get.el"))))
-      (if (file-exists-p el-get)
-          (load el-get))))
-
+(when (not (functionp 'el-get))
+  (let ((el-get (expand-file-name (concat user-emacs-directory
+                                          "el-get/el-get/el-get.el"))))
+    (if (file-exists-p el-get)
+        (load el-get))))
 
 ;; Install first if necessary, otherwise just execute.
 (if (not (functionp 'el-get))
