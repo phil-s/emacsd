@@ -70,7 +70,7 @@
             :type git
             :url "git://github.com/bbatsov/find-file-in-project.git")
 
-     ;; (:name notify)
+     (:name notify) ;; :notify "removed"
 
      (:name magit)
 
