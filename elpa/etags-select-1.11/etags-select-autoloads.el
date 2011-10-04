@@ -5,8 +5,8 @@
 
 ;;;### (autoloads (etags-select-find-tag etags-select-find-tag-at-point
 ;;;;;;  etags-select-mode-hook etags-select-no-select-for-one-match
-;;;;;;  etags-select-mode) "etags-select" "etags-select.el" (19486
-;;;;;;  45423))
+;;;;;;  etags-select-mode) "etags-select" "etags-select.el" (19816
+;;;;;;  65395))
 ;;; Generated autoloads from etags-select.el
 
 (let ((loads (get 'etags-select-mode 'custom-loads))) (if (member '"etags-select" loads) nil (put 'etags-select-mode 'custom-loads (cons '"etags-select" loads))))
@@ -38,7 +38,7 @@ to do.
 
 ;;;***
 
-;;;### (autoloads nil nil ("etags-select-pkg.el") (19486 45424 44496))
+;;;### (autoloads nil nil ("etags-select-pkg.el") (19816 65395 836000))
 
 ;;;***
 
