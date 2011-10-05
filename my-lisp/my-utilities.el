@@ -509,6 +509,42 @@ within the current buffer-file-name."
 
 (global-set-key [remap backward-up-list] 'backward-up-sexp)
 
+
+(defun my-semnav-up (arg)
+  "Helper for `my-extend-selection'
+By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
+  (interactive "p")
+  (when (nth 3 (syntax-ppss))
+    (if (> arg 0)
+        (progn
+          (skip-syntax-forward "^\"")
+          (goto-char (1+ (point)))
+          (decf arg))
+      (skip-syntax-backward "^\"")
+      (goto-char (1- (point)))
+      (incf arg)))
+  (up-list arg))
+
+(defun my-extend-selection (arg &optional incremental)
+  "Mark the symbol surrounding point.
+Subsequent calls mark higher levels of sexps.
+By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     (or (and transient-mark-mode mark-active)
+                         (eq last-command this-command))))
+  (if incremental
+      (progn
+        (my-semnav-up (- arg))
+        (forward-sexp)
+        (mark-sexp -1))
+    (if (> arg 1)
+        (extend-selection (1- arg) t)
+      (if (looking-at "\\=\\(\\s_\\|\\sw\\)*\\_>")
+          (goto-char (match-end 0))
+        (unless (memq (char-before) '(?\) ?\"))
+          (forward-sexp)))
+      (mark-sexp -1))))
+
 (provide 'my-utilities)
 
 ;;; Local Variables:

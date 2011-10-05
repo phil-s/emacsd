@@ -86,6 +86,7 @@
   (define-key keymap (kbd "C-c m")     'magit-status)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
   (define-key keymap (kbd "C-c n")     'deft)
+  (define-key keymap (kbd "M-S-SPC")   'my-extend-selection)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
