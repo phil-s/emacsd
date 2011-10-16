@@ -344,6 +344,9 @@
 ;; Non-programming text modes
 (require 'my-text)
 
+;; Version control systems
+(require 'my-version-control)
+
 ;; Configure other miscellaneous libraries
 (require 'my-libraries)
 

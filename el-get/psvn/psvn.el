@@ -1,8 +1,9 @@
 ;;; psvn.el --- Subversion interface for emacs
-;; Copyright (C) 2002-2009 by Stefan Reichoer
+;; Copyright (C) 2002-2011 by Stefan Reichoer
 
 ;; Author: Stefan Reichoer <stefan@xsteve.at>
-;; $Id: psvn.el 40299 2009-10-29 19:38:54Z xsteve $
+;; Note: This version is currently not under svn control
+;; Timestamp: Fri Sep 02 2011 22:25:12
 
 ;; psvn.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1272,9 +1273,7 @@ can edit ARGLIST before running svn.
 
 The hook svn-pre-run-hook allows to monitor/modify the ARGLIST."
   (setq arglist (svn-status-flatten-list arglist))
-  (if (or (eq (process-status "svn") nil)
-          (not (get-process "svn"))
-          (not (process-id (get-process "svn"))))
+  (if (eq (process-status "svn") nil)
       (progn
         (when svn-status-edit-svn-command
           (setq arglist (append
@@ -3741,7 +3740,7 @@ The version number of the client is cached in `svn-client-version'."
           (with-current-buffer svn-status-last-output-buffer-name
             (goto-char (point-min))
             (setq svn-client-version
-                  (when (re-search-forward "svn, version \\([0-9\.]+\\) " nil t)
+                  (when (re-search-forward "svn, version \\([0-9\.]+\\)" nil t)
                     (mapcar 'string-to-number (split-string (match-string 1) "\\."))))
             (let ((buffer-read-only nil))
               (goto-char (point-min))
@@ -6521,5 +6520,6 @@ A variable will keep its value, if it is specified in `svn-prepare-for-reload-do
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
+;; time-stamp-pattern: "10/;; Timestamp:[ ]+%3a %3b %02d %:y %02H:%02M:%02S$"
 ;; End:
 ;;; psvn.el ends here

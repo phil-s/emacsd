@@ -38,6 +38,9 @@
      (:name ediff-trees
             :type emacswiki)
 
+     (:name htmlr
+            :type emacswiki)
+     
      (:name rainbow-mode)
 
      (:name transpose-frame
@@ -85,6 +88,10 @@
             :type git
             :url "git://jblevins.org/git/deft.git")
 
+     (:name psvn
+            :type http
+            :url "http://www.xsteve.at/prg/emacs/psvn.el")
+     
      ;; (:name yasnippet
      ;;        :type git-svn
      ;;        :url "http://yasnippet.googlecode.com/svn/trunk/")

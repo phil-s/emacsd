@@ -5,7 +5,7 @@
 
 ;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
 ;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
-;;;;;;  "dbgp" "geben/dbgp.el" (19376 40618))
+;;;;;;  "dbgp" "geben/dbgp.el" (20106 20538))
 ;;; Generated autoloads from geben/dbgp.el
 
 (autoload 'dbgp-start "dbgp" "\
@@ -48,7 +48,7 @@ After unregistration, it kills the listener instance.
 
 ;;;***
 
-;;;### (autoloads (deft) "deft" "deft/deft.el" (20078 30406))
+;;;### (autoloads (deft) "deft" "deft/deft.el" (20106 20538))
 ;;; Generated autoloads from deft/deft.el
 
 (autoload 'deft "deft" "\
@@ -59,7 +59,7 @@ Switch to *Deft* buffer and load files.
 ;;;***
 
 ;;;### (autoloads (find-file-in-project) "find-file-in-project" "find-file-in-project/find-file-in-project.el"
-;;;;;;  (20106 18365))
+;;;;;;  (20106 20538))
 ;;; Generated autoloads from find-file-in-project/find-file-in-project.el
 
 (autoload 'find-file-in-project "find-file-in-project" "\
@@ -73,8 +73,8 @@ override this by locally setting the `ffip-project-root' variable.
 
 ;;;***
 
-;;;### (autoloads (geben geben-mode) "geben" "geben/geben.el" (20040
-;;;;;;  33441))
+;;;### (autoloads (geben geben-mode) "geben" "geben/geben.el" (20106
+;;;;;;  20538))
 ;;; Generated autoloads from geben/geben.el
 
 (autoload 'geben-mode "geben" "\
@@ -123,7 +123,7 @@ described its help page.
 ;;;***
 
 ;;;### (autoloads (keep-buffers-query) "keep-buffers" "keep-buffers/keep-buffers.el"
-;;;;;;  (20087 46707))
+;;;;;;  (20106 20520))
 ;;; Generated autoloads from keep-buffers/keep-buffers.el
 
 (autoload 'keep-buffers-query "keep-buffers" "\
@@ -133,8 +133,8 @@ The query function that disable deletion of buffers we protect.
 
 ;;;***
 
-;;;### (autoloads (magit-status) "magit" "magit/magit.el" (20068
-;;;;;;  18897))
+;;;### (autoloads (magit-status) "magit" "magit/magit.el" (20106
+;;;;;;  20538))
 ;;; Generated autoloads from magit/magit.el
 
 (autoload 'magit-status "magit" "\
@@ -152,7 +152,7 @@ user input.
 ;;;***
 
 ;;;### (autoloads (mo-git-blame-current mo-git-blame-file) "mo-git-blame"
-;;;;;;  "mo-git-blame/mo-git-blame.el" (20052 31423))
+;;;;;;  "mo-git-blame/mo-git-blame.el" (20106 20538))
 ;;; Generated autoloads from mo-git-blame/mo-git-blame.el
 
 (autoload 'mo-git-blame-file "mo-git-blame" "\
@@ -181,7 +181,7 @@ Calls `mo-git-blame-file' for HEAD for the current buffer.
 
 ;;;***
 
-;;;### (autoloads (notify) "notify" "notify/notify.el" (20035 7410))
+;;;### (autoloads (notify) "notify" "notify/notify.el" (20106 19964))
 ;;; Generated autoloads from notify/notify.el
 
 (autoload 'notify "notify" "\
@@ -192,9 +192,33 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
+;;;### (autoloads (svn-status svn-checkout) "psvn" "psvn/psvn.el"
+;;;;;;  (20123 13442))
+;;; Generated autoloads from psvn/psvn.el
+
+(autoload 'svn-checkout "psvn" "\
+Run svn checkout REPOS-URL PATH.
+
+\(fn REPOS-URL PATH)" t nil)
+ (defalias 'svn-examine 'svn-status)
+
+(autoload 'svn-status "psvn" "\
+Examine the status of Subversion working copy in directory DIR.
+If ARG is -, allow editing of the parameters. One could add -N to
+run svn status non recursively to make it faster.
+For every other non nil ARG pass the -u argument to `svn status', which
+asks svn to connect to the repository and check to see if there are updates
+there.
+
+If there is no .svn directory, examine if there is CVS and run
+`cvs-examine'. Otherwise ask if to run `dired'.
+
+\(fn DIR &optional ARG)" t nil)
+
+;;;***
 
 ;;;### (autoloads (rainbow-mode) "rainbow-mode" "rainbow-mode/rainbow-mode.el"
-;;;;;;  (20035 17800))
+;;;;;;  (20106 20538))
 ;;; Generated autoloads from rainbow-mode/rainbow-mode.el
 
 (autoload 'rainbow-mode "rainbow-mode" "\
@@ -206,7 +230,7 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 ;;;***
 
 ;;;### (autoloads (rebase-mode) "rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20035 12561))
+;;;;;;  (20106 20538))
 ;;; Generated autoloads from magit/rebase-mode.el
 
 (autoload 'rebase-mode "rebase-mode" "\
@@ -222,6 +246,7 @@ running 'man git-rebase' at the command line) for details.
 (add-to-list 'auto-mode-alist '("git-rebase-todo" . rebase-mode))
 
 ;;;***
+
 ;;;### (autoloads (color-theme-zenburn) "zenburn" "color-theme-zenburn/zenburn.el"
 ;;;;;;  (20032 36496))
 ;;; Generated autoloads from color-theme-zenburn/zenburn.el
@@ -234,14 +259,8 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20033 60655
-;;;;;;  852902))
 ;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "magit/50magit.el" "magit/magit-bisect.el" "magit/magit-pkg.el"
-;;;;;;  "magit/magit-stgit.el" "magit/magit-svn.el" "magit/magit-topgit.el"
-;;;;;;  "scratch/el-get.el"
-;;;;;;  "scratch/scratch.el" "transpose-frame/transpose-frame.el"
-;;;;;;  "undo-tree/undo-tree.el") (20106 18366 202130))
+;;;;;;  "htmlr/htmlr.el" "magit/magit-pkg.el") (20123 13443 717485))
 
 ;;;***
 
