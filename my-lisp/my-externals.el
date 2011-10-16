@@ -5,52 +5,9 @@
   ;; Define external sources
   (setq
    el-get-sources
-   '(
-     (:name el-get
+   '((:name el-get
             :type git
             :url "git://github.com/dimitri/el-get.git")
-
-     (:name browse-kill-ring
-            :type http
-            :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
-            :features browse-kill-ring)
-
-     (:name outline-copy-visible
-            :type http
-            :url "http://gist.github.com/raw/519635/yank-visible.el"
-            :loads "outline-copy-visible")
-
-     (:name scratch
-            :type git
-            :url "http://github.com/ieure/scratch-el.git")
-
-     (:name dtrt-indent
-            :type git
-            :url "git://git.sv.gnu.org/dtrt-indent.git"
-            :features dtrt-indent)
-
-     ;; highlight FIXME TODO BUG and KLUDGE in comments and strings
-     (:name fic-mode
-            :type http
-            :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
-            :features fic-mode)
-
-     (:name ediff-trees
-            :type emacswiki)
-
-     (:name htmlr
-            :type emacswiki)
-     
-     (:name rainbow-mode)
-
-     (:name transpose-frame
-            :type emacswiki
-            :features transpose-frame)
-
-     (:name keep-buffers
-            :type http
-            :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
-            :features keep-buffers)
 
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
@@ -58,47 +15,91 @@
      ;;        :url "http://repo.or.cz/w/ShellArchive.git?a=blob_plain&hb=HEAD&f=ack.el"
      ;;        :features ack)
 
-     ;; (:name espect
-     ;;        :type http
-     ;;        :url "https://github.com/rafl/espect/raw/master/espect.el")
+     ;; (:name asciidoc
+     ;;        :type elpa)
 
-     ;; (:name ws-trim
-     ;;        :type ftp
-     ;;        :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
+     (:name browse-kill-ring
+            :type http
+            :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
+            :features browse-kill-ring)
 
      (:name color-theme)
      (:name color-theme-zenburn)
-
-     (:name find-file-in-project
-            :type git
-            :url "git://github.com/bbatsov/find-file-in-project.git")
-
-     (:name notify)
-
-     (:name magit)
-
-     (:name mo-git-blame)
-     
-     (:name geben
-            :type http-tar
-            :options ("zxf")
-            :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
 
      (:name deft
             :type git
             :url "git://jblevins.org/git/deft.git")
 
+     ;; (:name dictionary-el
+     ;;        :type apt-get)
+
+     (:name dtrt-indent
+            :type git
+            :url "git://git.sv.gnu.org/dtrt-indent.git"
+            :features dtrt-indent)
+
+     (:name ediff-trees
+            :type emacswiki)
+
+     ;; (:name espect
+     ;;        :type http
+     ;;        :url "https://github.com/rafl/espect/raw/master/espect.el")
+
+     ;; highlight FIXME TODO BUG and KLUDGE in comments and strings
+     (:name fic-mode
+            :type http
+            :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
+            :features fic-mode)
+
+     (:name find-file-in-project
+            :type git
+            :url "git://github.com/bbatsov/find-file-in-project.git")
+
+     (:name geben
+            :type http-tar
+            :options ("zxf")
+            :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
+
+     (:name htmlr
+            :type emacswiki)
+
+     (:name keep-buffers
+            :type http
+            :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
+            :features keep-buffers)
+
+     (:name magit)
+
+     (:name mo-git-blame)
+
+     (:name notify)
+
+     (:name outline-copy-visible
+            :type http
+            :url "http://gist.github.com/raw/519635/yank-visible.el"
+            :loads "outline-copy-visible")
+
      (:name psvn
             :type http
             :url "http://www.xsteve.at/prg/emacs/psvn.el")
-     
+
+     (:name rainbow-mode)
+
+     (:name scratch
+            :type git
+            :url "http://github.com/ieure/scratch-el.git")
+
+     (:name transpose-frame
+            :type emacswiki
+            :features transpose-frame)
+
+     ;; (:name ws-trim
+     ;;        :type ftp
+     ;;        :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
+
      ;; (:name yasnippet
      ;;        :type git-svn
      ;;        :url "http://yasnippet.googlecode.com/svn/trunk/")
-
-     ;; (:name asciidoc         :type elpa)
-     ;; (:name dictionary-el    :type apt-get)
-
 
      ;; Colour readability tool.
      ;; Available by default in Emacs 24, so would need to restrict
