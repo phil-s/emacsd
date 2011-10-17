@@ -153,8 +153,10 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (setq cperl-indent-level 4)
 
 
+;; (Removed nXhtml)
 ;; nXHTML (also includes php-mode)
-(load "nxhtml/autostart.el")
+;; (load "nxhtml/autostart.el")
+
 ;; Mumamo is making emacs 23.3 freak out:
 (when (and (equal emacs-major-version 23)
            (equal emacs-minor-version 3))
@@ -208,7 +210,6 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 
 
 ;; HTML ;;/ ASP / VBSCRIPT
-(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
 ;;(add-hook 'html-helper-load-hook (lambda () (require 'visual-basic-mode)))
 (add-hook 'html-helper-load-hook (lambda () (require 'html-font)))
@@ -225,15 +226,24 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
-;;(add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
-;;(add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . drupal-mode))
 
 ;; Drupal mode (see my-php.el)
 (autoload 'drupal-mode "my-php" "Drupal Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\|engine\\)\\'" . drupal-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxhtml-mumamo-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.info\\'" . conf-windows-mode))
+
+;; (Removed nXhtml)
+;; ;; nxhtml seems slightly borked at the moment, with continual
+;; ;; font-lock issues cropping up after a while. Trying here to avoid
+;; ;; problems, by not switching to it unnecessarily...
+;; (delete '("\\.php\\'" . nxhtml-mumamo-mode) auto-mode-alist)
+;; (delete '("\\.php\\'" . html-mumamo-mode) auto-mode-alist)
+;; (delete '("\\.tpl\\.php\\'" . nxhtml-mumamo-mode) auto-mode-alist)
+;; (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
+;; (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxml-mode))
 
 ;; ;; Default to Drupal mode for PHP files
 ;; (delete '("\\.php\\'" . nxhtml-mumamo-mode) auto-mode-alist)

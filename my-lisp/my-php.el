@@ -4,25 +4,28 @@
 ;; is loaded in my-programming.el prior to defining the PHP
 ;; autoloads).
 (load "php-mode") ;load the real php-mode
+;; (Removed nXhtml)
+;; See my-externals for php-mode source.
 
 ;; Custom php-mode configuration
 (add-hook 'php-mode-hook 'my-php-mode t)
 
-;; .php files use nxhtml-mumamo-mode
-(add-hook 'nxhtml-mumamo-mode-hook 'my-nxhtml-mumamo-mode-hook t)
-(defun my-nxhtml-mumamo-mode-hook ()
-  (and (buffer-file-name)
-       (string-match "\\.php\\'" (buffer-file-name))
-       (not (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
-       (php-mode)))
+;; (Removed nXhtml)
+;; ;; .php files use nxhtml-mumamo-mode
+;; (add-hook 'nxhtml-mumamo-mode-hook 'my-nxhtml-mumamo-mode-hook t)
+;; (defun my-nxhtml-mumamo-mode-hook ()
+;;   (and (buffer-file-name)
+;;        (string-match "\\.php\\'" (buffer-file-name))
+;;        (not (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
+;;        (php-mode)))
 
 (defconst my-php-style
   '((c-offsets-alist . ((arglist-close . c-lineup-close-paren))))
   "My PHP programming style")
 (c-add-style "my-php-style" my-php-style)
 
-;; Configure imenu usage with php-imenu (also provided by nxhtml)
-(autoload 'php-imenu-create-index "php-imenu" nil t)
+;; ;; Configure imenu usage with php-imenu (also provided by nxhtml)
+;; (autoload 'php-imenu-create-index "php-imenu" nil t)
 
 (defun my-php-mode ()
   "My php-mode customisations."
