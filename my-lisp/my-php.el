@@ -31,25 +31,30 @@
   "My php-mode customisations."
   ;; (message (concat "Major Mode: " (symbol-name major-mode)))
   ;; (message (concat "Mode: " (if (boundp 'mode) (symbol-name mode) "unknown")))
-  (when (eq major-mode 'php-mode)
-    (c-set-style "my-php-style")
 
-    ;; The electric flag (toggled by `c-toggle-electric-state').
-    ;; If t, electric actions (like automatic reindentation, and (if
-    ;; c-auto-newline is also set) auto newlining) will happen when an
-    ;; electric key like `{' is pressed (or an electric keyword like
-    ;; `else').
-    (setq c-electric-flag nil)
-    ;; electric behaviours appear to be bad/unwanted in php-mode
+  (if (and (buffer-file-name)
+           (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
+      (nxml-mode)
 
-    ;; This is bugging out recently. Not sure why. Thought it
-    ;; was a conflict with (my-coding-config), but not certain
-    ;; any longer. Commenting out for now.
-    ;; Configure imenu
-    ;; (php-imenu-setup)
+    (when (eq major-mode 'php-mode)
+      (c-set-style "my-php-style")
 
-    ;; Find documentation online
-    (local-set-key (kbd "<f1>") 'my-php-symbol-lookup)))
+      ;; The electric flag (toggled by `c-toggle-electric-state').
+      ;; If t, electric actions (like automatic reindentation, and (if
+      ;; c-auto-newline is also set) auto newlining) will happen when an
+      ;; electric key like `{' is pressed (or an electric keyword like
+      ;; `else').
+      (setq c-electric-flag nil)
+      ;; electric behaviours appear to be bad/unwanted in php-mode
+
+      ;; This is bugging out recently. Not sure why. Thought it
+      ;; was a conflict with (my-coding-config), but not certain
+      ;; any longer. Commenting out for now.
+      ;; Configure imenu
+      ;; (php-imenu-setup)
+
+      ;; Find documentation online
+      (local-set-key (kbd "<f1>") 'my-php-symbol-lookup))))
 
 (defun php-imenu-setup ()
   (setq imenu-create-index-function (function php-imenu-create-index))

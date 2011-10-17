@@ -79,6 +79,10 @@
             :url "http://gist.github.com/raw/519635/yank-visible.el"
             :loads "outline-copy-visible")
 
+     (:name php-mode
+            :type git
+            :url "git://github.com/ejmr/php-mode.git")
+
      (:name psvn
             :type http
             :url "http://www.xsteve.at/prg/emacs/psvn.el")

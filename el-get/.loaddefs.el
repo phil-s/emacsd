@@ -192,6 +192,28 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
+;;;### (autoloads (php-mode php-file-patterns php) "php-mode" "php-mode/php-mode.el"
+;;;;;;  (20123 29196))
+;;; Generated autoloads from php-mode/php-mode.el
+
+(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode" loads))))
+
+(add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
+
+(defvar php-file-patterns '("\\.php[s345t]?\\'" "\\.phtml\\'" "\\.inc\\'") "\
+List of file patterns for which to automatically invoke `php-mode'.")
+
+(custom-autoload 'php-file-patterns "php-mode" nil)
+
+(autoload 'php-mode "php-mode" "\
+Major mode for editing PHP code.
+
+\\{php-mode-map}
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (svn-status svn-checkout) "psvn" "psvn/psvn.el"
 ;;;;;;  (20123 13442))
 ;;; Generated autoloads from psvn/psvn.el
@@ -260,7 +282,7 @@ Just some alien fruit salad to keep you in the zone.
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
 ;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "htmlr/htmlr.el" "magit/magit-pkg.el") (20123 13443 717485))
+;;;;;;  "htmlr/htmlr.el" "magit/magit-pkg.el") (20123 29196 880150))
 
 ;;;***
 
