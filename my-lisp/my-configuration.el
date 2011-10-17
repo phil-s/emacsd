@@ -170,7 +170,7 @@ See also: `my-copy-buffer-file-name'."
     [remap delete-char] 'delete-char))
 
 ;; titlebar = buffer unless filename
-(setq frame-title-format '(buffer-name "%f" ("%b")))
+(setq frame-title-format '(buffer-name "%f (Emacs)" ("%b (Emacs)")))
 
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
@@ -344,6 +344,9 @@ disabled.")))
 
 ;; Format completion lists in columns rather than rows
 (setq completions-format 'vertical)
+
+;; Default to side-by-side comparisons in ediff.
+(setq ediff-split-window-function 'split-window-horizontally)
 
 ;; Use ediff instead of diff when typing 'd' in `save-some-buffers'
 ;; See variable `save-some-buffers-action-alist'

@@ -13,7 +13,7 @@
     (pop-to-buffer log-view-buffer)))
 (ad-activate 'log-view-diff-changeset)
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; SVN (Subversion)
 ;; Start the psvn interface with M-x svn-status
