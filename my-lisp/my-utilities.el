@@ -226,6 +226,11 @@ command was winner-undo or winner-redo."
       (back-to-indentation)
     (beginning-of-line)))
 
+(defun my-capitalize-word (&optional arg)
+  "Used to invoke capitalize-word despite subword-mode remappings."
+  (interactive "*p")
+  (capitalize-word arg))
+
 ;; Display non-critical messages with minimal interference.
 ;; See also the following:
 ;; (minibuffer-message)

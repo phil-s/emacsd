@@ -97,6 +97,7 @@
   (define-key keymap (kbd "C-h C-l")   'find-library)
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
   (define-key keymap (kbd "C-c q")     'query-replace-regexp)
+  (define-key keymap (kbd "M-C")       'my-capitalize-word)
   )
 
 ;; Global bindings, for when I'm happy for other modes to redefine them.
