@@ -81,6 +81,11 @@
 ;; Do not overwrite the region by typing
 (setq delete-active-region nil)
 
+;; Recursive minibuffers lets us do neat things such as interactively
+;; building command arguments using other commands.
+(setq enable-recursive-minibuffers t)
+(minibuffer-depth-indicate-mode 1)
+
 ;; TODO: Idea: Implement a "recently-closed files" group in ibuffer.
 ;; Collapsed by default. Selecting a buffer from this list will
 ;; re-visit the file.
