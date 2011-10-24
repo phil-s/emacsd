@@ -331,6 +331,9 @@ disabled.")))
   (hide-trailing-whitespace)
   (ansi-color-for-comint-mode-on))
 
+;; Don't intersperse stderr output with stdout
+(setq shell-command-default-error-buffer "*stderr*")
+
 ;; Also, emacs doesn't deal with my usual cygwin prompt, so put:
 ;; export PS1="\n\u@\h \w\n\$ "
 ;; into ~/.emacs.d/init_bash.sh
