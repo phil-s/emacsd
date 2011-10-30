@@ -21,13 +21,13 @@
 
 ;; ;; Use the desktop-recover library to load and auto-save the desktop.
 ;; ;; Does not work for emacs --daemon
-;; (require 'desktop-recover)
-;; (setq desktop-recover-location
-;;       (desktop-recover-fixdir desktop-dirname))
-;; ;; Brings up the interactive buffer restore menu
-;; (desktop-recover-interactive)
-;; ;; Note that after using this menu, your desktop will be saved
-;; ;; automatically (triggered by the auto-save mechanism).
+;; (when (require 'desktop-recover nil 'noerror)
+;;   (setq desktop-recover-location
+;;         (desktop-recover-fixdir desktop-dirname))
+;;   ;; Brings up the interactive buffer restore menu
+;;   (desktop-recover-interactive))
+;;   ;; Note that after using this menu, your desktop will be saved
+;;   ;; automatically (triggered by the auto-save mechanism).
 
 ;; Save desktop when idle
 (add-hook 'auto-save-hook 'my-auto-desktop-save-in-desktop-dir)

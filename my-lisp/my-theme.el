@@ -5,17 +5,22 @@
 ;; Disable mumamo chunk background colours
 (setq mumamo-background-colors nil)
 
-;; hl-sexp-mode
-;; See my-programming.el
-(set-face-background 'hl-sexp-face "#090909")
-
 ;; Color theme - Zenburn
 ;; http://www.emacswiki.org/emacs/ColorThemeZenburn
-(color-theme-zenburn)
+(when (and (require 'color-theme nil t)
+		   (require 'zenburn nil t))
 
-;; Changes to Zenburn defaults
-;; hl-line-mode
-(set-face-background hl-line-face "#333333")
+  ;; hl-sexp-mode
+  ;; See my-programming.el
+  (when (featurep 'hl-sexp)
+    (set-face-background 'hl-sexp-face "#090909"))
+
+  ;; Initialise zenburn
+  (color-theme-zenburn)
+
+  ;; Changes to Zenburn defaults
+  ;; hl-line-mode
+  (set-face-background hl-line-face "#333333"))
 
 ;; Don't set the default font in (custom-set-faces), because it makes
 ;; things super-funky during initialisation if that font doesn't exist

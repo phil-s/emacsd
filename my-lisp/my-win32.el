@@ -22,7 +22,7 @@
 
 ;; Handle windows shortcuts
 (setq w32-symlinks-handle-shortcuts t)
-(require 'w32-symlinks)
+(require 'w32-symlinks nil 'noerror)
 
 ;; Make the emacs source files read-only
 (eval-after-load "my-projects"

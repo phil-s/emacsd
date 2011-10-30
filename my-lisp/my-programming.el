@@ -7,6 +7,8 @@
   (column-number-mode t)
   (if window-system (hl-line-mode t))
   (idle-highlight)
+  (when (require 'rainbow-delimiters nil t)
+	(rainbow-delimiters-mode 1))
   (turn-on-eldoc-mode)
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
@@ -136,11 +138,12 @@ context-help to false"
 ;; Emacs Lisp
 
 ;; Parenthesis / sexp matching
-(require 'hl-sexp)
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  (require 'bytecomp)
   (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
-  (hl-sexp-mode 1))
+  (when (require 'hl-sexp nil 'noerror)
+    (hl-sexp-mode 1)))
 
 (defun my-auto-byte-recompile ()
   "Byte compile if a corresponding .elc file already exists.
@@ -151,7 +154,6 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
 (setq cperl-indent-level 4)
-
 
 ;; (Removed nXhtml)
 ;; nXHTML (also includes php-mode)
@@ -212,7 +214,7 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; HTML ;;/ ASP / VBSCRIPT
 ;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
 ;;(add-hook 'html-helper-load-hook (lambda () (require 'visual-basic-mode)))
-(add-hook 'html-helper-load-hook (lambda () (require 'html-font)))
+(add-hook 'html-helper-load-hook (lambda () (require 'html-font nil 'noerror)))
 (add-hook 'html-helper-mode-hook (lambda () (font-lock-mode 1)))
 
 
@@ -233,7 +235,7 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (autoload 'drupal-mode "my-php" "Drupal Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\|engine\\)\\'" . drupal-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxml-mode))
-(add-to-list 'auto-mode-alist '("\\.info\\'" . conf-windows-mode))
+(add-to-list 'auto-mode-alist '("\\.info\\'" . conf-mode))
 
 ;; (Removed nXhtml)
 ;; ;; nxhtml seems slightly borked at the moment, with continual

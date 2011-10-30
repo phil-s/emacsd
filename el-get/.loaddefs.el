@@ -62,14 +62,39 @@ Switch to *Deft* buffer and load files.
 ;;;;;;  (20106 20538))
 ;;; Generated autoloads from find-file-in-project/find-file-in-project.el
 
-(autoload 'find-file-in-project "find-file-in-project" "\
-Prompt with a completing list of all files in the project to find one.
+(autoload 'magit-status "magit" "\
+Not documented
 
-The project's scope is defined as the first directory containing
-any of the files in the `.ffip-project-files' list. You can
-override this by locally setting the `ffip-project-root' variable.
+\(fn DIR)" t nil)
+
+;;;***
+
+;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters"
+;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20058 6012))
+;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
+
+(autoload 'rainbow-delimiters-mode "rainbow-delimiters" "\
+Color nested parentheses, brackets, and braces according to their depth.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads (rebase-mode) "rebase-mode" "magit/rebase-mode.el"
+;;;;;;  (20041 3720))
+;;; Generated autoloads from magit/rebase-mode.el
+
+(autoload 'rebase-mode "rebase-mode" "\
+Major mode for editing of a Git rebase file.
+
+Rebase files are generated when you run 'git rebase -i' or run
+`magit-interactive-rebase'.  They describe how Git should perform
+the rebase.  See the documentation for git-rebase (e.g., by
+running 'man git-rebase' at the command line) for details.
 
 \(fn)" t nil)
+
+(add-to-list 'auto-mode-alist '("git-rebase-todo" . rebase-mode))
 
 ;;;***
 
@@ -270,7 +295,7 @@ running 'man git-rebase' at the command line) for details.
 ;;;***
 
 ;;;### (autoloads (color-theme-zenburn) "zenburn" "color-theme-zenburn/zenburn.el"
-;;;;;;  (20032 36496))
+;;;;;;  (20034 29893))
 ;;; Generated autoloads from color-theme-zenburn/zenburn.el
 
 (autoload 'color-theme-zenburn "zenburn" "\
@@ -281,8 +306,14 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "htmlr/htmlr.el" "magit/magit-pkg.el") (20123 29196 880150))
+;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el"
+;;;;;;  "el-get/el-get.el" "htmlr/htmlr.el" "escreen/escreen.el"
+;;;;;;  "magit/50magit.el" "magit/magit-bisect.el"
+;;;;;;  "magit/magit-pkg.el" "magit/magit-stgit.el"
+;;;;;;  "magit/magit-svn.el" "magit/magit-topgit.el"
+;;;;;;  "scratch/el-get.el" "scratch/scratch.el"
+;;;;;;  "transpose-frame/transpose-frame.el" "undo-tree/undo-tree.el")
+;;;;;;  (20106 18366 202130))
 
 ;;;***
 

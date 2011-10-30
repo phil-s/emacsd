@@ -52,7 +52,8 @@
 (global-subword-mode 1)
 
 ;; Protect important buffers
-(keep-buffers-mode 1)
+(when (require 'keep-buffers nil t)
+  (keep-buffers-mode 1))
 
 ;; Make scripts executable
 (add-hook 'after-save-hook
@@ -200,7 +201,7 @@ See also: `my-copy-buffer-file-name'."
 
 ;; Highlight the matching parenthesis
 (show-paren-mode t)
-(require 'highlight-parentheses)
+(require 'highlight-parentheses nil 'noerror)
 
 ;; Make apropos searches also find unbound symbols.
 ;; See my-keybindings.el for various custom apropos bindings.

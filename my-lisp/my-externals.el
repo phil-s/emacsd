@@ -41,6 +41,8 @@
      (:name ediff-trees
             :type emacswiki)
 
+     (:name escreen)
+
      ;; (:name espect
      ;;        :type http
      ;;        :url "https://github.com/rafl/espect/raw/master/espect.el")
@@ -87,6 +89,8 @@
             :type http
             :url "http://www.xsteve.at/prg/emacs/psvn.el")
 
+     (:name rainbow-delimiters)
+
      (:name rainbow-mode)
 
      (:name scratch
@@ -96,6 +100,8 @@
      (:name transpose-frame
             :type emacswiki
             :features transpose-frame)
+
+     (:name undo-tree)
 
      ;; (:name ws-trim
      ;;        :type ftp
@@ -139,14 +145,11 @@
 
 
 ;;;;(require 'el-get)
-(if (not (functionp 'el-get))
-    (let ((el-get
-           (expand-file-name (concat
-                              user-emacs-directory
-                              "el-get/el-get/el-get.el"))))
-      (if (file-exists-p el-get)
-          (load el-get))))
-
+(when (not (functionp 'el-get))
+  (let ((el-get (expand-file-name (concat user-emacs-directory
+                                          "el-get/el-get/el-get.el"))))
+    (if (file-exists-p el-get)
+        (load el-get))))
 
 ;; Install first if necessary, otherwise just execute.
 (if (not (functionp 'el-get))
