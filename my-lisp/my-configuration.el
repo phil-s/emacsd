@@ -55,6 +55,9 @@
 (when (require 'keep-buffers nil t)
   (keep-buffers-mode 1))
 
+;; A much larger message history
+(setq message-log-max 10000)
+
 ;; Make scripts executable
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
