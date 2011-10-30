@@ -12,7 +12,7 @@
 
   ;; hl-sexp-mode
   ;; See my-programming.el
-  (when (featurep 'hl-sexp)
+  (when (require 'hl-sexp nil 'noerror)
     (set-face-background 'hl-sexp-face "#090909"))
 
   ;; Initialise zenburn
