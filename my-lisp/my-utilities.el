@@ -550,6 +550,30 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
           (forward-sexp)))
       (mark-sexp -1))))
 
+(defun my-region-or-word (prompt)
+  "Read a string from the minibuffer, prompting with PROMPT.
+If `transient-mark-mode' is non-nil and the mark is active,
+it defaults to the current region, else to the word at or before
+point. This function returns a list (string) for use in `interactive'."
+  (list (read-string prompt (or (and transient-mark-mode mark-active
+                                     (buffer-substring-no-properties
+                                      (region-beginning) (region-end)))
+                                (current-word)))))
+
+(defcustom my-www-search-url
+  "http://google.com/search?num=100&q=%s"
+  "URL for WWW search, with %s placeholder for search string"
+  :group 'www)
+
+(defun my-www-search (string)
+  "Ask a WWW browser to perform a web search for a given string.
+Prompts for a string, defaulting to the active region or the current word at
+or before point."
+  (interactive (my-region-or-word "WWW search: "))
+  (browse-url (format my-www-search-url (url-hexify-string string))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-utilities)
 
 ;;; Local Variables:

@@ -69,6 +69,9 @@
   ;; Completions
   (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
 
+  ;; WWW
+  (define-key keymap (kbd "C-c w s")   'my-www-search)
+
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
