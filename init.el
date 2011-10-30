@@ -7,6 +7,7 @@
 ;; http://obsidianrook.com/devnotes/elisp-for-perl-programmers.html
 ;; http://stackoverflow.com/questions/5795451/how-to-detect-that-emacs-is-in-terminal-mode
 ;; http://www.emacswiki.org/emacs/Reference_Sheet_by_Aaron_Hawley
+;; http://stackoverflow.com/questions/2500925/pipe-less-to-emacs
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -236,12 +237,16 @@
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
-;; C-x r x   : Copy region to register
-;; C-x r g   : Insert contents of register
+;; M-S-SPC   : my-extend-selection
+;; M-C       : my-capitalize-word
+;; C-c w s   : my-www-search
+;; C-c n     : deft
+;; C-x r x   : copy region to register
+;; C-x r g   : insert contents of register
 ;; C-x r SPC : point-to-register
 ;; C-x r j   : jump-to-register
-;; C-x 4 ... : Operations on other-window
-;; C-x 5 ... : Operations on other-frame
+;; C-x 4 ... : operations on other-window
+;; C-x 5 ... : operations on other-frame
 ;; C-x 6 ... : 2C (two columns) operations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Write/modify some Drupal YASnippets!
