@@ -69,6 +69,38 @@ Not documented
 
 ;;;***
 
+;;;### (autoloads (iedit-mode) "iedit/iedit" "iedit/iedit.el" (20142
+;;;;;;  13087))
+;;; Generated autoloads from iedit/iedit.el
+
+(autoload 'iedit-mode "iedit/iedit" "\
+Toggle iedit mode.
+If iedit mode is off, turn iedit mode on, off otherwise.
+
+In Transient Mark mode, when iedit mode is turned on, all the
+occurrences of the current region are highlighted. If one
+occurrence is modified, the change are propagated to all other
+occurrences simultaneously.
+
+If Transient Mark mode is disabled or the region is not active,
+the `current-word' is used as occurrence. All the occurrences of
+the `current-word' are highlighted.
+
+You can also switch to iedit mode from isearch mode directly. The
+current search string is used as occurrence.  All occurrences of
+the current search string are highlighted.
+
+With a prefix argument, the occurrence when iedit is turned off
+last time is used as occurrence.  This is intended to recover
+last iedit which is turned off by mistake.
+
+Commands:
+\\{iedit-mode-map}
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters"
 ;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20058 6012))
 ;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el

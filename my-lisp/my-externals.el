@@ -65,6 +65,8 @@
      (:name htmlr
             :type emacswiki)
 
+     (:name iedit)
+     
      (:name keep-buffers
             :type http
             :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
