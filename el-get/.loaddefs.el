@@ -48,7 +48,7 @@ After unregistration, it kills the listener instance.
 
 ;;;***
 
-;;;### (autoloads (deft) "deft/deft" "deft/deft.el" (20136 38559))
+;;;### (autoloads (deft) "deft/deft" "deft/deft.el" (20142 13239))
 ;;; Generated autoloads from deft/deft.el
 
 (autoload 'deft "deft/deft" "\
@@ -101,11 +101,11 @@ Commands:
 
 ;;;***
 
-;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters"
-;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20058 6012))
+;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
+;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20141 54317))
 ;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
 
-(autoload 'rainbow-delimiters-mode "rainbow-delimiters" "\
+(autoload 'rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
 Color nested parentheses, brackets, and braces according to their depth.
 
 \(fn &optional ARG)" t nil)
@@ -271,17 +271,17 @@ Major mode for editing PHP code.
 
 ;;;***
 
-;;;### (autoloads (svn-status svn-checkout) "psvn" "psvn/psvn.el"
-;;;;;;  (20123 13442))
+;;;### (autoloads (svn-status svn-checkout) "psvn/psvn" "psvn/psvn.el"
+;;;;;;  (20141 54317))
 ;;; Generated autoloads from psvn/psvn.el
 
-(autoload 'svn-checkout "psvn" "\
+(autoload 'svn-checkout "psvn/psvn" "\
 Run svn checkout REPOS-URL PATH.
 
 \(fn REPOS-URL PATH)" t nil)
  (defalias 'svn-examine 'svn-status)
 
-(autoload 'svn-status "psvn" "\
+(autoload 'svn-status "psvn/psvn" "\
 Examine the status of Subversion working copy in directory DIR.
 If ARG is -, allow editing of the parameters. One could add -N to
 run svn status non recursively to make it faster.
@@ -320,10 +320,6 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el"
-;;;;;;  "el-get/el-get.el" "htmlr/htmlr.el" "escreen/escreen.el"
-;;;;;;  "scratch/el-get.el" "scratch/scratch.el"
-;;;;;;  "transpose-frame/transpose-frame.el" "undo-tree/undo-tree.el")
 ;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "magit/magit-pkg.el")
 ;;;;;;  (20142 14333 434110))
 
