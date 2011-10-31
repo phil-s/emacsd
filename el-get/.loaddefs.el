@@ -48,10 +48,10 @@ After unregistration, it kills the listener instance.
 
 ;;;***
 
-;;;### (autoloads (deft) "deft" "deft/deft.el" (20106 20538))
+;;;### (autoloads (deft) "deft/deft" "deft/deft.el" (20136 38559))
 ;;; Generated autoloads from deft/deft.el
 
-(autoload 'deft "deft" "\
+(autoload 'deft "deft/deft" "\
 Switch to *Deft* buffer and load files.
 
 \(fn)" t nil)
