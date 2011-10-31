@@ -146,9 +146,11 @@ TODO: Switch to using emulation-mode-map-alists
     :global     t
     :keymap     'my-keys-minor-mode-map)
 
-  ;; Disable my custom keys in the minibuffer
-  (add-hook 'minibuffer-setup-hook
-            (lambda () (set (make-local-variable 'my-keys-minor-mode) 0)))
+;; Disable my custom keys in the minibuffer
+  (defun my-keys-minor-mode-minibuffer-setup-hook ()
+    (set (make-local-variable 'my-keys-minor-mode) 0)
+    (my-keys-minor-mode 0))
+  (add-hook 'minibuffer-setup-hook 'my-keys-minor-mode-minibuffer-setup-hook)
 
   (defadvice load (after give-my-keybindings-priority)
     "Try to ensure that my keybindings always have priority."
