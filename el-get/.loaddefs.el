@@ -112,11 +112,11 @@ Color nested parentheses, brackets, and braces according to their depth.
 
 ;;;***
 
-;;;### (autoloads (rebase-mode) "rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20041 3720))
+;;;### (autoloads (rebase-mode) "magit/rebase-mode" "magit/rebase-mode.el"
+;;;;;;  (20106 20538))
 ;;; Generated autoloads from magit/rebase-mode.el
 
-(autoload 'rebase-mode "rebase-mode" "\
+(autoload 'rebase-mode "magit/rebase-mode" "\
 Major mode for editing of a Git rebase file.
 
 Rebase files are generated when you run 'git rebase -i' or run
@@ -308,24 +308,6 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 
 ;;;***
 
-;;;### (autoloads (rebase-mode) "rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20106 20538))
-;;; Generated autoloads from magit/rebase-mode.el
-
-(autoload 'rebase-mode "rebase-mode" "\
-Major mode for editing of a Git rebase file.
-
-Rebase files are generated when you run 'git rebase -i' or run
-`magit-interactive-rebase'.  They describe how Git should perform
-the rebase.  See the documentation for git-rebase (e.g., by
-running 'man git-rebase' at the command line) for details.
-
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist '("git-rebase-todo" . rebase-mode))
-
-;;;***
-
 ;;;### (autoloads (color-theme-zenburn) "zenburn" "color-theme-zenburn/zenburn.el"
 ;;;;;;  (20034 29893))
 ;;; Generated autoloads from color-theme-zenburn/zenburn.el
@@ -340,12 +322,10 @@ Just some alien fruit salad to keep you in the zone.
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
 ;;;;;;  "ediff-trees/ediff-trees.el" "el-get/el-get-install.el"
 ;;;;;;  "el-get/el-get.el" "htmlr/htmlr.el" "escreen/escreen.el"
-;;;;;;  "magit/50magit.el" "magit/magit-bisect.el"
-;;;;;;  "magit/magit-pkg.el" "magit/magit-stgit.el"
-;;;;;;  "magit/magit-svn.el" "magit/magit-topgit.el"
 ;;;;;;  "scratch/el-get.el" "scratch/scratch.el"
 ;;;;;;  "transpose-frame/transpose-frame.el" "undo-tree/undo-tree.el")
-;;;;;;  (20106 18366 202130))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "magit/magit-pkg.el")
+;;;;;;  (20142 14333 434110))
 
 ;;;***
 
