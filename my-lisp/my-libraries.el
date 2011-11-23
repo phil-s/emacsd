@@ -41,7 +41,7 @@ unhides lines again"
                             (if sudo-clear-password-always
                                 (sudo-kill-password-timeout)))
                           nil   ;; not append
-                          t	    ;; buffer local hook
+                          t     ;; buffer local hook
                           )))))))
     (add-hook 'before-save-hook 'sudo-before-save-hook)))
 

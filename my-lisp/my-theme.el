@@ -8,7 +8,7 @@
 ;; Color theme - Zenburn
 ;; http://www.emacswiki.org/emacs/ColorThemeZenburn
 (when (and (require 'color-theme nil t)
-		   (require 'zenburn nil t))
+           (require 'zenburn nil t))
 
   ;; hl-sexp-mode
   ;; See my-programming.el
