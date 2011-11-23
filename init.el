@@ -1,5 +1,6 @@
 ;;;; Useful links
-;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
+;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
+;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
 ;; http://www.todesschaf.org/files/browse-kill-ring.el
 ;; http://www-sop.inria.fr/mimosa/Manuel.Serrano/flyspell/flyspell.html
 ;; http://stackoverflow.com/users/6148?sort=stats#sort-top
@@ -8,6 +9,8 @@
 ;; http://stackoverflow.com/questions/5795451/how-to-detect-that-emacs-is-in-terminal-mode
 ;; http://www.emacswiki.org/emacs/Reference_Sheet_by_Aaron_Hawley
 ;; http://stackoverflow.com/questions/2500925/pipe-less-to-emacs
+;; http://stackoverflow.com/questions/5147060/how-can-i-access-directory-local-variables-in-my-major-mode-hooks
+;; http://irreal.org/blog/?p=330 ;; sort-columns is awesome
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -146,10 +149,12 @@
 ;; M-x untrace-all
 
 ;; Emacs Lisp Profiler (ELP)
-;; M-x elp-instrument-function
-;; M-x elp-instrument-list
 ;; M-x elp-instrument-package
+;; M-x elp-instrument-list
+;; M-x elp-instrument-function
+;; M-x elp-reset-*
 ;; M-x elp-results
+;; M-x elp-restore-all
 ;;
 ;; There's a built-in profiler called ELP. You can try something like
 ;; M-x elp-instrument-package, enter "vc", and then try finding a
@@ -241,6 +246,8 @@
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
+;; C-x z     : repeat
+;; C-x M-:   : repeat-complex-command
 ;; C-x r x   : copy region to register
 ;; C-x r g   : insert contents of register
 ;; C-x r SPC : point-to-register
