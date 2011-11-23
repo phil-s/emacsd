@@ -114,6 +114,14 @@ http://stackoverflow.com/questions/2641211/emacs-interactively-search-open-buffe
      exclude-tags-pattern
      regexp)))
 
+(defun my-multi-occur-in-visible-buffers (regexp &optional arg)
+  "Show all lines matching REGEXP in the current frame's visible buffers."
+  (interactive (occur-read-primary-args)) ;; optional arg required but ignored
+  (let ((visible-buffers nil))
+    (walk-windows (lambda (window)
+                    (add-to-list 'visible-buffers (window-buffer window))))
+    (multi-occur visible-buffers regexp)))
+
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call next-buffer if the last command was
 next-buffer or previous-buffer, and winner-redo if the last

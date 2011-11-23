@@ -80,6 +80,7 @@
   (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
   (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
   (define-key keymap (kbd "M-s /")     'my-multi-occur-in-matching-buffers)
+  (define-key keymap (kbd "M-s C-/")   'my-multi-occur-in-visible-buffers)
   (define-key keymap (kbd "C-c c")     'clone-line)
   (define-key keymap (kbd "C-M-z")     'zap-to-char-backwards)
   (define-key keymap (kbd "M-.")       'etags-select-find-tag)
