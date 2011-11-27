@@ -221,11 +221,6 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; Wrap-region minor mode for mark-up
 (autoload 'wrap-region-mode "wrap-region" "Wrap region with stuff." t)
 
-
-;; JavaScript
-(autoload 'javascript-mode "javascript" nil t)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
-
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
