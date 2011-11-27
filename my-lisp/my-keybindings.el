@@ -27,7 +27,7 @@
 
   ;; Whitespace
   (define-key keymap (kbd "C-x M-w")   'toggle-show-trailing-whitespace)
-  (define-key keymap (kbd "C-x M-C-S-w") 'delete-trailing-whitespace)
+  (define-key keymap (kbd "C-x M-C-S-w") 'whitespace-cleanup)
 
   ;; Local occur
   (define-key keymap (kbd "M-s l")     'loccur) ; interactive loccur command
