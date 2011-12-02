@@ -74,6 +74,20 @@ using the specified hippie-expand function."
   (other-window 1)
   (delete-other-windows))
 
+
+;; @see https://gist.github.com/1415844
+(require 'cl)
+(defun my-rotate-left (l) (append (cdr l) (list (car l))))
+(defun my-rotate-windows ()
+  (let ((start-positions (my-rotate-left (mapcar 'window-start (window-list))))
+        (buffers (my-rotate-left (mapcar 'window-buffer (window-list)))))
+    (mapcar* (lambda (window buffer pos)
+               (set-window-buffer window buffer)
+               (set-window-start window pos))
+             (window-list)
+             buffers
+             start-positions)))
+
 (defun kill-other-buffer ()
   "Kill the next buffer, and expand the current one"
   (interactive)
