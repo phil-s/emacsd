@@ -449,13 +449,12 @@ within the current buffer-file-name."
 (defun toggle-window-dedicated ()
   "Toggle whether the current active window is dedicated or not"
   (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window 
-                                 (not (window-dedicated-p window))))
-       "Window '%s' is dedicated"
-     "Window '%s' is normal")
-   (current-buffer)))
+  (message (if (let* ((window (selected-window))
+                      (toggle (not (window-dedicated-p window))))
+                 (set-window-dedicated-p window toggle))
+               "Window '%s' is dedicated"
+             "Window '%s' is normal")
+           (current-buffer)))
 
 ;;
 ;; Ediff the current buffer's file with its auto-saved backup file.
