@@ -58,14 +58,35 @@ Switch to *Deft* buffer and load files.
 
 ;;;***
 
-;;;### (autoloads (find-file-in-project) "find-file-in-project" "find-file-in-project/find-file-in-project.el"
-;;;;;;  (20106 20538))
-;;; Generated autoloads from find-file-in-project/find-file-in-project.el
+;;;### (autoloads nil "ediff-binary-hexl/ediff-binary-hexl" "ediff-binary-hexl/ediff-binary-hexl.el"
+;;;;;;  (20174 55100))
+;;; Generated autoloads from ediff-binary-hexl/ediff-binary-hexl.el
 
-(autoload 'magit-status "magit" "\
-Not documented
+(defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate) "\
+Catch the condition when the binary files differ.
 
-\(fn DIR)" t nil)
+The reason for catching the error out here (when re-thrown from
+the inner advice) is to let the stack continue to unwind before
+we start the new diff otherwise some code in the middle of the
+stack expects some output that isn't there and triggers an error." (let ((file-A (ad-get-arg 0)) (file-B (ad-get-arg 1)) ediff-do-hexl-diff) (condition-case err (progn ad-do-it) (error (if ediff-do-hexl-diff (let ((buf-A (find-file-noselect file-A)) (buf-B (find-file-noselect file-B))) (with-current-buffer buf-A (hexl-mode 1)) (with-current-buffer buf-B (hexl-mode 1)) (ediff-buffers buf-A buf-B)) (error (error-message-string err)))))))
+
+(defadvice ediff-setup-diff-regions (around ediff-setup-diff-regions-for-binary-files activate) "\
+When binary files differ, set the trigger variable." (condition-case err (progn ad-do-it) (error (setq ediff-do-hexl-diff (and (string-match-p "^Errors in diff output.  Diff output is in.*" (error-message-string err)) (string-match-p "^\\(Binary \\)?[fF]iles .* and .* differ" (buffer-substring-no-properties (line-beginning-position) (line-end-position))) (y-or-n-p "The binary files differ, look at the differences in hexl-mode? "))) (error (error-message-string err)))))
+
+;;;***
+
+;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
+;;;;;;  "ffip/find-file-in-project.el" (20190 45072))
+;;; Generated autoloads from ffip/find-file-in-project.el
+
+(autoload 'find-file-in-project "ffip/find-file-in-project" "\
+Prompt with a completing list of all files in the project to find one.
+
+The project's scope is defined as the first directory containing
+an `.emacs-project' file. You can override this by locally
+setting the `ffip-project-root' variable.
+
+\(fn)" t nil)
 
 ;;;***
 
@@ -190,11 +211,11 @@ The query function that disable deletion of buffers we protect.
 
 ;;;***
 
-;;;### (autoloads (magit-status) "magit" "magit/magit.el" (20106
-;;;;;;  20538))
+;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20142
+;;;;;;  14392))
 ;;; Generated autoloads from magit/magit.el
 
-(autoload 'magit-status "magit" "\
+(autoload 'magit-status "magit/magit" "\
 Open a Magit status buffer for the Git repository containing
 DIR.  If DIR is not within a Git repository, offer to create a
 Git repository in DIR.
@@ -320,8 +341,8 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "magit/magit-pkg.el")
-;;;;;;  (20142 14333 434110))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20190 45074
+;;;;;;  228766))
 
 ;;;***
 

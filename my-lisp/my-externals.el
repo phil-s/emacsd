@@ -53,9 +53,13 @@
             :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
             :features fic-mode)
 
-     (:name find-file-in-project
+     (:name ffip
             :type git
-            :url "git://github.com/bbatsov/find-file-in-project.git")
+            :url "git://github.com/dburger/find-file-in-project.git")
+
+     ;; (:name find-file-in-project
+     ;;        :type git
+     ;;        :url "git://github.com/bbatsov/find-file-in-project.git")
 
      (:name geben
             :type http-tar

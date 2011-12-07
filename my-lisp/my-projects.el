@@ -28,6 +28,9 @@
  '((nil . ((indent-tabs-mode . nil)
            (tab-width . 8)
            (fill-column . 76)
+           (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info" "*.js"
+                             "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
+                             "*.xml" "*.test" "*.theme" "*.ini"))
            ;; (drupal-p . t)
            ))
    (php-mode . ((mode . drupal)
@@ -35,6 +38,7 @@
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
    (js-mode . ((js-indent-level . 2)))
+   (javascript-mode . ((js-indent-level . 2)))
    ))
 
 ;; (defun my-dir-locals-php-hook ()
@@ -57,6 +61,14 @@
    ;; (python-mode . (()))
    ;; (nxhtml-mode . (()))
    ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defadvice find-file-in-project (around my-ido-ffip)
+  "Always use ido-completing-read."
+  (let ((ido-mode t))
+    ad-do-it))
+(ad-activate 'find-file-in-project)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
