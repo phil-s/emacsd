@@ -43,4 +43,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun my-alt-theme ()
+  "A really obviously different theme, for when I need it."
+  (interactive)
+  (color-theme-blue-mood)
+  (eval-after-load "magit"
+    '(progn
+       (set-face-background 'magit-item-highlight "blue4")
+       (set-face-foreground 'magit-item-highlight nil)
+       (set-face-underline 'magit-item-highlight nil)
+       (set-face-attribute 'magit-item-highlight nil :inherit nil))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-theme)
