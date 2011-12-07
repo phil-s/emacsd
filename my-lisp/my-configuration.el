@@ -40,6 +40,9 @@
 ;; Place killed text into the clipboard
 (setq x-select-enable-clipboard t)
 
+;; Save the clipboard to the kill ring if it would be clobbered
+(setq save-interprogram-paste-before-kill t)
+
 ;; Show time in mode line
 (require 'time)
 (setq display-time-24hr-format t)
