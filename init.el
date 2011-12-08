@@ -11,9 +11,25 @@
 ;; http://stackoverflow.com/questions/2500925/pipe-less-to-emacs
 ;; http://stackoverflow.com/questions/5147060/how-can-i-access-directory-local-variables-in-my-major-mode-hooks
 ;; http://irreal.org/blog/?p=330 ;; sort-columns is awesome
+;; ;; Writing a callback operation for marked files in dired:
+;; http://xahlee.blogspot.com/2011/12/emacs-convert-image-files-and-change.html
+;; ;; Interactive command templates:
+;; http://xahlee.org/emacs/elisp_idioms.html
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
+
+;; Search & replace over many files:
+;; 1) Find and mark in dired:
+;; * M-x find-grep-dired RET (dir) RET (pattern) RET
+;; * Mark files with dired commands (e.g. 't' to mark all)
+;;
+;; 2) Search & replace:
+;; a) 'Q' to initiate search and replace across marked files.
+;;    or:
+;; b) (i)   'F' to open all files in visible buffers, then
+;;    (ii)  'M-s C-/' for my-multi-occur-in-visible-buffers
+;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
 ;;;; Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
@@ -45,6 +61,10 @@
 ;; (setq w32-lwindow-modifier 'super)
 ;; (setq w32-rwindow-modifier 'hyper)
 ;; In X you'll have to play around with xmodmap or your own tool of choice.
+
+;; Modifier key events can be sent in software with the sequence C-x @ <c>
+;; where <c> represents the modifier required. See C-x @ C-h for the list.
+;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
 ;;;; Macros
 ;;   C-x (       or F3     Begins recording.
