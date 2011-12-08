@@ -64,11 +64,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defadvice find-file-in-project (around my-ido-ffip)
-  "Always use ido-completing-read."
+(defadvice ffip-completing-read (around my-ido-ffip-completing-read)
+  "Always use ido-completing-read with ffip."
   (let ((ido-mode t))
     ad-do-it))
-(ad-activate 'find-file-in-project)
+(ad-activate 'ffip-completing-read)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
