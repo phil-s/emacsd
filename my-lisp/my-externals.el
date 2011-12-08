@@ -38,6 +38,10 @@
             :url "git://git.sv.gnu.org/dtrt-indent.git"
             :features dtrt-indent)
 
+     (:name ediff-binary-hexl
+            :type http
+            :url "file:///home/phil/.emacs.d/local-repository/ediff-binary-hexl.el")
+
      (:name ediff-trees
             :type emacswiki)
 
@@ -106,6 +110,11 @@
      (:name transpose-frame
             :type emacswiki
             :features transpose-frame)
+
+     (:name windcycle
+            :type http
+            :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
+            :features windcycle)
 
      (:name undo-tree)
 
