@@ -46,6 +46,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defgroup scratch nil
   "Scratch buffers."
   :prefix "scratch-"
@@ -86,6 +87,7 @@ for those buffers."
                (push (substring name 0 -5) modes)))))
         modes)))
 
+;;;###autoload
 (defun scratch (&optional arg)
   "Get a scratch buffer for the current mode."
   (interactive "p")
