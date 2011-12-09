@@ -593,6 +593,15 @@ or before point."
   (interactive (my-region-or-word "WWW search: "))
   (browse-url (format my-www-search-url (url-hexify-string string))))
 
+(defun my-copy-rectangle (start end &optional fill)
+  "Trigger the read-only behaviour of `kill-rectangle'."
+  (interactive "r\nP")
+  (let ((read-only-state buffer-read-only)
+        (kill-read-only-ok t))
+    (setq buffer-read-only t)
+    (kill-rectangle start end fill)
+    (setq buffer-read-only read-only-state)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)

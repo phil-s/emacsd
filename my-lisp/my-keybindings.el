@@ -44,6 +44,7 @@
   ;; Kill ring / Yank assistance
   ;; (TODO: 'browse-kill-ring' in my-utilities)
   (define-key keymap (kbd "C-c y")     'my-yank-menu)
+  (define-key keymap (kbd "C-x r M-w") 'my-copy-rectangle)
 
   ;; winner-mode. Add to default bindings, and integrate with
   ;; my-(backward|forward)-word-or-buffer-or-windows.
