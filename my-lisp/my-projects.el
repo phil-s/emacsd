@@ -30,7 +30,7 @@
            (fill-column . 76)
            (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info" "*.js"
                              "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
-                             "*.xml" "*.test" "*.theme" "*.ini"))
+                             "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
            ;; (drupal-p . t)
            ))
    (php-mode . ((mode . drupal)
