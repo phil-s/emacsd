@@ -240,6 +240,9 @@ disabled.")))
 ;; Don't allow dragging and dropping files into dired
 (setq dired-dnd-protocol-alist nil)
 
+;; Guess the target directory (as prompt) when one is needed.
+(setq dired-dwim-target t)
+
 ;; Enable RET during an isearch in dired to immediately visit the file.
 ;; http://stackoverflow.com/questions/4471835/emacs-dired-mode-and-isearch
 (add-hook 'isearch-mode-end-hook 'my-isearch-mode-end-hook)
