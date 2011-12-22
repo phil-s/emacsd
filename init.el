@@ -12,6 +12,7 @@
 ;; http://stackoverflow.com/questions/5147060/how-can-i-access-directory-local-variables-in-my-major-mode-hooks
 ;; http://irreal.org/blog/?p=330 ;; sort-columns is awesome
 ;; ;; Writing a callback operation for marked files in dired:
+;; http://irreal.org/blog/?p=382
 ;; http://xahlee.blogspot.com/2011/12/emacs-convert-image-files-and-change.html
 ;; ;; Interactive command templates:
 ;; http://xahlee.org/emacs/elisp_idioms.html
@@ -167,6 +168,9 @@
 ;; M-x trace-function FUNCTION &optional BUFFER
 ;; M-x untrace-function FUNCTION
 ;; M-x untrace-all
+
+;; Timing and benchmarking:
+;; (benchmark-run &optional REPETITIONS &rest FORMS)
 
 ;; Emacs Lisp Profiler (ELP)
 ;; M-x elp-instrument-package
