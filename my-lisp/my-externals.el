@@ -107,6 +107,9 @@
             :type git
             :url "http://github.com/ieure/scratch-el.git")
 
+     (:name second-sel
+            :type emacswiki)
+
      (:name transpose-frame
             :type emacswiki
             :features transpose-frame)

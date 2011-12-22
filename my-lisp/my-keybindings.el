@@ -110,6 +110,14 @@
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 
+;; Second selection support
+(global-set-key (kbd "C-M-y") 'secondary-dwim)
+(define-key isearch-mode-map (kbd "C-M-y") 'isearch-yank-secondary)
+;; (define-key esc-map "y" 'yank-pop-commands) ;; cua-paste-pop conflict
+;; You might want to also use library `browse-kill-ring+.el'
+;; (and `browse-kill-ring.el').  I do.  If you do that, then
+;; load `second-sel.el' first.
+
 ;; Make emacs consistent with xkcd :)
 ;; (Too many inferred prefixes to put this in the minor mode
 ;; key map, as the map is displayed in the mode's docstring.)
