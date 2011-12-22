@@ -221,6 +221,12 @@ See also: `my-copy-buffer-file-name'."
       uniquify-after-kill-buffer-p t ; rename after killing uniquified
       uniquify-ignore-buffers-re   "^\\*") ; don't muck with special buffers
 
+;; Increase the default undo limits
+(when (< undo-limit 160000)
+  (setq undo-limit 160000))
+(when (< undo-strong-limit 240000)
+  (setq undo-strong-limit 240000))
+
 ;; Make large files read-only, and disable undo for the buffer
 (defun my-find-file-check-make-large-file-read-only-hook ()
   "If a file is over a given size, make the buffer read only."
