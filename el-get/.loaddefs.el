@@ -476,8 +476,9 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20190 45074
-;;;;;;  228766))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "sauron/sauron-dbus.el"
+;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-org.el" "sauron/sauron.el")
+;;;;;;  (20210 50461 587233))
 
 ;;;***
 

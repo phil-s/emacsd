@@ -1,0 +1,322 @@
+* sauron
+
+  *WARNING* sauron is in its early stages of development. Okay, now I warned
+  you.
+
+** what is it?
+
+   *sauron* is an emacs mode for keeping track of /events/ happening in the
+   (emacs) world around you. Events are things like 'appointment in 5 minutes',
+   'bob pinged you on IRC', 'torrent download is complete' etc. Sauron shows
+   those events like a list -- basically like a log. You can 'activate' an event
+   by either pressing =RET= when point is on it, or clicking it with the left
+   mouse button (=<down-mouse-1>=).
+
+   When activated, it can execute some arbitrary function -- for example in the
+   case of IRC (ERC), it will switch you to the buffer (channel) it originated
+   from. It's a bit of a generalization of what /tracking mode/ does in ERC (the
+   emacs IRC client), and that is in fact how it started.
+
+   For my work, I need to keep track of a bunch of internal ERC (IRC) channels
+   and at the same time not forget to go to meetings, even when I'm
+   concentrating on something else. So, I want something tweakable to provide me
+   with the right balance between obnoxiousness and ignorability. Thus, sauron
+   was born.
+
+   There's an increasing number of hooks and tunables in sauron, which allows
+   you to fine-tune the behavior. However, I strive for it to be useful with
+   minimal configuration.
+
+** getting started
+
+   After you've put the various sauron files in a directory, you can enable it
+   with something like the following in your =.emacs=:
+
+   ;; set load path, obviously replace "<path-to-sauron-dir>" with the actual path...
+   #+being_example
+:   (add-to-list 'load-path "<path-to-sauron-dir>")
+:   (require 'sauron)
+   #end_example
+
+   Now, you can start sauron with... =M-x sauron-start=, and stop it with =M-x
+   sauron-stop=.
+
+   =sauron-start= will pop-up a new frame (window) which will show events coming
+   from any of its sources (i.e.., ERC, org-mode appointments and over
+   d-bus). You can 'activate' a source by pressing "Enter" with the cursor on
+   the event, which will then take some backend-specific action.
+
+   For example, for the ERC-backend, it will transfer you to the buffer
+   (IRC-channel) where said event happened.
+
+   You can clear all events with =M-x sauron-clear= (default keybinding: =c=).
+
+   Sauron (by default) loads the =sauron-erc=, =sauron-org= and =sauron-dbus=
+   modules; if you don't have ERC, org-mode or d-bus support, these will simply
+   be ignored. If so desired, you can customize =sauron-modules=. See below for
+   some specifics about the backends.
+
+
+** customization
+
+   I've tried hard to come up with reasonable defaults, such that users can get
+   started with sauron without reading too much documentation or having to write
+   emacs-lisp etc.; still, I've also tried to make sauron very configurable -
+   different people have different needs, so it should be possible to coerce the
+   software in whatever direction.
+
+   Below are some customization points.
+
+*** priorities -- =sauron-min-priority=
+
+    Each event in sauron has a certain /priority/. Sauron *ignores* all events
+    which have a priority that is lower that =sauron-min-priority= (default
+    value: 3).
+
+    For example, all messages written on IRC (i.e., coming from the ERC-backend)
+    which are *not* directed towards you have priority 2 -- you will not see
+    them. And that is probably a good idea.
+
+*** watching patterns -- =sauron-watch-patterns=
+
+    You can specify a list of patterns (regular expressions) which sauron should
+    check. An event matching any of the patterns in the list will have its
+    priority raised by 1 point. If that one point raises it to
+    `sauron-min-priority' or higher level, it will now show up in the Sauron
+    buffer.
+
+    =sauron-watch-patterns= is useful if you want to check if, for example, your
+    name, or your hobby project is mentioned in some IRC channel.
+
+    So, for example, as part of your settings:
+    #+begin_example
+:;; watch for some animals
+:(setq sauron-watch-patterns
+:  '("\\bgnu\\b" "yak" "capybara" "wombat"))
+    #+end_example
+
+*** watching nicks -- =sauron-watch-nicks=
+
+    You can also specify a list of nicks to watch for; nicks are matched using a
+    string-match (not a regular expression). A nick matching any of the nicks in
+    the list will have its priority raised by 1 point. If that one point raises
+    it to `sauron-min-priority' or higher level, it will now show up in the
+    Sauron buffer.
+
+*** don't get swamped by a certain nick
+
+    Since you may not want to get too many events from one nick -- and, who
+    knows, accompanying sound effects, pop-ups and what have you, you can set
+    some insensitivity time; events from the same nick during this time will be
+    lowered in priority by one point.
+
+    You can set the time period (in seconds) with `sauron-nick-insensitivity',
+    which defaults to 60 seconds.
+
+*** blocking events from showing up -- =sauron-event-block-functions=
+
+    We can customize things even more precisely using the
+    =sauron-event-block-functions= hook function. Any event with a priority >=
+    =sauron-min-priority= will be passed to the hook function(s); if any of
+    those functions returns non-nil, the event will be blocked. See the emacs
+    documentation for a general introduction to hook functions, here's an
+    example:
+    #+begin_example
+    :(add-hook 'sauron-event-block-functions
+:  (lambda (origin prio msg &optional props)
+:    (or
+:      (string-match "foo" msg) ;; ignore events that match 'foo'
+:      ;; other matchers
+:     )))
+    #+end_example
+
+    Note that the =props= parameter is a backend specific property-list, which
+    allows you e.g. (for the ERC-backend) to get the sender of some ERC message,
+    and block based on that.
+
+*** doing stuff based on events -- =sauron-event-added-functions=
+
+    After events have been added, another hook is called:
+    =sauron-event-added-functions=.
+
+    This is place to add sound effects, notifications and so on. After all, if
+    you get an event for e.g. the org-mode backend that you have a meeting to
+    attend in 5 minutes, simply adding a line in the Sauron-buffer may not be
+    enough.
+
+    Instead, you can define a hook function for this.
+
+    For doing very sound effects, pop-ups etc., a few
+    convenience functions are provided:
+    - ~sauron-fx-sox~ (play a sound using 'sox')
+    - ~sauron-fx-aplay~ (play a sound using 'aplay')
+    - ~sauron-fx-gnome-osd~ (show some letters on your screen)
+    - ~sauron-fx-zenity~ (pop up a zenity window)
+    - ~sauron-fx-notify~ (trigger a notification using the D-Bus notification daemon)
+    (see the doc-strings for the functions for the details about their
+    parameters).
+
+    Now, our hook function could look something like:
+
+    #+begin_example
+:(add-hook 'sauron-event-added-functions
+:  (lambda (origin prio msg &optional props)
+:    (if (string-match "ping" msg)
+:      (sauron-fx-sox "/usr/share/sounds/ping.wav")
+:      (sauron-fx-sox "/usr/share/sounds/something-happened.wav"))
+:    (when (>= prio 4)
+:	(sauron-fx-sox "/usr/share/sounds/uhoh.wav")
+:	(sauron-fx-gnome-osd msg 10))))
+    #+end_example
+
+** the backend modules
+
+   Currently, three backend modules have been implemented - ERC, org-mode and
+   d-bus. Hopefully, more will follow.
+
+*** erc
+
+    The ERC module check all IRC PRIVMSG messages, and JOIN/LEAVE/QUIT
+    messages. PRIVMSG includes the messages sent to any channel by anyone. These
+    message are given (by default) priority 2, so (by default) they do not show
+    up in your sauron buffer.
+
+    However, messages that match one of your =sauron-watch-patterns= or
+    =sauron-watch-nicks= are getting a higher priority, or messages that are
+    private messages directed at you. However, after sending a message, you
+    won't get notified from the same nick for another 60 seconds (by default --
+    see =sauron-nick-insensitivity=), so you won't get e.g. sound effects for
+    each message in a private conversation.
+
+*** org-mode / appt
+
+    For org-mode, sauron adds functionality to =appt-disp-window-function= (but
+    leaves it intact), so that whenever some event is near, you get a
+    notification with the following priorities:
+    - 15 minutes left: priority 3
+    - 10 minutes left: priority 3
+    - 5  minutes left: priority 4
+    - 2  minutes left: priority 5
+    For all other minutes, you'll get events with priority 2.
+
+*** d-bus
+
+    The dbus backend allows you to get events from outside emacs; it listens for
+    two messages, =AddUrlEvent= and =AddMsgEvent=. You can call them like this:
+
+#+begin_src sh
+:    dbus-send --session --dest="org.gnu.Emacs"	   \
+:    "/org/gnu/Emacs/Sauron"                       \
+:    "org.gnu.Emacs.Sauron.AddUrlEvent"            \
+:    string:shell uint32:3 string:"Link: Emacs-Fu" \
+:    string:"http://emacs-fu.blogspot.com"
+#+end_src
+The four parameters are resp. the sender ('shell'), the priority ('3' in the
+example), a description and a URL. This will show up in the sauron buffer (if
+the priority is high enough), and if you activate the event (press RET), your
+browser will visit the link.
+
+#+begin_src sh
+:    dbus-send --session          	          \
+:    --dest="org.gnu.Emacs"	                  \
+:     "/org/gnu/Emacs/Sauron"                     \
+:    "org.gnu.Emacs.Sauron.AddMsgEvent"           \
+:    string:shell uint32:3 string:"Hello, world!"
+#+end_src
+The three parameters are resp. the sender ('shell'), the priority ('3' in the
+example), and message. This will show up in the sauron buffer (if the priority
+is high enough).
+
+One use for these kind of messages is to warn you when for example a torrent has
+been completed in 'Transmission'. In the torrent-completion script (see Preferences/
+Call-script-when-torrent-is-completed), add something like:
+#+begin_src sh
+#+begin_src sh
+:    dbus-send --session          	          \
+:    --dest="org.gnu.Emacs"	                  \
+:     "/org/gnu/Emacs/Sauron"                     \
+:    "org.gnu.Emacs.Sauron.AddMsgEvent"           \
+:    string:Transmission uint32:3 string:"Torrent completed: $TR_TORRENT_NAME"
+#+end_src
+
+I'm sure you can think of other useful applications.
+
+
+** adding new modules
+
+   It may be interesting to track other modules as well; this shouldn't be too
+   hard. Suppose we have a module 'foo':
+
+   - create "sauron-foo.el", and make sure it's in the load-path
+   - sauron-foo should implement at least:
+     + ~sauron-foo-start~ to start the module
+     + ~sauron-foo-stop~ to stop the module / cleanup etc.
+   - add sauron-foo.el with =(provide 'sauron-foo)=
+   - now, add ~sauron-foo~ to your ~sauron-modules~
+
+   Now, to actually make your module useful, you'd want to add some event is
+   something happens. This is done using =sauron-add-event= (see it's
+   documentation).
+
+** Using =sauron= from your other modules
+
+   If you want to create simple sauron-events from other elisp code, writing a
+   backend modules might be unnecessary; you can simply call the
+   =sauron-add-event= function directly. See its docstring for the details. Example:
+
+#+begin_src emacs-lisp
+(sauron-add-event
+   'kitchen           ;; origin
+   3                  ;; priority
+   "Coffee is ready!"
+   '(lambda ()        ;; function called when activated
+      (message "Coffee's ready, get it while it's hot!"))
+   '(:temperature 80)) ;; arbitrary props passed to
+                       ;; hook functions
+#+end_src
+
+   A typical pattern may also be to switch to the buffer of origin when the
+   event is activated. The =sauron-switch-to-buffer= function may be useful
+   there, as it tries to ensure that the buffer is shown in the /other/ frame
+   (not the one with Sauron).
+
+
+** sample configuration
+
+#+begin_src emacs-lisp
+:(require 'sauron)
+:
+: ;; note, you add (setq sauron-debug t) to get errors which can debug if
+: ;; there's something wrong; normally, we catch such errors, since e.g an error
+: ;; in one of the hooks may cause ERC to fail (i.e., the message won't come
+: ;; trough).
+:
+:(setq
+:  sauron-max-line-length 120
+:
+:  ;; you probably want to add your own nickname to the these patterns
+:  sauron-watch-patterns
+:  '("emacs-fu" "emacsfu" "wombat" "capybara" "yak" "gnu" "\\bmu\\b")
+:
+:  ;; you probably want to add you own nick here as well
+:  sauron-watch-nicks
+:  '("Tom" "Dick" "Harry"))
+:
+:;; some sound/light effects for certain events
+:(add-hook 'sauron-event-added-functions
+:  (lambda (origin prio msg &optional props)
+:    (if (string-match "ping" msg)
+:      (sauron-fx-sox "/usr/share/sounds/ping.wav"))
+:    (cond
+:      ((= prio 3) (sauron-fx-sox "/usr/share/sounds/pling.wav"))
+:      ((= prio 4) (sauron-fx-sox "/usr/share/sounds/plong.wav"))
+:      ((= prio 5)
+:	(sauron-fx-sox "/usr/share/sounds/alarm.wav")
+:	(sauron-fx-gnome-osd(format "%S: %s" origin msg) 5)))))
+:
+:;; events to ignore
+:(add-hook 'sauron-event-block-functions
+:  (lambda (origin prio msg &optional props)
+:    (or
+:      (string-match "^*** Users" msg)))) ;; don't notify on IRC spam
+#+end_src

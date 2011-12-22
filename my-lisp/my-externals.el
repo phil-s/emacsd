@@ -103,6 +103,11 @@
 
      (:name rainbow-mode)
 
+     (:name sauron
+            :type git
+            :url "git://github.com/djcb/sauron.git"
+            :features sauron)
+
      (:name scratch
             :type git
             :url "http://github.com/ieure/scratch-el.git")
