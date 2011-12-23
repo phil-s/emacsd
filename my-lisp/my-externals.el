@@ -110,7 +110,8 @@
 
      (:name scratch
             :type git
-            :url "http://github.com/ieure/scratch-el.git")
+            :url "http://github.com/ieure/scratch-el.git"
+            :post-init (lambda () (autoload 'scratch "scratch" nil t)))
 
      (:name second-sel
             :type emacswiki)
