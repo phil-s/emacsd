@@ -59,7 +59,7 @@ Switch to *Deft* buffer and load files.
 ;;;***
 
 ;;;### (autoloads nil "ediff-binary-hexl/ediff-binary-hexl" "ediff-binary-hexl/ediff-binary-hexl.el"
-;;;;;;  (20174 55100))
+;;;;;;  (20192 19149))
 ;;; Generated autoloads from ediff-binary-hexl/ediff-binary-hexl.el
 
 (defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate) "\
@@ -76,7 +76,7 @@ When binary files differ, set the trigger variable." (condition-case err (progn 
 ;;;***
 
 ;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
-;;;;;;  "ffip/find-file-in-project.el" (20190 45072))
+;;;;;;  "ffip/find-file-in-project.el" (20192 19143))
 ;;; Generated autoloads from ffip/find-file-in-project.el
 
 (autoload 'find-file-in-project "ffip/find-file-in-project" "\
