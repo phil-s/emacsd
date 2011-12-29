@@ -58,15 +58,19 @@
   ;; ;; n.b. without smart-tab, TAB will currently be bound to yas/expand)
   (global-smart-tab-mode 1))
 
+(defvar my-global-smart-tab-major-mode-exceptions
+  (list 'org-mode 'term-mode)
+  "List of major modes for which smart-tab-mode should not be enabled.")
+
 ;; Smart Tabs occasionally does the Wrong Thing,
 ;; so disable smart-tab-mode for certain major modes
 (defadvice smart-tab-mode-on
   (around disable-smart-tab-for-modes)
-  "Disable smart-tab-mode in the specified major modes
-(to counter-act global-smart-tab-mode)."
+  "Disable smart-tab-mode in the specified major modes,
+to counter-act global-smart-tab-mode."
   (unless (memq major-mode
-                (list 'org-mode 'term-mode))
-      ad-do-it))
+                my-global-smart-tab-major-mode-exceptions)
+    ad-do-it))
 (ad-activate 'smart-tab-mode-on)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
