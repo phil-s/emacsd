@@ -299,6 +299,10 @@ disabled.")))
 (defun my-outline-minor-mode-hook ()
   (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
+;; Sauron (keeping an eye on things)
+(setq sauron-separate-frame nil
+      sauron-nick-insensitivity 0)
+
 ;; erc-mode (for IRC)
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
