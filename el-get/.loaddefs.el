@@ -76,7 +76,7 @@ When binary files differ, set the trigger variable." (condition-case err (progn 
 ;;;***
 
 ;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
-;;;;;;  "ffip/find-file-in-project.el" (20192 19143))
+;;;;;;  "ffip/find-file-in-project.el" (20220 2082))
 ;;; Generated autoloads from ffip/find-file-in-project.el
 
 (autoload 'find-file-in-project "ffip/find-file-in-project" "\
@@ -477,8 +477,9 @@ Just some alien fruit salad to keep you in the zone.
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
 ;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "sauron/sauron-dbus.el"
-;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-org.el" "sauron/sauron.el")
-;;;;;;  (20210 50461 587233))
+;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-org.el" "sauron/sauron.el"
+;;;;;;  "gpicker/gpicker.el")
+;;;;;;  (20229 17115 934208))
 
 ;;;***
 

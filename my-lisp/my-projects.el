@@ -70,6 +70,14 @@
     ad-do-it))
 (ad-activate 'ffip-completing-read)
 
+(defun my-find-file-in-project ()
+  (interactive)
+  (if (executable-find "gpicker")
+      (let ((*gpicker-project-dir*
+             (expand-file-name (ffip-project-root))))
+        (call-interactively 'gpicker-find-file))
+    (call-interactively 'find-file-in-project)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-file-locals-set-directory-class (file class &optional mtime)

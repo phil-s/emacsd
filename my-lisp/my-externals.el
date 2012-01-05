@@ -70,11 +70,18 @@
             :options ("zxf")
             :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
 
+     (:name gpicker
+            :type http
+            :url "http://git.savannah.gnu.org/cgit/gpicker.git/plain/gpicker.el"
+            :post-init (lambda ()
+                         (autoload 'gpicker-visit-project "gpicker" nil t)
+                         (autoload 'gpicker-find-file "gpicker" nil t)))
+
      (:name htmlr
             :type emacswiki)
 
      (:name iedit)
-     
+
      (:name keep-buffers
             :type http
             :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"

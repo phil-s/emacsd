@@ -87,7 +87,7 @@
   (define-key keymap (kbd "M-.")       'etags-select-find-tag)
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
-  (define-key keymap (kbd "C-c C-f")   'find-file-in-project)
+  (define-key keymap (kbd "C-c C-f")   'my-find-file-in-project)
   (define-key keymap (kbd "C-c m")     'magit-status)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
   (define-key keymap (kbd "C-c n")     'deft)
