@@ -25,6 +25,7 @@
   ;; Use ibuffer in place of list-buffers
   (define-key keymap (kbd "C-x C-b")   'ibuffer)
   (define-key keymap (kbd "<menu>")    'ibuffer)
+  (define-key keymap (kbd "M-<menu>")  'switch-to-buffer)
 
   ;; Whitespace
   (define-key keymap (kbd "C-x M-w")   'toggle-show-trailing-whitespace)
