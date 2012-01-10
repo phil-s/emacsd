@@ -206,7 +206,7 @@
 ;; http://stackoverflow.com/questions/6238331/#6259330
 ;;
 ;; #!/bin/sh
-;; ":"; exec emacs --no-site-file --script "$0" -- "$@" # -*-emacs-lisp-*-
+;; ":"; exec emacs --no-site-file --script "$0" "$@" # -*-emacs-lisp-*-
 ;; (print (+ 2 2))
 
 ;; Processing with STDIN and STDOUT via --script:
