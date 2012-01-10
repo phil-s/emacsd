@@ -14,3 +14,14 @@
 
 ;; See:
 ;; http://www.kernel.org/pub/software/scm/git/docs/git-update-index.html
+
+(defun my-local-backup ()
+  "Copy this file to a backup file after saving, to protect against git issues."
+  (copy-file
+   buffer-file-name
+   (concat (file-name-sans-extension buffer-file-name) ".backup")
+   t t))
+
+;;; Local Variables:
+;;; eval:(add-hook 'after-save-hook 'my-local-backup nil t)
+;;; End:
