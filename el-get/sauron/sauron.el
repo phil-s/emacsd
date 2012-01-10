@@ -1,12 +1,12 @@
-;;; sauron -- enhanced tracking of the world inside and outside your emacs
-;;; buffers
+;;; sauron.el --- a frame tracking events inside and outside your emacs buffers
 ;;
 ;; Copyright (C) 2011 Dirk-Jan C. Binnema
 
 ;; Author: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 ;; Maintainer: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
-;; Keywords:
-;; Version: 0.0
+;; Created: 06 Dec 2011
+;; Version: 0.1
+;; Keywords:comm,frames
 
 ;; This file is not part of GNU Emacs.
 ;;
@@ -24,6 +24,11 @@
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+;;  For documentation, please see:
+;;  https://github.com/djcb/sauron/blob/master/README.org
+
+;; note - 'public' functions/variables are prefixed with 'sauron-', while
+;; internal stuff starts with 'sr-'
 
 ;;; Code:
 (eval-when-compile (require 'cl))
@@ -32,10 +37,6 @@
   '(sauron-erc sauron-dbus sauron-org)
   "List of sauron modules to use. Currently supported are:
 sauron-erc, sauron-org and sauron-dbus.")
-
-;; user settable variables
-(defvar sauron-separate-frame t
-  "Whether the sauron should use a separate frame.")
 
 (defvar sauron-frame-geometry "100x8+0-0"
   "Geometry (size, position) of the the sauron frame, in X geometry
@@ -63,16 +64,15 @@ coming from some nick after something has come in. This is to
 prevent large numbers of beeps, light effects when dealing with
 nick. Must be < 65536")
 
-
-(defvar sauron-event-format "%t %o(%p) %m"
-  "Format of a sauron event line. The following format parameters are available:
-%t: the timestamp (see `sauron-timestamp-format' for its format)
-%p: priority of the event (an integer [1..5])
-%o: the origin of the event
-%m: the message for this event.")
-
-(defvar sauron-debug nil
-  "Whether do show errors.")
+(defvar sauron-column-alist
+  '( ( timestamp  .  20)
+     ( origin     .   7)
+     ( priority   .   4)
+     ( message    . nil))
+"An alist with elements (FIELD . WIDTH) which describes the columns to
+  show. The fields are truncated to fit in WIDTH characters, with
+  'nil' meaning 'no limit', so that one's should be reserverd for
+  the last field. Also, the width should be >= 3.")
 
 (defvar sauron-timestamp-format "%Y-%m-%d %H:%M:%S"
   "Format for the timestamps, as per `format-time-string'.")
@@ -80,6 +80,10 @@ nick. Must be < 65536")
 (defvar sauron-max-line-length 80
   "Maximum length of messages in the log (longer messages will be
   truncated. If set to nil, there is no maximum.")
+
+(defvar sauron-scroll-to-bottom t
+  "Wether to automatically scroll the sauron window to the bottom
+when new events arrive. Set to nil to prevent this.")
 
 (defvar sauron-event-block-functions nil
   "Hook to be called *before* an event is added. If all of the
@@ -114,33 +118,76 @@ PROPS is a backend-specific plist.")
   '((t :inherit font-lock-variable-name-face))
   "Face for a sauron event origin.")
 
+(defface sauron-priority-face
+  '((t :inherit font-lock-operator))
+  "Face for a sauron event priority.")
+
 ;; these highlight faces are for use in backends
 (defface sauron-highlight1-face
   '((t :inherit font-lock-pseudo-keyword-face))
-  "Face to highlight certain things (1).")
+  "Face to highlight certain things (1) - for use in backends.")
 
 (defface sauron-highlight2-face
   '((t :inherit font-lock-string-face))
-  "Face to highlight certain things (2).")
+  "Face to highlight certain things (2) - for use in backends.")
 
 (defface sauron-highlight3-face
   '((t :inherit font-lock-constant-face))
-  "Face to highlight certain things (3).")
+  "Face to highlight certain things (3) - for use in backends..")
+
+(defface sauron-header-face
+  '((t :inherit font-lock-function-name-face :bold t))
+  "Face for the header line.")
+
+(defface sauron-event-handled-face
+  '((t :strike-through t))
+  "Face for a handled event.")
 
 ;;(setq sauron-mode-map nil)
 (defvar sauron-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "c"               'sauron-clear)
     (define-key map (kbd "RET")       'sauron-activate-event)
-    (define-key map (kbd "<down-mouse-1>") 'sauron-activate-event)
+    (define-key map (kbd "<mouse-2>") 'sauron-activate-event)
     map)
   "Keymap for the sauron buffer.")
 (fset 'sauron-mode-map sauron-mode-map)
 
+(defvar sauron-debug nil
+  "Whether to show errors. Unless you're actually debugging, it's
+good to leave this to nil, since when there's some error happening
+in your hook function, this may interfere with normal operation,
+e.g. when using ERC")
+
+(defconst sr-column-name-alist
+  '( ( timestamp    . "Time"   )
+     ( origin       . "Orig"   )
+     ( priority     . "Prio"   )
+     ( message      . "Message"))
+  "Alist of the column names.")
 
 (defvar sr-nick-event-hash nil
   "*internal* hash of nicks and the last time we raised an 'event'
   for that at >= `sauron-min-priority'.")
+
+(defun sr-set-header-line ()
+  "Set the header line for the sauron buffer."
+  (setq header-line-format
+    (cons
+      (make-string (floor (fringe-columns 'left t)) ?\s)
+      (map 'list
+	(lambda (elm)
+	  (let ((field (cdr (assoc (car elm) sr-column-name-alist)))
+		 (width (cdr elm)))
+	    (concat
+	      (propertize
+		(if width
+		  (truncate-string-to-width field width 0 ?\s t)
+		  field)
+		'face 'sauron-header-face)
+	      " ")))
+	sauron-column-alist))))
+
 
 (defun sauron-mode ()
   "Major mode for the sauron."
@@ -152,7 +199,8 @@ PROPS is a backend-specific plist.")
     mode-name "Sauron"
     truncate-lines t
     buffer-read-only t
-    overwrite-mode 'overwrite-mode-binary))
+    overwrite-mode 'overwrite-mode-binary)
+  (sr-set-header-line))
 
 ;;;###autoload
 (defun sauron-start ()
@@ -208,15 +256,14 @@ timestamp."
 (defun sr-calibrated-prio (msg props prio)
   "Re-calibrate the PRIO for MSG with PROPS:
 1) if we already saw something from this nick in the last
-`sauron-nick-insensitity' seconds, set priority to 2.
+`sauron-nick-insensitity' seconds, set priority to 2 (see `sr-fresh-nick-event')
 2) otherwise:
    if msg matches `sauron-watch-patterns', prio = prio + 1
    if nick matches `sauron-watch-nicks', prio = prio + 1
 3) if prio > 5, prio = 5
 Returns the new priority."
-  (let ((prio prio)
-	 (nick (plist-get props :sender)))
-    (if (not (sr-fresh-nick-event nick)) ;;
+  (let ((prio prio) (nick (plist-get props :sender)))
+    (if (and nick (not (sr-fresh-nick-event nick))) ;;
       (setq prio 2) ;; set prio to 2 for nicks we got events for recently
       (progn
 	(when (sr-pattern-matches msg sauron-watch-patterns 'string-match)
@@ -228,7 +275,6 @@ Returns the new priority."
       prio))
 
 
-
 (defmacro sr-ignore-errors-maybe (&rest body)
   "Execute BODY; if sauron-debug is nil, do so in a
 `ignore-errors'-block, otherwise run with without such a block.
@@ -238,6 +284,33 @@ For debugging purposes."
     (declare (debug t) (indent 0))
     `(condition-case nil (progn ,@body) (error nil))))
 
+
+(defun sr-event-line (origin prio msg)
+  "Get a one-line string describing the event."
+  (mapconcat
+    (lambda (f-w)
+      (let* ((field (car f-w)) (width (cdr f-w))
+	      (str
+		(case field
+		  ('timestamp
+		    (propertize (format-time-string sauron-timestamp-format
+				  (current-time)) 'face 'sauron-timestamp-face))
+		  ('priority (propertize (format "%d" prio) 'face 'sauron-priority-face))
+		  ('origin   (propertize (symbol-name origin) 'face 'sauron-origin-face))
+		  ('message  msg)
+		  (otherwise (error "Unknown field %S" field)))))
+	(if width
+	  (truncate-string-to-width str width 0 ?\s t)
+	  str)))
+    sauron-column-alist " "))
+
+(defun sr-scroll-to-bottom ()
+  "Scroll to the bottom of the sauron frame."
+  (dolist (win (get-buffer-window-list sr-buffer nil t))
+    (select-window win)
+    (goto-char (point-max))
+    (recenter -1)))
+  
 ;; the main work horse functions
 (defun sauron-add-event (origin prio msg &optional func props)
   "Add a new event to the Sauron log with:
@@ -260,7 +333,7 @@ PROPS an origin-specific property list that will be passed to the hook funcs."
       func))
   (unless (or (null props) (listp props))
     (error "sauron-add-event: PROPS must be nil or a plist, not %S" props))
-  
+
   ;; recalculate the prio, based on watchwords, nicks involved, and recent
   ;; history.
   ;;  (message "old prio: %d" prio)
@@ -272,13 +345,7 @@ PROPS an origin-specific property list that will be passed to the hook funcs."
 	  (null (sr-ignore-errors-maybe ;; ignore errors unless we're debugging
 		  (run-hook-with-args-until-success
 		    'sauron-event-block-function origin prio msg props))))
-    (let* ((line (format-spec sauron-event-format
-		   (format-spec-make
-		     ?t (propertize (format-time-string sauron-timestamp-format
-				      (current-time)) 'face 'sauron-timestamp-face)
-		     ?p (format "%d" prio)
-		     ?o (propertize (symbol-name origin) 'face 'sauron-origin-face)
-		     ?m msg)))
+    (let* ((line (sr-event-line origin prio msg))
 	    ;; add the callback as a text property, remove any embedded newlines,
 	    ;; truncate if necessary append a newline
 	    (line (concat
@@ -291,11 +358,12 @@ PROPS an origin-specific property list that will be passed to the hook funcs."
       (sr-create-buffer-maybe) ;; create buffer if it did not exist yet
       (with-current-buffer sr-buffer
 	(goto-char (point-max))
-	(insert line))
+	(insert line)
+	(when sauron-scroll-to-bottom
+	  (sr-scroll-to-bottom)))
       (sr-ignore-errors-maybe ;; ignore errors unless we're debugging
 	(run-hook-with-args
 	  'sauron-event-added-functions origin prio msg props)))))
-
 
 (defun sauron-activate-event ()
   "Activate the callback for the current sauron line, and remove
@@ -307,7 +375,7 @@ any special faces from the line."
   	  (inhibit-read-only t))
     ;; remove the funky faces
     (put-text-property (line-beginning-position) (line-end-position)
-      'face 'default)
+      'face 'sauron-event-handled-face)
     (if callback
       (funcall callback)
       (message "No callback defined for this line."))))
@@ -323,18 +391,16 @@ any special faces from the line."
       (error "Buffer %s not found" buf))
     (let* ( ;; don't re-use the Sauron window
 	    (display-buffer-reuse-frames t)
-	    ;; if we're using a separate Sauron frame, don't split it
-	    (pop-up-windows (not sauron-separate-frame))
+	    (pop-up-windows nil)
 	   ;; don't create new frames
 	    (pop-up-frames nil)
 	    ;; find a window for our buffer
 	    (win  (display-buffer buf t)))
       (select-frame-set-input-focus (window-frame win)))))
 
+
 (defun sr-show ()
-  "Show the sauron buffer. Depending on
-`sauron-separate-frame', it will use the current frame or a new
-one."
+  "Show the sauron buffer in a separate frame."
   (interactive)
   (setq sr-buffer (sr-create-buffer-maybe))
   (let* ((win (get-buffer-window sr-buffer))
@@ -343,16 +409,14 @@ one."
       (progn
 	(select-window win)
 	(make-frame-visible frame))
-      (if sauron-separate-frame
-	(progn
+      (progn
 	  (switch-to-buffer-other-frame sr-buffer)
 	  (let ((frame-params
 		  (append
 		    '((tool-bar-lines . 0) (menu-bar-lines . 0))
 		    (x-parse-geometry sauron-frame-geometry))))
-	    (modify-frame-parameters nil frame-params)))
-	(switch-to-buffer sr-buffer)))
-      (set-window-dedicated-p (selected-window) t)))
+	    (modify-frame-parameters nil frame-params))))
+    (set-window-dedicated-p (selected-window) t)))
 
 (defun sr-hide ()
   "Hide the sauron buffer and/of frame."
@@ -361,9 +425,8 @@ one."
     (error "No sauron buffer found"))
   (let* ((win (get-buffer-window sr-buffer t))
 	  (frame (and win (window-frame win))))
-    (if (and sauron-separate-frame (frame-live-p frame))
+    (if (frame-live-p frame)
       (make-frame-invisible frame))))
-;; TODO: handle the non-separate frame case
 
 
 (defun sauron-clear ()
@@ -409,6 +472,21 @@ sauron buffer."
     (with-current-buffer sr-buffer
       (sauron-mode)))
   sr-buffer)
+
+
+
+;; adapters
+
+(defun sauron-alert-el-adapter (origin prio msg &optional props)
+  "A handler function to feed sauron events through John Wiegley's
+alert.el (https://github.com/jwiegley/alert). You can use it like:
+  (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)
+Obviously, 'alert.el' must be loaded for this to work."
+  ;; sauron priorities [0..5] mapping alert severities
+  (let ((sev (nth prio '(trivial trivial low normal moderate high urgent)))
+	 (cat origin)   ;; origins map to alert categories
+	 (title (format "Alert from %S" origin)))
+    (alert msg :severity sev :title title :category cat)))
 
 
 
@@ -465,3 +543,5 @@ id for the notification."
     note-id))
 
 (provide 'sauron)
+
+;;; sauron.el ends here
