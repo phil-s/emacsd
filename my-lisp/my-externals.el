@@ -59,7 +59,9 @@
 
      (:name ffip
             :type git
-            :url "git://github.com/dburger/find-file-in-project.git")
+            :url "git://github.com/dburger/find-file-in-project.git"
+            :post-init (lambda ()
+                         (autoload 'ffip-project-root "find-file-in-project" nil t)))
 
      ;; (:name find-file-in-project
      ;;        :type git
