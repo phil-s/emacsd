@@ -8,6 +8,7 @@ ELCS=$(ELS:.el=.elc)
 ELCS_CONTRIB=$(ELS_CONTRIB:.el=.elc)
 DIST_FILES=$(ELS) Makefile magit.texi magit.info README.md magit.spec.in magit-pkg.el.in 50magit.el
 DIST_FILES_CONTRIB=$(ELS_CONTRIB) contrib/magit
+ELPA_FILES=$(ELS) magit.info magit-pkg.el
 
 .PHONY=install
 
@@ -54,6 +55,15 @@ magit-$(VERSION).tar.gz: $(DIST_FILES) $(DIST_FILES_CONTRIB)
 	tar -cvzf magit-$(VERSION).tar.gz magit-$(VERSION)
 	rm -rf magit-$(VERSION)
 
+elpa: magit-$(VERSION).tar
+
+magit-$(VERSION).tar: $(ELPA_FILES)
+	mkdir magit-$(VERSION)
+	cp --preserve=timestamps $(ELPA_FILES) magit-$(VERSION)
+	sed -i -e "s/@GIT_DEV_VERSION@/$(VERSION)/" magit-$(VERSION)/magit.el #NO_DIST
+	tar -cvf magit-$(VERSION).tar magit-$(VERSION)
+	rm -rf magit-$(VERSION)
+
 install: install_core install_docs
 
 install_core: core
@@ -77,4 +87,5 @@ install_contrib: contrib
 install_all: install install_contrib
 
 clean:
-	rm -fr magit-pkg.el magit.spec magit.info $(ELCS) $(ELCS_CONTRIB) *.tar.gz magit-$(VERSION)
+	rm -f magit.info #NO_DIST
+	rm -fr magit-pkg.el magit.spec $(ELCS) $(ELCS_CONTRIB) *.tar.gz magit-$(VERSION)

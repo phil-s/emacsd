@@ -69,7 +69,8 @@
       ("t" "Push tags" magit-push-tags))
      (switches
       ("-f" "Force" "--force")
-      ("-d" "Dry run" "-n")))
+      ("-d" "Dry run" "-n")
+      ("-u" "Set upstream" "-u")))
 
     (pulling
      (man-page "git-pull")
@@ -81,7 +82,7 @@
     (branching
      (man-page "git-branch")
      (actions
-      ("v" "Branch manager" magit-show-branches)
+      ("v" "Branch manager" magit-branch-manager)
       ("n" "New" magit-create-branch)
       ("m" "Move" magit-move-branch)
       ("d" "Delete" magit-delete-branch)
