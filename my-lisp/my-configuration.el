@@ -13,6 +13,19 @@
       kept-new-versions      20 ; How many of the newest versions to keep...
       kept-old-versions      5) ; ...and how many of the old.
 
+(defvar my-non-file-buffer-auto-save-dir (file-name-directory user-init-file)
+  "Directory in which to store auto-save files for non-file buffers,
+when `auto-save-mode' is invoked manually.")
+
+(defadvice auto-save-mode (around use-my-non-file-buffer-auto-save-dir)
+  "Use a standard location for auto-save files for non-file buffers"
+  (if (and (not buffer-file-name)
+           (called-interactively-p 'any))
+      (let ((default-directory my-non-file-buffer-auto-save-dir))
+        ad-do-it)
+    ad-do-it))
+(ad-activate 'auto-save-mode)
+
 ;; No splash screen
 (setq inhibit-startup-screen t)
 
