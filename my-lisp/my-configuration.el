@@ -195,8 +195,14 @@ See also: `my-copy-buffer-file-name'."
   (define-key cua--region-keymap
     [remap delete-char] 'delete-char))
 
-;; titlebar = buffer unless filename
-(setq frame-title-format '(buffer-name "%f (Emacs)" ("%b (Emacs)")))
+;; Set titlebar text to buffer name, along with the file/directory path
+;; as appropriate.
+(setq frame-title-format
+      '(buffer-file-name
+        ("%b (Emacs) %f")
+        (dired-directory
+         (:eval (concat (buffer-name) " (Emacs) " dired-directory))
+         ("%b (Emacs)"))))
 
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
