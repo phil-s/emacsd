@@ -78,11 +78,9 @@
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
 
   ;; Configure local TAGS
-  (let ((tag-dir (my-parent-of-dir-in-buffer-file-name "htdocs")))
-    (if tag-dir
-        (let ((tag-file (concat tag-dir "/TAGS")))
-          (if (file-readable-p tag-file)
-              (visit-tags-table tag-file t)))))
+  (let ((tag-dir (locate-dominating-file default-directory "TAGS")))
+    (when tag-dir
+      (visit-tags-table tag-dir t)))
 
   ;; Essential Drupal configurations.
   (drupal-mode-php-config)
