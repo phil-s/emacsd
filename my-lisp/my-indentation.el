@@ -59,7 +59,7 @@
   (global-smart-tab-mode 1))
 
 (defvar my-global-smart-tab-major-mode-exceptions
-  (list 'org-mode 'term-mode 'erc-mode)
+  (list 'org-mode 'term-mode 'shell-mode 'eshell-mode 'erc-mode)
   "List of major modes for which smart-tab-mode should not be enabled.")
 
 ;; Smart Tabs occasionally does the Wrong Thing,
