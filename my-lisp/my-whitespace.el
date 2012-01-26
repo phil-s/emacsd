@@ -24,12 +24,10 @@
         (tab-mark 9 [187 9] [92 9])
         ))
 
-;; Broken in Emacs 24
-(when (not (equal emacs-major-version 24))
-  ;; Use ws-trim mode to strip trailing whitespace automatically
-  ;; from edited lines (the default ws-trim-level).
-  (when (require 'ws-trim nil 'noerror)
-    (global-ws-trim-mode t)))
+;; Use ws-trim mode to strip trailing whitespace automatically
+;; from edited lines (the default ws-trim-level).
+(when (require 'ws-trim nil 'noerror)
+  (global-ws-trim-mode t))
 
 ;; ;; Strip trailing whitespace.
 ;; ;; No need for this now; delete-trailing-whitespace is built in.

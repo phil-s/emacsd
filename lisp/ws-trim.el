@@ -277,11 +277,8 @@ See the variable docstring for details about this mode."
 	  (progn
 	    (error "`ws-trim-level' must be an integer")
 	    (setq ws-trim-mode nil))
-	(make-local-hook 'after-change-functions)
 	(add-hook 'after-change-functions 'ws-trim-after-change nil t)
-	(make-local-hook 'post-command-hook)
 	(add-hook 'post-command-hook 'ws-trim-post-command nil t)
-	(make-local-hook 'first-change-hook)
 	(add-hook 'first-change-hook 'ws-trim-on-first-change nil t)
 	(add-hook 'write-contents-hooks 'ws-trim-on-write)
 	(run-hooks 'ws-trim-mode-hook)
