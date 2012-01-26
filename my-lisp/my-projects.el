@@ -34,7 +34,7 @@
            ;; (drupal-p . t)
            ))
    (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
-                          (drupal-mode)))
+                          (drupal-mode) (hack-local-variables))) ;; Oooh.
                 (c-basic-offset . 2)))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
