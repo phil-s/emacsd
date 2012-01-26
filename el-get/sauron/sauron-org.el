@@ -50,18 +50,28 @@
       appt-disp-window-function (function sr-org-old-appt-func)
       sr-org-running nil)))
 
-
 (defun sr-org-handler-func (minutes-to-app new-time msg)
-  "Handle appointment reminders. FIXME: apparently these params
-could be lists, too."
+  "Handle appointment reminders - the actual work is done in
+`sr-org-handler-func-real', but this function deals with the
+possibility of getting lists for the `minutes-to-app' and `msg'
+arguments rather than single values."
+   (when minutes-to-app
+    (if (listp minutes-to-app)
+      (progn
+	(sr-org-handler-func-real (car minutes-to-app) new-time (car msg))
+	(sr-org-handler-func (cdr minutes-to-app) new-time (cdr msg)))
+      (sr-org-handler-func-real minutes-to-app new-time msg))))
+
+(defun sr-org-handler-func-real (minutes-to-app new-time msg)
+  "Handle appointment reminders. Also see: `sr-org-handler-func.'"
   (let* ((left (string-to-number minutes-to-app))
 	  (prio ;; priorities, hard-coded....
 	    (cond
-	      ((= left 15) 3)
-	      ((= left 10) 3)
-	      ((= left 5)  4)
-	      ((= left 2)  5)
-	      (t 2))))
+	      ((> left 15) 2)
+	      ((> left 10) 3)
+	      ((> left 5)  3)
+	      ((> left 2)  4)
+	      (t 5))))
     (sauron-add-event 'org prio
       (format "%s minutes left before %s" minutes-to-app msg)
       'org-agenda-list
@@ -69,7 +79,7 @@ could be lists, too."
     ;; call the old function as well, if defined
     (when sr-org-old-appt-func
       (funcall sr-org-old-appt-func minutes-to-app new-time msg))))
-  
-(provide 'sauron-org)  
+
+(provide 'sauron-org)
 
 ;;; sauron-org ends here
