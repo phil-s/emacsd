@@ -125,6 +125,13 @@
 ;; key map, as the map is displayed in the mode's docstring.)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
 
+;; Custom aliases
+(defalias 'll   'load-dot-emacs)
+(defalias 'lll  'find-dot-emacs)
+(defalias 'llll 'find-my-lisp-dir)
+(defalias 'llle 'find-el-get-dir)
+(defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
+
 (defun my-keybindings-after-init-hook ()
   "Define and enable our minor mode after the init file has been loaded.
 We want this to be our final initialisation step, to ensure that

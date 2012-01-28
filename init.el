@@ -237,6 +237,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; Load or evaluate this file
+
+;; See also: custom aliases in my-keybindings.el
+
 (defun load-dot-emacs ()
   "Load and evaluate init file."
   (interactive)
@@ -253,12 +256,6 @@
   "Dired ~/.emacs.d/my-lisp"
   (interactive)
   (dired (concat (file-name-directory user-init-file) "el-get/")))
-(defalias 'll 'load-dot-emacs)
-(defalias 'lll 'find-dot-emacs)
-(defalias 'llll 'find-my-lisp-dir)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defalias 'llle 'find-el-get-dir)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
