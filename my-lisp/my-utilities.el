@@ -133,6 +133,37 @@ instead of using `multi-occur-in-matching-buffers'.
      exclude-tags-pattern
      regexp)))
 
+(defvar my-multi-occur-buffers-file-name-exclusions '("TAGS")
+  "File names to exclude from my-multi-occur, regardless of path.")
+
+(defvar my-multi-occur-buffers-file-path-exclusions nil
+  "File paths to exclude from my-multi-occur.")
+
+(defun my-multi-occur-buffers ()
+  "List of file-visiting buffers, excluding any known unwanted buffers."
+  (let* ((list (buffer-list))
+         (buffers list))
+    (while buffers
+      (let* ((buffer (car buffers))
+             (next (cdr buffers))
+             (buffer-name (buffer-name buffer))
+             (file-name (buffer-file-name buffer)))
+        ;; Exclude non-file buffers and TAGS files.
+        (when (or (not file-name)
+                  (string= (substring buffer-name 0 1) " ")
+                  (member (file-name-nondirectory file-name)
+                          my-multi-occur-buffers-file-name-exclusions)
+                  (member file-name
+                          my-multi-occur-buffers-file-path-exclusions))
+          (setq list (delq buffer list)))
+        (setq buffers next)))
+    list))
+
+(defun my-multi-occur (regexp &optional nlines)
+  "Show all lines matching REGEXP in all buffers."
+  (interactive (occur-read-primary-args))
+  (multi-occur (my-multi-occur-buffers) regexp nlines))
+
 (defun my-multi-occur-in-visible-buffers (regexp &optional arg)
   "Show all lines matching REGEXP in the current frame's visible buffers."
   (interactive (occur-read-primary-args)) ;; optional arg required but ignored
