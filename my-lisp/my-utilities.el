@@ -115,23 +115,23 @@ using the specified hippie-expand function."
   (scroll-down 1)
   (forward-line -1))
 
-(defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
-  "Show all lines matching REGEXP in all buffers.
-Enhance this to ignore other known-bad files?
-http://stackoverflow.com/questions/2641211/emacs-interactively-search-open-buffers/2642655#2642655
+;; (defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
+;;   "Show all lines matching REGEXP in all buffers.
+;; Enhance this to ignore other known-bad files?
+;; http://stackoverflow.com/questions/2641211/emacs-interactively-search-open-buffers/2642655#2642655
 
-TODO: Re-write to *positively* match and delete bad buffer names from
-the list of all buffers, and pass the resulting list into `multi-occur',
-instead of using `multi-occur-in-matching-buffers'.
-"
-  (interactive (occur-read-primary-args))
-  (let* ((not-tags "\\([^T]\\|T[^A]\\|TA[^G]\\|TAG[^S]\\|TAGS.\\)")
-         (exclude-tags-pattern (if allbufs
-                                   (concat "^" not-tags)
-                                 (concat "/" not-tags "[^/]*$"))))
-    (multi-occur-in-matching-buffers
-     exclude-tags-pattern
-     regexp)))
+;; TODO: Re-write to *positively* match and delete bad buffer names from
+;; the list of all buffers, and pass the resulting list into `multi-occur',
+;; instead of using `multi-occur-in-matching-buffers'.
+;; "
+;;   (interactive (occur-read-primary-args))
+;;   (let* ((not-tags "\\([^T]\\|T[^A]\\|TA[^G]\\|TAG[^S]\\|TAGS.\\)")
+;;          (exclude-tags-pattern (if allbufs
+;;                                    (concat "^" not-tags)
+;;                                  (concat "/" not-tags "[^/]*$"))))
+;;     (multi-occur-in-matching-buffers
+;;      exclude-tags-pattern
+;;      regexp)))
 
 (defvar my-multi-occur-buffers-file-name-exclusions '("TAGS")
   "File names to exclude from my-multi-occur, regardless of path.")
