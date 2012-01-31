@@ -90,15 +90,16 @@
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
   (define-key keymap (kbd "C-c C-f")   'my-find-file-in-project)
-  (define-key keymap (kbd "C-c m")     'magit-status)
+  (define-key keymap (kbd "C-c m m")   'magit-status)
+  (define-key keymap (kbd "C-c m b")   'mo-git-blame-current)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
   (define-key keymap (kbd "C-c n")     'deft)
-  (define-key keymap (kbd "M-S-SPC")   'my-extend-selection)
+  (define-key keymap (kbd "S-SPC")     'my-extend-selection)
   (define-key keymap (kbd "C-c M-w")   'whitespace-toggle-options)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
-  (define-key keymap (kbd "M-l")       'goto-line)
+  (define-key keymap (kbd "M-L")       'goto-line)
   (define-key keymap (kbd "C-h C-f")   'find-function)
   (define-key keymap (kbd "C-h C-k")   'find-function-on-key)
   (define-key keymap (kbd "C-h C-v")   'find-variable)
@@ -124,6 +125,13 @@
 ;; (Too many inferred prefixes to put this in the minor mode
 ;; key map, as the map is displayed in the mode's docstring.)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
+
+;; Custom aliases
+(defalias 'll   'load-dot-emacs)
+(defalias 'lll  'find-dot-emacs)
+(defalias 'llll 'find-my-lisp-dir)
+(defalias 'llle 'find-el-get-dir)
+(defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
 
 (defun my-keybindings-after-init-hook ()
   "Define and enable our minor mode after the init file has been loaded.

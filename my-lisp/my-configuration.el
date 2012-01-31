@@ -348,6 +348,8 @@ disabled.")))
 ;; Term mode
 (eval-after-load "term"
   '(progn
+     ;; Default terminal history is much too small.
+     (setq-default term-buffer-maximum-size 65535)
      ;; Enable terminal history in line mode.
      (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
      (define-key term-mode-map (kbd "<C-down>") 'term-send-down)

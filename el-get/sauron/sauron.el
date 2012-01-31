@@ -34,7 +34,7 @@
 (eval-when-compile (require 'cl))
 
 (defvar sauron-modules
-  '(sauron-erc sauron-dbus sauron-org)
+  '(sauron-erc sauron-dbus sauron-org sauron-notifications)
   "List of sauron modules to use. Currently supported are:
 sauron-erc, sauron-org and sauron-dbus.")
 
@@ -80,6 +80,9 @@ nick. Must be < 65536")
 (defvar sauron-max-line-length 80
   "Maximum length of messages in the log (longer messages will be
   truncated. If set to nil, there is no maximum.")
+
+(defvar sauron-sticky-frame nil
+  "If t, show the sauron frame on every (virtual) desktop.")
 
 (defvar sauron-scroll-to-bottom t
   "Wether to automatically scroll the sauron window to the bottom
@@ -189,14 +192,11 @@ e.g. when using ERC")
 	sauron-column-alist))))
 
 
-(defun sauron-mode ()
-  "Major mode for the sauron."
-  (interactive)
-  (kill-all-local-variables)
-  (use-local-map sauron-mode-map)
+(define-derived-mode sauron-mode nil "Sauron"
+  "Major mode for sauron.
+
+\\{sauron-mode-map}."
   (setq
-    major-mode 'sauron-mode
-    mode-name "Sauron"
     truncate-lines t
     buffer-read-only t
     overwrite-mode 'overwrite-mode-binary)
@@ -310,7 +310,8 @@ For debugging purposes."
     (select-window win)
     (goto-char (point-max))
     (recenter -1)))
-  
+
+
 ;; the main work horse functions
 (defun sauron-add-event (origin prio msg &optional func props)
   "Add a new event to the Sauron log with:
@@ -348,12 +349,12 @@ PROPS an origin-specific property list that will be passed to the hook funcs."
     (let* ((line (sr-event-line origin prio msg))
 	    ;; add the callback as a text property, remove any embedded newlines,
 	    ;; truncate if necessary append a newline
-	    (line (concat
-		    (truncate-string-to-width
-		      (propertize (replace-regexp-in-string "\n" " " line)
-			'callback func)
-		      sauron-max-line-length 0 nil t)
-		      "\n"))
+	    (line (replace-regexp-in-string "\n" " " line))
+	    (line (if sauron-max-line-length
+		      (truncate-string-to-width
+		       line sauron-max-line-length 0 nil t)
+		    line))
+	    (line (concat (propertize line 'callback func) "\n"))
 	    (inhibit-read-only t))
       (sr-create-buffer-maybe) ;; create buffer if it did not exist yet
       (with-current-buffer sr-buffer
@@ -381,22 +382,26 @@ any special faces from the line."
       (message "No callback defined for this line."))))
 
 
-(defun sauron-switch-to-buffer (buffer-or-name)
-  "Switch to BUFFER-OR-NAME in another frame/window."
-  (let* ((buf (if (buffer-live-p buffer-or-name)
-		buffer-or-name
-		(get-buffer buffer-or-name)))
-	  (win (and buf (get-buffer-window buf 'visible))))
-    (unless (and buf (buffer-live-p buf))
-      (error "Buffer %s not found" buf))
-    (let* ( ;; don't re-use the Sauron window
-	    (display-buffer-reuse-frames t)
-	    (pop-up-windows nil)
-	   ;; don't create new frames
-	    (pop-up-frames nil)
-	    ;; find a window for our buffer
-	    (win  (display-buffer buf t)))
-      (select-frame-set-input-focus (window-frame win)))))
+(defun sauron-switch-to-marker-or-buffer (mbn)
+  "Switch to MBN (marker-or-buffer-or-name) in another
+frame/window."
+  (if (not mbn)
+    (message "No target buffer defined")
+    (let* ((buf) (pos))
+      (if (markerp mbn)
+	(setq buf (marker-buffer mbn) pos (marker-position mbn))
+	(setq buf (or (buffer-live-p mbn) (get-buffer mbn))))
+      (unless (buffer-live-p buf)
+	(error "Buffer not found"))
+      (let* ( ;; don't re-use the Sauron window
+	      (display-buffer-reuse-frames t)
+	      (pop-up-windows nil)
+	      ;; don't create new frames
+	      (pop-up-frames nil)
+	      ;; find a window for our buffer
+	      (win (display-buffer buf t)))
+	(select-frame-set-input-focus (window-frame win))
+	(goto-char (if pos pos (point-max)))))))
 
 
 (defun sr-show ()
@@ -413,7 +418,8 @@ any special faces from the line."
 	  (switch-to-buffer-other-frame sr-buffer)
 	  (let ((frame-params
 		  (append
-		    '((tool-bar-lines . 0) (menu-bar-lines . 0))
+		    `((tool-bar-lines . 0) (menu-bar-lines . 0)
+		       (unsplittable . t) (sticky . ,sauron-sticky-frame))
 		    (x-parse-geometry sauron-frame-geometry))))
 	    (modify-frame-parameters nil frame-params))))
     (set-window-dedicated-p (selected-window) t)))
@@ -439,22 +445,6 @@ any special faces from the line."
       (let ((inhibit-read-only t))
 	(erase-buffer)))
     (message nil)))
-
-
-(defun sauron-switch-to-target ()
-  "Switch to the target buffer for the current line."
-  (interactive)
-  (let* ((target (get-text-property (point) 'target-buffer))
-	  (buf (and target (get-buffer target)))
-  	  (inhibit-read-only t))
-    (unless target
-      (error "No target specified for this line"))
-    (unless buf
-      (error "Target buffer not found"))
-    ;; remove the funky faces
-    (put-text-property (line-beginning-position)
-      (line-end-position) 'face 'default)
-    (switch-to-buffer-other-windown target)))
 
 
 ;; internal settings

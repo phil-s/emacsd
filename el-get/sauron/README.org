@@ -33,10 +33,11 @@
    with something like the following in your =.emacs=:
 
    ;; set load path, obviously replace "<path-to-sauron-dir>" with the actual path...
-   #+being_example
+
+#+begin_example
 :   (add-to-list 'load-path "<path-to-sauron-dir>")
 :   (require 'sauron)
-   #end_example
+#+end_example
 
    Now, you can start sauron with... =M-x sauron-start=, and stop it with =M-x
    sauron-stop=.
@@ -121,14 +122,15 @@
     those functions returns non-nil, the event will be blocked. See the emacs
     documentation for a general introduction to hook functions, here's an
     example:
-    #+begin_example
-    :(add-hook 'sauron-event-block-functions
+
+#+begin_example
+:(add-hook 'sauron-event-block-functions
 :  (lambda (origin prio msg &optional props)
 :    (or
 :      (string-match "foo" msg) ;; ignore events that match 'foo'
 :      ;; other matchers
 :     )))
-    #+end_example
+#+end_example
 
     Note that the =props= parameter is a backend specific property-list, which
     allows you e.g. (for the ERC-backend) to get the sender of some ERC message,
@@ -174,21 +176,37 @@
     You can customize the columns shown in the sauron buffer by setting
     =sauron-column-alist= - see its documentation.
 
+*** customizing window properties
+
+**** stickiness
+
+    You can make the Sauron window appear on every (virtual) desktop by setting
+    ~sauron-sticky-add~ to t, i.e..
+#+begin_src
+    (setq sauron-sticky-frame t)
+#+end_src 
+
+    in your configuration. Depending on your window manager, this may also set
+    the frame to be /always-on-top/.
+
+
 ** connecting to alert.el
 
    John Wiegley's [[https://github.com/jwiegley/alert][alert.el]] has a bit of overlap with sauron; however, I've added
    some wrapper function to make it trivial to feed sauron events into
    alert. Simply adding:
+
 #begin_src emacs-lisp
      (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)
 #end_src
-   in your setup should do the trick (of course. alert.el must be loaded).
+
+   in your setup should do the trick (of course, =alert.el= must be loaded).
 
 
 ** the backend modules
 
-   Currently, three backend modules have been implemented - ERC, org-mode and
-   d-bus. Hopefully, more will follow.
+   Currently, four backend modules have been implemented - *ERC*, *org-mode*, *d-bus*
+   and *notifications* (for emacs 24). Hopefully, more will follow.
 
 *** erc
 
@@ -215,6 +233,10 @@
     - 2  minutes left: priority 5
     For all other minutes, you'll get events with priority 2.
 
+    Note that you can influence the number of warnings and the time they start
+    by setting the variables =appt-display-interval= and
+    =appt-message-warning-time=, as documented in emacs manual.
+
     You should load org /before/ starting sauron, in particular before you set
     ~appt-disp-window-function~, as sauron-org uses that same function (it will
     preserve the existing functionality though).
@@ -231,10 +253,11 @@
 :    string:shell uint32:3 string:"Link: Emacs-Fu" \
 :    string:"http://emacs-fu.blogspot.com"
 #+end_src
-The four parameters are resp. the sender ('shell'), the priority ('3' in the
-example), a description and a URL. This will show up in the sauron buffer (if
-the priority is high enough), and if you activate the event (press RET), your
-browser will visit the link.
+
+    The four parameters are resp. the originator ('shell'), the priority ('3' in the
+    example), a description and a URL. This will show up in the sauron buffer (if
+    the priority is high enough), and if you activate the event (press RET), your
+    browser will visit the link.
 
 #+begin_src sh
 :    dbus-send --session          	          \
@@ -243,13 +266,15 @@ browser will visit the link.
 :    "org.gnu.Emacs.Sauron.AddMsgEvent"           \
 :    string:shell uint32:3 string:"Hello, world!"
 #+end_src
-The three parameters are resp. the sender ('shell'), the priority ('3' in the
-example), and message. This will show up in the sauron buffer (if the priority
-is high enough).
 
-One use for these kind of messages is to warn you when for example a torrent has
-been completed in 'Transmission'. In the torrent-completion script (see Preferences/
-Call-script-when-torrent-is-completed), add something like:
+    The three parameters are resp. the sender ('shell'), the priority ('3' in the
+    example), and message. This will show up in the sauron buffer (if the priority
+    is high enough).
+
+    As an example, you can get a notification when torrent has been completed in
+    'Transmission'. In the torrent-completion script (see Preferences/
+    Call-script-when-torrent-is-completed), add something like:
+
 #+begin_src sh
 :    dbus-send --session          	          \
 :    --dest="org.gnu.Emacs"	                  \
@@ -258,27 +283,40 @@ Call-script-when-torrent-is-completed), add something like:
 :    string:Transmission uint32:3 string:"Torrent completed: $TR_TORRENT_NAME"
 #+end_src
 
-I'm sure you can think of other useful applications.
+    Note, if you start transmission before you start your session, see `Using D-Bus
+    outside your session'.
+
 
 **** Using D-Bus outside your session
 
-Note, you normally only use D-Bus (i.e.., the d-bus session bus) when you are in
-the same /session/ -- say, your desktop environment. Thus, it is generally /not/
-possible to send yourself D-Bus messages from programs outside your session, for
-example something running from ~crontab~.
+     Note, you normally only use D-Bus (i.e.., the d-bus session bus) when you are in
+     the same /session/ -- say, your desktop environment. Thus, it is generally /not/
+     possible to send yourself D-Bus messages from programs outside your session, for
+     example something running from ~crontab~.
 
-For this, if you set =sauron-dbus-cookie= to non-nil (before starting sauron),
-it will drop a file =~/.sauron-dbus= which contains the D-Bus session bus
-address (=DBUS_SESSION_BUS_ADDRESS=). Using this address you can, in fact, send
-messages to sauron from outside your session, by doing something like in the
-previous examples, but first setting =DBUS_SESSION_BUS_ADDRESS=: 
+     For this, if you set =sauron-dbus-cookie= to non-nil (before starting sauron),
+     it will drop a file =~/.sauron-dbus= which contains the D-Bus session bus
+     address (=DBUS_SESSION_BUS_ADDRESS=). Using this address you can, in fact, send
+     messages to sauron from outside your session, by doing something like in the
+     previous examples, but first setting =DBUS_SESSION_BUS_ADDRESS=:
 #+begin_src sh
 :DBUS_SESSION_BUS_ADDRESS="`cat ~/.sauron-dbus`" dbus-send ....
 #+end_src
 
-We don't write =~/.sauron-dbus= as their may be security downsides to this -
-even though normally other users are not allowed to send to 'your' session bus,
-even with the cookie, it's always good to be a bit paranoid.
+     We don't write =~/.sauron-dbus= as there may be security downsides to this -
+     even though normally other users are not allowed to send to 'your' session bus,
+     even with the cookie, it's always good to be a bit paranoid.
+
+*** notifications
+
+    sauron-notifications tracks notifications sent using `notifications-notify',
+    which was added in the (not yet released) emacs 24. You can use
+    `sauron-notifications-urgency-to-priority-plist' for the mapping of the
+    'urgency' field of notification to the sauron's priority field.
+
+    Note, one should be careful when calling `notifications-notify' from
+    functions listed in the `sauron-event-added-functions' hook, as to not
+    create some infinite recursion.
 
 ** adding new modules
 
@@ -296,7 +334,7 @@ even with the cookie, it's always good to be a bit paranoid.
    something happens. This is done using =sauron-add-event= (see it's
    documentation).
 
-** Using =sauron= from your other modules
+** Using =sauron= in other elisp
 
    If you want to create simple sauron-events from other elisp code, writing a
    backend modules might be unnecessary; you can simply call the
@@ -314,9 +352,9 @@ even with the cookie, it's always good to be a bit paranoid.
 #+end_src
 
    A typical pattern may also be to switch to the buffer of origin when the
-   event is activated. The =sauron-switch-to-buffer= function may be useful
-   there, as it tries to ensure that the buffer is shown in the /other/ frame
-   (not the one with Sauron).
+   event is activated. The =sauron-switch-to-marker-or-buffer= function may be
+   useful there, as it tries to ensure that the buffer is shown in the /other/
+   frame (not the one with Sauron).
 
 
 ** sample configuration
@@ -356,5 +394,5 @@ even with the cookie, it's always good to be a bit paranoid.
 :(add-hook 'sauron-event-block-functions
 :  (lambda (origin prio msg &optional props)
 :    (or
-:      (string-match "^*** Users" msg)))) ;; don't notify on IRC spam
+:      (string-match "^*** Users" msg)))) ;; filter out IRC spam
 #+end_src

@@ -237,6 +237,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; Load or evaluate this file
+
+;; See also: custom aliases in my-keybindings.el
+
 (defun load-dot-emacs ()
   "Load and evaluate init file."
   (interactive)
@@ -253,12 +256,6 @@
   "Dired ~/.emacs.d/my-lisp"
   (interactive)
   (dired (concat (file-name-directory user-init-file) "el-get/")))
-(defalias 'll 'load-dot-emacs)
-(defalias 'lll 'find-dot-emacs)
-(defalias 'llll 'find-my-lisp-dir)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defalias 'llle 'find-el-get-dir)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
@@ -266,7 +263,7 @@
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
-;; M-S-SPC   : my-extend-selection
+;; S-SPC     : my-extend-selection
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
@@ -309,7 +306,7 @@
  '(inhibit-eol-conversion nil)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values (quote ((eval when (not (eq major-mode (quote drupal-mode))) (drupal-mode)) (eval add-hook (quote after-save-hook) (quote my-local-backup) nil t) (ffip-patterns "*.php" "*.inc" "*.module" "*.install" "*.info" "*.js" "*.css" ".htaccess" "*.engine" "*.txt" "*.profile" "*.xml" "*.test" "*.theme" "*.ini" "*.make") (whitespace-mode . 0) (css-indent-offset . 2) (js-indent-level . 2) (eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 8)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
+ '(safe-local-variable-values (quote ((eval when (not (eq major-mode (quote drupal-mode))) (drupal-mode) (hack-local-variables)) (eval add-hook (quote after-save-hook) (quote my-local-backup) nil t) (ffip-patterns "*.php" "*.inc" "*.module" "*.install" "*.info" "*.js" "*.css" ".htaccess" "*.engine" "*.txt" "*.profile" "*.xml" "*.test" "*.theme" "*.ini" "*.make") (whitespace-mode . 0) (css-indent-offset . 2) (js-indent-level . 2) (eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 8)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
  '(scroll-bar-mode (quote right))
  '(svn-log-edit-show-diff-for-commit t)
  '(tool-bar-mode nil)

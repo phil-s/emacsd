@@ -10,6 +10,14 @@
 ;; Null class
 (dir-locals-set-class-variables 'null '(nil))
 
+;; Fundamental mode (file class)
+;; This is primarily intended for use with `my-file-locals-set-directory-class',
+;; for very large files which are too slow to load/edit when their normal mode
+;; is active.
+(dir-locals-set-class-variables
+ 'fundamental-mode-class
+ '((nil . ((mode . fundamental)))))
+
 ;; Emacs
 (dir-locals-set-class-variables
  'emacs
@@ -34,7 +42,7 @@
            ;; (drupal-p . t)
            ))
    (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
-                          (drupal-mode)))
+                          (drupal-mode) (hack-local-variables))) ;; Oooh.
                 (c-basic-offset . 2)))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
