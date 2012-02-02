@@ -5,7 +5,7 @@
 ;; Author: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 ;; Maintainer: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 ;; Created: 06 Dec 2011
-;; Version: 0.1
+;; Version: 0.2
 ;; Keywords:comm,frames
 
 ;; This file is not part of GNU Emacs.
@@ -83,6 +83,9 @@ nick. Must be < 65536")
 
 (defvar sauron-sticky-frame nil
   "If t, show the sauron frame on every (virtual) desktop.")
+
+(defvar sauron-hide-mode-line nil
+  "If t, hide the modeline in the sauron frame.")
 
 (defvar sauron-scroll-to-bottom t
   "Wether to automatically scroll the sauron window to the bottom
@@ -422,6 +425,8 @@ frame/window."
 		       (unsplittable . t) (sticky . ,sauron-sticky-frame))
 		    (x-parse-geometry sauron-frame-geometry))))
 	    (modify-frame-parameters nil frame-params))))
+	(if sauron-hide-mode-line
+	  (setq mode-line-format nil))
     (set-window-dedicated-p (selected-window) t)))
 
 (defun sr-hide ()
