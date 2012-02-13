@@ -136,9 +136,9 @@
 
      (:name undo-tree)
 
-     ;; (:name ws-trim
-     ;;        :type ftp
-     ;;        :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
+     (:name ws-trim
+            :type ftp
+            :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
 
      ;; (:name yasnippet
      ;;        :type git-svn
