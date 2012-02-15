@@ -211,6 +211,16 @@ See also: `my-copy-buffer-file-name'."
 ;; preference to opening another copy in the current buffer.
 (setq-default display-buffer-reuse-frames t)
 
+(defun my-frame-config (frame)
+  "Custom behaviours for new frames."
+  (with-selected-frame frame
+    ;; do things
+    ))
+;; Run now, for non-daemon Emacs...
+(my-frame-config (selected-frame))
+;; ...and later, for new frames / emacsclient
+(add-hook 'after-make-frame-functions 'my-frame-config)
+
 ;; Show a marker in the left fringe for lines not in the buffer
 (if (version< emacs-version "23.2")
     (setq default-indicate-empty-lines t) ; deprecated
