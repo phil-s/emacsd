@@ -124,7 +124,7 @@ before generating the TAGS file:
 cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
 
 Exuberant ctags:
-$ ctags -eR --langmap=php:+.module.install.inc --languages=php
+$ ctags -eR --langmap=php:+.module.install.inc.engine --languages=php
 
 Old etags:
 $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.engine' \\) | etags --language=php -
