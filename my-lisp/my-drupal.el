@@ -114,7 +114,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 ;;    " && mv -f TAGS.new TAGS;"
 ;;    " rm -f TAGS.new;"))
 
-(defun drupal-tags-autoupdate-command ()
+(defun drupal-tags-autoupdate-command (dir)
   (format
    (concat
     "cd \"%s\";"
@@ -124,10 +124,31 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
     " && ! cmp --silent TAGS TAGS.new"
     " && mv -f TAGS.new TAGS;"
     " rm -f TAGS.new;")
-   (file-name-directory tags-file-name)
+   dir
    drupal-tags-autoupdate-prune
    drupal-tags-autoupdate-ignore
    drupal-tags-autoupdate-pattern))
+
+(defun my-directory-tree-last-modified (dir)
+  "Return a timestamp for the most recent modification under the specified dir."
+  (string-to-number
+   (shell-command-to-string
+    (format
+     (concat
+      "max=0; find \"%s\" -print0 | xargs -0 stat --format=%%Y"
+      " | while read -r ts; do test $ts -gt $max && max=$ts && echo $max; done"
+      " | tail -1")
+     (shell-quote-argument dir)))))
+
+(defun my-buffer-file-last-modified (file-name)
+  "Return a timestamp for the most recent modification to the specified file.
+We assume that a buffer is visiting the most recent version of this time."
+  (let ((buffer (get-file-buffer file-name)))
+    (when buffer
+      (string-to-number
+       (format-time-string
+        "%s" (with-current-buffer (get-file-buffer file-name)
+               (visited-file-modtime)))))))
 
 ;; variable for the timer object
 (defvar drupal-tags-autoupdate-timer nil)
@@ -135,11 +156,16 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 
 ;; callback function
 (defun drupal-tags-autoupdate-callback ()
-  (save-window-excursion
-    (async-shell-command (drupal-tags-autoupdate-command) nil))
-  (when (not (verify-visited-file-modtime
-              (get-file-buffer tags-file-name)))
-    (setq tags-completion-table nil)))
+  (let ((dir (file-name-directory tags-file-name))
+        (tags-modified (my-buffer-file-last-modified tags-file-name)))
+    (when (and tags-modified
+               (> (my-directory-tree-last-modified dir)
+                  tags-modified))
+      (save-window-excursion
+        (async-shell-command (drupal-tags-autoupdate-command dir) nil))
+      (when (not (verify-visited-file-modtime
+                  (get-file-buffer tags-file-name)))
+        (setq tags-completion-table nil)))))
 
 ;; start functions
 (defun drupal-tags-autoupdate-start ()
