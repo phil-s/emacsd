@@ -115,23 +115,54 @@ using the specified hippie-expand function."
   (scroll-down 1)
   (forward-line -1))
 
-(defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
-  "Show all lines matching REGEXP in all buffers.
-Enhance this to ignore other known-bad files?
-http://stackoverflow.com/questions/2641211/emacs-interactively-search-open-buffers/2642655#2642655
+;; (defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
+;;   "Show all lines matching REGEXP in all buffers.
+;; Enhance this to ignore other known-bad files?
+;; http://stackoverflow.com/questions/2641211/emacs-interactively-search-open-buffers/2642655#2642655
 
-TODO: Re-write to *positively* match and delete bad buffer names from
-the list of all buffers, and pass the resulting list into `multi-occur',
-instead of using `multi-occur-in-matching-buffers'.
-"
+;; TODO: Re-write to *positively* match and delete bad buffer names from
+;; the list of all buffers, and pass the resulting list into `multi-occur',
+;; instead of using `multi-occur-in-matching-buffers'.
+;; "
+;;   (interactive (occur-read-primary-args))
+;;   (let* ((not-tags "\\([^T]\\|T[^A]\\|TA[^G]\\|TAG[^S]\\|TAGS.\\)")
+;;          (exclude-tags-pattern (if allbufs
+;;                                    (concat "^" not-tags)
+;;                                  (concat "/" not-tags "[^/]*$"))))
+;;     (multi-occur-in-matching-buffers
+;;      exclude-tags-pattern
+;;      regexp)))
+
+(defvar my-multi-occur-buffers-file-name-exclusions '("TAGS")
+  "File names to exclude from my-multi-occur, regardless of path.")
+
+(defvar my-multi-occur-buffers-file-path-exclusions nil
+  "File paths to exclude from my-multi-occur.")
+
+(defun my-multi-occur-buffers ()
+  "List of file-visiting buffers, excluding any known unwanted buffers."
+  (let* ((list (buffer-list))
+         (buffers list))
+    (while buffers
+      (let* ((buffer (car buffers))
+             (next (cdr buffers))
+             (buffer-name (buffer-name buffer))
+             (file-name (buffer-file-name buffer)))
+        ;; Exclude non-file buffers and TAGS files.
+        (when (or (not file-name)
+                  (string= (substring buffer-name 0 1) " ")
+                  (member (file-name-nondirectory file-name)
+                          my-multi-occur-buffers-file-name-exclusions)
+                  (member file-name
+                          my-multi-occur-buffers-file-path-exclusions))
+          (setq list (delq buffer list)))
+        (setq buffers next)))
+    list))
+
+(defun my-multi-occur (regexp &optional nlines)
+  "Show all lines matching REGEXP in all buffers."
   (interactive (occur-read-primary-args))
-  (let* ((not-tags "\\([^T]\\|T[^A]\\|TA[^G]\\|TAG[^S]\\|TAGS.\\)")
-         (exclude-tags-pattern (if allbufs
-                                   (concat "^" not-tags)
-                                 (concat "/" not-tags "[^/]*$"))))
-    (multi-occur-in-matching-buffers
-     exclude-tags-pattern
-     regexp)))
+  (multi-occur (my-multi-occur-buffers) regexp nlines))
 
 (defun my-multi-occur-in-visible-buffers (regexp &optional arg)
   "Show all lines matching REGEXP in the current frame's visible buffers."

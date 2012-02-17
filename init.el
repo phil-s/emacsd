@@ -68,11 +68,12 @@
 ;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
 ;;;; Macros
-;;   C-x (       or F3     Begins recording.
-;;                  F3     Insert counter (if recording has already commenced).
-;;   C-x )       or F4     Ends recording.
-;;   C-x e       or F4     Executes the last recorded keyboard macro.
-;;                         Repeated e or F4 presses repeats the macro.
+;;   C-x (         or F3   Begins recording.
+;;                    F3   Insert counter (if recording has already commenced).
+;;   C-x )         or F4   Ends recording.
+;;   C-x e         or F4   Executes the last recorded keyboard macro.
+;;                         Additional e or F4 presses repeat the macro.
+;;   C-u <n> C-x ) or F4   End macro and repeat an additional <n>-1 times.
 ;;   C-x C-k e             Edit a keyboard macro (RET for most recent).
 ;;   C-x C-k b             Set a key-binding.
 ;;

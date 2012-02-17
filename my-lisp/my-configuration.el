@@ -13,6 +13,19 @@
       kept-new-versions      20 ; How many of the newest versions to keep...
       kept-old-versions      5) ; ...and how many of the old.
 
+(defvar my-non-file-buffer-auto-save-dir (file-name-directory user-init-file)
+  "Directory in which to store auto-save files for non-file buffers,
+when `auto-save-mode' is invoked manually.")
+
+(defadvice auto-save-mode (around use-my-non-file-buffer-auto-save-dir)
+  "Use a standard location for auto-save files for non-file buffers"
+  (if (and (not buffer-file-name)
+           (called-interactively-p 'any))
+      (let ((default-directory my-non-file-buffer-auto-save-dir))
+        ad-do-it)
+    ad-do-it))
+(ad-activate 'auto-save-mode)
+
 ;; No splash screen
 (setq inhibit-startup-screen t)
 
@@ -182,8 +195,14 @@ See also: `my-copy-buffer-file-name'."
   (define-key cua--region-keymap
     [remap delete-char] 'delete-char))
 
-;; titlebar = buffer unless filename
-(setq frame-title-format '(buffer-name "%f (Emacs)" ("%b (Emacs)")))
+;; Set titlebar text to buffer name, along with the file/directory path
+;; as appropriate.
+(setq frame-title-format
+      '(buffer-file-name
+        ("%b (Emacs) %f")
+        (dired-directory
+         (:eval (concat (buffer-name) " (Emacs) " dired-directory))
+         ("%b (Emacs)"))))
 
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
