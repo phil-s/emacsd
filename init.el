@@ -263,7 +263,7 @@
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
-;; S-SPC     : my-extend-selection
+;; M-S-SPC   : my-extend-selection
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
