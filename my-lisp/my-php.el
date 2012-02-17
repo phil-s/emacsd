@@ -127,25 +127,22 @@ Exuberant ctags:
 $ ctags -eR --langmap=php:+.module.install.inc --languages=php
 
 Old etags:
-$ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' \\) | etags --language=php -
+$ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.engine' \\) | etags --language=php -
 "
   (interactive (find-tag-interactive "Hook: "))
-  (let ((module (replace-regexp-in-string
-                 "\\..*$" "" (file-name-nondirectory (buffer-file-name)))))
+  (let ((module (file-name-sans-extension
+                 (file-name-nondirectory (buffer-file-name)))))
     (find-tag (format "^function %s(" tagname) nil t)
-    (let ((tmp-buffer (generate-new-buffer "*temp*"))
-          (start (line-beginning-position)))
-      (search-forward "{")
-      (backward-char)
-      (forward-sexp)
-      (copy-to-buffer tmp-buffer start (point))
-      (kill-buffer)
+    (let ((tmp-buffer (generate-new-buffer "*temp*")))
+      (c-mark-function)
+      (copy-to-buffer tmp-buffer (point) (mark))
+      (kill-buffer) ;; the relevant API file
       (switch-to-buffer tmp-buffer))
     (newline)
     (forward-line -1)
     (insert "/**\n * Implements ")
     (forward-word)
-    (forward-char)
+    (forward-char) ;; to start of function name
     (let ((start (point)))
       (search-forward "(")
       (backward-char)
@@ -164,4 +161,3 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
     (backward-sexp)
     (forward-line)
     (back-to-indentation)))
-;; Use `c-mark-function' ?
