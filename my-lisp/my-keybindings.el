@@ -65,6 +65,7 @@
   (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
   (define-key keymap (kbd "C-c \\")    'toggle-window-split)
   (define-key keymap (kbd "C-c C-\\")  'transpose-frame)
+  (define-key keymap (kbd "C-x 2")     'my-split-window-below)
 
   ;; compare-windows
   (define-key keymap (kbd "C-M-=")     'compare-windows)
