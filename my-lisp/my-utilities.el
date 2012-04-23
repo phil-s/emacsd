@@ -481,6 +481,15 @@ within the current buffer-file-name."
         (select-window first-win)
         (when this-win-2nd (other-window 1))))))
 
+(defun my-split-window-below (&optional arg)
+  "Split the current window 50/50 by default.
+A single-digit prefix argument gives the top window arg * 10%
+of the available lines."
+  (interactive "P")
+  (let* ((proportion (and arg (* arg 0.1)))
+         (size (and proportion (round (* proportion (window-height))))))
+    (split-window-below size)))
+
 ;; Toggle window dedication
 (defun toggle-window-dedicated ()
   "Toggle whether the current active window is dedicated or not"
