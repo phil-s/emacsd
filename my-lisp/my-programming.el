@@ -227,8 +227,8 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.php[34]?\\'\\|\\.phtml\\'" . php-mode))
 
-;; Drupal mode (see my-php.el)
-(autoload 'drupal-mode "my-php" "Drupal Mode." t)
+;; Drupal mode (see my-drupal.el)
+(autoload 'drupal-mode "my-drupal" "Drupal Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\|engine\\)\\'" . drupal-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.info\\'" . conf-mode))
