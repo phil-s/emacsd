@@ -57,6 +57,9 @@
             :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
             :features fic-mode)
 
+     (:name find-file-in-tags
+            :type emacswiki)
+
      (:name ffip
             :type git
             :url "git://github.com/dburger/find-file-in-project.git"

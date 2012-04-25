@@ -3,6 +3,32 @@
 ;;; Code:
 
 
+;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
+;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
+;;;;;;  (20375 59395))
+;;; Generated autoloads from find-file-in-tags/find-file-in-tags.el
+
+(autoload 'ffit-determine-dir-for-current-file "find-file-in-tags/find-file-in-tags" "\
+Return a directory to use as the base directory for a TAGS file, or nil if it couldn't be determined.
+Basically, look at the path to the tags file (one level above TAGS, see if it matches that of the current file,
+and if so, then use that directory.  Added the additional constraint that there must be a TAGS file in the
+directory returned, i.e. if the directory calculated does not have a TAGS file, do not return it as a possibility.
+
+This is to help minimize the number of TAGS files loaded by Emacs, b/c in general you're working on one software project
+and the TAGS files for each of the sandboxes are about the same.  So just use one TAGS file, but find the files in
+the appropriate sandbox.
+
+\(fn)" nil nil)
+
+(autoload 'find-file-in-tags "find-file-in-tags/find-file-in-tags" "\
+find file, but completion just works on files found in TAGS
+unless a prefix argument is given, only allows one file to be specified
+with prefix argument, all files matching what was typed will be loaded.
+
+\(fn FILE &optional PRE)" t nil)
+
+;;;***
+
 ;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
 ;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
 ;;;;;;  "dbgp" "geben/dbgp.el" (20106 20538))
