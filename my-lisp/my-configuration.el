@@ -1,5 +1,6 @@
 ;; Set a preferred coding system?
-;; (prefer-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(set-locale-environment "en_NZ.UTF-8")
 
 ;; Put other files and dirs into .emacs.d
 (setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
