@@ -91,6 +91,11 @@
 
      (:name magit)
 
+     (:name multiple-cursors
+            :type git
+            :url "https://github.com/magnars/multiple-cursors.el.git"
+            :features multiple-cursors)
+
      (:name mo-git-blame)
 
      (:name notify)

@@ -122,6 +122,102 @@ Commands:
 
 ;;;***
 
+;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
+;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
+;;;;;;  (20529 52015))
+;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
+
+(autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
+Add one cursor to each line of the active region.
+Starts from mark and moves in straight down or up towards the
+line point is on.
+
+Could possibly be used to mark multiple regions with
+mark-multiple if point and mark is on different columns.
+
+\(fn)" t nil)
+
+(autoload 'mc/edit-ends-of-lines "multiple-cursors/mc-edit-lines" "\
+Add one cursor to the end of each line in the active region.
+
+\(fn)" t nil)
+
+(autoload 'mc/edit-beginnings-of-lines "multiple-cursors/mc-edit-lines" "\
+Add one cursor to the beginning of each line in the active region.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (mc/mark-more-like-this-extended mc/mark-all-in-region
+;;;;;;  mc/mark-all-like-this mc/mark-previous-like-this mc/mark-next-like-this)
+;;;;;;  "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
+;;;;;;  (20529 52015))
+;;; Generated autoloads from multiple-cursors/mc-mark-more.el
+
+(autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
+Find and mark the next part of the buffer matching the currently active region
+With negative ARG, delete the last one instead.
+With zero ARG, skip the last one and mark next.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-previous-like-this "multiple-cursors/mc-mark-more" "\
+Find and mark the previous part of the buffer matching the currently active region
+With negative ARG, delete the last one instead.
+With zero ARG, skip the last one and mark next.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-all-like-this "multiple-cursors/mc-mark-more" "\
+Find and mark all the parts of the buffer matching the currently active region
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-in-region "multiple-cursors/mc-mark-more" "\
+Find and mark all the parts in the region matching the given search
+
+\(fn BEG END)" t nil)
+
+(autoload 'mc/mark-more-like-this-extended "multiple-cursors/mc-mark-more" "\
+Like mark-more-like-this, but then lets you adjust with arrows key.
+The actual adjustment made depends on the final component of the
+key-binding used to invoke the command, with all modifiers removed:
+
+   <up>    Mark previous like this
+   <down>  Mark next like this
+   <left>  If last was previous, skip it
+           If last was next, remove it
+   <right> If last was next, skip it
+           If last was previous, remove it
+
+Then, continue to read input events and further add or move marks
+as long as the input event read (with all modifiers removed)
+is one of the above.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "multiple-cursors/multiple-cursors" "multiple-cursors/multiple-cursors.el"
+;;;;;;  (20529 52015))
+;;; Generated autoloads from multiple-cursors/multiple-cursors.el
+
+(eval-after-load "mark-multiple" '(require 'mc-mark-multiple-integration))
+
+;;;***
+
+;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20529 52015))
+;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
+
+(autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
+
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
 ;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20141 54317))
 ;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
@@ -671,10 +767,10 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "sauron/sauron-dbus.el"
-;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-org.el" "sauron/sauron.el"
-;;;;;;  "gpicker/gpicker.el")
-;;;;;;  (20229 17115 934208))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
+;;;;;;  "multiple-cursors/mc-mark-multiple-integration.el" "multiple-cursors/multiple-cursors-core.el"
+;;;;;;  "multiple-cursors/multiple-cursors-pkg.el") (20529 52023
+;;;;;;  614374))
 
 ;;;***
 
