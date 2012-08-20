@@ -661,6 +661,23 @@ or before point."
        (move-to-column fill-column t)
        (extract-rectangle (point-min) (point))))))
 
+(defun my-ssh (args)
+  "Connect to a remote host by SSH."
+  (interactive "sssh ")
+  (require 'term)
+  (let ((switches (split-string-and-unquote args)))
+    (set-buffer (apply 'make-term "ssh" "ssh" nil switches))
+    (term-mode)
+    (term-char-mode)
+    (switch-to-buffer "*ssh*")))
+
+(defun my-eval-remote-library (url)
+  "Retrieve and evaluate the code in the specified URL."
+  (interactive "sURL: ")
+  (save-window-excursion
+    (eval-buffer
+     (browse-url-emacs url))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
