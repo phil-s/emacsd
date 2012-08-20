@@ -641,11 +641,25 @@ or before point."
 (defun my-copy-rectangle (start end &optional fill)
   "Trigger the read-only behaviour of `kill-rectangle'."
   (interactive "r\nP")
-  (let ((read-only-state buffer-read-only)
+  (let ((buffer-read-only t)
         (kill-read-only-ok t))
-    (setq buffer-read-only t)
-    (kill-rectangle start end fill)
-    (setq buffer-read-only read-only-state)))
+    (kill-rectangle start end fill)))
+
+(defun my-fill-rectangle (start end)
+  "`fill-region' within the confines of a rectangle."
+  (interactive "*r")
+  (let* ((indent-tabs-mode nil)
+         (content (delete-extract-rectangle start end)))
+    (goto-char start)
+    (insert-rectangle
+     (with-temp-buffer
+       (setq indent-tabs-mode nil
+             fill-column (length (car content)))
+       (insert-rectangle content)
+       (fill-region (point-min) (point-max))
+       (goto-char (point-max))
+       (move-to-column fill-column t)
+       (extract-rectangle (point-min) (point))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
