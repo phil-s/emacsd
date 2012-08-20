@@ -464,9 +464,27 @@ If you do this twice in the same position, it kills the selection.
 
 ;;;***
 
+;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
+;;;;;;  "unfill/unfill.el" (20421 20109))
+;;; Generated autoloads from unfill/unfill.el
+
+(autoload 'unfill-paragraph "unfill/unfill" "\
+Replace newline chars in current paragraph by single spaces.
+This command does the inverse of `fill-paragraph'.
+
+\(fn)" t nil)
+
+(autoload 'unfill-region "unfill/unfill" "\
+Replace newline chars in region from START to END by single spaces.
+This command does the inverse of `fill-region'.
+
+\(fn START END)" t nil)
+
+;;;***
+
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
-;;;;;;  "ws-trim/ws-trim.el" (20281 33373))
+;;;;;;  "ws-trim/ws-trim.el" (20289 32280))
 ;;; Generated autoloads from ws-trim/ws-trim.el
 
 (defvar ws-trim-method-hook '(ws-trim-leading ws-trim-trailing) "\

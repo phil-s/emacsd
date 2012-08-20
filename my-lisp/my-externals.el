@@ -134,6 +134,10 @@
             :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
             :features windcycle)
 
+     (:name unfill
+            :type git
+            :url "https://github.com/purcell/unfill.git")
+
      (:name undo-tree)
 
      (:name ws-trim
