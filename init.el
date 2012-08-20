@@ -16,6 +16,8 @@
 ;; http://xahlee.blogspot.com/2011/12/emacs-convert-image-files-and-change.html
 ;; ;; Interactive command templates:
 ;; http://xahlee.org/emacs/elisp_idioms.html
+;; ;; The TTY Demystified
+;; http://www.linusakesson.net/programming/tty/
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -237,6 +239,24 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;; Tramp
+
+;; sudo multihop/proxy
+
+;; (add-to-list 'tramp-default-proxies-alist
+;;              '("scmp-qa\\'" "\\`root\\'" "/ssh:%h:"))))
+
+;; (require 'tramp)
+;; (add-to-list 'tramp-default-proxies-alist
+;;              '(nil "\\`root\\'" "/ssh:%h:"))
+;; (add-to-list 'tramp-default-proxies-alist
+;;              '((regexp-quote (system-name)) nil nil))
+;;
+;; Then you can edit remote root files with 【Ctrl+x ctrl+f】
+;; /sudo:root@remote-host:<path-to-root-owned-file>
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;; Load or evaluate this file
 
 ;; See also: custom aliases in my-keybindings.el
@@ -279,6 +299,14 @@
 ;; C-x 6 ... : 2C (two columns) operations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Write/modify some Drupal YASnippets!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; find-file library:
+;;
+;; This package features a function called ff-find-other-file, which performs
+;; the following function:
+;;
+;;     When in a .c file, find the first corresponding .h file in a set
+;;     of directories and display it, and vice-versa from the .h file.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -400,5 +428,5 @@
 (require 'my-local)
 
 ;;; Local Variables:
-;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 8)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
+;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 9)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
 ;;; End:
