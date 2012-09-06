@@ -145,6 +145,10 @@
 
      (:name undo-tree)
 
+     (:name web-mode
+            :type git
+            :url "https://github.com/fxbois/web-mode.git")
+
      (:name ws-trim
             :type ftp
             :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")

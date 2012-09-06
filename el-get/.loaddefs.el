@@ -578,6 +578,21 @@ This command does the inverse of `fill-region'.
 
 ;;;***
 
+;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
+;;;;;;  "web-mode/web-mode.el" (20552 10417))
+;;; Generated autoloads from web-mode/web-mode.el
+
+(let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
+
+(let ((loads (get 'web-mode-faces 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode-faces 'custom-loads (cons '"web-mode/web-mode" loads))))
+
+(autoload 'web-mode "web-mode/web-mode" "\
+Major mode for editing mixed HTML Templates.
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
 ;;;;;;  "ws-trim/ws-trim.el" (20289 32280))

@@ -171,6 +171,8 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
     '(add-to-list 'byte-compile-not-obsolete-vars
                   'font-lock-beginning-of-syntax-function)))
 
+;; Mark-up (SGML, XML, HTML)
+
 ;; XML
 (defun my-xml-hook ()
   (make-local-variable 'column-number-mode)
@@ -186,6 +188,19 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
               (string-match "\\.pt\\'" (buffer-file-name)))
           (rng-validate-mode 0))))
 (add-hook 'nxml-mode-hook 'my-templates-nxml-mode-hook)
+
+;; SGML
+(defun my-sgml-mode-hook ()
+  (local-set-key (kbd "<C-M-right>") 'sgml-skip-tag-forward)
+  (local-set-key (kbd "<C-M-left>") 'sgml-skip-tag-backward))
+
+(add-hook 'sgml-mode-hook 'my-sgml-mode-hook)
+(add-hook 'web-mode-hook 'my-sgml-mode-hook)
+
+;; HTML
+;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
+(add-hook 'html-helper-load-hook (lambda () (require 'html-font nil 'noerror)))
+(add-hook 'html-helper-mode-hook (lambda () (font-lock-mode 1)))
 
 ;; CSS
 (add-hook 'css-mode-hook 'my-css-mode-hook)
@@ -211,17 +226,6 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
   (pop-mark)
   (match-string 0))
 
-
-;; HTML ;;/ ASP / VBSCRIPT
-;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
-;;(add-hook 'html-helper-load-hook (lambda () (require 'visual-basic-mode)))
-(add-hook 'html-helper-load-hook (lambda () (require 'html-font nil 'noerror)))
-(add-hook 'html-helper-mode-hook (lambda () (font-lock-mode 1)))
-
-
-;; Wrap-region minor mode for mark-up
-(autoload 'wrap-region-mode "wrap-region" "Wrap region with stuff." t)
-
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
@@ -230,7 +234,7 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; Drupal mode (see my-drupal.el)
 (autoload 'drupal-mode "my-drupal" "Drupal Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\|engine\\)\\'" . drupal-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.info\\'" . conf-mode))
 
 ;; (Removed nXhtml)
