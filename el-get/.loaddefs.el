@@ -578,6 +578,19 @@ This command does the inverse of `fill-region'.
 
 ;;;***
 
+;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
+;;;;;;  (20552 11953))
+;;; Generated autoloads from vcl-mode/vcl-mode.el
+
+(let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
+
+(autoload 'vcl-mode "vcl-mode/vcl-mode" "\
+Mode for Varnish Command Language
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
 ;;;;;;  "web-mode/web-mode.el" (20552 10417))
 ;;; Generated autoloads from web-mode/web-mode.el

@@ -254,6 +254,9 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; (delete '("\\.php[s34]?\\'" . php-mode) auto-mode-alist)
 ;; (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . drupal-mode))
 
+;; Varnish
+(add-to-list 'auto-mode-alist '("\\.vcl\\'" . vcl-mode))
+
 ;; Python / Plone / Zope
 (require 'my-python)
 

@@ -145,6 +145,10 @@
 
      (:name undo-tree)
 
+     (:name vcl-mode
+            :type http
+            :url "file:///home/phil/.emacs.d/local-repository/vcl-mode.el")
+
      (:name web-mode
             :type git
             :url "https://github.com/fxbois/web-mode.git")
