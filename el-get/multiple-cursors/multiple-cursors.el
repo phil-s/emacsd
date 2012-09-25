@@ -125,14 +125,10 @@
 ;;
 ;;; Code:
 
-(require 'multiple-cursors-core)
 (require 'mc-edit-lines)
 (require 'mc-cycle-cursors)
 (require 'mc-mark-more)
 (require 'rectangular-region-mode)
-
-;;;###autoload
-(eval-after-load "mark-multiple" '(require 'mc-mark-multiple-integration))
 
 (provide 'multiple-cursors)
 

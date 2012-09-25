@@ -150,7 +150,7 @@ Commands:
 
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20529 52015))
+;;;;;;  (20529 56221))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
@@ -178,7 +178,7 @@ Add one cursor to the beginning of each line in the active region.
 ;;;### (autoloads (mc/mark-more-like-this-extended mc/mark-all-in-region
 ;;;;;;  mc/mark-all-like-this mc/mark-previous-like-this mc/mark-next-like-this)
 ;;;;;;  "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20529 52015))
+;;;;;;  (20529 56221))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -226,7 +226,7 @@ is one of the above.
 ;;;***
 
 ;;;### (autoloads nil "multiple-cursors/multiple-cursors" "multiple-cursors/multiple-cursors.el"
-;;;;;;  (20529 52015))
+;;;;;;  (20529 56221))
 ;;; Generated autoloads from multiple-cursors/multiple-cursors.el
 
 (eval-after-load "mark-multiple" '(require 'mc-mark-multiple-integration))
@@ -234,7 +234,7 @@ is one of the above.
 ;;;***
 
 ;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20529 52015))
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20529 56221))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
@@ -821,10 +821,8 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
-;;;;;;  "multiple-cursors/mc-mark-multiple-integration.el" "multiple-cursors/multiple-cursors-core.el"
-;;;;;;  "multiple-cursors/multiple-cursors-pkg.el") (20529 52023
-;;;;;;  614374))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20552 11954
+;;;;;;  147070))
 
 ;;;***
 

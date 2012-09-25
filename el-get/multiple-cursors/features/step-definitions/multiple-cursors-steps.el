@@ -22,7 +22,7 @@
 
 (Then "^rectangular-region-mode should be on$"
        (lambda ()
-         (assert (rectangular-region-mode) nil
+         (assert rectangular-region-mode nil
                  "Expected rectangular-region-mode mode to be on, but wasn't.")))
 
 (When "^I press \"\\(.+\\)\"$"
@@ -42,8 +42,8 @@
          (search-forward needle)
          (set-mark (point))
          (goto-char (match-beginning 0))
-         (mark-all-like-this)
-         (mc/switch-from-mark-multiple-to-cursors)))
+         (mc/mark-all-like-this)
+         (mc/keyboard-quit)))
 
 (When "^I copy \"\\(.+\\)\" in another program$"
        (lambda (text)

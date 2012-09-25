@@ -1,4 +1,4 @@
-# multiple-cursors.el
+# multiple-cursors.el [![Build Status](https://secure.travis-ci.org/magnars/multiple-cursors.el.png)](http://travis-ci.org/magnars/multiple-cursors.el)
 
 Multiple cursors for Emacs. This is some pretty crazy functionality, so yes,
 there are kinks. Don't be afraid tho, I've been using it since 2011 with
@@ -9,6 +9,9 @@ great success and much merriment.
 Start out with:
 
     (require 'multiple-cursors)
+
+Then you have to set up your keybindings - multiple-cursors doesn't presume to
+know how you'd like them laid out. Here are some examples:
 
 When you have an active region that spans multiple lines, the following will
 add a cursor to each line:
@@ -28,6 +31,9 @@ To get out of multiple-cursors-mode, press `<return>` or `C-g`. The latter will
 first disable multiple regions before disabling multiple cursors. If you want to
 insert a newline in multiple-cursors-mode, use `C-j`.
 
+## Video
+
+You can [watch an intro to multiple-cursors at Emacs Rocks](http://emacsrocks.com/e13.html).
 
 ## More commands to play around with
 

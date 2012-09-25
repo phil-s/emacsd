@@ -27,6 +27,8 @@
 
 (eval-when-compile (require 'cl))
 
+(require 'rect)
+
 (defface mc/cursor-face
   '((t (:inverse-video t)))
   "The face used for fake cursors"
@@ -36,6 +38,55 @@
   '((t :inherit region))
   "The face used for fake regions"
   :group 'multiple-cursors)
+
+(defmacro mc/add-fake-cursor-to-undo-list (&rest forms)
+  "Make sure point is in the right place when undoing"
+  `(let ((undo-cleaner (cons 'apply (cons 'deactivate-cursor-after-undo (list id)))))
+     (setq buffer-undo-list (cons undo-cleaner buffer-undo-list))
+     ,@forms
+     (if (eq undo-cleaner (car buffer-undo-list)) ;; if nothing has been added to the undo-list
+         (setq buffer-undo-list (cdr buffer-undo-list)) ;; then pop the cleaner right off again
+       (setq buffer-undo-list ;; otherwise add a function to activate this cursor
+             (cons (cons 'apply (cons 'activate-cursor-for-undo (list id))) buffer-undo-list)))))
+
+(defmacro mc/for-each-fake-cursor (&rest forms)
+  "Runs the body for each fake cursor, bound to the name cursor"
+  `(mapc #'(lambda (cursor)
+             (when (mc/fake-cursor-p cursor)
+               ,@forms))
+         (overlays-in (point-min) (point-max))))
+
+(defmacro mc/save-excursion (&rest forms)
+  "Saves and restores all the state that multiple-cursors cares about."
+  `(let ((current-state (mc/store-current-state-in-overlay
+                         (make-overlay (point) (point) nil nil t))))
+     (overlay-put current-state 'type 'original-cursor)
+     (save-excursion ,@forms)
+     (mc/pop-state-from-overlay current-state)))
+
+(defun mc--compare-by-overlay-start (o1 o2)
+  (< (overlay-start o1) (overlay-start o2)))
+
+(defmacro mc/for-each-cursor-ordered (&rest forms)
+  "Runs the body for each cursor, fake and real, bound to the name cursor"
+  `(let ((real-cursor (mc/create-fake-cursor-at-point)))
+     (mapc #'(lambda (cursor)
+               (when (mc/fake-cursor-p cursor)
+                 ,@forms))
+           (sort (overlays-in (point-min) (point-max)) 'mc--compare-by-overlay-start))
+     (mc/pop-state-from-overlay real-cursor)))
+
+(defmacro mc/save-window-scroll (&rest forms)
+  "Saves and restores the window scroll position"
+  `(let ((p (set-marker (make-marker) (point)))
+         (start (set-marker (make-marker) (window-start)))
+         (hscroll (window-hscroll)))
+     ,@forms
+     (goto-char p)
+     (set-window-start nil start)
+     (set-window-hscroll nil hscroll)
+     (set-marker p nil)
+     (set-marker start nil)))
 
 (defun mc/make-cursor-overlay-at-eol (pos)
   "Create overlay to look like cursor at end of line."
@@ -123,7 +174,8 @@ Saves the current state in the overlay to be restored later."
     (mc/store-current-state-in-overlay overlay)
     (when (use-region-p)
       (overlay-put overlay 'region-overlay
-                   (mc/make-region-overlay-between-point-and-mark)))))
+                   (mc/make-region-overlay-between-point-and-mark)))
+    overlay))
 
 (defun mc/execute-command (cmd)
   "Run command, simulating the parts of the command loop that makes sense for fake cursors."
@@ -132,6 +184,8 @@ Saves the current state in the overlay to be restored later."
   (unless (eq this-command 'ignore)
     (call-interactively cmd))
   (when deactivate-mark (deactivate-mark)))
+
+(defvar mc--executing-command-for-fake-cursor nil)
 
 (defun mc/execute-command-for-all-fake-cursors (cmd)
   "Calls CMD interactively for each cursor.
@@ -143,23 +197,15 @@ cursor with updated info."
    (mc/save-window-scroll
     (mc/for-each-fake-cursor
      (save-excursion
-       (let ((id (overlay-get cursor 'mc-id))
-             (annoying-arrows-mode nil))
+       (let ((mc--executing-command-for-fake-cursor t)
+             (id (overlay-get cursor 'mc-id))
+             (annoying-arrows-mode nil)
+             (smooth-scroll-margin 0))
          (mc/add-fake-cursor-to-undo-list
           (mc/pop-state-from-overlay cursor)
           (ignore-errors
             (mc/execute-command cmd)
             (mc/create-fake-cursor-at-point id)))))))))
-
-(defmacro mc/add-fake-cursor-to-undo-list (&rest forms)
-  "Make sure point is in the right place when undoing"
-  `(let ((undo-cleaner (cons 'apply (cons 'deactivate-cursor-after-undo (list id)))))
-     (setq buffer-undo-list (cons undo-cleaner buffer-undo-list))
-     ,@forms
-     (if (eq undo-cleaner (car buffer-undo-list)) ;; if nothing has been added to the undo-list
-         (setq buffer-undo-list (cdr buffer-undo-list)) ;; then pop the cleaner right off again
-       (setq buffer-undo-list ;; otherwise add a function to activate this cursor
-             (cons (cons 'apply (cons 'activate-cursor-for-undo (list id))) buffer-undo-list)))))
 
 (defun mc/fake-cursor-p (o)
   "Predicate to check if an overlay is a fake cursor"
@@ -189,33 +235,6 @@ cursor with updated info."
     (mc/pop-state-from-overlay mc--stored-state-for-undo)
     (setq mc--stored-state-for-undo nil)))
 
-(defmacro mc/for-each-fake-cursor (&rest forms)
-  "Runs the body for each fake cursor, bound to the name cursor"
-  `(mapc #'(lambda (cursor)
-             (when (mc/fake-cursor-p cursor)
-               ,@forms))
-         (overlays-in (point-min) (point-max))))
-
-(defmacro mc/save-excursion (&rest forms)
-  "Saves and restores all the state that multiple-cursors cares about."
-  `(let ((current-state (mc/store-current-state-in-overlay
-                         (make-overlay (point) (point) nil nil t))))
-     (overlay-put current-state 'type 'original-cursor)
-     (save-excursion ,@forms)
-     (mc/pop-state-from-overlay current-state)))
-
-(defmacro mc/save-window-scroll (&rest forms)
-  "Saves and restores the window scroll position"
-  `(let ((p (set-marker (make-marker) (point)))
-         (start (set-marker (make-marker) (window-start)))
-         (hscroll (window-hscroll)))
-     ,@forms
-     (goto-char p)
-     (set-window-start nil start)
-     (set-window-hscroll nil hscroll)
-     (set-marker p nil)
-     (set-marker start nil)))
-
 (defun mc/prompt-for-inclusion-in-whitelist (original-command)
   "Asks the user, then adds the command either to the once-list or the all-list."
   (let ((all-p (y-or-n-p (format "Do %S for all cursors?" original-command))))
@@ -231,14 +250,14 @@ cursor with updated info."
                 (overlays-in (point-min) (point-max)))))
 
 (defun mc/execute-this-command-for-all-cursors ()
-  "Used with post-command-hook to execute supported commands for
-all cursors. It also checks a list of explicitly unsupported
-commands that is prevented even for the original cursor, to
-inform about the lack of support.
+  "Used with post-command-hook to execute supported commands for all cursors.
 
-Commands that are neither supported nor explicitly unsupported
-is executed normally for point, but skipped for the fake
-cursors."
+It uses two lists of commands to know what to do: the run-once
+list and the run-for-all list. If a command is in neither of these lists,
+it will prompt for the proper action and then save that preference.
+
+Some commands are so unsupported that they are even prevented for
+the original cursor, to inform about the lack of support."
   (if (eq 1 (mc/num-cursors)) ;; no fake cursors? disable mc-mode
       (multiple-cursors-mode 0)
     (let ((original-command (or (command-remapping this-original-command)
@@ -286,6 +305,30 @@ multiple cursors editing.")
   (define-key mc/keymap (kbd "C-g") 'mc/keyboard-quit)
   (define-key mc/keymap (kbd "<return>") 'multiple-cursors-mode))
 
+(defun mc--all-equal (entries)
+  "Are all these entries equal?"
+  (let ((first (car entries))
+        (all-equal t))
+    (while (and all-equal entries)
+      (setq all-equal (equal first (car entries)))
+      (setq entries (cdr entries)))
+    all-equal))
+
+(defun mc--kill-ring-entries ()
+  "Return the latest kill-ring entry for each cursor.
+The entries are returned in the order they are found in the buffer."
+  (let (entries)
+    (mc/for-each-cursor-ordered
+     (setq entries (cons (car (overlay-get cursor 'kill-ring)) entries)))
+    (reverse entries)))
+
+(defun mc--maybe-set-killed-rectangle ()
+  "Add the latest kill-ring entry for each cursor to killed-rectangle.
+So you can paste it in later with `yank-rectangle'."
+  (let ((entries (mc--kill-ring-entries)))
+    (unless (mc--all-equal entries)
+      (setq killed-rectangle entries))))
+
 (define-minor-mode multiple-cursors-mode
   "Mode while multiple cursors are active."
   nil " mc" mc/keymap
@@ -294,6 +337,7 @@ multiple cursors editing.")
         (add-hook 'post-command-hook 'mc/execute-this-command-for-all-cursors t t)
         (run-hooks 'multiple-cursors-mode-enabled-hook))
     (remove-hook 'post-command-hook 'mc/execute-this-command-for-all-cursors t)
+    (mc--maybe-set-killed-rectangle)
     (mc/remove-fake-cursors)
     (run-hooks 'multiple-cursors-mode-disabled-hook)))
 
@@ -343,6 +387,7 @@ from being executed if in multiple-cursors-mode."
 for running commands with multiple cursors.")
 
 (defun mc/save-lists ()
+  "Saves preferences for running commands with multiple cursors to `mc/list-file'"
   (with-temp-file mc/list-file
     (emacs-lisp-mode)
     (insert ";; This file is automatically generated by the multiple-cursors extension.")
@@ -353,7 +398,7 @@ for running commands with multiple cursors.")
     (insert "(setq mc/cmds-to-run-for-all '(")
     (mapc #'(lambda (cmd) (insert (format "%S" cmd)) (newline-and-indent)) mc/cmds-to-run-for-all)
     (when mc/cmds-to-run-for-all
-      (next-line -1)
+      (forward-line -1)
       (end-of-line))
     (insert "))")
     (newline)
@@ -361,7 +406,7 @@ for running commands with multiple cursors.")
     (insert "(setq mc/cmds-to-run-once '(")
     (mapc #'(lambda (cmd) (insert (format "%S" cmd)) (newline-and-indent)) mc/cmds-to-run-once)
     (when mc/cmds-to-run-once
-      (next-line -1)
+      (forward-line -1)
       (end-of-line))
     (insert "))")
     (newline)))
@@ -372,8 +417,7 @@ for running commands with multiple cursors.")
 (defvar mc--default-cmds-to-run-once nil
   "Default set of commands to run only once in multiple-cursors-mode.")
 
-(setq mc--default-cmds-to-run-once '(mc/switch-from-mark-multiple-to-cursors
-                                     mc/edit-lines
+(setq mc--default-cmds-to-run-once '(mc/edit-lines
                                      mc/edit-ends-of-lines
                                      mc/edit-beginnings-of-lines
                                      mc/mark-next-like-this
@@ -408,6 +452,9 @@ for running commands with multiple cursors.")
                                      split-window-below
                                      delete-other-windows
                                      toggle-window-split
+                                     mwheel-scroll
+                                     quit-window
+                                     toggle-read-only
                                      windmove-left
                                      windmove-right
                                      windmove-up
@@ -423,6 +470,7 @@ for running commands with multiple cursors.")
                                         newline
                                         newline-and-indent
                                         open-line
+                                        delete-blank-lines
                                         transpose-chars
                                         transpose-lines
                                         transpose-paragraphs
@@ -436,6 +484,8 @@ for running commands with multiple cursors.")
                                         left-word
                                         backward-char
                                         backward-word
+                                        forward-paragraph
+                                        backward-paragraph
                                         upcase-word
                                         downcase-word
                                         capitalize-word
@@ -445,6 +495,7 @@ for running commands with multiple cursors.")
                                         hippie-expand-lines
                                         yank
                                         yank-pop
+                                        append-next-kill
                                         kill-word
                                         kill-line
                                         kill-whole-line
@@ -456,6 +507,7 @@ for running commands with multiple cursors.")
                                         zap-to-char
                                         end-of-line
                                         set-mark-command
+                                        exchange-point-and-mark
                                         move-end-of-line
                                         beginning-of-line
                                         move-beginning-of-line
