@@ -224,6 +224,9 @@ See also: `my-copy-buffer-file-name'."
 ;; preference to opening another copy in the current buffer.
 (setq-default display-buffer-reuse-frames t)
 
+;; Full-screen by default.
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 (defun my-frame-config (frame)
   "Custom behaviours for new frames."
   (with-selected-frame frame
