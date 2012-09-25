@@ -671,6 +671,18 @@ or before point."
     (term-char-mode)
     (switch-to-buffer "*ssh*")))
 
+(defun eval-and-replace ()
+  "Replace the preceding sexp with its value.
+
+https://github.com/magnars/.emacs.d/blob/master/defuns/lisp-defuns.el"
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
 (defun my-eval-remote-library (url)
   "Retrieve and evaluate the code in the specified URL."
   (interactive "sURL: ")
