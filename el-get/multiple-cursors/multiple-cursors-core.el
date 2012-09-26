@@ -249,6 +249,22 @@ cursor with updated info."
   (1+ (count-if 'mc/fake-cursor-p
                 (overlays-in (point-min) (point-max)))))
 
+(defvar mc--this-command nil
+  "Used to store the original command being run.")
+(make-variable-buffer-local 'mc--this-command)
+
+(defun mc/make-a-note-of-the-command-being-run ()
+  "Used with pre-command-hook to store the original command being run.
+Since that cannot be reliably determined in the post-command-hook.
+
+Specifically, this-original-command isn't always right, because it could have
+been remapped. And certain modes (cua comes to mind) will change their
+remapping based on state. So a command that changes the state will afterwards
+not be recognized through the command-remapping lookup."
+  (unless mc--executing-command-for-fake-cursor
+    (setq mc--this-command (or (command-remapping this-original-command)
+                               this-original-command))))
+
 (defun mc/execute-this-command-for-all-cursors ()
   "Used with post-command-hook to execute supported commands for all cursors.
 
@@ -260,26 +276,29 @@ Some commands are so unsupported that they are even prevented for
 the original cursor, to inform about the lack of support."
   (if (eq 1 (mc/num-cursors)) ;; no fake cursors? disable mc-mode
       (multiple-cursors-mode 0)
-    (let ((original-command (or (command-remapping this-original-command)
-                                this-original-command)))
 
-      ;; if it's a lambda, we can't know if it's supported or not
-      ;; - so go ahead and assume it's ok, because we're just optimistic like that
-      (if (not (symbolp original-command))
-          (mc/execute-command-for-all-fake-cursors original-command)
+    (when this-original-command
+      (let ((original-command (or mc--this-command
+                                  (command-remapping this-original-command)
+                                  this-original-command)))
 
-        ;; otherwise it's a symbol, and we can be more thorough
-        (if (get original-command 'mc--unsupported)
-            (message "%S is not supported with multiple cursors%s"
-                     original-command
-                     (get original-command 'mc--unsupported))
-          (when (and original-command
-                     (not (memq original-command mc--default-cmds-to-run-once))
-                     (not (memq original-command mc/cmds-to-run-once))
-                     (or (memq original-command mc--default-cmds-to-run-for-all)
-                         (memq original-command mc/cmds-to-run-for-all)
-                         (mc/prompt-for-inclusion-in-whitelist original-command)))
-            (mc/execute-command-for-all-fake-cursors original-command)))))))
+        ;; if it's a lambda, we can't know if it's supported or not
+        ;; - so go ahead and assume it's ok, because we're just optimistic like that
+        (if (not (symbolp original-command))
+            (mc/execute-command-for-all-fake-cursors original-command)
+
+          ;; otherwise it's a symbol, and we can be more thorough
+          (if (get original-command 'mc--unsupported)
+              (message "%S is not supported with multiple cursors%s"
+                       original-command
+                       (get original-command 'mc--unsupported))
+            (when (and original-command
+                       (not (memq original-command mc--default-cmds-to-run-once))
+                       (not (memq original-command mc/cmds-to-run-once))
+                       (or (memq original-command mc--default-cmds-to-run-for-all)
+                           (memq original-command mc/cmds-to-run-for-all)
+                           (mc/prompt-for-inclusion-in-whitelist original-command)))
+              (mc/execute-command-for-all-fake-cursors original-command))))))))
 
 (defun mc/remove-fake-cursors ()
   "Remove all fake cursors.
@@ -329,16 +348,45 @@ So you can paste it in later with `yank-rectangle'."
     (unless (mc--all-equal entries)
       (setq killed-rectangle entries))))
 
+(defvar mc/unsupported-minor-modes '(auto-complete-mode)
+  "List of minor-modes that does not play well with multiple-cursors.
+They are temporarily disabled when multiple-cursors are active.")
+
+(defvar mc/temporarily-disabled-minor-modes nil
+  "The list of temporarily disabled minor-modes.")
+(make-variable-buffer-local 'mc/temporarily-disabled-minor-modes)
+
+(defun mc/temporarily-disable-minor-mode (mode)
+  "If MODE is available and turned on, remember that and turn it off."
+  (when (and (boundp mode) (eval mode))
+    (add-to-list 'mc/temporarily-disabled-minor-modes mode)
+    (funcall mode -1)))
+
+(defun mc/temporarily-disable-unsupported-minor-modes ()
+  (mapc 'mc/temporarily-disable-minor-mode mc/unsupported-minor-modes))
+
+(defun mc/enable-minor-mode (mode)
+  (funcall mode 1))
+
+(defun mc/enable-temporarily-disabled-minor-modes ()
+  (mapc 'mc/enable-minor-mode mc/temporarily-disabled-minor-modes)
+  (setq mc/temporarily-disabled-minor-modes nil))
+
 (define-minor-mode multiple-cursors-mode
   "Mode while multiple cursors are active."
   nil " mc" mc/keymap
   (if multiple-cursors-mode
       (progn
+        (mc/temporarily-disable-unsupported-minor-modes)
+        (add-hook 'pre-command-hook 'mc/make-a-note-of-the-command-being-run nil t)
         (add-hook 'post-command-hook 'mc/execute-this-command-for-all-cursors t t)
         (run-hooks 'multiple-cursors-mode-enabled-hook))
     (remove-hook 'post-command-hook 'mc/execute-this-command-for-all-cursors t)
+    (remove-hook 'pre-command-hook 'mc/make-a-note-of-the-command-being-run t)
+    (setq mc--this-command nil)
     (mc--maybe-set-killed-rectangle)
     (mc/remove-fake-cursors)
+    (mc/enable-temporarily-disabled-minor-modes)
     (run-hooks 'multiple-cursors-mode-disabled-hook)))
 
 (add-hook 'after-revert-hook #'(lambda () (multiple-cursors-mode 0)))
@@ -430,6 +478,7 @@ for running commands with multiple cursors.")
                                      save-buffer
                                      ido-exit-minibuffer
                                      exit-minibuffer
+                                     minibuffer-complete-and-exit
                                      undo
                                      redo
                                      undo-tree-undo
@@ -453,6 +502,8 @@ for running commands with multiple cursors.")
                                      delete-other-windows
                                      toggle-window-split
                                      mwheel-scroll
+                                     mouse-set-point
+                                     mouse-drag-region
                                      quit-window
                                      toggle-read-only
                                      windmove-left
@@ -508,6 +559,8 @@ for running commands with multiple cursors.")
                                         end-of-line
                                         set-mark-command
                                         exchange-point-and-mark
+                                        cua-set-mark
+                                        cua-replace-region
                                         move-end-of-line
                                         beginning-of-line
                                         move-beginning-of-line
