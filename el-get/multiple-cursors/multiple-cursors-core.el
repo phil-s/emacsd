@@ -205,7 +205,31 @@ cursor with updated info."
           (mc/pop-state-from-overlay cursor)
           (ignore-errors
             (mc/execute-command cmd)
-            (mc/create-fake-cursor-at-point id)))))))))
+            (mc/create-fake-cursor-at-point id))))))))
+  (mc--reset-read-prompts))
+
+;; Intercept some reading commands so you won't have to
+;; answer them for every single cursor
+
+(defadvice read-char (around mc-support activate)
+  (if (not multiple-cursors-mode)
+      ad-do-it
+    (unless mc--read-char
+      (setq mc--read-char ad-do-it))
+    (setq ad-return-value mc--read-char)))
+
+(defadvice read-quoted-char (around mc-support activate)
+  (if (not multiple-cursors-mode)
+      ad-do-it
+    (unless mc--read-quoted-char
+      (setq mc--read-quoted-char ad-do-it))
+    (setq ad-return-value mc--read-quoted-char)))
+
+(defun mc--reset-read-prompts ()
+  (setq mc--read-char nil)
+  (setq mc--read-quoted-char nil))
+
+(mc--reset-read-prompts)
 
 (defun mc/fake-cursor-p (o)
   "Predicate to check if an overlay is a fake cursor"
@@ -266,6 +290,14 @@ not be recognized through the command-remapping lookup."
                                this-original-command))))
 
 (defun mc/execute-this-command-for-all-cursors ()
+  "Wrap around `mc/execute-this-command-for-all-cursors-1' to protect hook."
+  (condition-case error
+      (mc/execute-this-command-for-all-cursors-1)
+    (error
+     (message "[mc] problem in `mc/execute-this-command-for-all-cursors': %s"
+              (error-message-string error)))))
+
+(defun mc/execute-this-command-for-all-cursors-1 ()
   "Used with post-command-hook to execute supported commands for all cursors.
 
 It uses two lists of commands to know what to do: the run-once
@@ -274,31 +306,37 @@ it will prompt for the proper action and then save that preference.
 
 Some commands are so unsupported that they are even prevented for
 the original cursor, to inform about the lack of support."
-  (if (eq 1 (mc/num-cursors)) ;; no fake cursors? disable mc-mode
-      (multiple-cursors-mode 0)
+  (unless mc--executing-command-for-fake-cursor
 
-    (when this-original-command
-      (let ((original-command (or mc--this-command
-                                  (command-remapping this-original-command)
-                                  this-original-command)))
+   (if (eq 1 (mc/num-cursors)) ;; no fake cursors? disable mc-mode
+       (multiple-cursors-mode 0)
 
-        ;; if it's a lambda, we can't know if it's supported or not
-        ;; - so go ahead and assume it's ok, because we're just optimistic like that
-        (if (not (symbolp original-command))
-            (mc/execute-command-for-all-fake-cursors original-command)
+     (when this-original-command
+       (let ((original-command (or mc--this-command
+                                   (command-remapping this-original-command)
+                                   this-original-command)))
 
-          ;; otherwise it's a symbol, and we can be more thorough
-          (if (get original-command 'mc--unsupported)
-              (message "%S is not supported with multiple cursors%s"
-                       original-command
-                       (get original-command 'mc--unsupported))
-            (when (and original-command
-                       (not (memq original-command mc--default-cmds-to-run-once))
-                       (not (memq original-command mc/cmds-to-run-once))
-                       (or (memq original-command mc--default-cmds-to-run-for-all)
-                           (memq original-command mc/cmds-to-run-for-all)
-                           (mc/prompt-for-inclusion-in-whitelist original-command)))
-              (mc/execute-command-for-all-fake-cursors original-command))))))))
+         ;; skip keyboard macros, since they will generate actual commands that are
+         ;; also run in the command loop - we'll handle those later instead.
+         (when (functionp original-command)
+
+           ;; if it's a lambda, we can't know if it's supported or not
+           ;; - so go ahead and assume it's ok, because we're just optimistic like that
+           (if (not (symbolp original-command))
+               (mc/execute-command-for-all-fake-cursors original-command)
+
+             ;; otherwise it's a symbol, and we can be more thorough
+             (if (get original-command 'mc--unsupported)
+                 (message "%S is not supported with multiple cursors%s"
+                          original-command
+                          (get original-command 'mc--unsupported))
+               (when (and original-command
+                          (not (memq original-command mc--default-cmds-to-run-once))
+                          (not (memq original-command mc/cmds-to-run-once))
+                          (or (memq original-command mc--default-cmds-to-run-for-all)
+                              (memq original-command mc/cmds-to-run-for-all)
+                              (mc/prompt-for-inclusion-in-whitelist original-command)))
+                 (mc/execute-command-for-all-fake-cursors original-command))))))))))
 
 (defun mc/remove-fake-cursors ()
   "Remove all fake cursors.
@@ -516,6 +554,7 @@ for running commands with multiple cursors.")
 
 (setq mc--default-cmds-to-run-for-all '(mc/keyboard-quit
                                         self-insert-command
+                                        quoted-insert
                                         previous-line
                                         next-line
                                         newline
