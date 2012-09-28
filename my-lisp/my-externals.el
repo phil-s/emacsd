@@ -177,7 +177,7 @@
 
   ;; Execute el-get
   (if (functionp 'el-get)
-      (el-get)))
+      (el-get 'wait)))
 
 
 ;; Modification of the *scratch* Installer from
