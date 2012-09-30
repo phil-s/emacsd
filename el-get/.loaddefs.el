@@ -632,6 +632,18 @@ Major mode for editing mixed HTML Templates.
 
 ;;;***
 
+;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20584
+;;;;;;  48796))
+;;; Generated autoloads from wgrep/wgrep.el
+
+(autoload 'wgrep-setup "wgrep/wgrep" "\
+Setup wgrep preparation.
+
+\(fn)" nil nil)
+(add-hook 'grep-setup-hook 'wgrep-setup)
+
+;;;***
+
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
 ;;;;;;  "ws-trim/ws-trim.el" (20289 32280))
@@ -821,8 +833,8 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20552 11954
-;;;;;;  147070))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/multiple-cursors.el"
+;;;;;;  "wgrep/wgrep-test.el") (20584 48796 822695))
 
 ;;;***
 
