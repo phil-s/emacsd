@@ -22,8 +22,16 @@
 ;;  https://github.com/djcb/sauron/blob/master/README.org
 
 ;;; Code:
-(unless (require 'dbus nil 'noerror)
-  (setq dbus-service-emacs "")) ;; keep errors out if dbus is not there
+(require 'cl)
+(require 'dbus nil 'noerror) ;; keep errors out if dbus is not there
+
+;; keep the byte-compiler happy, even if dbus isn't there
+(defvar dbus-service-emacs nil)
+(defvar dbus-path-emacs nil)
+(defvar dbus-interface-introspectable nil)
+(when (not (fboundp 'dbus-unregister-service))
+  (defun dbus-unregister-service (&rest args) nil))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar sauron-dbus-cookie nil
   "If non-nil, write the dbus-address for this session to a file
@@ -32,12 +40,12 @@
 you can source this in e.g. a shell script:
    DBUS_SESSION_BUS_ADDRESS=\"`cat ~/.sauron-dbus`\"
 and thus send messages to sauron, even when not in the session.")
-  
+
 (defconst sr-dbus-service dbus-service-emacs
   "*internal* the D-bus service name for sauron.")
 
 (defconst sr-dbus-path
-  (concat dbus-path-emacs "/Sauron")
+  (concat (or dbus-path-emacs "" ) "/Sauron")
   "*internal* the D-bus interface for sauron.")
 
 (defconst sr-dbus-interface
@@ -68,7 +76,7 @@ and thus send messages to sauron, even when not in the session.")
     (dbus-register-method
       :session              ;; bus to use (:session or :system)
       sr-dbus-service       ;; ie. org.gnu.Emacs or org.gnu.Emacs.<username>
-      sr-dbus-path          ;; ie. org.gnu.Emacs.Sauron 
+      sr-dbus-path          ;; ie. org.gnu.Emacs.Sauron
       dbus-interface-introspectable
       "Introspect"
       (lambda () ;; return the introspection XML for our object"
@@ -98,14 +106,19 @@ and thus send messages to sauron, even when not in the session.")
     (insert (getenv "DBUS_SESSION_BUS_ADDRESS"))))
 
 (defun sauron-dbus-start ()
-  "Start listening for sauron dbus messages."
+  "Start listening for sauron dbus message; if this is succesful
+return t, otherwise, return nil."
   (if (not (boundp 'dbus-path-emacs))
-    (message "sauron-dbus not available")
-    (unless sr-dbus-running
-      (sr-register-methods)
-      (when sauron-dbus-cookie
-	(sr-dbus-drop-cookie))
-      (setq sr-dbus-running t))))
+    (progn
+      (message "sauron-dbus: not available")
+      nil)
+    (ignore-errors
+      (when (not sr-dbus-running)
+	(sr-register-methods)
+	(when sauron-dbus-cookie
+	  (sr-dbus-drop-cookie))
+	(setq sr-dbus-running t))
+      t)))
 
 (defun sauron-dbus-stop ()
   "Stop listening for dbus messages."
