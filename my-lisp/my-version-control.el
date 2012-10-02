@@ -103,6 +103,15 @@ static char * data[] = {
    ((pcomplete-match "checkout" 1)
     (pcomplete-here* (pcmpl-git-get-refs "heads")))))
 
+(defadvice magit-quit-window (around my-do-not-close-magit-frame)
+  "Apparently a `quit-window' window property can control what happens
+when `kill-window' is called, however it's not well-documented, so I'm
+doing this instead."
+  (if (eq 1 (count-windows))
+      (kill-buffer)
+    ad-do-it))
+(ad-activate 'magit-quit-window)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-version-control)
