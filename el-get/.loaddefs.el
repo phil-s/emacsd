@@ -150,16 +150,13 @@ Commands:
 
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20529 56221))
+;;;;;;  (20580 60946))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
 Add one cursor to each line of the active region.
 Starts from mark and moves in straight down or up towards the
 line point is on.
-
-Could possibly be used to mark multiple regions with
-mark-multiple if point and mark is on different columns.
 
 \(fn)" t nil)
 
@@ -225,20 +222,26 @@ is one of the above.
 
 ;;;***
 
-;;;### (autoloads nil "multiple-cursors/multiple-cursors" "multiple-cursors/multiple-cursors.el"
-;;;;;;  (20529 56221))
-;;; Generated autoloads from multiple-cursors/multiple-cursors.el
-
-(eval-after-load "mark-multiple" '(require 'mc-mark-multiple-integration))
-
-;;;***
-
 ;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20529 56221))
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20578 10013))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
+Anchors the rectangular region at point.
 
+Think of this one as `set-mark' except you're marking a rectangular region. It is
+an exceedingly quick way of adding multiple cursors to multiple lines.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (offlineimap) "offlineimap/offlineimap" "offlineimap/offlineimap.el"
+;;;;;;  (20530 59020))
+;;; Generated autoloads from offlineimap/offlineimap.el
+
+(autoload 'offlineimap "offlineimap/offlineimap" "\
+Start OfflineIMAP.
 
 \(fn)" t nil)
 
