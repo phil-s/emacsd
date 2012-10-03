@@ -8,8 +8,29 @@
       (visit-tags-table tag-dir t)
       (when (not (timerp drupal-tags-autoupdate-timer))
         (drupal-tags-autoupdate-start))))
-  ;; [...]
-  )
+
+  ;; PHP configuration for Drupal
+  ;; n.b. php-mode is derived from c-mode
+
+  (setq tab-width                2
+        c-basic-offset           2
+        indent-tabs-mode         nil
+        fill-column              78
+        show-trailing-whitespace t
+        ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
+        paragraph-start          (concat paragraph-start "\\| \\* @[a-z]+")
+        paragraph-separate       "$"
+        )
+
+  (c-set-offset 'case-label '+)
+  (c-set-offset 'arglist-close 0)
+  (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
+  (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
+
+  ;; Key bindings
+  (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
+  (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
+
 
 (defun my-insert-drupal-hook (tagname)
   "Clone the specified function as a new module hook implementation.
@@ -71,7 +92,6 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
            (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info" "*.js"
                              "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
                              "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
-           ;; (drupal-p . t)
            ))
    (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
                           (drupal-mode) (hack-local-variables))) ;; Oooh.
@@ -111,6 +131,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 ;;    " rm -f TAGS.new;"))
 
 (defun drupal-tags-autoupdate-command (dir)
+  "Regenerate TAGS.
+Do not replace the original file unless there are differences."
   (format
    (concat
     "cd \"%s\";"
@@ -188,3 +210,7 @@ We assume that a buffer is visiting the most recent version of this time."
 
 (setq tags-revert-without-query t)
 ;;(drupal-tags-autoupdate-start)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide 'my-drupal)

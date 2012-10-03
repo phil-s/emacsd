@@ -1,6 +1,6 @@
 ;;; sauron-org.el --- an org-mode (appt) tracking module, part of sauron
 ;;
-;; Copyright (C) 2011 Dirk-Jan C. Binnema
+;; Copyright (C) 2011-2012 Dirk-Jan C. Binnema
 
 ;; This file is not part of GNU Emacs.
 ;;
@@ -36,12 +36,15 @@
 (defun sauron-org-start ()
   "Start watching org (appt)."
   (if (not (boundp 'appt-disp-window-function))
-    (message "sauron-org not available")
+    (progn 
+      (message "sauron-org not available")
+      nil)
     (unless sr-org-running
       (setq ;; save the old one, set the new one
 	sr-org-old-appt-func appt-disp-window-function
 	appt-disp-window-function (function sr-org-handler-func)
-	sr-org-running t))))
+	sr-org-running t))
+    t))
 
 (defun sauron-org-stop ()
   "Stop checking appointments; restore the old function."

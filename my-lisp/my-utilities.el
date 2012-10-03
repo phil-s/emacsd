@@ -641,11 +641,54 @@ or before point."
 (defun my-copy-rectangle (start end &optional fill)
   "Trigger the read-only behaviour of `kill-rectangle'."
   (interactive "r\nP")
-  (let ((read-only-state buffer-read-only)
+  (let ((buffer-read-only t)
         (kill-read-only-ok t))
-    (setq buffer-read-only t)
-    (kill-rectangle start end fill)
-    (setq buffer-read-only read-only-state)))
+    (kill-rectangle start end fill)))
+
+(defun my-fill-rectangle (start end)
+  "`fill-region' within the confines of a rectangle."
+  (interactive "*r")
+  (let* ((indent-tabs-mode nil)
+         (content (delete-extract-rectangle start end)))
+    (goto-char start)
+    (insert-rectangle
+     (with-temp-buffer
+       (setq indent-tabs-mode nil
+             fill-column (length (car content)))
+       (insert-rectangle content)
+       (fill-region (point-min) (point-max))
+       (goto-char (point-max))
+       (move-to-column fill-column t)
+       (extract-rectangle (point-min) (point))))))
+
+(defun my-ssh (args)
+  "Connect to a remote host by SSH."
+  (interactive "sssh ")
+  (require 'term)
+  (let ((switches (split-string-and-unquote args)))
+    (set-buffer (apply 'make-term "ssh" "ssh" nil switches))
+    (term-mode)
+    (term-char-mode)
+    (switch-to-buffer "*ssh*")))
+
+(defun eval-and-replace ()
+  "Replace the preceding sexp with its value.
+
+https://github.com/magnars/.emacs.d/blob/master/defuns/lisp-defuns.el"
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+(defun my-eval-remote-library (url)
+  "Retrieve and evaluate the code in the specified URL."
+  (interactive "sURL: ")
+  (save-window-excursion
+    (eval-buffer
+     (browse-url-emacs url))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

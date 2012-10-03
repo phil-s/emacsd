@@ -2,18 +2,18 @@
 
 ;; Copyright (C) 1999, 2000, 2001, 2003, 2004 Turadg Aleahmad
 ;;               2008 Aaron S. Hawley
-;;               2011 Eric James Michael Ritz
+;;               2011, 2012 Eric James Michael Ritz
 
-;; Maintainer: Eric James Michael Ritz <Ren at lifesnotsimple dot com>
+;; Maintainer: Eric James Michael Ritz <lobbyjones at gmail dot com>
 ;; Original Author: Turadg Aleahmad, 1999-2004
 ;; Keywords: php languages oop
 ;; Created: 1999-05-17
 ;; X-URL:   https://github.com/ejmr/php-mode
 
-(defconst php-mode-version-number "1.6.4"
+(defconst php-mode-version-number "1.6.6"
   "PHP Mode version number.")
 
-(defconst php-mode-modified "2011-09-25"
+(defconst php-mode-modified "2012-08-27"
   "PHP Mode build date.")
 
 ;;; License
@@ -301,7 +301,7 @@ See `php-beginning-of-defun'."
              (base-msg
               (concat
                "Indentation fails badly with mixed HTML/PHP in the HTML part in
-plaín `php-mode'.  To get indentation to work you must use an
+plaï¿½n `php-mode'.  To get indentation to work you must use an
 Emacs library that supports 'multiple major modes' in a buffer.
 Parts of the buffer will then be in `php-mode' and parts in for
 example `html-mode'.  Known such libraries are:\n\t"
@@ -420,6 +420,19 @@ This is was done due to the problem reported here:
   "See `php-c-at-vsemi-p'."
   )
 
+(defun php-lineup-arglist-intro (langelem)
+  (save-excursion
+    (goto-char (cdr langelem))
+    (vector (+ (current-column) c-basic-offset))))
+
+(defun php-lineup-arglist-close (langelem)
+  (save-excursion
+    (goto-char (cdr langelem))
+    (vector (current-column))))
+
+(c-set-offset 'arglist-intro 'php-lineup-arglist-intro)
+(c-set-offset 'arglist-close 'php-lineup-arglist-close)
+
 ;;;###autoload
 (define-derived-mode php-mode c-mode "PHP"
   "Major mode for editing PHP code.\n\n\\{php-mode-map}"
@@ -451,9 +464,14 @@ This is was done due to the problem reported here:
           (("_" . "w"))      ; SYNTAX-ALIST
           nil))              ; SYNTAX-BEGIN
 
-  (modify-syntax-entry ?# "< b" php-mode-syntax-table)
-  (modify-syntax-entry ?_ "_" php-mode-syntax-table)
-  (modify-syntax-entry ?` "\"" php-mode-syntax-table)
+  (modify-syntax-entry ?_    "_" php-mode-syntax-table)
+  (modify-syntax-entry ?'    "w" php-mode-syntax-table)
+  (modify-syntax-entry ?\"   "w" php-mode-syntax-table)
+  (modify-syntax-entry ?`    "\"" php-mode-syntax-table)
+
+  (set (make-local-variable 'font-lock-syntactic-keywords)
+       '(("\\(\"\\)\\(\\\\.\\|[^\"\n\\]\\)*\\(\"\\)" (1 "\"") (3 "\""))
+	 ("\\(\'\\)\\(\\\\.\\|[^\'\n\\]\\)*\\(\'\\)" (1 "\"") (3 "\""))))
 
   (setq font-lock-maximum-decoration t
         imenu-generic-expression php-imenu-generic-expression)
@@ -662,7 +680,8 @@ documentation exists, and nil otherwise."
                                  php-manual-path)))
     (let ((doc-file (php-function-file-for (current-word))))
       (and (file-exists-p doc-file)
-           (browse-url doc-file)))))
+           (browse-url doc-file)
+           t))))
 
 ;; Define function documentation function
 (defun php-search-documentation ()
@@ -715,8 +734,8 @@ searching the PHP website."
   (eval-when-compile
     (regexp-opt
      '(;; core constants
-       "__LINE__" "__FILE__"
-       "__FUNCTION__" "__CLASS__" "__METHOD__"
+       "__LINE__" "__FILE__" "__DIR__"
+       "__FUNCTION__" "__CLASS__" "__TRAIT__" "__METHOD__"
        "__NAMESPACE__"
        "__COMPILER_HALT_OFFSET__"
        "PHP_OS" "PHP_VERSION"
@@ -989,10 +1008,10 @@ searching the PHP website."
     (regexp-opt
      ;; "class", "new" and "extends" get special treatment
      ;; "case" gets special treatment elsewhere
-     '("and" "break" "continue" "declare" "default" "do" "echo" "else" "elseif"
+     '("and" "break" "continue" "declare" "default" "die" "do" "echo" "else" "elseif"
        "endfor" "endforeach" "endif" "endswitch" "endwhile" "exit"
        "extends" "for" "foreach" "global" "if" "include" "include_once"
-       "next" "or" "require" "require_once" "return" "return new" "static" "switch"
+       "or" "require" "require_once" "return" "return new" "static" "switch"
        "then" "var" "while" "xor" "throw" "catch" "try"
        "instanceof" "catch all" "finally" "insteadof" "use" "as"
        "clone")))
@@ -1019,6 +1038,7 @@ searching the PHP website."
 ;; Set up font locking
 (defconst php-font-lock-keywords-1
   (list
+   '("#.*" . font-lock-comment-face)
    ;; Fontify constants
    (cons
     (concat "[^_$]?\\<\\(" php-constants "\\)\\>[^_]?")
@@ -1072,7 +1092,7 @@ searching the PHP website."
       (1 font-lock-type-face nil t))
 
     ;; namespace imports
-    '("\\<\\(use\\)\\s-+\\(\\(?:\\sw\\|\\\\\\)+\\)"
+    '("\\<\\(use\\)\\s-+\\(\\(?:\\sw\\|\\(?:,\s-?\\)\\|\\\\\\)+\\)"
       (1 font-lock-keyword-face)
       (2 font-lock-type-face))
 
@@ -1199,6 +1219,24 @@ searching the PHP website."
 
 (add-to-list 'flymake-err-line-patterns
              '("\\(Parse\\|Fatal\\) error: \\(.*?\\) in \\(.*?\\) on line \\([0-9]+\\)" 3 4 nil 2))
+
+
+(defun php-send-region (start end)
+  "Send the region between `start' and `end' to PHP for execution.
+The output will appear in the buffer *PHP*."
+  (interactive "r")
+  (let ((php-buffer (get-buffer-create "*PHP*"))
+        (code (buffer-substring start end)))
+    ;; Calling 'php -r' will fail if we send it code that starts with
+    ;; '<?php', which is likely.  So we run the code through this
+    ;; function to check for that prefix and remove it.
+    (flet ((clean-php-code (code)
+                           (if (string-prefix-p "<?php" code t)
+                               (substring code 5)
+                             code)))
+      (call-process "php" nil php-buffer nil "-r" (clean-php-code code)))))
+
+(define-key php-mode-map "\C-c\C-r" 'php-send-region)
 
 
 (provide 'php-mode)

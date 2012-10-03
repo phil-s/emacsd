@@ -3,6 +3,32 @@
 ;;; Code:
 
 
+;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
+;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
+;;;;;;  (20375 59395))
+;;; Generated autoloads from find-file-in-tags/find-file-in-tags.el
+
+(autoload 'ffit-determine-dir-for-current-file "find-file-in-tags/find-file-in-tags" "\
+Return a directory to use as the base directory for a TAGS file, or nil if it couldn't be determined.
+Basically, look at the path to the tags file (one level above TAGS, see if it matches that of the current file,
+and if so, then use that directory.  Added the additional constraint that there must be a TAGS file in the
+directory returned, i.e. if the directory calculated does not have a TAGS file, do not return it as a possibility.
+
+This is to help minimize the number of TAGS files loaded by Emacs, b/c in general you're working on one software project
+and the TAGS files for each of the sandboxes are about the same.  So just use one TAGS file, but find the files in
+the appropriate sandbox.
+
+\(fn)" nil nil)
+
+(autoload 'find-file-in-tags "find-file-in-tags/find-file-in-tags" "\
+find file, but completion just works on files found in TAGS
+unless a prefix argument is given, only allows one file to be specified
+with prefix argument, all files matching what was typed will be loaded.
+
+\(fn FILE &optional PRE)" t nil)
+
+;;;***
+
 ;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
 ;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
 ;;;;;;  "dbgp" "geben/dbgp.el" (20106 20538))
@@ -119,6 +145,105 @@ Commands:
 \\{iedit-mode-map}
 
 \(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
+;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
+;;;;;;  (20580 60946))
+;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
+
+(autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
+Add one cursor to each line of the active region.
+Starts from mark and moves in straight down or up towards the
+line point is on.
+
+\(fn)" t nil)
+
+(autoload 'mc/edit-ends-of-lines "multiple-cursors/mc-edit-lines" "\
+Add one cursor to the end of each line in the active region.
+
+\(fn)" t nil)
+
+(autoload 'mc/edit-beginnings-of-lines "multiple-cursors/mc-edit-lines" "\
+Add one cursor to the beginning of each line in the active region.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (mc/mark-more-like-this-extended mc/mark-all-in-region
+;;;;;;  mc/mark-all-like-this mc/mark-previous-like-this mc/mark-next-like-this)
+;;;;;;  "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
+;;;;;;  (20529 56221))
+;;; Generated autoloads from multiple-cursors/mc-mark-more.el
+
+(autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
+Find and mark the next part of the buffer matching the currently active region
+With negative ARG, delete the last one instead.
+With zero ARG, skip the last one and mark next.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-previous-like-this "multiple-cursors/mc-mark-more" "\
+Find and mark the previous part of the buffer matching the currently active region
+With negative ARG, delete the last one instead.
+With zero ARG, skip the last one and mark next.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-all-like-this "multiple-cursors/mc-mark-more" "\
+Find and mark all the parts of the buffer matching the currently active region
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-in-region "multiple-cursors/mc-mark-more" "\
+Find and mark all the parts in the region matching the given search
+
+\(fn BEG END)" t nil)
+
+(autoload 'mc/mark-more-like-this-extended "multiple-cursors/mc-mark-more" "\
+Like mark-more-like-this, but then lets you adjust with arrows key.
+The actual adjustment made depends on the final component of the
+key-binding used to invoke the command, with all modifiers removed:
+
+   <up>    Mark previous like this
+   <down>  Mark next like this
+   <left>  If last was previous, skip it
+           If last was next, remove it
+   <right> If last was next, skip it
+           If last was previous, remove it
+
+Then, continue to read input events and further add or move marks
+as long as the input event read (with all modifiers removed)
+is one of the above.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20578 10013))
+;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
+
+(autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
+Anchors the rectangular region at point.
+
+Think of this one as `set-mark' except you're marking a rectangular region. It is
+an exceedingly quick way of adding multiple cursors to multiple lines.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (offlineimap) "offlineimap/offlineimap" "offlineimap/offlineimap.el"
+;;;;;;  (20530 59020))
+;;; Generated autoloads from offlineimap/offlineimap.el
+
+(autoload 'offlineimap "offlineimap/offlineimap" "\
+Start OfflineIMAP.
+
+\(fn)" t nil)
 
 ;;;***
 
@@ -464,9 +589,67 @@ If you do this twice in the same position, it kills the selection.
 
 ;;;***
 
+;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
+;;;;;;  "unfill/unfill.el" (20421 20109))
+;;; Generated autoloads from unfill/unfill.el
+
+(autoload 'unfill-paragraph "unfill/unfill" "\
+Replace newline chars in current paragraph by single spaces.
+This command does the inverse of `fill-paragraph'.
+
+\(fn)" t nil)
+
+(autoload 'unfill-region "unfill/unfill" "\
+Replace newline chars in region from START to END by single spaces.
+This command does the inverse of `fill-region'.
+
+\(fn START END)" t nil)
+
+;;;***
+
+;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
+;;;;;;  (20552 11953))
+;;; Generated autoloads from vcl-mode/vcl-mode.el
+
+(let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
+
+(autoload 'vcl-mode "vcl-mode/vcl-mode" "\
+Mode for Varnish Command Language
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
+;;;;;;  "web-mode/web-mode.el" (20587 43208))
+;;; Generated autoloads from web-mode/web-mode.el
+
+(let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
+
+(let ((loads (get 'web-mode-faces 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode-faces 'custom-loads (cons '"web-mode/web-mode" loads))))
+
+(autoload 'web-mode "web-mode/web-mode" "\
+Major mode for editing mixed HTML Templates.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20584
+;;;;;;  48796))
+;;; Generated autoloads from wgrep/wgrep.el
+
+(autoload 'wgrep-setup "wgrep/wgrep" "\
+Setup wgrep preparation.
+
+\(fn)" nil nil)
+(add-hook 'grep-setup-hook 'wgrep-setup)
+
+;;;***
+
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
-;;;;;;  "ws-trim/ws-trim.el" (20281 33373))
+;;;;;;  "ws-trim/ws-trim.el" (20289 32280))
 ;;; Generated autoloads from ws-trim/ws-trim.el
 
 (defvar ws-trim-method-hook '(ws-trim-leading ws-trim-trailing) "\
@@ -653,10 +836,8 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "sauron/sauron-dbus.el"
-;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-org.el" "sauron/sauron.el"
-;;;;;;  "gpicker/gpicker.el")
-;;;;;;  (20229 17115 934208))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/multiple-cursors.el"
+;;;;;;  "wgrep/wgrep-test.el") (20584 48796 822695))
 
 ;;;***
 

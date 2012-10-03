@@ -1,12 +1,16 @@
 ;;; sauron.el --- a frame tracking events inside and outside your emacs buffers
 ;;
-;; Copyright (C) 2011 Dirk-Jan C. Binnema
+;; Copyright (C) 2011-2012 Dirk-Jan C. Binnema
 
 ;; Author: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 ;; Maintainer: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 ;; Created: 06 Dec 2011
-;; Version: 0.2
+;; Version: 0.8
 ;; Keywords:comm,frames
+
+;; NOTE: odd minor version numbers (0.3, 0.5, ...) are for development, even
+;; numbers (0.2, 0.4, ...) are for releases (ELPA etc.). Also note scripts use
+;; the ";; Version" line.
 
 ;; This file is not part of GNU Emacs.
 ;;
@@ -31,12 +35,18 @@
 ;; internal stuff starts with 'sr-'
 
 ;;; Code:
-(eval-when-compile (require 'cl))
+(require 'cl)
 
 (defvar sauron-modules
-  '(sauron-erc sauron-dbus sauron-org sauron-notifications)
+  '(sauron-erc sauron-dbus sauron-org sauron-notifications
+     sauron-twittering sauron-jabber sauron-identica)
   "List of sauron modules to use. Currently supported are:
-sauron-erc, sauron-org and sauron-dbus.")
+sauron-erc, sauron-org and sauron-dbus, sauron-twittering,
+sauron-jabber, sauron-identica.")
+
+(defvar sauron-separate-frame t
+  "Show sauron in a separate frame; if set to nil (*experimental*),
+show sauron embedded in the current frame.")
 
 (defvar sauron-frame-geometry "100x8+0-0"
   "Geometry (size, position) of the the sauron frame, in X geometry
@@ -81,6 +91,15 @@ nick. Must be < 65536")
   "Maximum length of messages in the log (longer messages will be
   truncated. If set to nil, there is no maximum.")
 
+(defvar sauron-log-events nil
+  "Whether to show write all Sauron events (even the filtered ones)
+to the sauron log buffer.")
+
+(defvar sauron-log-buffer-max-lines 1000
+  "Maximum number of messages to store in the sauron log buffer.
+Messages are removed from the buffer when the total number
+exceeds this number.")
+
 (defvar sauron-sticky-frame nil
   "If t, show the sauron frame on every (virtual) desktop.")
 
@@ -112,42 +131,56 @@ PROPS is a backend-specific plist.")
 
 
 ;;  faces; re-using the font-lock stuff...
+(defgroup sauron-faces nil
+  "Faces for sauron."
+  :group 'local
+  :group 'faces)
+
 (defface sauron-timestamp-face
   '((t :inherit font-lock-type-face))
-  "Face for a sauron time stamp.")
+  "Face for a sauron time stamp."
+:group 'sauron-faces)
 
 (defface sauron-message-face
   '((t :inherit font-lock-preprocessor-face))
-  "Face for a sauron event message.")
+  "Face for a sauron event message."
+  :group 'sauron-faces)
 
 (defface sauron-origin-face
   '((t :inherit font-lock-variable-name-face))
-  "Face for a sauron event origin.")
+  "Face for a sauron event origin."
+  :group 'sauron-faces)
 
 (defface sauron-priority-face
   '((t :inherit font-lock-operator))
-  "Face for a sauron event priority.")
+  "Face for a sauron event priority."
+  :group 'sauron-faces)
 
 ;; these highlight faces are for use in backends
 (defface sauron-highlight1-face
   '((t :inherit font-lock-pseudo-keyword-face))
-  "Face to highlight certain things (1) - for use in backends.")
+  "Face to highlight certain things (1) - for use in backends."
+  :group 'sauron-faces)
 
 (defface sauron-highlight2-face
-  '((t :inherit font-lock-string-face))
-  "Face to highlight certain things (2) - for use in backends.")
+  '((t :inherit font-lock-string-face :italic t))
+  "Face to highlight certain things (2) - for use in backends."
+  :group 'sauron-faces)
 
 (defface sauron-highlight3-face
   '((t :inherit font-lock-constant-face))
-  "Face to highlight certain things (3) - for use in backends..")
+  "Face to highlight certain things (3) - for use in backends.."
+  :group 'sauron-faces)
 
 (defface sauron-header-face
   '((t :inherit font-lock-function-name-face :bold t))
-  "Face for the header line.")
+  "Face for the header line."
+  :group 'sauron-faces)
 
 (defface sauron-event-handled-face
   '((t :strike-through t))
-  "Face for a handled event.")
+  "Face for a handled event."
+:group 'sauron-faces)
 
 ;;(setq sauron-mode-map nil)
 (defvar sauron-mode-map
@@ -155,6 +188,11 @@ PROPS is a backend-specific plist.")
     (define-key map "c"               'sauron-clear)
     (define-key map (kbd "RET")       'sauron-activate-event)
     (define-key map (kbd "<mouse-2>") 'sauron-activate-event)
+    (define-key map (kbd "<M-up>")    'sauron-activate-event-prev)
+    (define-key map (kbd "<M-down>")  'sauron-activate-event-next)
+    (define-key map "n"               'next-line)
+    (define-key map "p"               'previous-line)
+    (define-key map "q"               'bury-buffer)
     map)
   "Keymap for the sauron buffer.")
 (fset 'sauron-mode-map sauron-mode-map)
@@ -163,7 +201,7 @@ PROPS is a backend-specific plist.")
   "Whether to show errors. Unless you're actually debugging, it's
 good to leave this to nil, since when there's some error happening
 in your hook function, this may interfere with normal operation,
-e.g. when using ERC")
+e.g. when using ERC.")
 
 (defconst sr-column-name-alist
   '( ( timestamp    . "Time"   )
@@ -172,9 +210,25 @@ e.g. when using ERC")
      ( message      . "Message"))
   "Alist of the column names.")
 
+(defvar sr-buffer nil
+  "*internal* The sauron buffer")
+
+(defconst sr-buffer-name "*Sauron*"
+  "*internal* Name of the sauron buffer.")
+
+(defvar sr-log-buffer nil
+  "*internal* The sauron log buffer.")
+
+(defconst sr-log-buffer-name "*Sauron Log*"
+  "*internal* Name of the sauron log buffer.")
+
 (defvar sr-nick-event-hash nil
   "*internal* hash of nicks and the last time we raised an 'event'
   for that at >= `sauron-min-priority'.")
+
+;; not all versions of emacs define 'fringe-columns
+(unless (fboundp 'fringe-columns)
+  (defun fringe-columns (dummy1 &optional dummy2) 0))
 
 (defun sr-set-header-line ()
   "Set the header line for the sauron buffer."
@@ -200,39 +254,59 @@ e.g. when using ERC")
 
 \\{sauron-mode-map}."
   (setq
-    truncate-lines t
+   truncate-lines t
     buffer-read-only t
     overwrite-mode 'overwrite-mode-binary)
   (sr-set-header-line))
 
+(defvar sr-running-p nil
+  "*internal* Whether sauron is running.")
+
 ;;;###autoload
-(defun sauron-start ()
-  "Start sauron."
+(defun sauron-start (&optional hidden)
+  "Start sauron. If the optional parameter HIDDEN is non-nil,
+don't show the sauron window."
   (interactive)
-  (dolist (module sauron-modules)
-    (require module)
-    (let* ((start-func-name (concat (symbol-name module) "-start"))
-	    (start-func (intern-soft start-func-name)))
-      (if start-func
-	(funcall start-func)
-	(error "%s not defined" start-func-name))))
-  (message "Sauron has started")
-  (setq sr-nick-event-hash (make-hash-table :size 100 :test 'equal))
-  (sr-show)
-  (sauron-add-event 'sauron 1 "sauron has started"))
+  (unless sr-running-p
+    (setq sr-running-p t
+      sr-nick-event-hash (make-hash-table :size 100 :test 'equal))
+    (let ((started))
+      (dolist (module sauron-modules)
+	(require module)
+	(let* ( (name (symbol-name module))
+		(start-func-name (concat name "-start"))
+		(start-func (intern-soft start-func-name)))
+	  (if start-func
+	    (when (funcall start-func)
+	      (add-to-list 'started name t))
+	    (error "%s not defined" start-func-name))))
+      (message "Sauron has started")
+      (unless hidden
+	(sr-show))
+      (sauron-add-event 'sauron 3
+	(concat "sauron started: " (mapconcat 'identity started ", "))))))
+
+;;;###autoload
+(defun sauron-start-hidden ()
+  "Start sauron, but don't show the window."
+  (interactive)
+  (sauron-start t))
+
 
 (defun sauron-stop ()
   "Stop sauron."
   (interactive)
-  (dolist (module sauron-modules)
-    (let* ((stop-func-name (concat (symbol-name module) "-stop"))
-	    (stop-func (intern-soft stop-func-name)))
-      (if stop-func
-	(funcall stop-func)
-	(error "%s not defined" stop-func-name))))
-  (message "Sauron has stopped")
-  (sauron-add-event 'sauron 1 "sauron has stopped")
-  (sr-hide))
+  (when sr-running-p
+    (dolist (module sauron-modules)
+      (let* ((stop-func-name (concat (symbol-name module) "-stop"))
+	      (stop-func (intern-soft stop-func-name)))
+	(if stop-func
+	  (funcall stop-func)
+	  (error "%s not defined" stop-func-name))))
+    (message "Sauron has stopped")
+    (setq sr-running-p nil)
+    (sauron-add-event 'sauron 1 "sauron has stopped")
+    (sr-hide)))
 
 (defun sr-pattern-matches (str ptrnlist cmpfunc)
   "Return t if any regexp in the list PTRNLIST matches STR,
@@ -282,10 +356,10 @@ Returns the new priority."
   "Execute BODY; if sauron-debug is nil, do so in a
 `ignore-errors'-block, otherwise run with without such a block.
 For debugging purposes."
-  (if sauron-debug
-    `(progn ,@body)
-    (declare (debug t) (indent 0))
-    `(condition-case nil (progn ,@body) (error nil))))
+  `(if sauron-debug
+     (progn ,@body)
+     (declare (debug t) (indent 0))
+     (condition-case nil (progn ,@body) (error nil))))
 
 
 (defun sr-event-line (origin prio msg)
@@ -298,8 +372,10 @@ For debugging purposes."
 		  ('timestamp
 		    (propertize (format-time-string sauron-timestamp-format
 				  (current-time)) 'face 'sauron-timestamp-face))
-		  ('priority (propertize (format "%d" prio) 'face 'sauron-priority-face))
-		  ('origin   (propertize (symbol-name origin) 'face 'sauron-origin-face))
+		  ('priority (propertize (format "%d" prio)
+			       'face 'sauron-priority-face))
+		  ('origin   (propertize (symbol-name origin)
+			       'face 'sauron-origin-face))
 		  ('message  msg)
 		  (otherwise (error "Unknown field %S" field)))))
 	(if width
@@ -307,15 +383,27 @@ For debugging purposes."
 	  str)))
     sauron-column-alist " "))
 
+(defvar sr-buffer nil
+  "*internal* The sauron buffer.")
+
 (defun sr-scroll-to-bottom ()
   "Scroll to the bottom of the sauron frame."
   (dolist (win (get-buffer-window-list sr-buffer nil t))
-    (select-window win)
+    (with-selected-window win
+      (goto-char (point-max))
+      (recenter -1))))
+
+(defun sr-add-to-log (line)
+  "Add LINE to the Sauron log buffer."
+  (unless (buffer-live-p sr-log-buffer)
+    (setq sr-log-buffer (sr-create-buffer-maybe sr-log-buffer-name)))
+  (with-current-buffer sr-log-buffer
     (goto-char (point-max))
-    (recenter -1)))
+    (insert line)
+    (sr-clear-log-buffer-maybe)))
 
 
-;; the main work horse functions
+;; the main work horse function
 (defun sauron-add-event (origin prio msg &optional func props)
   "Add a new event to the Sauron log with:
 ORIGIN the source of the event (e.g., 'erc or 'dbus or 'org)
@@ -345,21 +433,27 @@ PROPS an origin-specific property list that will be passed to the hook funcs."
   ;;  (message "new prio:%S msg:%S" prio msg)
   ;; we allow this event only if it's prio >= `sauron-min-priority' and
   ;; running the `sauron-event-block-functions' hook evaluates to nil.
-  (when (and (>= prio sauron-min-priority)
-	  (null (sr-ignore-errors-maybe ;; ignore errors unless we're debugging
-		  (run-hook-with-args-until-success
-		    'sauron-event-block-function origin prio msg props))))
-    (let* ((line (sr-event-line origin prio msg))
-	    ;; add the callback as a text property, remove any embedded newlines,
-	    ;; truncate if necessary append a newline
-	    (line (replace-regexp-in-string "\n" " " line))
-	    (line (if sauron-max-line-length
-		      (truncate-string-to-width
-		       line sauron-max-line-length 0 nil t)
-		    line))
-	    (line (concat (propertize line 'callback func) "\n"))
-	    (inhibit-read-only t))
-      (sr-create-buffer-maybe) ;; create buffer if it did not exist yet
+  (let* ((line (sr-event-line origin prio msg))
+	 ;; add the callback as a text property, remove any embedded newlines,
+	 ;; truncate if necessary append a newline
+	 (line (replace-regexp-in-string "\n" " " line))
+	 (line (if sauron-max-line-length
+		   (truncate-string-to-width
+		    line sauron-max-line-length 0 nil t)
+		 line))
+	 (line (concat (propertize line 'callback func) "\n"))
+	 (inhibit-read-only t))
+
+    ;; when logging is enabled, write the line to the sauron log as well
+    (when sauron-log-events (sr-add-to-log line))
+
+    (when (and (>= prio sauron-min-priority)
+	       (null (sr-ignore-errors-maybe
+		      ;; ignore errors unless we're debugging
+		      (run-hook-with-args-until-success
+		       'sauron-event-block-functions origin prio msg props))))
+      ;; create buffer if it did not exist yet
+      (setq sr-buffer (sr-create-buffer-maybe sr-buffer-name))
       (with-current-buffer sr-buffer
 	(goto-char (point-max))
 	(insert line)
@@ -385,6 +479,22 @@ any special faces from the line."
       (message "No callback defined for this line."))))
 
 
+(defun sauron-activate-event-prev (&optional n)
+  "Move to the previous line, and then activate the event for that
+line. Optionally, takes an integer N (prefix argument), to go to
+the Nth previous line."
+  (interactive "P")
+  (forward-line (- (or n 1)))
+  (sauron-activate-event))
+
+(defun sauron-activate-event-next (&optional n)
+  "Move to the previous line, and then activate the event for that
+line. Optionally, takes an integer N (prefix argument), to go to
+the Nth previous line."
+  (interactive "P")
+  (forward-line (or n 1))
+  (sauron-activate-event))
+ 
 (defun sauron-switch-to-marker-or-buffer (mbn)
   "Switch to MBN (marker-or-buffer-or-name) in another
 frame/window."
@@ -408,11 +518,18 @@ frame/window."
 
 
 (defun sr-show ()
+  "Show the sauron buffer; if `sauron-separate-frame' is non-nil,
+show it in a separate frame, otherwise, show it embedded in the
+current frame."
+  (if sauron-separate-frame
+    (sr-show-in-separate-frame)
+    (sr-show-embedded)))
+
+(defun sr-show-in-separate-frame ()
   "Show the sauron buffer in a separate frame."
-  (interactive)
-  (setq sr-buffer (sr-create-buffer-maybe))
+  (setq sr-buffer (sr-create-buffer-maybe sr-buffer-name))
   (let* ((win (get-buffer-window sr-buffer))
-	 (frame (and win (window-frame frame))))
+	  (frame (and win (window-frame win))))
     (if (and frame win)
       (progn
 	(select-window win)
@@ -429,16 +546,57 @@ frame/window."
 	  (setq mode-line-format nil))
     (set-window-dedicated-p (selected-window) t)))
 
+(defun sr-split-window-below (new-win-size)
+  "Split the window, return the new window below. We need this
+function because emacs 23 does not support the negative size
+argument to split-window."
+  (split-window
+    (frame-root-window)
+    (- (window-height (frame-root-window)) new-win-size)))
+
+
+(defun sr-show-embedded ()
+  "Show the sauron buffer embedded in the current frame."
+  (setq sr-buffer (sr-create-buffer-maybe sr-buffer-name))
+  (let* ((win (or (get-buffer-window sr-buffer)
+		(sr-split-window-below 8))))
+    (with-selected-window win
+      (switch-to-buffer sr-buffer)
+      (if sauron-hide-mode-line
+	(setq mode-line-format nil))
+      (set-window-dedicated-p (selected-window) t))))
+
+
 (defun sr-hide ()
-  "Hide the sauron buffer and/of frame."
-  (interactive)
+  "Hide the sauron buffer, window and/or frame."
   (unless (buffer-live-p sr-buffer)
     (error "No sauron buffer found"))
   (let* ((win (get-buffer-window sr-buffer t))
 	  (frame (and win (window-frame win))))
-    (if (frame-live-p frame)
-      (make-frame-invisible frame))))
+    ;; depending on whether we showing sauron in a window or in a separate frame
+    (if (and (frame-live-p frame)
+	  (eq win (frame-root-window frame)))
+      (make-frame-invisible frame)
+      (delete-window win))))
 
+(defun sauron-toggle-hide-show ()
+  "Toggle between showing/hiding the Sauron window or frame, and
+start sauron if it weren't so already."
+  (interactive)
+  ;; sr-sauron-visible may be wrong, let's double-check
+  (if (and (buffer-live-p sr-buffer)
+	(window-live-p (get-buffer-window sr-buffer)))
+    (sr-hide)
+    (progn
+      (sauron-start)
+      (sr-show))))
+
+(defun sauron-pop-to-buffer ()
+  "Popup sauron buffer."
+  (interactive)
+  (unless (buffer-live-p sr-buffer)
+    (error "No sauron buffer found.  Please start sauron by `sauron-start'."))
+  (pop-to-buffer sr-buffer))
 
 (defun sauron-clear ()
   "Clear the sauron buffer."
@@ -452,21 +610,26 @@ frame/window."
     (message nil)))
 
 
-;; internal settings
-(defvar sr-buffer nil
-  "*internal* The sauron buffer")
-
-(defconst sr-buffer-name "*Sauron*"
-  "*internal* Name of the sauron buffer.")
-
-(defun sr-create-buffer-maybe ()
-  "Create the sauron buffer, if it does not yet exist. Return the
+(defun sr-create-buffer-maybe (name)
+  "Create the sauron buffer of NAME, if it does not yet exist. Return the
 sauron buffer."
-  (unless (and sr-buffer (buffer-live-p sr-buffer))
-    (setq sr-buffer (get-buffer-create sr-buffer-name))
-    (with-current-buffer sr-buffer
-      (sauron-mode)))
-  sr-buffer)
+  (let ((buffer (get-buffer-create name)))
+    (with-current-buffer buffer
+      (unless (equal major-mode 'sauron-mode)
+	(sauron-mode)))
+    buffer))
+
+
+(defun sr-clear-log-buffer-maybe ()
+  "Clear the sauon log "
+  (when sr-log-buffer
+    (with-current-buffer sr-log-buffer
+      (save-excursion
+        (let ((lines (count-lines (point-min) (point-max)))
+	       (inhibit-read-only t))
+          (when (> lines sauron-log-buffer-max-lines)
+            (forward-line (- sauron-log-buffer-max-lines lines))
+            (delete-region (point-min) (point))))))))
 
 
 
@@ -478,10 +641,11 @@ alert.el (https://github.com/jwiegley/alert). You can use it like:
   (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)
 Obviously, 'alert.el' must be loaded for this to work."
   ;; sauron priorities [0..5] mapping alert severities
-  (let ((sev (nth prio '(trivial trivial low normal moderate high urgent)))
-	 (cat origin)   ;; origins map to alert categories
-	 (title (format "Alert from %S" origin)))
-    (alert msg :severity sev :title title :category cat)))
+  (when (fboundp 'alert)
+    (let ((sev (nth prio '(trivial trivial low normal moderate high urgent)))
+	   (cat origin)   ;; origins map to alert categories
+	   (title (format "Alert from %S" origin)))
+      (alert msg :severity sev :title title :category cat))))
 
 
 
@@ -494,6 +658,44 @@ Obviously, 'alert.el' must be loaded for this to work."
     (error "aplay not found"))
   (call-process "aplay" nil 0 nil "-q" "-N" path))
 
+(defun sauron-fx-gnome-osd (msg secs)
+  "Display MSG on your screen for SECS second... for really important stuff."
+  (unless (executable-find "gnome-osd-client")
+    (error "gnome-osd-client not found"))
+  (let ((xmlmsg
+	  (concat ;; weird XML... but this should work
+	    "<message id=\"sauron\" osd_vposition=\"center\" "
+	    "osd_halignment=\"left\" "
+	    "osd_fake_translucent_bg=\"on\" "
+	    "hide_timeout=\"" (format "%d" (* 1000 secs)) "\">"
+	    msg
+	    "</message>")))
+    (call-process "gnome-osd-client" nil 0 nil "-f" "--dbus" xmlmsg)))
+
+(defun sauron-fx-mplayer (path)
+  "Play a wav-file at PATH using program mplayer."
+  (unless (and (file-readable-p path) (file-regular-p path))
+     (error "%s is not a playable file" path))
+  (unless (executable-find "mplayer")
+     (error "mplayer not found"))
+  (call-process "mplayer" nil 0 nil "-really-quiet" path))
+
+(defun sauron-fx-notify (title msg secs)
+  "Send a notification with TITLE and MSG to the notification
+daemon of D-bus, and show the message for SECS seconds. Return the
+id for the notification."
+  (when (require 'dbus nil 'noerror)
+    (let ((note-id (random 65535)))
+      (dbus-call-method
+	:session "org.freedesktop.Notifications"
+	"/org/freedesktop/Notifications"
+	"org.freedesktop.Notifications" "Notify"
+	"Sauron"
+	note-id
+	"emacs" title msg
+	'(:array) '(:array :signature "{sv}") ':int32 secs)
+      note-id)))
+
 (defun sauron-fx-sox (path)
   "Play a wav-file at PATH using program sox."
   (unless (and (file-readable-p path) (file-regular-p path))
@@ -502,40 +704,12 @@ Obviously, 'alert.el' must be loaded for this to work."
     (error "sox not found"))
   (call-process "sox" nil 0 nil "--volume=9" "-V0" "-q" path "-d"))
 
-(defun sauron-fx-gnome-osd (msg secs)
-  "Display MSG on your screen for SECS second... for really important stuff."
-  (unless (executable-find "gnome-osd-client")
-    (error "gnome-osd-client not found"))
-  (let ((xmlmsg
-	  (concat ;; weird XML... but this should work
-	    "<message id=\"sauron\" osd_vposition=\"center\" osd_halignment=\"left\" "
-	    "osd_fake_translucent_bg=\"on\" "
-	    "hide_timeout=\"" (format "%d" (* 1000 secs)) "\">"
-	    msg
-	    "</message>")))
-    (call-process "gnome-osd-client" nil 0 nil "-f" "--dbus" xmlmsg)))
-
 (defun sauron-fx-zenity (msg)
   "Pop-up a zenity window with MSG."
   (unless (executable-find "zenity")
     (error "zenity not found"))
   (call-process "zenity" nil 0 nil "--info" "--title=Sauron"
     (concat "--text=" msg)))
-
-(defun sauron-fx-notify (title msg secs)
-  "Send a notification with TITLE and MSG to the notification
-daemon of D-bus, and show the message for SECS seconds. Return the
-id for the notification."
-  (let ((note-id (random 65535)))
-    (dbus-call-method
-      :session "org.freedesktop.Notifications"
-      "/org/freedesktop/Notifications"
-      "org.freedesktop.Notifications" "Notify"
-      "Sauron"
-      note-id
-      "emacs" title msg
-      '(:array) '(:array :signature "{sv}") ':int32 secs)
-    note-id))
 
 (provide 'sauron)
 

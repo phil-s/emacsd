@@ -1,5 +1,17 @@
-;; Set a preferred coding system?
-;; (prefer-coding-system 'utf-8)
+;; Set a preferred coding system
+;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-locale-environment "en_NZ.UTF-8")
+;; backwards compatibility as default-buffer-file-coding-system
+;; is deprecated in 23.2.
+(if (boundp 'buffer-file-coding-system)
+    (setq-default buffer-file-coding-system 'utf-8)
+  (setq default-buffer-file-coding-system 'utf-8))
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 ;; Put other files and dirs into .emacs.d
 (setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
@@ -11,7 +23,8 @@
       version-control        t  ; Use version numbers on backups
       delete-old-versions    t  ; Automatically delete excess backups:
       kept-new-versions      20 ; How many of the newest versions to keep...
-      kept-old-versions      5) ; ...and how many of the old.
+      kept-old-versions      5  ; ...and how many of the old.
+      vc-make-backup-files   t) ; Make backups even for files under VCS.
 
 (defvar my-non-file-buffer-auto-save-dir (file-name-directory user-init-file)
   "Directory in which to store auto-save files for non-file buffers,
@@ -210,6 +223,19 @@ See also: `my-copy-buffer-file-name'."
 ;; By default, raise an existing frame with buffer B in
 ;; preference to opening another copy in the current buffer.
 (setq-default display-buffer-reuse-frames t)
+
+;; Full-screen by default.
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+(defun my-frame-config (frame)
+  "Custom behaviours for new frames."
+  (with-selected-frame frame
+    ;; do things
+    ))
+;; Run now, for non-daemon Emacs...
+(my-frame-config (selected-frame))
+;; ...and later, for new frames / emacsclient
+(add-hook 'after-make-frame-functions 'my-frame-config)
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (if (version< emacs-version "23.2")
@@ -460,6 +486,22 @@ return to the save-some-buffers minibuffer prompt."
       (fset 'revert-buffer real-revert-buffer))))
 
 (ad-activate 'ask-user-about-supersession-threat)
+
+;; Make linum's format calculation more efficient
+(defvar my-linum-format-string "%4d")
+
+(add-hook 'linum-before-numbering-hook 'my-linum-get-format-string)
+
+(defun my-linum-get-format-string ()
+  (let* ((width (length (number-to-string
+                         (count-lines (point-min) (point-max)))))
+         (format (concat "%" (number-to-string width) "d")))
+    (setq my-linum-format-string format)))
+
+(setq linum-format 'my-linum-format)
+
+(defun my-linum-format (line-number)
+  (propertize (format my-linum-format-string line-number) 'face 'linum))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

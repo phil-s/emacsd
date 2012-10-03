@@ -10,11 +10,11 @@ This updates `php-mode` with features to make it more friendly to use with PHP 5
 
 And all those mentioned in the ‘Contributors’ section below.
 
-Please email any bugs or feature requests to `Ren at lifesnotsimple dot com` or submit them as Issues here on the Github page.  Also please include the output of `php-mode-version` in bug reports.
+Please email any bugs or feature requests to `lobbyjones at gmail dot com` or submit them as Issues here on the Github page.  Also please include the output of `php-mode-version` in bug reports.
 
 # Status
 
-**23 December 2011:** These days I am doing less and less PHP programming, and thus work on `php-mode` has slowed down.  However I am still accepting bug reports and feature requests, so please do not consider the project dead.  I have a list of features I would like to add, but right now I am unsure when I will get around to them.  My apologies for the slow updates.
+**28 July 2012:**  I will not be working on any PHP projects in the forseeable future.  Therefore I have not worked on adding any new features.  However, the project is not dead.  I am still accepting bug requests and will try to address them in a timely manner.  I also welcome any improvements in functionality from other developers.  Updates to `php-mode` may be infrequent, but I will continue to maintain it as best as possible.
 
 # Features
 
@@ -72,9 +72,27 @@ By customizing the variable `php-executable` you can enable Flymake mode in orde
 
 The key command `C-c C-f` will search the PHP website for documentation on the word under the cursor.  However, if you have a [local copy of the PHP documentation](http://us2.php.net/download-docs.php) then `php-mode` will try searching that documentation first.  All you need to do is customize the variable `php-manual-path` and give it the path to your copy of the documentation.  If `php-mode` cannot find something locally then it will still fallback on searching the PHP website.
 
+## Executing Regions of PHP
+
+The command `php-send-region`, which is bound to `C-c C-r` by default, will execute the selected region of PHP code.  In conjunction with the Emacs command `C-x h` you can use this to execute an entire file.  Any output will appear in a buffer called `*PHP*`.
+
+# How to Contribute
+
+All contributions to `php-mode` are welcome.  But please try to do the following when sending improvements or bug fixes:
+
+1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a Github page then please link your name to it, so people can see your other work.  `(=^･^=)`
+
+2. If your contribution addresses an issue on the Github project page then include a single line like `Github-issue: 16` with the appropriate issue number.
+
+3. Make sure to update the constant `php-mode-modified`.
+
+4. However, please do not modify `php-mode-version-number`.  I will decide what constitutes a bump in the version number.
+
+5. Send me a pull request here on Github.  Or if you do not have a Github account then email the patches to me at `lobbyjones at gmail dot com`.  Please try to make sure the patches are acceptable input to the comand `git am`.  Please note that even if you send a pull request it is very likely that I will *not* simply merge your branch through Github; I prefer to go through commits and cherry-pick them so I can review the commit messages and sign-off on them.  You can see which commits I did or did not merge by using the [`git-cherry`](http://www.kernel.org/pub/software/scm/git/docs/git-cherry.html) command.
+
 # License
 
-The code for `php-mode` is covered by the GNU General Public License 3.
+The code for `php-mode` is covered by the [GNU General Public License 3](http://www.gnu.org/copyleft/gpl.html).
 
 # Contributors
 
@@ -109,9 +127,12 @@ In chronological order:
 27. Lennart Borgman
 28. Stefan Monnier
 29. Aaron S. Hawley
-30. Ian Eure
-31. Bill Lovett
+30. [Ian Eure](https://github.com/ieure)
+31. [Bill Lovett](https://github.com/lovett)
 32. Dias Badekas
 33. David House
-34. Tom Willemsen
-35. Olaf the Viking
+34. [Tom Willemsen](https://github.com/ryuslash)
+35. [Olaf the Viking](https://github.com/olavTHEviking)
+36. [Maël Nison](https://github.com/arcanis)
+37. [flack](https://github.com/flack)
+38. [Michele Bini](https://github.com/rev22)

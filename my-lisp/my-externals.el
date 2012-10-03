@@ -57,6 +57,9 @@
             :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
             :features fic-mode)
 
+     (:name find-file-in-tags
+            :type emacswiki)
+
      (:name ffip
             :type git
             :url "git://github.com/dburger/find-file-in-project.git"
@@ -90,6 +93,11 @@
             :features keep-buffers)
 
      (:name magit)
+
+     (:name multiple-cursors
+            :type git
+            :url "https://github.com/magnars/multiple-cursors.el.git"
+            :features multiple-cursors)
 
      (:name mo-git-blame)
 
@@ -134,7 +142,23 @@
             :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
             :features windcycle)
 
+     (:name unfill
+            :type git
+            :url "https://github.com/purcell/unfill.git")
+
      (:name undo-tree)
+
+     (:name vcl-mode
+            :type http
+            :url "file:///home/phil/.emacs.d/local-repository/vcl-mode.el")
+
+     (:name web-mode
+            :type git
+            :url "https://github.com/fxbois/web-mode.git")
+
+     (:name wgrep
+            :type git
+            :url "https://github.com/mhayashi1120/Emacs-wgrep.git")
 
      (:name ws-trim
             :type ftp
@@ -157,7 +181,7 @@
 
   ;; Execute el-get
   (if (functionp 'el-get)
-      (el-get)))
+      (el-get 'wait)))
 
 
 ;; Modification of the *scratch* Installer from
