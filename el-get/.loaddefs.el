@@ -621,7 +621,7 @@ Mode for Varnish Command Language
 ;;;***
 
 ;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20552 10417))
+;;;;;;  "web-mode/web-mode.el" (20587 43208))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
