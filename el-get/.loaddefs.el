@@ -5,7 +5,7 @@
 
 ;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
 ;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
-;;;;;;  (20375 59395))
+;;;;;;  (20587 44126))
 ;;; Generated autoloads from find-file-in-tags/find-file-in-tags.el
 
 (autoload 'ffit-determine-dir-for-current-file "find-file-in-tags/find-file-in-tags" "\
@@ -31,20 +31,20 @@ with prefix argument, all files matching what was typed will be loaded.
 
 ;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
 ;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
-;;;;;;  "dbgp" "geben/dbgp.el" (20106 20538))
+;;;;;;  "geben/dbgp" "geben/dbgp.el" (20289 32888))
 ;;; Generated autoloads from geben/dbgp.el
 
-(autoload 'dbgp-start "dbgp" "\
+(autoload 'dbgp-start "geben/dbgp" "\
 Start a new DBGp listener listening to PORT.
 
 \(fn PORT)" t nil)
 
-(autoload 'dbgp-exec "dbgp" "\
+(autoload 'dbgp-exec "geben/dbgp" "\
 Start a new DBGp listener listening to PORT.
 
 \(fn PORT &rest SESSION-PARAMS)" nil nil)
 
-(autoload 'dbgp-proxy-register "dbgp" "\
+(autoload 'dbgp-proxy-register "geben/dbgp" "\
 Register a new DBGp listener to an external DBGp proxy.
 The proxy should be found at PROXY-IP-OR-ADDR / PROXY-PORT.
 This creates a new DBGp listener and register it to the proxy
@@ -52,7 +52,7 @@ associating with the IDEKEY.
 
 \(fn PROXY-IP-OR-ADDR PROXY-PORT IDEKEY MULTI-SESSION-P &optional SESSION-PORT)" t nil)
 
-(autoload 'dbgp-proxy-register-exec "dbgp" "\
+(autoload 'dbgp-proxy-register-exec "geben/dbgp" "\
 Register a new DBGp listener to an external DBGp proxy.
 The proxy should be found at IP-OR-ADDR / PORT.
 This create a new DBGp listener and register it to the proxy
@@ -60,13 +60,13 @@ associating with the IDEKEY.
 
 \(fn IP-OR-ADDR PORT IDEKEY MULTI-SESSION-P SESSION-PORT &rest SESSION-PARAMS)" nil nil)
 
-(autoload 'dbgp-proxy-unregister "dbgp" "\
+(autoload 'dbgp-proxy-unregister "geben/dbgp" "\
 Unregister the DBGp listener associated with IDEKEY from a DBGp proxy.
 After unregistration, it kills the listener instance.
 
 \(fn IDEKEY &optional PROXY-IP-OR-ADDR PROXY-PORT)" t nil)
 
-(autoload 'dbgp-proxy-unregister-exec "dbgp" "\
+(autoload 'dbgp-proxy-unregister-exec "geben/dbgp" "\
 Unregister PROXY from a DBGp proxy.
 After unregistration, it kills the listener instance.
 
@@ -74,7 +74,7 @@ After unregistration, it kills the listener instance.
 
 ;;;***
 
-;;;### (autoloads (deft) "deft/deft" "deft/deft.el" (20142 13239))
+;;;### (autoloads (deft) "deft/deft" "deft/deft.el" (20289 32888))
 ;;; Generated autoloads from deft/deft.el
 
 (autoload 'deft "deft/deft" "\
@@ -85,7 +85,7 @@ Switch to *Deft* buffer and load files.
 ;;;***
 
 ;;;### (autoloads nil "ediff-binary-hexl/ediff-binary-hexl" "ediff-binary-hexl/ediff-binary-hexl.el"
-;;;;;;  (20192 19149))
+;;;;;;  (20289 32888))
 ;;; Generated autoloads from ediff-binary-hexl/ediff-binary-hexl.el
 
 (defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate) "\
@@ -102,7 +102,7 @@ When binary files differ, set the trigger variable." (condition-case err (progn 
 ;;;***
 
 ;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
-;;;;;;  "ffip/find-file-in-project.el" (20220 2082))
+;;;;;;  "ffip/find-file-in-project.el" (20289 32888))
 ;;; Generated autoloads from ffip/find-file-in-project.el
 
 (autoload 'find-file-in-project "ffip/find-file-in-project" "\
@@ -116,8 +116,8 @@ setting the `ffip-project-root' variable.
 
 ;;;***
 
-;;;### (autoloads (iedit-mode) "iedit/iedit" "iedit/iedit.el" (20142
-;;;;;;  13087))
+;;;### (autoloads (iedit-mode) "iedit/iedit" "iedit/iedit.el" (20289
+;;;;;;  32888))
 ;;; Generated autoloads from iedit/iedit.el
 
 (autoload 'iedit-mode "iedit/iedit" "\
@@ -150,7 +150,7 @@ Commands:
 
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20580 60946))
+;;;;;;  (20587 45961))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
@@ -175,7 +175,7 @@ Add one cursor to the beginning of each line in the active region.
 ;;;### (autoloads (mc/mark-more-like-this-extended mc/mark-all-in-region
 ;;;;;;  mc/mark-all-like-this mc/mark-previous-like-this mc/mark-next-like-this)
 ;;;;;;  "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20529 56221))
+;;;;;;  (20587 45961))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -223,7 +223,7 @@ is one of the above.
 ;;;***
 
 ;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20578 10013))
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20587 45961))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
@@ -248,7 +248,7 @@ Start OfflineIMAP.
 ;;;***
 
 ;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
-;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20141 54317))
+;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20289 32888))
 ;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
 
 (autoload 'rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
@@ -259,7 +259,7 @@ Color nested parentheses, brackets, and braces according to their depth.
 ;;;***
 
 ;;;### (autoloads (rebase-mode) "magit/rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20106 20538))
+;;;;;;  (20289 32888))
 ;;; Generated autoloads from magit/rebase-mode.el
 
 (autoload 'rebase-mode "magit/rebase-mode" "\
@@ -276,18 +276,18 @@ running 'man git-rebase' at the command line) for details.
 
 ;;;***
 
-;;;### (autoloads (geben geben-mode) "geben" "geben/geben.el" (20106
-;;;;;;  20538))
+;;;### (autoloads (geben geben-mode) "geben/geben" "geben/geben.el"
+;;;;;;  (20289 32888))
 ;;; Generated autoloads from geben/geben.el
 
-(autoload 'geben-mode "geben" "\
+(autoload 'geben-mode "geben/geben" "\
 Minor mode for debugging source code with GEBEN.
 The geben-mode buffer commands:
 \\{geben-mode-map}
 
 \(fn &optional ARG)" t nil)
 
-(autoload 'geben "geben" "\
+(autoload 'geben "geben/geben" "\
 Start GEBEN, a DBGp protocol frontend - a script debugger.
 Variations are described below.
 
@@ -325,19 +325,19 @@ described its help page.
 
 ;;;***
 
-;;;### (autoloads (keep-buffers-query) "keep-buffers" "keep-buffers/keep-buffers.el"
-;;;;;;  (20106 20520))
+;;;### (autoloads (keep-buffers-query) "keep-buffers/keep-buffers"
+;;;;;;  "keep-buffers/keep-buffers.el" (20289 32888))
 ;;; Generated autoloads from keep-buffers/keep-buffers.el
 
-(autoload 'keep-buffers-query "keep-buffers" "\
+(autoload 'keep-buffers-query "keep-buffers/keep-buffers" "\
 The query function that disable deletion of buffers we protect.
 
 \(fn)" nil nil)
 
 ;;;***
 
-;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20142
-;;;;;;  14392))
+;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20289
+;;;;;;  32888))
 ;;; Generated autoloads from magit/magit.el
 
 (autoload 'magit-status "magit/magit" "\
@@ -354,11 +354,11 @@ user input.
 
 ;;;***
 
-;;;### (autoloads (mo-git-blame-current mo-git-blame-file) "mo-git-blame"
-;;;;;;  "mo-git-blame/mo-git-blame.el" (20106 20538))
+;;;### (autoloads (mo-git-blame-current mo-git-blame-file) "mo-git-blame/mo-git-blame"
+;;;;;;  "mo-git-blame/mo-git-blame.el" (20289 32888))
 ;;; Generated autoloads from mo-git-blame/mo-git-blame.el
 
-(autoload 'mo-git-blame-file "mo-git-blame" "\
+(autoload 'mo-git-blame-file "mo-git-blame/mo-git-blame" "\
 Calls `git blame' for REVISION of FILE-NAME or `HEAD' if
 REVISION is not given. Initializes the two windows that will show
 the output of 'git blame' and the content.
@@ -377,17 +377,18 @@ blamed.
 
 \(fn &optional FILE-NAME REVISION ORIGINAL-FILE-NAME NUM-LINES-TO-BLAME)" t nil)
 
-(autoload 'mo-git-blame-current "mo-git-blame" "\
+(autoload 'mo-git-blame-current "mo-git-blame/mo-git-blame" "\
 Calls `mo-git-blame-file' for HEAD for the current buffer.
 
 \(fn)" t nil)
 
 ;;;***
 
-;;;### (autoloads (notify) "notify" "notify/notify.el" (20106 19964))
+;;;### (autoloads (notify) "notify/notify" "notify/notify.el" (20289
+;;;;;;  32888))
 ;;; Generated autoloads from notify/notify.el
 
-(autoload 'notify "notify" "\
+(autoload 'notify "notify/notify" "\
 Notify TITLE, BODY via `notify-method'.
 ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
@@ -395,20 +396,20 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
-;;;### (autoloads (php-mode php-file-patterns php) "php-mode" "php-mode/php-mode.el"
-;;;;;;  (20123 29196))
+;;;### (autoloads (php-mode php-file-patterns php) "php-mode/php-mode"
+;;;;;;  "php-mode/php-mode.el" (20587 44126))
 ;;; Generated autoloads from php-mode/php-mode.el
 
-(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode" loads))))
+(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
 
 (add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
 
 (defvar php-file-patterns '("\\.php[s345t]?\\'" "\\.phtml\\'" "\\.inc\\'") "\
 List of file patterns for which to automatically invoke `php-mode'.")
 
-(custom-autoload 'php-file-patterns "php-mode" nil)
+(custom-autoload 'php-file-patterns "php-mode/php-mode" nil)
 
-(autoload 'php-mode "php-mode" "\
+(autoload 'php-mode "php-mode/php-mode" "\
 Major mode for editing PHP code.
 
 \\{php-mode-map}
@@ -418,7 +419,7 @@ Major mode for editing PHP code.
 ;;;***
 
 ;;;### (autoloads (svn-status svn-checkout) "psvn/psvn" "psvn/psvn.el"
-;;;;;;  (20141 54317))
+;;;;;;  (20289 32888))
 ;;; Generated autoloads from psvn/psvn.el
 
 (autoload 'svn-checkout "psvn/psvn" "\
@@ -442,11 +443,11 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;***
 
-;;;### (autoloads (rainbow-mode) "rainbow-mode" "rainbow-mode/rainbow-mode.el"
-;;;;;;  (20106 20538))
+;;;### (autoloads (rainbow-mode) "rainbow-mode/rainbow-mode" "rainbow-mode/rainbow-mode.el"
+;;;;;;  (20289 32888))
 ;;; Generated autoloads from rainbow-mode/rainbow-mode.el
 
-(autoload 'rainbow-mode "rainbow-mode" "\
+(autoload 'rainbow-mode "rainbow-mode/rainbow-mode" "\
 Colorize strings that represent colors.
 This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 
@@ -459,8 +460,8 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 ;;;;;;  secondary-swap-region primary-to-secondary isearch-yank-secondary
 ;;;;;;  yank-secondary secondary-dwim secondary-selection-yank-secondary-commands
 ;;;;;;  secondary-selection-yank-commands secondary-selection-ring-max)
-;;;;;;  "second-sel/second-sel" "second-sel/second-sel.el" (20202
-;;;;;;  24401))
+;;;;;;  "second-sel/second-sel" "second-sel/second-sel.el" (20289
+;;;;;;  32888))
 ;;; Generated autoloads from second-sel/second-sel.el
 
 (defvar secondary-selection-ring-max 60 "\
@@ -590,7 +591,7 @@ If you do this twice in the same position, it kills the selection.
 ;;;***
 
 ;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
-;;;;;;  "unfill/unfill.el" (20421 20109))
+;;;;;;  "unfill/unfill.el" (20587 44126))
 ;;; Generated autoloads from unfill/unfill.el
 
 (autoload 'unfill-paragraph "unfill/unfill" "\
@@ -608,7 +609,7 @@ This command does the inverse of `fill-region'.
 ;;;***
 
 ;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
-;;;;;;  (20552 11953))
+;;;;;;  (20587 44126))
 ;;; Generated autoloads from vcl-mode/vcl-mode.el
 
 (let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
@@ -621,7 +622,7 @@ Mode for Varnish Command Language
 ;;;***
 
 ;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20587 43208))
+;;;;;;  "web-mode/web-mode.el" (20587 44126))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
@@ -635,8 +636,8 @@ Major mode for editing mixed HTML Templates.
 
 ;;;***
 
-;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20584
-;;;;;;  48796))
+;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20587
+;;;;;;  44126))
 ;;; Generated autoloads from wgrep/wgrep.el
 
 (autoload 'wgrep-setup "wgrep/wgrep" "\
@@ -649,7 +650,7 @@ Setup wgrep preparation.
 
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
-;;;;;;  "ws-trim/ws-trim.el" (20289 32280))
+;;;;;;  "ws-trim/ws-trim.el" (20289 32888))
 ;;; Generated autoloads from ws-trim/ws-trim.el
 
 (defvar ws-trim-method-hook '(ws-trim-leading ws-trim-trailing) "\
@@ -824,11 +825,11 @@ controlled by the `ws-trim-global-modes' variable.
 
 ;;;***
 
-;;;### (autoloads (color-theme-zenburn) "zenburn" "color-theme-zenburn/zenburn.el"
-;;;;;;  (20034 29893))
+;;;### (autoloads (color-theme-zenburn) "color-theme-zenburn/zenburn"
+;;;;;;  "color-theme-zenburn/zenburn.el" (20289 32888))
 ;;; Generated autoloads from color-theme-zenburn/zenburn.el
 
-(autoload 'color-theme-zenburn "zenburn" "\
+(autoload 'color-theme-zenburn "color-theme-zenburn/zenburn" "\
 Just some alien fruit salad to keep you in the zone.
 
 \(fn)" t nil)
@@ -836,8 +837,9 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/multiple-cursors.el"
-;;;;;;  "wgrep/wgrep-test.el") (20584 48796 822695))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
+;;;;;;  "multiple-cursors/multiple-cursors-core.el" "multiple-cursors/multiple-cursors-pkg.el"
+;;;;;;  "multiple-cursors/multiple-cursors.el") (20587 45967 633169))
 
 ;;;***
 
