@@ -18,6 +18,8 @@
 ;; http://xahlee.org/emacs/elisp_idioms.html
 ;; ;; The TTY Demystified
 ;; http://www.linusakesson.net/programming/tty/
+;; ;; Custom Flymake commands
+;; http://stackoverflow.com/questions/9771339
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -69,7 +71,7 @@
 ;; where <c> represents the modifier required. See C-x @ C-h for the list.
 ;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
-;;;; Macros
+;;;; Keyboard macros
 ;;   C-x (         or F3   Begins recording.
 ;;                    F3   Insert counter (if recording has already commenced).
 ;;   C-x )         or F4   Ends recording.
@@ -84,8 +86,9 @@
 ;;   M-x name-last-kbd-macro (name) RET
 ;;   M-x insert-kbd-macro (name) RET
 ;;
-;; For more documentation, see the info page:
+;; For more documentation:
 ;;   C-h k C-x (
+;;   M-: (info "(emacs) Keyboard Macros") RET
 
 ;;;; Registers
 ;;   C-x r x a           Copy region to register 'a'
@@ -257,8 +260,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Load or evaluate this file
+;;;; Load or evaluate this file (and other files)
 
+;; Other libraries:
+;;
+;; M-x load-library
+;; M-x locate-library
+;; M-x list-load-path-shadows
+
+;; My libraries:
 ;; See also: custom aliases in my-keybindings.el
 
 (defun load-dot-emacs ()
