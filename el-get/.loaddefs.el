@@ -173,9 +173,9 @@ Add one cursor to the beginning of each line in the active region.
 ;;;***
 
 ;;;### (autoloads (mc/mark-more-like-this-extended mc/mark-all-in-region
-;;;;;;  mc/mark-all-like-this mc/mark-previous-like-this mc/mark-next-like-this)
-;;;;;;  "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20529 56221))
+;;;;;;  mc/mark-all-like-this mc/unmark-previous-like-this mc/unmark-next-like-this
+;;;;;;  mc/mark-previous-like-this mc/mark-next-like-this) "multiple-cursors/mc-mark-more"
+;;;;;;  "multiple-cursors/mc-mark-more.el" (20595 7554))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -189,6 +189,16 @@ With zero ARG, skip the last one and mark next.
 Find and mark the previous part of the buffer matching the currently active region
 With negative ARG, delete the last one instead.
 With zero ARG, skip the last one and mark next.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/unmark-next-like-this "multiple-cursors/mc-mark-more" "\
+Deselect next part of the buffer matching the currently active region.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/unmark-previous-like-this "multiple-cursors/mc-mark-more" "\
+Deselect prev part of the buffer matching the currently active region.
 
 \(fn ARG)" t nil)
 
