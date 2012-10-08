@@ -19,6 +19,12 @@
 ;; ;; The TTY Demystified
 ;; http://www.linusakesson.net/programming/tty/
 
+;; ;; Dynamic function definition without macro:
+;; (let ((name "my-function"))
+;;   (defalias (intern name)
+;;     `(lambda () ,(format "Docstring for %s" name) (interactive)
+;;        (message "Hello from %s" ,name))))
+
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
 
@@ -69,7 +75,7 @@
 ;; where <c> represents the modifier required. See C-x @ C-h for the list.
 ;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
-;;;; Macros
+;;;; Keyboard macros
 ;;   C-x (         or F3   Begins recording.
 ;;                    F3   Insert counter (if recording has already commenced).
 ;;   C-x )         or F4   Ends recording.
