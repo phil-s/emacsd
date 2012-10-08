@@ -23,7 +23,8 @@
  'emacs
  '((nil . ((buffer-read-only . t)
            (show-trailing-whitespace . nil)
-           (tab-width . 8)))))
+           (tab-width . 8)
+           (eval . (whitespace-mode -1))))))
 
 ;; Generic read-only class
 (dir-locals-set-class-variables
