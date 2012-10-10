@@ -664,7 +664,8 @@ or before point."
 (defun my-ssh (args)
   "Connect to a remote host by SSH."
   (interactive "sssh ")
-  (require 'term)
+  (eval-when-compile
+    (require 'term))
   (let ((switches (split-string-and-unquote args)))
     (set-buffer (apply 'make-term "ssh" "ssh" nil switches))
     (term-mode)
