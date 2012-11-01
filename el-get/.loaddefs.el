@@ -846,8 +846,9 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/multiple-cursors.el"
-;;;;;;  "wgrep/wgrep-test.el") (20584 48796 822695))
+;;;;;;  "dired-details/dired-details.el" "el-get/el-get-install.el"
+;;;;;;  "el-get/el-get.el" "multiple-cursors/multiple-cursors.el"
+;;;;;;  "wgrep/wgrep-test.el") (20625 50482 172961))
 
 ;;;***
 

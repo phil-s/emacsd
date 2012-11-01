@@ -316,6 +316,13 @@ disabled.")))
 ;;             ;; (dired-omit-mode 1)
 ;;             ))
 
+;; Use dired-details
+(eval-after-load "dired"
+  '(progn
+     (require 'dired-details)
+     (dired-details-install)
+     (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle)))
+
 ;; Use ControlMaster with TRAMP by default
 (setq tramp-default-method "scpc"
       tramp-default-user   "phil")

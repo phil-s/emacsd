@@ -33,6 +33,9 @@
      ;; (:name dictionary-el
      ;;        :type apt-get)
 
+     (:name dired-details
+            :type emacswiki)
+
      (:name dtrt-indent
             :type git
             :url "git://git.sv.gnu.org/dtrt-indent.git"
