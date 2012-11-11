@@ -73,6 +73,9 @@ when `auto-save-mode' is invoked manually.")
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+;; Delay fontification to improve scrolling performance in large buffers
+(setq jit-lock-defer-time 0.05)
+
 ;; Highlight current line
 (global-hl-line-mode 1)
 
