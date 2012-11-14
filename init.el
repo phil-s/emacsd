@@ -65,6 +65,9 @@
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Translation-Keymaps.html
 ;; http://stackoverflow.com/questions/4351044/binding-m-up-m-down-in-emacs-23-1-1/4360658#4360658
 
+;; Buffer-local keymaps / Minor mode keymap over-rides:
+;; http://stackoverflow.com/a/13102821/324105
+
 ;; In Windows you can add this to to your .emacs to enable hyper and super:
 ;; (setq w32-apps-modifier 'hyper)
 ;; (setq w32-lwindow-modifier 'super)
@@ -319,6 +322,8 @@
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defvar my-init-load-start (current-time))
+
 (setq custom-file (expand-file-name "~/.emacs.d/custom.el"))
 (load custom-file)
 
@@ -394,6 +399,11 @@
 
 ;; Support for development on local machine
 (require 'my-local)
+
+(message "Init file loaded in %ds"
+         (destructuring-bind (hi lo ms) (current-time)
+           (- (+ hi lo) (+ (first my-init-load-start)
+                           (second my-init-load-start)))))
 
 ;;; Local Variables:
 ;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 9)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
