@@ -266,6 +266,11 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; Varnish
 (add-to-list 'auto-mode-alist '("\\.vcl\\'" . vcl-mode))
 
+;; SQL
+(add-hook 'sql-mode-hook 'my-sql-mode-hook)
+(defun my-sql-mode-hook ()
+  (setq show-trailing-whitespace nil))
+
 ;; Python / Plone / Zope
 (require 'my-python)
 
