@@ -18,6 +18,8 @@
 ;; http://xahlee.org/emacs/elisp_idioms.html
 ;; ;; The TTY Demystified
 ;; http://www.linusakesson.net/programming/tty/
+;; ;; Custom Flymake commands
+;; http://stackoverflow.com/questions/9771339
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
@@ -93,8 +95,9 @@
 ;;   M-x name-last-kbd-macro (name) RET
 ;;   M-x insert-kbd-macro (name) RET
 ;;
-;; For more documentation, see the info page:
+;; For more documentation:
 ;;   C-h k C-x (
+;;   M-: (info "(emacs) Keyboard Macros") RET
 
 ;;;; Registers
 ;;   C-x r x a           Copy region to register 'a'
@@ -266,8 +269,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Load or evaluate this file
+;;;; Load or evaluate this file (and other files)
 
+;; Other libraries:
+;;
+;; M-x load-library
+;; M-x locate-library
+;; M-x list-load-path-shadows
+
+;; My libraries:
 ;; See also: custom aliases in my-keybindings.el
 
 (defun load-dot-emacs ()
