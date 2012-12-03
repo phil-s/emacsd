@@ -139,6 +139,7 @@
   (define-key keymap (kbd "C-c n")     'deft)
   (define-key keymap (kbd "S-M-SPC")   'my-extend-selection)
   (define-key keymap (kbd "C-c M-w")   'whitespace-toggle-options)
+  (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)

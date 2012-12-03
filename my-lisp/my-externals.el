@@ -145,6 +145,9 @@
             :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
             :features windcycle)
 
+     (:name unbound
+            :type emacswiki)
+
      (:name unfill
             :type git
             :url "https://github.com/purcell/unfill.git")

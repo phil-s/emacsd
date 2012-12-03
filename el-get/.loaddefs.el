@@ -599,6 +599,18 @@ If you do this twice in the same position, it kills the selection.
 
 ;;;***
 
+;;;### (autoloads (describe-unbound-keys) "unbound/unbound" "unbound/unbound.el"
+;;;;;;  (20667 63336))
+;;; Generated autoloads from unbound/unbound.el
+
+(autoload 'describe-unbound-keys "unbound/unbound" "\
+Display a list of unbound keystrokes of complexity no greater than MAX.
+Keys are sorted by their complexity; `key-complexity' determines it.
+
+\(fn MAX)" t nil)
+
+;;;***
+
 ;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
 ;;;;;;  "unfill/unfill.el" (20421 20109))
 ;;; Generated autoloads from unfill/unfill.el
