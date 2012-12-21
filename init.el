@@ -20,6 +20,8 @@
 ;; http://www.linusakesson.net/programming/tty/
 ;; ;; Custom Flymake commands
 ;; http://stackoverflow.com/questions/9771339
+;; ;; Invoking external interactive scripts
+;; http://stackoverflow.com/questions/13674100/properly-invoking-an-interactive-script-from-elisp
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
@@ -58,9 +60,11 @@
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
 
 ;; Interrogate bindings:
+;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
 ;; (key-binding KEY &optional ACCEPT-DEFAULT NO-REMAP POSITION) ;; dominant binding
 ;; (minor-mode-key-binding KEY &optional ACCEPT-DEFAULT) ;; discover keymap(s)
 ;; (global-key-binding KEYS &optional ACCEPT-DEFAULT)
+;; (local-key-binding KEYS &optional ACCEPT-DEFAULT)
 
 ;; On non-standard terminals, the input-decode-map keymap can be used
 ;; to define mappings between terminal codes and normal emacs keys.
@@ -326,6 +330,14 @@
 ;;
 ;;     When in a .c file, find the first corresponding .h file in a set
 ;;     of directories and display it, and vice-versa from the .h file.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Add a byte-compilation section:
+;;  * Macro expansion at compile time
+;;  * (elisp) Declaring Functions
+;;  * eval-and-compile / eval-when-compile
+;;  * dont-compile
+;;  * displaying-byte-compile-warnings
+;;  ...?
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
