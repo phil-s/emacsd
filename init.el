@@ -1,4 +1,4 @@
-;;;; Useful links
+;;;; * Useful links
 ;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
 ;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
 ;; http://www.todesschaf.org/files/browse-kill-ring.el
@@ -44,7 +44,7 @@
 ;;    (ii)  'M-s C-/' for my-multi-occur-in-visible-buffers
 ;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
-;;;; Keybinding reference
+;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
 ;; http://www.masteringemacs.org/articles/2011/02/08/mastering-key-bindings-emacs/
@@ -84,7 +84,7 @@
 ;; where <c> represents the modifier required. See C-x @ C-h for the list.
 ;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
-;;;; Keyboard macros
+;;;; * Keyboard macros
 ;;   C-x (         or F3   Begins recording.
 ;;                    F3   Insert counter (if recording has already commenced).
 ;;   C-x )         or F4   Ends recording.
@@ -103,7 +103,7 @@
 ;;   C-h k C-x (
 ;;   M-: (info "(emacs) Keyboard Macros") RET
 
-;;;; Registers
+;;;; * Registers
 ;;   C-x r x a           Copy region to register 'a'
 ;;   C-x r g a           Insert contents of register 'a'
 ;;   C-x r SPC a         point-to-register 'a'
@@ -112,7 +112,7 @@
 ;; Remember that killing doesn't affect the registers, which
 ;; can make this useful for killing and replacing.
 
-;;;; Multiple windows and frames
+;;;; * Multiple windows and frames
 ;; C-x 1     : Single window on this buffer
 ;; C-x 2     : Split windows horizontally
 ;; C-x 3     : Split windows vertically
@@ -120,7 +120,7 @@
 ;; C-x 5 ... : Operations on other-frame
 ;; C-x 6 ... : 2C (two columns) operations
 
-;;;; Determining running environment and platform capabilities in Emacs.
+;;;; * Determining running environment and platform capabilities in Emacs.
 ;; http://brain-break.blogspot.com/2010/08/determining-running-environment-and.html
 
 ;; ;; Check variables:
@@ -170,7 +170,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Debugging, Tracing, and Profiling
+;;;; * Debugging, Tracing, and Profiling
 
 ;; Standard debugger:
 ;; M-x debug-on-entry FUNCTION
@@ -215,7 +215,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Elisp executable scripts
+;;;; * Elisp executable scripts
 
 ;; --batch vs --script
 ;; M-: (info "(emacs) Initial Options") RET
@@ -255,7 +255,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Tramp
+;;;; * Tramp
 
 ;; sudo multihop/proxy
 
@@ -273,7 +273,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Load or evaluate this file (and other files)
+;;;; * Load or evaluate this file (and other files)
 
 ;; Other libraries:
 ;;
@@ -429,5 +429,6 @@
                            (second my-init-load-start)))))
 
 ;;; Local Variables:
-;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 9)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
+;;; outline-regexp: ";;;; "
+;;; eval:(progn (outline-minor-mode 1) (while (re-search-forward "^;;;; \\* " nil t) (outline-toggle-children)))
 ;;; End:
