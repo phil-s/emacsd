@@ -392,6 +392,7 @@
 
 ;; Custom utilities
 (require 'my-utilities)
+(require 'my-rectangles)
 
 ;; Indentation and white space
 (require 'my-indentation)

@@ -85,6 +85,10 @@
   (define-key keymap (kbd "s-SPC x")   'mc/mark-more-like-this-extended)
   (define-key keymap (kbd "s-SPC r")   'mc/mark-all-in-region)
 
+  ;; Rectangle editing
+  (define-key keymap (kbd "C-x r M-%") 'my-replace-string-rectangle)
+  (define-key keymap (kbd "C-x r C-M-%") 'my-replace-regexp-rectangle)
+
   ;; iedit
   (define-key keymap (kbd "C-;")       'iedit-mode)
 
