@@ -41,6 +41,10 @@
                              "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
                              "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
            ;; (drupal-p . t)
+           (ff-search-directories . ("."))
+           (ff-other-file-alist . (("\\.module$" (".install" ".info"))
+                                   ("\\.install$" (".info"))
+                                   ("\\.info$" (".module"))))
            ))
    (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
                           (drupal-mode) (hack-local-variables))) ;; Oooh.

@@ -122,6 +122,8 @@
   (define-key keymap (kbd "C-c w s")   'my-www-search)
 
   ;; Miscellaneous (mine/third-party)
+  (define-key keymap (kbd "C-c o")     'ff-find-other-file)
+  (define-key keymap (kbd "<f5>")      'ff-find-other-file)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
