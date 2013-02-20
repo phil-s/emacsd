@@ -668,6 +668,30 @@ https://github.com/magnars/.emacs.d/blob/master/defuns/lisp-defuns.el"
     (eval-buffer
      (browse-url-emacs url))))
 
+(defun my-toggle-fill-paragraph ()
+  "Fill or unfill the current paragraph, depending upon the current line length.
+When there is a text selection, act on the region.
+See `fill-paragraph' and `fill-region'."
+  (interactive)
+  ;; We set a property 'currently-filled-p on this command's symbol
+  ;; (i.e. on 'my-toggle-fill-paragraph), thus avoiding the need to
+  ;; create a variable for remembering the current fill state.
+  (save-excursion
+    (let* ((deactivate-mark nil)
+           (line-length (- (line-end-position) (line-beginning-position)))
+           (currently-filled (if (eq last-command this-command)
+                                 (get this-command 'currently-filled-p)
+                               (< line-length fill-column)))
+           (fill-column (if currently-filled
+                            most-positive-fixnum
+                          fill-column)))
+
+      (if (region-active-p)
+          (fill-region (region-beginning) (region-end))
+        (fill-paragraph))
+
+      (put this-command 'currently-filled-p (not currently-filled)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
