@@ -146,6 +146,7 @@
   (define-key keymap (kbd "S-M-SPC")   'my-extend-selection)
   (define-key keymap (kbd "C-c M-w")   'whitespace-toggle-options)
   (define-key keymap (kbd "C-c M-q")   'my-toggle-fill-paragraph)
+  (define-key keymap (kbd "C-c x e")   'eval-and-replace)
   (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
 
   ;; Miscellaneous (standard commands)
