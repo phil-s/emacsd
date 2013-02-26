@@ -33,6 +33,9 @@
 ;; (and `browse-kill-ring.el').  I do.  If you do that, then
 ;; load `second-sel.el' first.
 
+(global-set-key (kbd "M-y") 'jp/yank-pop)
+(global-set-key (kbd "C-y") 'jp/yank)
+
 ;;
 ;; Global minor mode: `my-keys-minor-mode'
 ;;

@@ -417,6 +417,24 @@ Does not set point.  Does nothing if mark ring is empty."
   (global-set-key (kbd "C-c k") 'browse-kill-ring)
   )
 
+;; Make M-y re-yank the most-recently-yanked text if the previous
+;; command was NOT a yank. This prevents the gradual burying of the
+;; desired text in the kill ring, when you wish to kill several
+;; pieces of text, but yank the same thing in as a replacement.
+;; @see; http://stackoverflow.com/a/5825012/324105
+(defun jp/yank (&optional arg)
+  "Yank and save text to jp/yank register"
+  (interactive)
+  (set-register 'jp/yank (current-kill 0 t))
+  (yank arg))
+
+(defun jp/yank-pop (&optional arg)
+  "If yank-pop fails, insert jp/yank register contents instead."
+  (interactive)
+  (condition-case nil
+      (yank-pop arg)
+    (error (insert (get-register 'jp/yank)))))
+
 ;; Grab copy of the current buffer's filename.
 (defun my-copy-buffer-file-name (&optional arg)
   "Copy the buffer's filename to the kill ring.
