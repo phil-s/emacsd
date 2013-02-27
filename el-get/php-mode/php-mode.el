@@ -10,10 +10,10 @@
 ;; Created: 1999-05-17
 ;; X-URL:   https://github.com/ejmr/php-mode
 
-(defconst php-mode-version-number "1.6.6"
+(defconst php-mode-version-number "1.7"
   "PHP Mode version number.")
 
-(defconst php-mode-modified "2012-08-27"
+(defconst php-mode-modified "2012-10-15"
   "PHP Mode build date.")
 
 ;;; License
@@ -71,7 +71,9 @@
 (require 'custom)
 (require 'etags)
 (eval-when-compile
-  (require 'regexp-opt))
+  (require 'regexp-opt)
+  (defvar c-vsemi-status-unknown-p)
+  (defvar syntax-propertize-via-font-lock))
 (require 'flymake)
 
 ;; Local variables
@@ -443,6 +445,12 @@ This is was done due to the problem reported here:
   (set (make-local-variable 'c-opt-cpp-start) php-tags-key)
   (set (make-local-variable 'c-opt-cpp-prefix) php-tags-key)
 
+  ;; These settings ensure that chained method calls line up correctly
+  ;; over multiple lines.
+  (c-set-offset 'topmost-intro-cont 'c-lineup-cascaded-calls)
+  (c-set-offset 'statement-cont 'c-lineup-cascaded-calls)
+  (c-set-offset 'brace-list-entry 'c-lineup-cascaded-calls)
+
   (set (make-local-variable 'c-block-stmt-1-key) php-block-stmt-1-key)
   (set (make-local-variable 'c-block-stmt-2-key) php-block-stmt-2-key)
 
@@ -465,11 +473,10 @@ This is was done due to the problem reported here:
           nil))              ; SYNTAX-BEGIN
 
   (modify-syntax-entry ?_    "_" php-mode-syntax-table)
-  (modify-syntax-entry ?'    "w" php-mode-syntax-table)
-  (modify-syntax-entry ?\"   "w" php-mode-syntax-table)
   (modify-syntax-entry ?`    "\"" php-mode-syntax-table)
+  (modify-syntax-entry ?\"   "\"" php-mode-syntax-table)
 
-  (set (make-local-variable 'font-lock-syntactic-keywords)
+  (set (make-local-variable 'syntax-propertize-via-font-lock)
        '(("\\(\"\\)\\(\\\\.\\|[^\"\n\\]\\)*\\(\"\\)" (1 "\"") (3 "\""))
 	 ("\\(\'\\)\\(\\\\.\\|[^\'\n\\]\\)*\\(\'\\)" (1 "\"") (3 "\""))))
 
@@ -1237,6 +1244,32 @@ The output will appear in the buffer *PHP*."
       (call-process "php" nil php-buffer nil "-r" (clean-php-code code)))))
 
 (define-key php-mode-map "\C-c\C-r" 'php-send-region)
+
+
+(defface php-annotations-annotation-face '((t . (:inherit 'font-lock-constant-face)))
+  "Face used to highlight annotations.")
+
+(defconst php-annotations-re "\\(\\s-\\|{\\)\\(@[[:alpha:]]+\\)")
+
+(defmacro php-annotations-inside-comment-p (pos)
+  "Return non-nil if POS is inside a comment."
+  `(eq (get-char-property ,pos 'face) 'font-lock-comment-face))
+
+(defun php-annotations-font-lock-find-annotation (limit)
+  (let ((match
+	 (catch 'match
+	   (save-match-data
+	     (while (re-search-forward php-annotations-re limit t)
+	       (when (php-annotations-inside-comment-p (match-beginning 0))
+		 (goto-char (match-end 0))
+		 (throw 'match (match-data))))))))
+    (when match
+      (set-match-data match)
+      t)))
+
+(eval-after-load 'php-mode
+  '(font-lock-add-keywords 'php-mode '((php-annotations-font-lock-find-annotation (2 'php-annotations-annotation-face t)))))
+
 
 
 (provide 'php-mode)

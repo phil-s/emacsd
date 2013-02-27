@@ -23,7 +23,8 @@
  'emacs
  '((nil . ((buffer-read-only . t)
            (show-trailing-whitespace . nil)
-           (tab-width . 8)))))
+           (tab-width . 8)
+           (eval . (whitespace-mode -1))))))
 
 ;; Generic read-only class
 (dir-locals-set-class-variables
@@ -40,6 +41,10 @@
                              "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
                              "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
            ;; (drupal-p . t)
+           (ff-search-directories . ("."))
+           (ff-other-file-alist . (("\\.module$" (".install" ".info"))
+                                   ("\\.install$" (".info"))
+                                   ("\\.info$" (".module"))))
            ))
    (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
                           (drupal-mode) (hack-local-variables))) ;; Oooh.

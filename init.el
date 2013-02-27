@@ -1,4 +1,4 @@
-;;;; Useful links
+;;;; * Useful links
 ;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
 ;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
 ;; http://www.todesschaf.org/files/browse-kill-ring.el
@@ -20,6 +20,14 @@
 ;; http://www.linusakesson.net/programming/tty/
 ;; ;; Custom Flymake commands
 ;; http://stackoverflow.com/questions/9771339
+;; ;; Invoking external interactive scripts
+;; http://stackoverflow.com/questions/13674100/properly-invoking-an-interactive-script-from-elisp
+
+;; ;; Dynamic function definition without macro:
+;; (let ((name "my-function"))
+;;   (defalias (intern name)
+;;     `(lambda () ,(format "Docstring for %s" name) (interactive)
+;;        (message "Hello from %s" ,name))))
 
 ;; Example of running Emacs remotely with local display:
 ;; ssh -Y (user)@(host) -f "source ~/.ssh/environment && emacsclient -a '' -c"
@@ -36,7 +44,7 @@
 ;;    (ii)  'M-s C-/' for my-multi-occur-in-visible-buffers
 ;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
-;;;; Keybinding reference
+;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
 ;; http://www.masteringemacs.org/articles/2011/02/08/mastering-key-bindings-emacs/
@@ -52,14 +60,19 @@
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
 
 ;; Interrogate bindings:
+;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
 ;; (key-binding KEY &optional ACCEPT-DEFAULT NO-REMAP POSITION) ;; dominant binding
 ;; (minor-mode-key-binding KEY &optional ACCEPT-DEFAULT) ;; discover keymap(s)
 ;; (global-key-binding KEYS &optional ACCEPT-DEFAULT)
+;; (local-key-binding KEYS &optional ACCEPT-DEFAULT)
 
 ;; On non-standard terminals, the input-decode-map keymap can be used
 ;; to define mappings between terminal codes and normal emacs keys.
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Translation-Keymaps.html
 ;; http://stackoverflow.com/questions/4351044/binding-m-up-m-down-in-emacs-23-1-1/4360658#4360658
+
+;; Buffer-local keymaps / Minor mode keymap over-rides:
+;; http://stackoverflow.com/a/13102821/324105
 
 ;; In Windows you can add this to to your .emacs to enable hyper and super:
 ;; (setq w32-apps-modifier 'hyper)
@@ -71,7 +84,7 @@
 ;; where <c> represents the modifier required. See C-x @ C-h for the list.
 ;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
-;;;; Keyboard macros
+;;;; * Keyboard macros
 ;;   C-x (         or F3   Begins recording.
 ;;                    F3   Insert counter (if recording has already commenced).
 ;;   C-x )         or F4   Ends recording.
@@ -90,7 +103,7 @@
 ;;   C-h k C-x (
 ;;   M-: (info "(emacs) Keyboard Macros") RET
 
-;;;; Registers
+;;;; * Registers
 ;;   C-x r x a           Copy region to register 'a'
 ;;   C-x r g a           Insert contents of register 'a'
 ;;   C-x r SPC a         point-to-register 'a'
@@ -99,7 +112,7 @@
 ;; Remember that killing doesn't affect the registers, which
 ;; can make this useful for killing and replacing.
 
-;;;; Multiple windows and frames
+;;;; * Multiple windows and frames
 ;; C-x 1     : Single window on this buffer
 ;; C-x 2     : Split windows horizontally
 ;; C-x 3     : Split windows vertically
@@ -107,7 +120,7 @@
 ;; C-x 5 ... : Operations on other-frame
 ;; C-x 6 ... : 2C (two columns) operations
 
-;;;; Determining running environment and platform capabilities in Emacs.
+;;;; * Determining running environment and platform capabilities in Emacs.
 ;; http://brain-break.blogspot.com/2010/08/determining-running-environment-and.html
 
 ;; ;; Check variables:
@@ -157,7 +170,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Debugging, Tracing, and Profiling
+;;;; * Debugging, Tracing, and Profiling
 
 ;; Standard debugger:
 ;; M-x debug-on-entry FUNCTION
@@ -202,7 +215,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Elisp executable scripts
+;;;; * Elisp executable scripts
 
 ;; --batch vs --script
 ;; M-: (info "(emacs) Initial Options") RET
@@ -242,7 +255,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Tramp
+;;;; * Tramp
 
 ;; sudo multihop/proxy
 
@@ -260,7 +273,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; Load or evaluate this file (and other files)
+;;;; * Load or evaluate this file (and other files)
 
 ;; Other libraries:
 ;;
@@ -318,51 +331,23 @@
 ;;     When in a .c file, find the first corresponding .h file in a set
 ;;     of directories and display it, and vice-versa from the .h file.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Add a byte-compilation section:
+;;  * Macro expansion at compile time
+;;  * (elisp) Declaring Functions
+;;  * eval-and-compile / eval-when-compile
+;;  * dont-compile
+;;  * displaying-byte-compile-warnings
+;;  ...?
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
-;; Basic customisations.
-;;
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(case-fold-search t)
- '(confirm-kill-emacs (quote y-or-n-p))
- '(current-language-environment "Latin-1")
- '(default-input-method "latin-1-prefix")
- '(dnd-protocol-alist (quote (("^file:///" . dnd-open-local-file) ("^file://" . dnd-open-file) ("^file:[A-Za-z]%3a" . dnd-open-local-file-fix-url) ("^file:" . dnd-open-local-file) ("^\\(https?\\|ftp\\|file\\|nfs\\)://" . dnd-open-file))))
- '(fic-highlighted-words (quote ("FIXME" "TODO" "KLUDGE")))
- '(global-font-lock-mode t nil (font-lock))
- '(grep-find-ignored-files (quote (".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.pfsl" "*.dfsl" "*.p64fsl" "*.d64fsl" "*.dx64fsl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff" "*.pdf" "*.doc" "")))
- '(history-length 100)
- '(ibuffer-saved-filter-groups (quote (("default" ("Scratch" (mode . lisp-interaction-mode)) ("Shells" (mode . shell-mode)) ("Emacs" (filename . "emacs"))))))
- '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . emacs-lisp-mode) (mode . cperl-mode) (mode . c-mode) (mode . java-mode) (mode . idl-mode) (mode . lisp-mode)))))))
- '(inhibit-eol-conversion nil)
- '(read-buffer-completion-ignore-case t)
- '(read-file-name-completion-ignore-case t)
- '(safe-local-variable-values (quote ((eval when (not (eq major-mode (quote drupal-mode))) (drupal-mode) (hack-local-variables)) (eval add-hook (quote after-save-hook) (quote my-local-backup) nil t) (ffip-patterns "*.php" "*.inc" "*.module" "*.install" "*.info" "*.js" "*.css" ".htaccess" "*.engine" "*.txt" "*.profile" "*.xml" "*.test" "*.theme" "*.ini" "*.make") (whitespace-mode . 0) (css-indent-offset . 2) (js-indent-level . 2) (eval progn (outline-minor-mode) (outline-toggle-children) (let ((n 8)) (while (> n 0) (setq n (1- n)) (call-interactively (quote outline-next-visible-heading)) (outline-toggle-children)))) (eval hide-body))))
- '(scroll-bar-mode (quote right))
- '(svn-log-edit-show-diff-for-commit t)
- '(tool-bar-mode nil)
- '(tramp-remote-path (quote (tramp-default-remote-path "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin" "/usr/bin")))
- '(vc-svn-global-switches (quote ("--username" "phils" "--password" "password"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))
- '(tks-time-face ((t (:foreground "#cc9933"))))
- '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
- '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
-;; WARNING: my-theme.el over-rides (custom-set-faces) for the 'user
-;; theme, to set the default font face. Custom faces set in the above
-;; call will be over-ridden.
+(defvar my-init-load-start (current-time))
+
+(setq custom-file (expand-file-name "~/.emacs.d/custom.el"))
+(load custom-file)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -407,6 +392,7 @@
 
 ;; Custom utilities
 (require 'my-utilities)
+(require 'my-rectangles)
 
 ;; Indentation and white space
 (require 'my-indentation)
@@ -437,6 +423,12 @@
 ;; Support for development on local machine
 (require 'my-local)
 
+(message "Init file loaded in %ds"
+         (destructuring-bind (hi lo ms) (current-time)
+           (- (+ hi lo) (+ (first my-init-load-start)
+                           (second my-init-load-start)))))
+
 ;;; Local Variables:
-;;; eval:(progn (outline-minor-mode) (outline-toggle-children) (let ((n 9)) (while (> n 0) (setq n (1- n)) (call-interactively 'outline-next-visible-heading) (outline-toggle-children))))
+;;; outline-regexp: ";;;; "
+;;; eval:(progn (outline-minor-mode 1) (while (re-search-forward "^;;;; \\* " nil t) (outline-toggle-children)))
 ;;; End:

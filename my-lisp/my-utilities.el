@@ -417,6 +417,24 @@ Does not set point.  Does nothing if mark ring is empty."
   (global-set-key (kbd "C-c k") 'browse-kill-ring)
   )
 
+;; Make M-y re-yank the most-recently-yanked text if the previous
+;; command was NOT a yank. This prevents the gradual burying of the
+;; desired text in the kill ring, when you wish to kill several
+;; pieces of text, but yank the same thing in as a replacement.
+;; @see; http://stackoverflow.com/a/5825012/324105
+(defun jp/yank (&optional arg)
+  "Yank and save text to jp/yank register"
+  (interactive)
+  (set-register 'jp/yank (current-kill 0 t))
+  (yank arg))
+
+(defun jp/yank-pop (&optional arg)
+  "If yank-pop fails, insert jp/yank register contents instead."
+  (interactive)
+  (condition-case nil
+      (yank-pop arg)
+    (error (insert (get-register 'jp/yank)))))
+
 ;; Grab copy of the current buffer's filename.
 (defun my-copy-buffer-file-name (&optional arg)
   "Copy the buffer's filename to the kill ring.
@@ -638,33 +656,11 @@ or before point."
   (interactive (my-region-or-word "WWW search: "))
   (browse-url (format my-www-search-url (url-hexify-string string))))
 
-(defun my-copy-rectangle (start end &optional fill)
-  "Trigger the read-only behaviour of `kill-rectangle'."
-  (interactive "r\nP")
-  (let ((buffer-read-only t)
-        (kill-read-only-ok t))
-    (kill-rectangle start end fill)))
-
-(defun my-fill-rectangle (start end)
-  "`fill-region' within the confines of a rectangle."
-  (interactive "*r")
-  (let* ((indent-tabs-mode nil)
-         (content (delete-extract-rectangle start end)))
-    (goto-char start)
-    (insert-rectangle
-     (with-temp-buffer
-       (setq indent-tabs-mode nil
-             fill-column (length (car content)))
-       (insert-rectangle content)
-       (fill-region (point-min) (point-max))
-       (goto-char (point-max))
-       (move-to-column fill-column t)
-       (extract-rectangle (point-min) (point))))))
-
 (defun my-ssh (args)
   "Connect to a remote host by SSH."
   (interactive "sssh ")
-  (require 'term)
+  (eval-when-compile
+    (require 'term))
   (let ((switches (split-string-and-unquote args)))
     (set-buffer (apply 'make-term "ssh" "ssh" nil switches))
     (term-mode)
@@ -689,6 +685,30 @@ https://github.com/magnars/.emacs.d/blob/master/defuns/lisp-defuns.el"
   (save-window-excursion
     (eval-buffer
      (browse-url-emacs url))))
+
+(defun my-toggle-fill-paragraph ()
+  "Fill or unfill the current paragraph, depending upon the current line length.
+When there is a text selection, act on the region.
+See `fill-paragraph' and `fill-region'."
+  (interactive)
+  ;; We set a property 'currently-filled-p on this command's symbol
+  ;; (i.e. on 'my-toggle-fill-paragraph), thus avoiding the need to
+  ;; create a variable for remembering the current fill state.
+  (save-excursion
+    (let* ((deactivate-mark nil)
+           (line-length (- (line-end-position) (line-beginning-position)))
+           (currently-filled (if (eq last-command this-command)
+                                 (get this-command 'currently-filled-p)
+                               (< line-length fill-column)))
+           (fill-column (if currently-filled
+                            most-positive-fixnum
+                          fill-column)))
+
+      (if (region-active-p)
+          (fill-region (region-beginning) (region-end))
+        (fill-paragraph))
+
+      (put this-command 'currently-filled-p (not currently-filled)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

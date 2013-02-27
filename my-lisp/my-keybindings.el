@@ -33,6 +33,9 @@
 ;; (and `browse-kill-ring.el').  I do.  If you do that, then
 ;; load `second-sel.el' first.
 
+(global-set-key (kbd "M-y") 'jp/yank-pop)
+(global-set-key (kbd "C-y") 'jp/yank)
+
 ;;
 ;; Global minor mode: `my-keys-minor-mode'
 ;;
@@ -85,6 +88,10 @@
   (define-key keymap (kbd "s-SPC x")   'mc/mark-more-like-this-extended)
   (define-key keymap (kbd "s-SPC r")   'mc/mark-all-in-region)
 
+  ;; Rectangle editing
+  (define-key keymap (kbd "C-x r M-%") 'my-replace-string-rectangle)
+  (define-key keymap (kbd "C-x r C-M-%") 'my-replace-regexp-rectangle)
+
   ;; iedit
   (define-key keymap (kbd "C-;")       'iedit-mode)
 
@@ -118,6 +125,8 @@
   (define-key keymap (kbd "C-c w s")   'my-www-search)
 
   ;; Miscellaneous (mine/third-party)
+  (define-key keymap (kbd "C-c o")     'ff-find-other-file)
+  (define-key keymap (kbd "<f5>")      'ff-find-other-file)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
@@ -139,6 +148,9 @@
   (define-key keymap (kbd "C-c n")     'deft)
   (define-key keymap (kbd "S-M-SPC")   'my-extend-selection)
   (define-key keymap (kbd "C-c M-w")   'whitespace-toggle-options)
+  (define-key keymap (kbd "C-c M-q")   'my-toggle-fill-paragraph)
+  (define-key keymap (kbd "C-c x e")   'eval-and-replace)
+  (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)

@@ -14,7 +14,7 @@ Please email any bugs or feature requests to `lobbyjones at gmail dot com` or su
 
 # Status
 
-**28 July 2012:**  I will not be working on any PHP projects in the forseeable future.  Therefore I have not worked on adding any new features.  However, the project is not dead.  I am still accepting bug requests and will try to address them in a timely manner.  I also welcome any improvements in functionality from other developers.  Updates to `php-mode` may be infrequent, but I will continue to maintain it as best as possible.
+**24 October 2012:**  I like to update this section roughly every six months.  Lately I have returned to working on some PHP software after a hiatus working with other technologies.  So hopefully that will mean `php-mode` will see more improvements in the near future.  In the mean time I am still accepting any and all bug reports and improvements from other developers as usual.
 
 # Features
 
@@ -76,11 +76,46 @@ The key command `C-c C-f` will search the PHP website for documentation on the w
 
 The command `php-send-region`, which is bound to `C-c C-r` by default, will execute the selected region of PHP code.  In conjunction with the Emacs command `C-x h` you can use this to execute an entire file.  Any output will appear in a buffer called `*PHP*`.
 
+## Annotation Highlighting
+
+Projects like [Symfony](http://symfony.com/) use annotations in comments.  For example, here is code from their website:
+
+    /**
+     * @ORM\Entity
+     * @ORM\Table(name="product")
+     */
+    class Product
+    {
+        /**
+         * @ORM\Id
+         * @ORM\Column(type="integer")
+         * @ORM\GeneratedValue(strategy="AUTO")
+         */
+        protected $id;
+
+        /**
+         * @ORM\Column(type="string", length=100)
+         */
+        protected $name;
+
+        /**
+         * @ORM\Column(type="decimal", scale=2)
+         */
+        protected $price;
+
+        /**
+         * @ORM\Column(type="text")
+         */
+        protected $description;
+    }
+
+The annotations are the lines that begin with the `@` character, and `php-mode` will give these special highlighting to help them stand out.
+
 # How to Contribute
 
 All contributions to `php-mode` are welcome.  But please try to do the following when sending improvements or bug fixes:
 
-1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a Github page then please link your name to it, so people can see your other work.  `(=^･^=)`
+1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a Github page then please link your name to it, so people can see your other work.
 
 2. If your contribution addresses an issue on the Github project page then include a single line like `Github-issue: 16` with the appropriate issue number.
 
@@ -89,6 +124,8 @@ All contributions to `php-mode` are welcome.  But please try to do the following
 4. However, please do not modify `php-mode-version-number`.  I will decide what constitutes a bump in the version number.
 
 5. Send me a pull request here on Github.  Or if you do not have a Github account then email the patches to me at `lobbyjones at gmail dot com`.  Please try to make sure the patches are acceptable input to the comand `git am`.  Please note that even if you send a pull request it is very likely that I will *not* simply merge your branch through Github; I prefer to go through commits and cherry-pick them so I can review the commit messages and sign-off on them.  You can see which commits I did or did not merge by using the [`git-cherry`](http://www.kernel.org/pub/software/scm/git/docs/git-cherry.html) command.
+
+If you are fixing a bug related to a Github issue, then first of all, thank you for the help improving `php-mode`.  Second, there is a `tests/` directory which contains PHP scripts for each issue (although not all of them).  Please consider adding a test script to that directory that documents the expected behavior and provides code that allows others to see if said behavior works properly.  Please try to follow the format of the existing tests.
 
 # License
 
@@ -136,3 +173,5 @@ In chronological order:
 36. [Maël Nison](https://github.com/arcanis)
 37. [flack](https://github.com/flack)
 38. [Michele Bini](https://github.com/rev22)
+39. Emanuele Tomasi
+40. [David Maus](https://github.com/dmj)

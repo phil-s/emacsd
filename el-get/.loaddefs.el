@@ -172,16 +172,32 @@ Add one cursor to the beginning of each line in the active region.
 
 ;;;***
 
-;;;### (autoloads (mc/mark-more-like-this-extended mc/mark-all-in-region
-;;;;;;  mc/mark-all-like-this mc/mark-previous-like-this mc/mark-next-like-this)
-;;;;;;  "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20587 45961))
+;;;### (autoloads (mc/mark-sgml-tag-pair mc/mark-all-symbols-like-this-in-defun
+;;;;;;  mc/mark-all-words-like-this-in-defun mc/mark-all-like-this-in-defun
+;;;;;;  mc/mark-all-like-this-dwim mc/mark-more-like-this-extended
+;;;;;;  mc/mark-all-in-region mc/mark-all-symbols-like-this mc/mark-all-words-like-this
+;;;;;;  mc/mark-all-like-this mc/unmark-previous-like-this mc/unmark-next-like-this
+;;;;;;  mc/mark-previous-lines mc/mark-next-lines mc/mark-previous-symbol-like-this
+;;;;;;  mc/mark-previous-word-like-this mc/mark-previous-like-this
+;;;;;;  mc/mark-next-symbol-like-this mc/mark-next-word-like-this
+;;;;;;  mc/mark-next-like-this) "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
+;;;;;;  (20659 53539))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
 Find and mark the next part of the buffer matching the currently active region
 With negative ARG, delete the last one instead.
 With zero ARG, skip the last one and mark next.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-next-word-like-this "multiple-cursors/mc-mark-more" "\
+
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-next-symbol-like-this "multiple-cursors/mc-mark-more" "\
+
 
 \(fn ARG)" t nil)
 
@@ -192,8 +208,48 @@ With zero ARG, skip the last one and mark next.
 
 \(fn ARG)" t nil)
 
+(autoload 'mc/mark-previous-word-like-this "multiple-cursors/mc-mark-more" "\
+
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-previous-symbol-like-this "multiple-cursors/mc-mark-more" "\
+
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-next-lines "multiple-cursors/mc-mark-more" "\
+
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-previous-lines "multiple-cursors/mc-mark-more" "\
+
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/unmark-next-like-this "multiple-cursors/mc-mark-more" "\
+Deselect next part of the buffer matching the currently active region.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/unmark-previous-like-this "multiple-cursors/mc-mark-more" "\
+Deselect prev part of the buffer matching the currently active region.
+
+\(fn ARG)" t nil)
+
 (autoload 'mc/mark-all-like-this "multiple-cursors/mc-mark-more" "\
 Find and mark all the parts of the buffer matching the currently active region
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-words-like-this "multiple-cursors/mc-mark-more" "\
+
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-symbols-like-this "multiple-cursors/mc-mark-more" "\
+
 
 \(fn)" t nil)
 
@@ -217,6 +273,34 @@ key-binding used to invoke the command, with all modifiers removed:
 Then, continue to read input events and further add or move marks
 as long as the input event read (with all modifiers removed)
 is one of the above.
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-like-this-dwim "multiple-cursors/mc-mark-more" "\
+Tries to guess what you want to mark all of.
+Can be pressed multiple times to increase selection.
+
+With prefix, it behaves the same as original `mc/mark-all-like-this'
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/mark-all-like-this-in-defun "multiple-cursors/mc-mark-more" "\
+Mark all like this in defun.
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-words-like-this-in-defun "multiple-cursors/mc-mark-more" "\
+Mark all words like this in defun.
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-all-symbols-like-this-in-defun "multiple-cursors/mc-mark-more" "\
+Mark all symbols like this in defun.
+
+\(fn)" t nil)
+
+(autoload 'mc/mark-sgml-tag-pair "multiple-cursors/mc-mark-more" "\
+Mark the tag we're in and its pair for renaming.
 
 \(fn)" t nil)
 
@@ -590,6 +674,18 @@ If you do this twice in the same position, it kills the selection.
 
 ;;;***
 
+;;;### (autoloads (describe-unbound-keys) "unbound/unbound" "unbound/unbound.el"
+;;;;;;  (20667 63336))
+;;; Generated autoloads from unbound/unbound.el
+
+(autoload 'describe-unbound-keys "unbound/unbound" "\
+Display a list of unbound keystrokes of complexity no greater than MAX.
+Keys are sorted by their complexity; `key-complexity' determines it.
+
+\(fn MAX)" t nil)
+
+;;;***
+
 ;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
 ;;;;;;  "unfill/unfill.el" (20587 44126))
 ;;; Generated autoloads from unfill/unfill.el
@@ -837,9 +933,12 @@ Just some alien fruit salad to keep you in the zone.
 ;;;***
 
 ;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
-;;;;;;  "multiple-cursors/multiple-cursors-core.el" "multiple-cursors/multiple-cursors-pkg.el"
-;;;;;;  "multiple-cursors/multiple-cursors.el") (20587 45967 633169))
+;;;;;;  "dired-details/dired-details.el" "el-get/el-get-install.el"
+;;;;;;  "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
+;;;;;;  "multiple-cursors/multiple-cursors-core.el"
+;;;;;;  "multiple-cursors/multiple-cursors-pkg.el"
+;;;;;;  "multiple-cursors/multiple-cursors.el"
+;;;;;;  "wgrep/wgrep-test.el") (20625 50482 172961))
 
 ;;;***
 

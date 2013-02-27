@@ -5,10 +5,8 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-locale-environment "en_NZ.UTF-8")
-;; backwards compatibility as default-buffer-file-coding-system
-;; is deprecated in 23.2.
-(if (boundp 'buffer-file-coding-system)
-    (setq-default buffer-file-coding-system 'utf-8)
+(setq-default buffer-file-coding-system 'utf-8)
+(when (boundp 'default-buffer-file-coding-system) ;; obsolete since 23.2
   (setq default-buffer-file-coding-system 'utf-8))
 ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
@@ -74,6 +72,9 @@ when `auto-save-mode' is invoked manually.")
 (require 'time)
 (setq display-time-24hr-format t)
 (display-time-mode 1)
+
+;; Delay fontification to improve scrolling performance in large buffers
+(setq jit-lock-defer-time 0.05)
 
 ;; Highlight current line
 (global-hl-line-mode 1)
@@ -238,9 +239,9 @@ See also: `my-copy-buffer-file-name'."
 (add-hook 'after-make-frame-functions 'my-frame-config)
 
 ;; Show a marker in the left fringe for lines not in the buffer
-(if (version< emacs-version "23.2")
-    (setq default-indicate-empty-lines t) ; deprecated
-  (setq-default indicate-empty-lines t))
+(setq-default indicate-empty-lines t)
+(when (boundp 'default-indicate-empty-lines) ;; obsolete since 23.2
+  (setq default-indicate-empty-lines t))
 
 ;; Show approx buffer size in modeline
 (size-indication-mode t)
@@ -317,6 +318,13 @@ disabled.")))
 ;;             ;; Set dired-x buffer-local variables here.  For example:
 ;;             ;; (dired-omit-mode 1)
 ;;             ))
+
+;; Use dired-details
+(eval-after-load "dired"
+  '(progn
+     (require 'dired-details)
+     (dired-details-install)
+     (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle)))
 
 ;; Use ControlMaster with TRAMP by default
 (setq tramp-default-method "scpc"

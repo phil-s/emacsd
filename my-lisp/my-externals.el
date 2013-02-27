@@ -33,6 +33,9 @@
      ;; (:name dictionary-el
      ;;        :type apt-get)
 
+     (:name dired-details
+            :type emacswiki)
+
      (:name dtrt-indent
             :type git
             :url "git://git.sv.gnu.org/dtrt-indent.git"
@@ -141,6 +144,9 @@
             :type http
             :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
             :features windcycle)
+
+     (:name unbound
+            :type emacswiki)
 
      (:name unfill
             :type git
