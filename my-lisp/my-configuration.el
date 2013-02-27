@@ -218,6 +218,9 @@ See also: `my-copy-buffer-file-name'."
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
          ("%b (Emacs)"))))
 
+;; Full-screen by default.
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
 
@@ -354,6 +357,7 @@ disabled.")))
 
 ;; Sauron (keeping an eye on things)
 (setq sauron-separate-frame nil
+      sauron-scroll-to-bottom nil
       sauron-nick-insensitivity 0)
 
 ;; erc-mode (for IRC)

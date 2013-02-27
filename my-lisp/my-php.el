@@ -38,7 +38,7 @@
 
   (if (and (buffer-file-name)
            (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
-      (nxml-mode)
+      (web-mode)
 
     (when (eq major-mode 'php-mode)
       (c-set-style "my-php-style")

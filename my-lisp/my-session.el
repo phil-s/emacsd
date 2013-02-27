@@ -18,6 +18,7 @@
 ;; Remember vars between sessions
 (add-to-list 'desktop-globals-to-save 'whitespace-line-column)
 (add-to-list 'desktop-globals-to-save 'whitespace-style)
+(add-to-list 'desktop-globals-to-save 'ibuffer-filter-groups)
 
 ;; ;; Use the desktop-recover library to load and auto-save the desktop.
 ;; ;; Does not work for emacs --daemon

@@ -14,6 +14,11 @@
 ;;
 ;;; And then remove the content added at the end of this file!
 
+;; Marmalade repository
+(require 'package)
+(add-to-list 'package-archives 
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+
 ;;; Initialise:
 (if (not (functionp 'package-initialize))
     (let ((elpa-package

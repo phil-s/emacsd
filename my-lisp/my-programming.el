@@ -193,7 +193,7 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 
 (defun my-templates-nxml-mode-hook ()
   (if (buffer-file-name)
-      (if (or (string-match "\\.tpl.php\\'" (buffer-file-name))
+      (if (or (string-match "\\.tpl\\.php\\'" (buffer-file-name))
               (string-match "\\.pt\\'" (buffer-file-name)))
           (rng-validate-mode 0))))
 (add-hook 'nxml-mode-hook 'my-templates-nxml-mode-hook)
@@ -205,6 +205,8 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 
 (add-hook 'sgml-mode-hook 'my-sgml-mode-hook)
 (add-hook 'web-mode-hook 'my-sgml-mode-hook)
+
+(setq web-mode-autocompletes nil)
 
 ;; HTML
 ;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
@@ -235,6 +237,10 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
   (pop-mark)
   (match-string 0))
 
+;; Javascript
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.min\\.js\\'" . fundamental-mode))
+
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
@@ -243,7 +249,7 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 ;; Drupal mode (see my-drupal.el)
 (autoload 'drupal-mode "my-drupal" "Drupal Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\|engine\\)\\'" . drupal-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode)) ;; except see `my-php-mode-hook'
 (add-to-list 'auto-mode-alist '("\\.info\\'" . conf-mode))
 
 ;; (Removed nXhtml)

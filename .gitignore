@@ -12,4 +12,6 @@
 /tramp
 /geben/
 /erc/*
+/my-lisp/*.elc
 /lisp/__nxhtml__
+/image-dired/

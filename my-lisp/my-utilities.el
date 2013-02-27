@@ -103,6 +103,15 @@ using the specified hippie-expand function."
   (other-window 1)
   (switch-to-buffer (other-buffer)))
 
+(defun my-align-next-window ()
+  "Move point in `next-window' to the same line as the current window."
+  (interactive)
+  (recenter)
+  (let ((line (line-number-at-pos)))
+    (with-selected-window (next-window)
+      (recenter)
+      (goto-line line (window-buffer)))))
+
 (defun scroll-one-line-ahead ()
   "Scroll ahead one line"
   (interactive)
@@ -148,7 +157,7 @@ using the specified hippie-expand function."
              (next (cdr buffers))
              (buffer-name (buffer-name buffer))
              (file-name (buffer-file-name buffer)))
-        ;; Exclude non-file buffers and TAGS files.
+        ;; Exclude non-file buffers and internal-use buffers.
         (when (or (not file-name)
                   (string= (substring buffer-name 0 1) " ")
                   (member (file-name-nondirectory file-name)
