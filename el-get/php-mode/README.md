@@ -1,8 +1,8 @@
 # php-mode
 
-This updates `php-mode` with features to make it more friendly to use with PHP 5.4.  It is based on the work of:
+This updates php-mode with features to make it more friendly to use with PHP 5.4 and 5.5.  It is based on the work of:
 
-1. Turadg Aleahmad
+1. Turadg Aleahmad: The original author.
 
 2. Aaron S. Hawley
 
@@ -10,25 +10,27 @@ This updates `php-mode` with features to make it more friendly to use with PHP 5
 
 And all those mentioned in the ‘Contributors’ section below.
 
-Please email any bugs or feature requests to `lobbyjones at gmail dot com` or submit them as Issues here on the Github page.  Also please include the output of `php-mode-version` in bug reports.
+Please email any bugs or feature requests to `lobbyjones at gmail dot com` or submit them as Issues on the [Github page](https://github.com/ejmr/php-mode).  Also please include the output of `php-mode-version` in bug reports.
+
+**Note:** [You can see all of the previous changes for each version here.](./Changelog.md)
 
 # Status
 
-**24 October 2012:**  I like to update this section roughly every six months.  Lately I have returned to working on some PHP software after a hiatus working with other technologies.  So hopefully that will mean `php-mode` will see more improvements in the near future.  In the mean time I am still accepting any and all bug reports and improvements from other developers as usual.
+[The php-mode wiki](https://github.com/ejmr/php-mode/wiki) describes the plan for the next release and I update it to mark off issues when they are complete.  However, there is no hard date set for each release.  Serious bugs I try to resolve as soon as possibe.  But lately I have been lax when it comes to finishing feature requests, so my apologies.  That said, php-mode is in no way a dead project by any means, even if updates are sometimes sparse.
 
 # Features
 
 ## New Keywords
 
-Now `php-mode` supports syntax highlighting for new keywords which were added as part of PHP 5.4, e.g. those related to traits, such as `insteadof`.  Also supported are the older keywords `clone` and `default`.
+Now php-mode supports syntax highlighting for new keywords which were added as part of PHP 5.4, e.g. those related to traits, such as `insteadof`.  Also supported are the older keywords `clone` and `default`.
 
 ## Constants
 
-Every magic constant and predefined constant listed on the official PHP site is included in syntax highlighted.
+Syntax highlighting includes every magic constant and predefined constant listed on the official PHP site.  However, some constants from specific extensions are not currently included.
 
 ## Traits, Interfaces, and Namespaces
 
-Traits, interfaces, and namespaces now appear under Imenu listings.  Fontification works properly for namespaces as well, so that code like `namespace Foo\Bar\Baz` no longer looks like a warning.  This is also true for namespace aliases, e.g. `use <namespace> as <alias>`; currently the aliased name is not listed in Imenu, but that will be addressed in the future.
+Traits, interfaces, and namespaces now appear under Imenu listings. Fontification works properly for namespaces as well, so that code like `namespace Foo\Bar\Baz` no longer looks like a warning.  This is also true for namespace aliases, e.g. `use <namespace> as <alias>`; currently the aliased name is not listed in Imenu, but that will be addressed in the future.
 
 ## Treatment of Underscores
 
@@ -48,13 +50,11 @@ Nested function calls and `array()` structures now look better by default (or at
 
     $results = Post::model()->find(
         array(
-            'select'    => 'title',
+            'select' => 'title',
             'condition' => 'postID=:postID',
-            'params'    => array(':postID' => 10),
+            'params' => array(':postID' => 10),
         )
     );
-
-(Note: The alignment of the `=>` operators is not part of these changes.)
 
 ## Anonymous Functions
 
@@ -70,7 +70,7 @@ By customizing the variable `php-executable` you can enable Flymake mode in orde
 
 ## Search Local Documentation
 
-The key command `C-c C-f` will search the PHP website for documentation on the word under the cursor.  However, if you have a [local copy of the PHP documentation](http://us2.php.net/download-docs.php) then `php-mode` will try searching that documentation first.  All you need to do is customize the variable `php-manual-path` and give it the path to your copy of the documentation.  If `php-mode` cannot find something locally then it will still fallback on searching the PHP website.
+The key command `C-c C-f` will search the PHP website for documentation on the word under the cursor.  However, if you have a [local copy of the PHP documentation](http://us2.php.net/download-docs.php) then php-mode will try searching that documentation first.  All you need to do is customize the variable `php-manual-path` and give it the path to your copy of the documentation.  If php-mode cannot find something locally then it will still fallback on searching the PHP website.
 
 ## Executing Regions of PHP
 
@@ -109,11 +109,21 @@ Projects like [Symfony](http://symfony.com/) use annotations in comments.  For e
         protected $description;
     }
 
-The annotations are the lines that begin with the `@` character, and `php-mode` will give these special highlighting to help them stand out.
+The annotations are the lines that begin with the `@` character, and php-mode will give these special highlighting to help them stand out.
+
+## Coding Styles
+
+By default php-mode tries to provide a reasonable style for indentation and formatting.  However, it provides other options suited for particular projects which you may find useful.  These coding styles are available through three functions:
+
+1. `php-enable-pear-coding-style`
+2. `php-enable-drupal-coding-style`
+3. `php-enable-wordpress-coding-style`
+
+They will help format your code for PEAR projects, or work on the Drupal and WordPress software, respectively.  You may enable any of them by default by running `M-x customize-group <RET> php` and looking for the ‘PHP Mode Coding Style’ option.
 
 # How to Contribute
 
-All contributions to `php-mode` are welcome.  But please try to do the following when sending improvements or bug fixes:
+All contributions to php-mode are welcome.  But please try to do the following when sending improvements or bug fixes:
 
 1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a Github page then please link your name to it, so people can see your other work.
 
@@ -123,13 +133,19 @@ All contributions to `php-mode` are welcome.  But please try to do the following
 
 4. However, please do not modify `php-mode-version-number`.  I will decide what constitutes a bump in the version number.
 
-5. Send me a pull request here on Github.  Or if you do not have a Github account then email the patches to me at `lobbyjones at gmail dot com`.  Please try to make sure the patches are acceptable input to the comand `git am`.  Please note that even if you send a pull request it is very likely that I will *not* simply merge your branch through Github; I prefer to go through commits and cherry-pick them so I can review the commit messages and sign-off on them.  You can see which commits I did or did not merge by using the [`git-cherry`](http://www.kernel.org/pub/software/scm/git/docs/git-cherry.html) command.
+5. Open the `php-mode-test.el` file and [run all of the tests](http://www.gnu.org/software/emacs/manual/html_node/ert/Running-Tests-Interactively.html#Running-Tests-Interactively) to ensure they still pass as expected.  Sometimes we expect for a test to fail, and those unit tests have the appropriate configuration so their failure will not raise any warnings.  You can use the `run-tests.sh` script to run all tests from a terminal, which is also useful in conjunction with [`git bisect run`](http://git-scm.com/book/en/Git-Tools-Debugging-with-Git).
 
-If you are fixing a bug related to a Github issue, then first of all, thank you for the help improving `php-mode`.  Second, there is a `tests/` directory which contains PHP scripts for each issue (although not all of them).  Please consider adding a test script to that directory that documents the expected behavior and provides code that allows others to see if said behavior works properly.  Please try to follow the format of the existing tests.
+6. Send me a pull request here on Github.  Or if you do not have a Github account then email the patches to me at `lobbyjones at gmail dot com`.  Please try to make sure the patches are acceptable input to the comand `git am`.  Please note that even if you send a pull request it is very likely that I will *not* simply merge your branch through Github; I prefer to go through commits and cherry-pick them so I can review the commit messages and sign-off on them.  You can see which commits I did or did not merge by using the [`git-cherry`](http://www.kernel.org/pub/software/scm/git/docs/git-cherry.html) command.
+
+If you are fixing a bug related to a Github issue, then first of all, thank you for the help improving php-mode.  Second, there is a `tests/` directory which contains PHP scripts for issues (although not all of them).  Please consider adding a test script to that directory that documents the expected behavior and provides code that allows others to see if said behavior works properly.  Then create a unit test within `php-mode-test.el` using [ERT](http://www.gnu.org/software/emacs/manual/html_node/ert/index.html). Please try to follow the format of the existing tests.
+
+# The Wiki
+
+The Github project page [has a wiki](https://github.com/ejmr/php-mode/wiki) that you should feel free to edit.  The wiki lists the features and bugs that are on plan to include in upcoming versions of php-mode.  It is also a place to add any tips to make the mode more useful.
 
 # License
 
-The code for `php-mode` is covered by the [GNU General Public License 3](http://www.gnu.org/copyleft/gpl.html).
+The code for php-mode is covered by the [GNU General Public License 3](http://www.gnu.org/copyleft/gpl.html).
 
 # Contributors
 
@@ -175,3 +191,11 @@ In chronological order:
 38. [Michele Bini](https://github.com/rev22)
 39. Emanuele Tomasi
 40. [David Maus](https://github.com/dmj)
+41. [Jakub Jankiewicz](https://github.com/jcubic)
+42. [Marcin Antczak](https://github.com/marcinant)
+43. [顾伟刚](https://github.com/cnwggu)
+44. [zapad](https://github.com/zargener)
+45. [Carl Groner](https://github.com/cgroner)
+46. [Michael Dwyer](https://github.com/kalifg)
+47. [Daniel Hackney](https://github.com/haxney)
+48. [Nate Eagleson](https://github.com/NateEag)

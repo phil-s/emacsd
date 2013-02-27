@@ -1,19 +1,17 @@
-;;; php-mode.el --- major mode for editing PHP code
+;;; php-mode.el --- Major mode for editing PHP code
 
 ;; Copyright (C) 1999, 2000, 2001, 2003, 2004 Turadg Aleahmad
 ;;               2008 Aaron S. Hawley
-;;               2011, 2012 Eric James Michael Ritz
+;;               2011, 2012, 2013 Eric James Michael Ritz
 
-;; Maintainer: Eric James Michael Ritz <lobbyjones at gmail dot com>
-;; Original Author: Turadg Aleahmad, 1999-2004
-;; Keywords: php languages oop
-;; Created: 1999-05-17
-;; X-URL:   https://github.com/ejmr/php-mode
+;;; Author: Eric James Michael Ritz
+;;; URL: https://github.com/ejmr/php-mode
+;;; Version: 1.10
 
-(defconst php-mode-version-number "1.7"
+(defconst php-mode-version-number "1.10"
   "PHP Mode version number.")
 
-(defconst php-mode-modified "2012-10-15"
+(defconst php-mode-modified "2013-02-15"
   "PHP Mode build date.")
 
 ;;; License
@@ -63,18 +61,22 @@
 
 ;;; Code:
 
-(require 'add-log)
-(require 'speedbar)
 (require 'font-lock)
 (require 'cc-mode)
 (require 'cc-langs)
 (require 'custom)
-(require 'etags)
+(require 'flymake)
 (eval-when-compile
+  (unless (require 'cl-lib nil t)
+    (require 'cl))
   (require 'regexp-opt)
   (defvar c-vsemi-status-unknown-p)
   (defvar syntax-propertize-via-font-lock))
-(require 'flymake)
+
+;;; Emacs 24.3 obsoletes flet in favor of cl-flet.  So if we are not
+;;; using that version then we revert to using flet.
+(unless (fboundp 'cl-flet)
+  (defalias 'cl-flet 'flet))
 
 ;; Local variables
 ;;;###autoload
@@ -202,11 +204,8 @@ You can replace \"en\" with your ISO language code."
   :type '(repeat (regexp :tag "Pattern"))
   :set (lambda (sym val)
          (set-default sym val)
-         (let ((php-file-patterns-temp val))
-           (while php-file-patterns-temp
-             (add-to-list 'auto-mode-alist
-                          (cons (car php-file-patterns-temp) 'php-mode))
-             (setq php-file-patterns-temp (cdr php-file-patterns-temp)))))
+         (mapc (lambda (i) (add-to-list 'auto-mode-alist (cons i 'php-mode)))
+               val))
   :group 'php)
 
 (defcustom php-mode-hook nil
@@ -216,6 +215,16 @@ You can replace \"en\" with your ISO language code."
 
 (defcustom php-mode-pear-hook nil
   "Hook called when a PHP PEAR file is opened with `php-mode'."
+  :type 'hook
+  :group 'php)
+
+(defcustom php-mode-drupal-hook nil
+  "Hook called when a Drupal file is opened with `php-mode'."
+  :type 'hook
+  :group 'php)
+
+(defcustom php-mode-wordpress-hook nil
+  "Hook called when a WordPress file is opened with `php-mode'."
   :type 'hook
   :group 'php)
 
@@ -232,6 +241,90 @@ buffer before warning, but this is is not very smart; e.g. if you
 have any tags inside a PHP string, it will be fooled."
   :type '(choice (const :tag "Warg" t) (const "Don't warn" nil))
   :group 'php)
+
+(defcustom php-mode-coding-style 'pear
+  "Select default coding style to use with php-mode.
+This variable can take one of the following symbol values:
+
+`PEAR' - use coding styles preferred for PEAR code and modules.
+
+`Drupal' - use coding styles preferred for working with Drupal projects.
+
+`WordPress' - use coding styles preferred for working with WordPress projects."
+  :type '(choice (const :tag "PEAR" pear)
+                                 (const :tag "Drupal" drupal)
+                                 (const :tag "WordPress" wordpress))
+  :group 'php
+  :set 'php-mode-custom-coding-style-set
+  :initialize 'custom-initialize-default)
+
+(defun php-mode-custom-coding-style-set (sym value)
+  (set         sym value)
+  (set-default sym value)
+  (cond ((eq value 'pear)
+                 (php-enable-pear-coding-style))
+                ((eq value 'drupal)
+                 (php-enable-drupal-coding-style))
+                ((eq value 'wordpress)
+                 (php-enable-wordpress-coding-style))))
+
+
+
+(c-add-style
+ "pear"
+ '((c-basic-offset . 4)
+   (c-offsets-alist . ((block-open . -)
+                       (block-close . 0)
+                       (statement-cont . +)))))
+
+(defun php-enable-pear-coding-style ()
+  "Sets up php-mode to use the coding styles preferred for PEAR
+code and modules."
+  (interactive)
+  (setq tab-width 4
+        indent-tabs-mode nil)
+  (c-set-style "pear"))
+
+(c-add-style
+ "drupal"
+ '((c-basic-offset . 2)
+   (c-offsets-alist . ((case-label . +)
+                       (arglist-close . 0)
+                       (arglist-intro . +)
+                       (arglist-cont-nonempty . c-lineup-math)
+                       (statement-cont . +)))))
+
+(defun php-enable-drupal-coding-style ()
+  "Makes php-mode use coding styles that are preferable for
+working with Drupal."
+  (interactive)
+  (setq tab-width 2
+        indent-tabs-mode nil
+        fill-column 78
+        show-trailing-whitespace t)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (c-set-style "drupal"))
+
+(c-add-style
+ "wordpress"
+ '((c-basic-offset . 4)
+   (c-offsets-alist . ((arglist-cont . 0)
+                       (arglist-intro . +)
+                       (case-label . 2)
+                       (arglist-close . 0)
+                       (defun-close . 0)
+                       (defun-block-intro . +)
+                       (statement-cont . +)))))
+
+(defun php-enable-wordpress-coding-style ()
+  "Makes php-mode use coding styles that are preferable for
+working with Wordpress."
+  (interactive)
+  (setq indent-tabs-mode t
+        fill-column 78
+        tab-width 4
+        c-indent-comments-syntactically-p t)
+  (c-set-style "wordpress"))
 
 
 (defun php-mode-version ()
@@ -262,7 +355,7 @@ Implements PHP version of `beginning-of-defun-function'."
         (if (eq opoint (point))
             (re-search-forward php-beginning-of-defun-regexp
                                nil 'noerror))
-	(setq arg (1+ arg))))))
+        (setq arg (1+ arg))))))
 
 (defun php-end-of-defun (&optional arg)
   "Move the end of the ARGth PHP function from point.
@@ -303,7 +396,7 @@ See `php-beginning-of-defun'."
              (base-msg
               (concat
                "Indentation fails badly with mixed HTML/PHP in the HTML part in
-pla�n `php-mode'.  To get indentation to work you must use an
+plain `php-mode'.  To get indentation to work you must use an
 Emacs library that supports 'multiple major modes' in a buffer.
 Parts of the buffer will then be in `php-mode' and parts in for
 example `html-mode'.  Known such libraries are:\n\t"
@@ -435,6 +528,44 @@ This is was done due to the problem reported here:
 (c-set-offset 'arglist-intro 'php-lineup-arglist-intro)
 (c-set-offset 'arglist-close 'php-lineup-arglist-close)
 
+(defun php-unindent-closure ()
+  (let ((syntax (mapcar 'car c-syntactic-context)))
+    (if (and (member 'arglist-cont-nonempty syntax)
+             (or
+              (member 'statement-block-intro syntax)
+              (member 'brace-list-intro syntax)
+              (member 'brace-list-close syntax)
+              (member 'block-close syntax)))
+        (save-excursion
+          (let ((count-func (if (fboundp 'cl-count) #'cl-count #'count)))
+            (beginning-of-line)
+            (delete-char (* (funcall count-func 'arglist-cont-nonempty syntax)
+                            c-basic-offset)))))))
+
+(defvar php-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [menu-bar php]
+      (cons "PHP" (make-sparse-keymap "PHP")))
+
+    (define-key map [menu-bar php complete-function]
+      '("Complete function name" . php-complete-function))
+    (define-key map [menu-bar php browse-manual]
+      '("Browse manual" . php-browse-manual))
+    (define-key map [menu-bar php search-documentation]
+      '("Search documentation" . php-search-documentation))
+
+    (define-key map [(control c) (control f)] 'php-search-documentation)
+    (define-key map [(meta tab)] 'php-complete-function)
+    (define-key map [(control c) (control m)] 'php-browse-manual)
+    (define-key map [(control .)] 'php-show-arglist)
+    (define-key map [(control c) (control r)] 'php-send-region)
+    ;; Use the Emacs standard indentation binding. This may upset c-mode
+    ;; which does not follow this at the moment, but I see no better
+    ;; choice.
+    (define-key map [tab] 'indent-for-tab-command)
+    map)
+  "Keymap for `php-mode'")
+
 ;;;###autoload
 (define-derived-mode php-mode c-mode "PHP"
   "Major mode for editing PHP code.\n\n\\{php-mode-map}"
@@ -448,7 +579,6 @@ This is was done due to the problem reported here:
   ;; These settings ensure that chained method calls line up correctly
   ;; over multiple lines.
   (c-set-offset 'topmost-intro-cont 'c-lineup-cascaded-calls)
-  (c-set-offset 'statement-cont 'c-lineup-cascaded-calls)
   (c-set-offset 'brace-list-entry 'c-lineup-cascaded-calls)
 
   (set (make-local-variable 'c-block-stmt-1-key) php-block-stmt-1-key)
@@ -475,10 +605,12 @@ This is was done due to the problem reported here:
   (modify-syntax-entry ?_    "_" php-mode-syntax-table)
   (modify-syntax-entry ?`    "\"" php-mode-syntax-table)
   (modify-syntax-entry ?\"   "\"" php-mode-syntax-table)
+  (modify-syntax-entry ?#    "< b" php-mode-syntax-table)
+  (modify-syntax-entry ?\n   "> b" php-mode-syntax-table)
 
   (set (make-local-variable 'syntax-propertize-via-font-lock)
        '(("\\(\"\\)\\(\\\\.\\|[^\"\n\\]\\)*\\(\"\\)" (1 "\"") (3 "\""))
-	 ("\\(\'\\)\\(\\\\.\\|[^\'\n\\]\\)*\\(\'\\)" (1 "\"") (3 "\""))))
+         ("\\(\'\\)\\(\\\\.\\|[^\'\n\\]\\)*\\(\'\\)" (1 "\"") (3 "\""))))
 
   (setq font-lock-maximum-decoration t
         imenu-generic-expression php-imenu-generic-expression)
@@ -493,13 +625,23 @@ This is was done due to the problem reported here:
   (set (make-local-variable 'next-line-add-newlines) nil)
 
   ;; PEAR coding standards
-  (add-hook 'php-mode-pear-hook
-            (lambda ()
-              (set (make-local-variable 'tab-width) 4)
-              (set (make-local-variable 'c-basic-offset) 4)
-              (set (make-local-variable 'indent-tabs-mode) nil)
-              (c-set-offset 'block-open' - )
-              (c-set-offset 'block-close' 0 )) nil t)
+  (add-hook 'php-mode-pear-hook 'php-enable-pear-coding-style
+             nil t)
+
+  ;; ;; Drupal coding standards
+  (add-hook 'php-mode-drupal-hook 'php-enable-drupal-coding-style
+             nil t)
+
+  ;; ;; WordPress coding standards
+  (add-hook 'php-mode-wordpress-hook 'php-enable-wordpress-coding-style
+             nil t)
+
+  (cond ((eq php-mode-coding-style 'pear)
+                 (run-hooks 'php-mode-pear-hook))
+                ((eq php-mode-coding-style 'drupal)
+                 (run-hooks 'php-mode-drupal-hook))
+                ((eq php-mode-coding-style 'wordpress)
+                 (run-hooks 'php-mode-wordpress-hook)))
 
   (if (or php-mode-force-pear
           (and (stringp buffer-file-name)
@@ -510,7 +652,7 @@ This is was done due to the problem reported here:
 
   (setq indent-line-function 'php-cautious-indent-line)
   (setq indent-region-function 'php-cautious-indent-region)
-  (setq c-special-indent-hook nil)
+  (add-hook 'c-special-indent-hook 'php-unindent-closure)
   (setq c-at-vsemi-p-fn 'php-c-at-vsemi-p)
   (setq c-vsemi-status-unknown-p 'php-c-vsemi-status-unknown-p)
 
@@ -525,25 +667,7 @@ This is was done due to the problem reported here:
   (set (make-local-variable 'defun-prompt-regexp)
        "^\\s-*function\\s-+&?\\s-*\\(\\(\\sw\\|\\s_\\)+\\)\\s-*")
   (set (make-local-variable 'add-log-current-defun-header-regexp)
-       php-beginning-of-defun-regexp)
-
-  (run-hooks 'php-mode-hook))
-
-;; Make a menu keymap (with a prompt string)
-;; and make it the menu bar item's definition.
-(define-key php-mode-map [menu-bar] (make-sparse-keymap))
-(define-key php-mode-map [menu-bar php]
-  (cons "PHP" (make-sparse-keymap "PHP")))
-
-;; Define specific subcommands in this menu.
-(define-key php-mode-map [menu-bar php complete-function]
-  '("Complete function name" . php-complete-function))
-(define-key php-mode-map
-  [menu-bar php browse-manual]
-  '("Browse manual" . php-browse-manual))
-(define-key php-mode-map
-  [menu-bar php search-documentation]
-  '("Search documentation" . php-search-documentation))
+       php-beginning-of-defun-regexp))
 
 ;; Define function name completion function
 (defvar php-completion-table nil
@@ -680,7 +804,7 @@ current `tags-file-name'."
 for the word at point.  The function returns t if the requested
 documentation exists, and nil otherwise."
   (interactive)
-  (flet ((php-function-file-for (name)
+  (cl-flet ((php-function-file-for (name)
                                 (expand-file-name
                                  (format "function.%s.html"
                                          (replace-regexp-in-string "_" "-" name))
@@ -698,7 +822,7 @@ will first try searching the local documentation.  If the
 requested documentation does not exist it will fallback to
 searching the PHP website."
   (interactive)
-  (flet ((php-search-web-documentation ()
+  (cl-flet ((php-search-web-documentation ()
                                        (browse-url (concat php-search-url (current-word)))))
     (if (and (stringp php-manual-path)
              (not (string= php-manual-path "")))
@@ -712,30 +836,6 @@ searching the PHP website."
   (interactive)
   (browse-url php-manual-url))
 
-;; Define shortcut
-(define-key php-mode-map
-  "\C-c\C-f"
-  'php-search-documentation)
-
-;; Define shortcut
-(define-key php-mode-map
-  [(meta tab)]
-  'php-complete-function)
-
-;; Define shortcut
-(define-key php-mode-map
-  "\C-c\C-m"
-  'php-browse-manual)
-
-;; Define shortcut
-(define-key php-mode-map
-  '[(control .)]
-  'php-show-arglist)
-
-;; Use the Emacs standard indentation binding. This may upset c-mode
-;; which does not follow this at the moment, but I see no better
-;; choice.
-(define-key php-mode-map [?\t] 'indent-for-tab-command)
 
 (defconst php-constants
   (eval-when-compile
@@ -786,6 +886,12 @@ searching the PHP website."
        "DATE_RFC2822" "DATE_RFC3339"
        "DATE_RSS" "DATE_W3C"
 
+       ;; upload error message constants
+       "UPLOAD_ERR_CANT_WRITE" "UPLOAD_ERR_EXTENSION"
+       "UPLOAD_ERR_FORM_SIZE" "UPLOAD_ERR_INI_SIZE"
+       "UPLOAD_ERR_NO_FILE" "UPLOAD_ERR_NO_TMP_DIR"
+       "UPLOAD_ERR_OK" "UPLOAD_ERR_PARTIAL"
+
        ;; from ext/standard:
        "EXTR_OVERWRITE"
        "EXTR_PREFIX_SAME"
@@ -816,7 +922,15 @@ searching the PHP website."
        "LOCK_UN"
        "HTML_SPECIALCHARS"
        "ENT_COMPAT"
+       "ENT_QUOTES"
        "ENT_NOQUOTES"
+       "ENT_IGNORE"
+       "ENT_SUBSTITUTE"
+       "ENT_DISALLOWED"
+       "ENT_HTML401"
+       "ENT_XML1"
+       "ENT_XHTML"
+       "ENT_HTML5"
        "INFO_CREDITS"
        "INFO_MODULES"
        "INFO_VARIABLES"
@@ -939,6 +1053,255 @@ searching the PHP website."
        "FILTER_FLAG_NO_RES_RANGE"
        "FILTER_FLAG_NO_PRIV_RANGE"
 
+       ;; Password constants
+       "PASSWORD_DEFAULT"
+       "PASSWORD_BCRYPT"
+
+       ;; cURL constants
+       "CURLOPT_AUTOREFERER"
+       "CURLOPT_COOKIESESSION"
+       "CURLOPT_DNS_USE_GLOBAL_CACHE"
+       "CURLOPT_DNS_CACHE_TIMEOUT"
+       "CURLOPT_FTP_SSL"
+       "CURLFTPSSL_TRY"
+       "CURLFTPSSL_ALL"
+       "CURLFTPSSL_CONTROL"
+       "CURLFTPSSL_NONE"
+       "CURLOPT_PRIVATE"
+       "CURLOPT_FTPSSLAUTH"
+       "CURLOPT_PORT"
+       "CURLOPT_FILE"
+       "CURLOPT_INFILE"
+       "CURLOPT_INFILESIZE"
+       "CURLOPT_URL"
+       "CURLOPT_PROXY"
+       "CURLOPT_VERBOSE"
+       "CURLOPT_HEADER"
+       "CURLOPT_HTTPHEADER"
+       "CURLOPT_NOPROGRESS"
+       "CURLOPT_NOBODY"
+       "CURLOPT_FAILONERROR"
+       "CURLOPT_UPLOAD"
+       "CURLOPT_POST"
+       "CURLOPT_FTPLISTONLY"
+       "CURLOPT_FTPAPPEND"
+       "CURLOPT_FTP_CREATE_MISSING_DIRS"
+       "CURLOPT_NETRC"
+       "CURLOPT_FOLLOWLOCATION"
+       "CURLOPT_FTPASCII"
+       "CURLOPT_PUT"
+       "CURLOPT_MUTE"
+       "CURLOPT_USERPWD"
+       "CURLOPT_PROXYUSERPWD"
+       "CURLOPT_RANGE"
+       "CURLOPT_TIMEOUT"
+       "CURLOPT_TIMEOUT_MS"
+       "CURLOPT_TCP_NODELAY"
+       "CURLOPT_POSTFIELDS"
+       "CURLOPT_PROGRESSFUNCTION"
+       "CURLOPT_REFERER"
+       "CURLOPT_USERAGENT"
+       "CURLOPT_FTPPORT"
+       "CURLOPT_FTP_USE_EPSV"
+       "CURLOPT_LOW_SPEED_LIMIT"
+       "CURLOPT_LOW_SPEED_TIME"
+       "CURLOPT_RESUME_FROM"
+       "CURLOPT_COOKIE"
+       "CURLOPT_SSLCERT"
+       "CURLOPT_SSLCERTPASSWD"
+       "CURLOPT_WRITEHEADER"
+       "CURLOPT_SSL_VERIFYHOST"
+       "CURLOPT_COOKIEFILE"
+       "CURLOPT_SSLVERSION"
+       "CURLOPT_TIMECONDITION"
+       "CURLOPT_TIMEVALUE"
+       "CURLOPT_CUSTOMREQUEST"
+       "CURLOPT_STDERR"
+       "CURLOPT_TRANSFERTEXT"
+       "CURLOPT_RETURNTRANSFER"
+       "CURLOPT_QUOTE"
+       "CURLOPT_POSTQUOTE"
+       "CURLOPT_INTERFACE"
+       "CURLOPT_KRB4LEVEL"
+       "CURLOPT_HTTPPROXYTUNNEL"
+       "CURLOPT_FILETIME"
+       "CURLOPT_WRITEFUNCTION"
+       "CURLOPT_READFUNCTION"
+       "CURLOPT_PASSWDFUNCTION"
+       "CURLOPT_HEADERFUNCTION"
+       "CURLOPT_MAXREDIRS"
+       "CURLOPT_MAXCONNECTS"
+       "CURLOPT_CLOSEPOLICY"
+       "CURLOPT_FRESH_CONNECT"
+       "CURLOPT_FORBID_REUSE"
+       "CURLOPT_RANDOM_FILE"
+       "CURLOPT_EGDSOCKET"
+       "CURLOPT_CONNECTTIMEOUT"
+       "CURLOPT_CONNECTTIMEOUT_MS"
+       "CURLOPT_SSL_VERIFYPEER"
+       "CURLOPT_CAINFO"
+       "CURLOPT_CAPATH"
+       "CURLOPT_COOKIEJAR"
+       "CURLOPT_SSL_CIPHER_LIST"
+       "CURLOPT_BINARYTRANSFER"
+       "CURLOPT_NOSIGNAL"
+       "CURLOPT_PROXYTYPE"
+       "CURLOPT_BUFFERSIZE"
+       "CURLOPT_HTTPGET"
+       "CURLOPT_HTTP_VERSION"
+       "CURLOPT_SSLKEY"
+       "CURLOPT_SSLKEYTYPE"
+       "CURLOPT_SSLKEYPASSWD"
+       "CURLOPT_SSLENGINE"
+       "CURLOPT_SSLENGINE_DEFAULT"
+       "CURLOPT_SSLCERTTYPE"
+       "CURLOPT_CRLF"
+       "CURLOPT_ENCODING"
+       "CURLOPT_PROXYPORT"
+       "CURLOPT_UNRESTRICTED_AUTH"
+       "CURLOPT_FTP_USE_EPRT"
+       "CURLOPT_HTTP200ALIASES"
+       "CURLOPT_HTTPAUTH"
+       "CURLAUTH_BASIC"
+       "CURLAUTH_DIGEST"
+       "CURLAUTH_GSSNEGOTIATE"
+       "CURLAUTH_NTLM"
+       "CURLAUTH_ANY"
+       "CURLAUTH_ANYSAFE"
+       "CURLOPT_PROXYAUTH"
+       "CURLOPT_MAX_RECV_SPEED_LARGE"
+       "CURLOPT_MAX_SEND_SPEED_LARGE"
+       "CURLCLOSEPOLICY_LEAST_RECENTLY_USED"
+       "CURLCLOSEPOLICY_LEAST_TRAFFIC"
+       "CURLCLOSEPOLICY_SLOWEST"
+       "CURLCLOSEPOLICY_CALLBACK"
+       "CURLCLOSEPOLICY_OLDEST"
+       "CURLINFO_PRIVATE"
+       "CURLINFO_EFFECTIVE_URL"
+       "CURLINFO_HTTP_CODE"
+       "CURLINFO_HEADER_OUT"
+       "CURLINFO_HEADER_SIZE"
+       "CURLINFO_REQUEST_SIZE"
+       "CURLINFO_TOTAL_TIME"
+       "CURLINFO_NAMELOOKUP_TIME"
+       "CURLINFO_CONNECT_TIME"
+       "CURLINFO_PRETRANSFER_TIME"
+       "CURLINFO_SIZE_UPLOAD"
+       "CURLINFO_SIZE_DOWNLOAD"
+       "CURLINFO_SPEED_DOWNLOAD"
+       "CURLINFO_SPEED_UPLOAD"
+       "CURLINFO_FILETIME"
+       "CURLINFO_SSL_VERIFYRESULT"
+       "CURLINFO_CONTENT_LENGTH_DOWNLOAD"
+       "CURLINFO_CONTENT_LENGTH_UPLOAD"
+       "CURLINFO_STARTTRANSFER_TIME"
+       "CURLINFO_CONTENT_TYPE"
+       "CURLINFO_REDIRECT_TIME"
+       "CURLINFO_REDIRECT_COUNT"
+       "CURL_TIMECOND_IFMODSINCE"
+       "CURL_TIMECOND_IFUNMODSINCE"
+       "CURL_TIMECOND_LASTMOD"
+       "CURL_VERSION_IPV6"
+       "CURL_VERSION_KERBEROS4"
+       "CURL_VERSION_SSL"
+       "CURL_VERSION_LIBZ"
+       "CURLVERSION_NOW"
+       "CURLE_OK"
+       "CURLE_UNSUPPORTED_PROTOCOL"
+       "CURLE_FAILED_INIT"
+       "CURLE_URL_MALFORMAT"
+       "CURLE_URL_MALFORMAT_USER"
+       "CURLE_COULDNT_RESOLVE_PROXY"
+       "CURLE_COULDNT_RESOLVE_HOST"
+       "CURLE_COULDNT_CONNECT"
+       "CURLE_FTP_WEIRD_SERVER_REPLY"
+       "CURLE_FTP_ACCESS_DENIED"
+       "CURLE_FTP_USER_PASSWORD_INCORRECT"
+       "CURLE_FTP_WEIRD_PASS_REPLY"
+       "CURLE_FTP_WEIRD_USER_REPLY"
+       "CURLE_FTP_WEIRD_PASV_REPLY"
+       "CURLE_FTP_WEIRD_227_FORMAT"
+       "CURLE_FTP_CANT_GET_HOST"
+       "CURLE_FTP_CANT_RECONNECT"
+       "CURLE_FTP_COULDNT_SET_BINARY"
+       "CURLE_PARTIAL_FILE"
+       "CURLE_FTP_COULDNT_RETR_FILE"
+       "CURLE_FTP_WRITE_ERROR"
+       "CURLE_FTP_QUOTE_ERROR"
+       "CURLE_HTTP_NOT_FOUND"
+       "CURLE_WRITE_ERROR"
+       "CURLE_MALFORMAT_USER"
+       "CURLE_FTP_COULDNT_STOR_FILE"
+       "CURLE_READ_ERROR"
+       "CURLE_OUT_OF_MEMORY"
+       "CURLE_OPERATION_TIMEOUTED"
+       "CURLE_FTP_COULDNT_SET_ASCII"
+       "CURLE_FTP_PORT_FAILED"
+       "CURLE_FTP_COULDNT_USE_REST"
+       "CURLE_FTP_COULDNT_GET_SIZE"
+       "CURLE_HTTP_RANGE_ERROR"
+       "CURLE_HTTP_POST_ERROR"
+       "CURLE_SSL_CONNECT_ERROR"
+       "CURLE_FTP_BAD_DOWNLOAD_RESUME"
+       "CURLE_FILE_COULDNT_READ_FILE"
+       "CURLE_LDAP_CANNOT_BIND"
+       "CURLE_LDAP_SEARCH_FAILED"
+       "CURLE_LIBRARY_NOT_FOUND"
+       "CURLE_FUNCTION_NOT_FOUND"
+       "CURLE_ABORTED_BY_CALLBACK"
+       "CURLE_BAD_FUNCTION_ARGUMENT"
+       "CURLE_BAD_CALLING_ORDER"
+       "CURLE_HTTP_PORT_FAILED"
+       "CURLE_BAD_PASSWORD_ENTERED"
+       "CURLE_TOO_MANY_REDIRECTS"
+       "CURLE_UNKNOWN_TELNET_OPTION"
+       "CURLE_TELNET_OPTION_SYNTAX"
+       "CURLE_OBSOLETE"
+       "CURLE_SSL_PEER_CERTIFICATE"
+       "CURLE_GOT_NOTHING"
+       "CURLE_SSL_ENGINE_NOTFOUND"
+       "CURLE_SSL_ENGINE_SETFAILED"
+       "CURLE_SEND_ERROR"
+       "CURLE_RECV_ERROR"
+       "CURLE_SHARE_IN_USE"
+       "CURLE_SSL_CERTPROBLEM"
+       "CURLE_SSL_CIPHER"
+       "CURLE_SSL_CACERT"
+       "CURLE_BAD_CONTENT_ENCODING"
+       "CURLE_LDAP_INVALID_URL"
+       "CURLE_FILESIZE_EXCEEDED"
+       "CURLE_FTP_SSL_FAILED"
+       "CURLFTPAUTH_DEFAULT"
+       "CURLFTPAUTH_SSL"
+       "CURLFTPAUTH_TLS"
+       "CURLPROXY_HTTP"
+       "CURLPROXY_SOCKS5"
+       "CURL_NETRC_OPTIONAL"
+       "CURL_NETRC_IGNORED"
+       "CURL_NETRC_REQUIRED"
+       "CURL_HTTP_VERSION_NONE"
+       "CURL_HTTP_VERSION_1_0"
+       "CURL_HTTP_VERSION_1_1"
+       "CURLM_CALL_MULTI_PERFORM"
+       "CURLM_OK"
+       "CURLM_BAD_HANDLE"
+       "CURLM_BAD_EASY_HANDLE"
+       "CURLM_OUT_OF_MEMORY"
+       "CURLM_INTERNAL_ERROR"
+       "CURLMSG_DONE"
+       "CURLOPT_KEYPASSWD"
+       "CURLOPT_SSH_AUTH_TYPES"
+       "CURLOPT_SSH_HOST_PUBLIC_KEY_MD5"
+       "CURLOPT_SSH_PRIVATE_KEYFILE"
+       "CURLOPT_SSH_PUBLIC_KEYFILE"
+       "CURLSSH_AUTH_ANY"
+       "CURLSSH_AUTH_DEFAULT"
+       "CURLSSH_AUTH_HOST"
+       "CURLSSH_AUTH_KEYBOARD"
+       "CURLSSH_AUTH_NONE"
+       "CURLSSH_AUTH_PASSWORD"
+       "CURLSSH_AUTH_PUBLICKEY"
+
        ;; IMAP constants
        "NIL"
        "OP_DEBUG"
@@ -1015,13 +1378,57 @@ searching the PHP website."
     (regexp-opt
      ;; "class", "new" and "extends" get special treatment
      ;; "case" gets special treatment elsewhere
-     '("and" "break" "continue" "declare" "default" "die" "do" "echo" "else" "elseif"
-       "endfor" "endforeach" "endif" "endswitch" "endwhile" "exit"
-       "extends" "for" "foreach" "global" "if" "include" "include_once"
-       "or" "require" "require_once" "return" "return new" "static" "switch"
-       "then" "var" "while" "xor" "throw" "catch" "try"
-       "instanceof" "catch all" "finally" "insteadof" "use" "as"
-       "clone")))
+     '("and"
+       "array"
+       "as"
+       "break"
+       "catch all"
+       "catch"
+       "clone"
+       "continue"
+       "declare"
+       "default"
+       "die"
+       "do"
+       "echo"
+       "else"
+       "elseif"
+       "empty"
+       "encoding"
+       "endfor"
+       "endforeach"
+       "endif"
+       "endswitch"
+       "endwhile"
+       "exit"
+       "extends"
+       "finally"
+       "for"
+       "function"
+       "foreach"
+       "global"
+       "if"
+       "include"
+       "include_once"
+       "instanceof"
+       "insteadof"
+       "isset"
+       "list"
+       "or"
+       "require"
+       "require_once"
+       "return"
+       "static"
+       "switch"
+       "ticks"
+       "throw"
+       "try"
+       "unset"
+       "use"
+       "var"
+       "while"
+       "xor"
+       "yield")))
   "PHP keywords.")
 
 (defconst php-identifier
@@ -1031,7 +1438,7 @@ searching the PHP website."
 
 (defconst php-types
   (eval-when-compile
-    (regexp-opt '("array" "bool" "boolean" "char" "const" "double" "float"
+    (regexp-opt '("array" "bool" "boolean" "callable" "char" "const" "double" "float"
                   "int" "integer" "long" "mixed" "object" "real"
                   "string")))
   "PHP types.")
@@ -1045,7 +1452,7 @@ searching the PHP website."
 ;; Set up font locking
 (defconst php-font-lock-keywords-1
   (list
-   '("#.*" . font-lock-comment-face)
+
    ;; Fontify constants
    (cons
     (concat "[^_$]?\\<\\(" php-constants "\\)\\>[^_]?")
@@ -1058,7 +1465,7 @@ searching the PHP website."
 
    ;; Fontify keywords and targets, and case default tags.
    (list "\\<\\(break\\|case\\|continue\\)\\>\\s-+\\(-?\\sw+\\)?"
-         '(1 font-lock-keyword-face) '(2 font-lock-constant-face t t))
+         '(1 font-lock-keyword-face) '(2 font-lock-constant-face keep t))
    ;; This must come after the one for keywords and targets.
    '(":" ("^\\s-+\\(\\sw+\\)\\s-+\\s-+$"
           (beginning-of-line) (end-of-line)
@@ -1166,6 +1573,10 @@ searching the PHP website."
     `("[(,]\\(?:\\s-\\|\n\\)*\\(\\(?:\\sw\\|\\\\\\)+\\)\\s-+&?\\$\\sw+\\>"
       1 font-lock-type-face)
 
+    ;; Function calls qualified by namespaces
+    '("\\(?:\\(\\sw+\\)\\\\\\)+\\sw+("
+      (1 font-lock-type-face))
+
     ;; Fontify variables and function calls
     '("\\$\\(this\\|that\\)\\W" (1 font-lock-constant-face nil nil))
 
@@ -1176,11 +1587,11 @@ searching the PHP website."
     ;; $variable
     '("\\$\\(\\sw+\\)" (1 font-lock-variable-name-face))
 
-    ;; ->variable
-    '("->\\(\\sw+\\)" (1 font-lock-variable-name-face t t))
-
     ;; ->function_call
-    '("->\\(\\sw+\\)\\s-*(" . (1 php-function-call-face t t))
+    '("->\\(\\sw+\\)\\s-*(" (1 php-function-call-face keep t))
+
+    ;; ->variable
+    '("->\\(\\sw+\\)" (1 font-lock-variable-name-face keep t))
 
     ;; class::member
     '("\\(\\(\\sw\\|\\\\\\)+\\)::\\sw+\\s-*(?" . (1 font-lock-type-face))
@@ -1237,13 +1648,11 @@ The output will appear in the buffer *PHP*."
     ;; Calling 'php -r' will fail if we send it code that starts with
     ;; '<?php', which is likely.  So we run the code through this
     ;; function to check for that prefix and remove it.
-    (flet ((clean-php-code (code)
+    (cl-flet ((clean-php-code (code)
                            (if (string-prefix-p "<?php" code t)
                                (substring code 5)
                              code)))
       (call-process "php" nil php-buffer nil "-r" (clean-php-code code)))))
-
-(define-key php-mode-map "\C-c\C-r" 'php-send-region)
 
 
 (defface php-annotations-annotation-face '((t . (:inherit 'font-lock-constant-face)))
@@ -1253,16 +1662,17 @@ The output will appear in the buffer *PHP*."
 
 (defmacro php-annotations-inside-comment-p (pos)
   "Return non-nil if POS is inside a comment."
-  `(eq (get-char-property ,pos 'face) 'font-lock-comment-face))
+  `(or (eq (get-char-property ,pos 'face) 'font-lock-comment-face)
+       (eq (get-char-property ,pos 'face) 'font-lock-comment-delimiter-face)))
 
 (defun php-annotations-font-lock-find-annotation (limit)
   (let ((match
-	 (catch 'match
-	   (save-match-data
-	     (while (re-search-forward php-annotations-re limit t)
-	       (when (php-annotations-inside-comment-p (match-beginning 0))
-		 (goto-char (match-end 0))
-		 (throw 'match (match-data))))))))
+         (catch 'match
+           (save-match-data
+             (while (re-search-forward php-annotations-re limit t)
+               (when (php-annotations-inside-comment-p (match-beginning 0))
+                 (goto-char (match-end 0))
+                 (throw 'match (match-data))))))))
     (when match
       (set-match-data match)
       t)))
