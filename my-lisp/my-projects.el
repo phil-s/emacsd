@@ -47,6 +47,8 @@
            (ff-other-file-alist . (("\\.module$" (".install" ".info"))
                                    ("\\.install$" (".info"))
                                    ("\\.info$" (".module"))))
+           (eval . (when (string-match "\\.make\\'" buffer-file-name)
+                     (conf-mode)))
            ))
    (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
                           (drupal-mode)
