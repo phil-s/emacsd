@@ -199,6 +199,8 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (add-hook 'nxml-mode-hook 'my-templates-nxml-mode-hook)
 
 ;; SGML
+(autoload 'sgml-skip-tag-forward "sgml-mode")
+(autoload 'sgml-skip-tag-backward "sgml-mode")
 (defun my-sgml-mode-hook ()
   (local-set-key (kbd "<C-M-right>") 'sgml-skip-tag-forward)
   (local-set-key (kbd "<C-M-left>") 'sgml-skip-tag-backward))
