@@ -148,10 +148,6 @@
      (:name unbound
             :type emacswiki)
 
-     (:name unfill
-            :type git
-            :url "https://github.com/purcell/unfill.git")
-
      (:name undo-tree)
 
      (:name vcl-mode

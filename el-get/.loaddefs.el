@@ -686,24 +686,6 @@ Keys are sorted by their complexity; `key-complexity' determines it.
 
 ;;;***
 
-;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
-;;;;;;  "unfill/unfill.el" (20587 44126))
-;;; Generated autoloads from unfill/unfill.el
-
-(autoload 'unfill-paragraph "unfill/unfill" "\
-Replace newline chars in current paragraph by single spaces.
-This command does the inverse of `fill-paragraph'.
-
-\(fn)" t nil)
-
-(autoload 'unfill-region "unfill/unfill" "\
-Replace newline chars in region from START to END by single spaces.
-This command does the inverse of `fill-region'.
-
-\(fn START END)" t nil)
-
-;;;***
-
 ;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
 ;;;;;;  (20587 44126))
 ;;; Generated autoloads from vcl-mode/vcl-mode.el

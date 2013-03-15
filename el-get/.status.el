@@ -27,7 +27,6 @@
 :gpicker "installed"
 :ws-trim "installed"
 :find-file-in-tags "installed"
-:unfill "installed"
 :multiple-cursors "installed"
 :web-mode "installed"
 :vcl-mode "installed"
