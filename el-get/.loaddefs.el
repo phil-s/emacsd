@@ -3,207 +3,31 @@
 ;;; Code:
 
 
-;;;### (autoloads (dtrt-indent-mode dtrt-indent-mode) "dtrt-indent/dtrt-indent"
-;;;;;;  "dtrt-indent/dtrt-indent.el" (20804 10249 123933 346000))
-;;; Generated autoloads from dtrt-indent/dtrt-indent.el
-
-(defvar dtrt-indent-mode nil "\
-Non-nil if Dtrt-Indent mode is enabled.
-See the command `dtrt-indent-mode' for a description of this minor mode.")
-
-(custom-autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" nil)
-
-(autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" "\
-Toggle dtrt-indent mode.
-With no argument, this command toggles the mode.  Non-null prefix
-argument turns on the mode.  Null prefix argument turns off the
-mode.
-
-When dtrt-indent mode is enabled, the proper indentation
-offset will be guessed for newly opened files and adjusted
-transparently.
-
-\(fn &optional ARG)" t nil)
-
-(defvar dtrt-indent-mode nil "\
-Toggle adaptive indentation mode.
-Setting this variable directly does not take effect;
-use either \\[customize] or the function `dtrt-indent-mode'.")
-
-(custom-autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" nil)
-
-;;;***
-
-;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
-;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
-;;;;;;  (20587 44126))
-;;; Generated autoloads from find-file-in-tags/find-file-in-tags.el
-
-(autoload 'ffit-determine-dir-for-current-file "find-file-in-tags/find-file-in-tags" "\
-Return a directory to use as the base directory for a TAGS file, or nil if it couldn't be determined.
-Basically, look at the path to the tags file (one level above TAGS, see if it matches that of the current file,
-and if so, then use that directory.  Added the additional constraint that there must be a TAGS file in the
-directory returned, i.e. if the directory calculated does not have a TAGS file, do not return it as a possibility.
-
-This is to help minimize the number of TAGS files loaded by Emacs, b/c in general you're working on one software project
-and the TAGS files for each of the sandboxes are about the same.  So just use one TAGS file, but find the files in
-the appropriate sandbox.
-
-\(fn)" nil nil)
-
-(autoload 'find-file-in-tags "find-file-in-tags/find-file-in-tags" "\
-find file, but completion just works on files found in TAGS
-unless a prefix argument is given, only allows one file to be specified
-with prefix argument, all files matching what was typed will be loaded.
-
-\(fn FILE &optional PRE)" t nil)
-
-;;;***
-
-;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
-;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
-;;;;;;  "geben/dbgp" "geben/dbgp.el" (20289 32888))
-;;; Generated autoloads from geben/dbgp.el
-
-(autoload 'dbgp-start "geben/dbgp" "\
-Start a new DBGp listener listening to PORT.
-
-\(fn PORT)" t nil)
-
-(autoload 'dbgp-exec "geben/dbgp" "\
-Start a new DBGp listener listening to PORT.
-
-\(fn PORT &rest SESSION-PARAMS)" nil nil)
-
-(autoload 'dbgp-proxy-register "geben/dbgp" "\
-Register a new DBGp listener to an external DBGp proxy.
-The proxy should be found at PROXY-IP-OR-ADDR / PROXY-PORT.
-This creates a new DBGp listener and register it to the proxy
-associating with the IDEKEY.
-
-\(fn PROXY-IP-OR-ADDR PROXY-PORT IDEKEY MULTI-SESSION-P &optional SESSION-PORT)" t nil)
-
-(autoload 'dbgp-proxy-register-exec "geben/dbgp" "\
-Register a new DBGp listener to an external DBGp proxy.
-The proxy should be found at IP-OR-ADDR / PORT.
-This create a new DBGp listener and register it to the proxy
-associating with the IDEKEY.
-
-\(fn IP-OR-ADDR PORT IDEKEY MULTI-SESSION-P SESSION-PORT &rest SESSION-PARAMS)" nil nil)
-
-(autoload 'dbgp-proxy-unregister "geben/dbgp" "\
-Unregister the DBGp listener associated with IDEKEY from a DBGp proxy.
-After unregistration, it kills the listener instance.
-
-\(fn IDEKEY &optional PROXY-IP-OR-ADDR PROXY-PORT)" t nil)
-
-(autoload 'dbgp-proxy-unregister-exec "geben/dbgp" "\
-Unregister PROXY from a DBGp proxy.
-After unregistration, it kills the listener instance.
-
-\(fn PROXY)" nil nil)
-
-;;;***
-
-;;;### (autoloads (deft) "deft/deft" "deft/deft.el" (20289 32888))
-;;; Generated autoloads from deft/deft.el
-
-(autoload 'deft "deft/deft" "\
-Switch to *Deft* buffer and load files.
-
-\(fn)" t nil)
-
-;;;***
-
-;;;### (autoloads nil "ediff-binary-hexl/ediff-binary-hexl" "ediff-binary-hexl/ediff-binary-hexl.el"
-;;;;;;  (20289 32888))
-;;; Generated autoloads from ediff-binary-hexl/ediff-binary-hexl.el
-
-(defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate) "\
-Catch the condition when the binary files differ.
-
-The reason for catching the error out here (when re-thrown from
-the inner advice) is to let the stack continue to unwind before
-we start the new diff otherwise some code in the middle of the
-stack expects some output that isn't there and triggers an error." (let ((file-A (ad-get-arg 0)) (file-B (ad-get-arg 1)) ediff-do-hexl-diff) (condition-case err (progn ad-do-it) (error (if ediff-do-hexl-diff (let ((buf-A (find-file-noselect file-A)) (buf-B (find-file-noselect file-B))) (with-current-buffer buf-A (hexl-mode 1)) (with-current-buffer buf-B (hexl-mode 1)) (ediff-buffers buf-A buf-B)) (error (error-message-string err)))))))
-
-(defadvice ediff-setup-diff-regions (around ediff-setup-diff-regions-for-binary-files activate) "\
-When binary files differ, set the trigger variable." (condition-case err (progn ad-do-it) (error (setq ediff-do-hexl-diff (and (string-match-p "^Errors in diff output.  Diff output is in.*" (error-message-string err)) (string-match-p "^\\(Binary \\)?[fF]iles .* and .* differ" (buffer-substring-no-properties (line-beginning-position) (line-end-position))) (y-or-n-p "The binary files differ, look at the differences in hexl-mode? "))) (error (error-message-string err)))))
-
-;;;***
-
-;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
-;;;;;;  "ffip/find-file-in-project.el" (20289 32888))
-;;; Generated autoloads from ffip/find-file-in-project.el
-
-(autoload 'find-file-in-project "ffip/find-file-in-project" "\
-Prompt with a completing list of all files in the project to find one.
-
-The project's scope is defined as the first directory containing
-an `.emacs-project' file. You can override this by locally
-setting the `ffip-project-root' variable.
-
-\(fn)" t nil)
-
-;;;***
-
-;;;### (autoloads (iedit-mode) "iedit/iedit" "iedit/iedit.el" (20289
-;;;;;;  32888))
-;;; Generated autoloads from iedit/iedit.el
-
-(autoload 'iedit-mode "iedit/iedit" "\
-Toggle iedit mode.
-If iedit mode is off, turn iedit mode on, off otherwise.
-
-In Transient Mark mode, when iedit mode is turned on, all the
-occurrences of the current region are highlighted. If one
-occurrence is modified, the change are propagated to all other
-occurrences simultaneously.
-
-If Transient Mark mode is disabled or the region is not active,
-the `current-word' is used as occurrence. All the occurrences of
-the `current-word' are highlighted.
-
-You can also switch to iedit mode from isearch mode directly. The
-current search string is used as occurrence.  All occurrences of
-the current search string are highlighted.
-
-With a prefix argument, the occurrence when iedit is turned off
-last time is used as occurrence.  This is intended to recover
-last iedit which is turned off by mistake.
-
-Commands:
-\\{iedit-mode-map}
-
-\(fn &optional ARG)" t nil)
-
-;;;***
-
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
-;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20802 24771 412829 899000))
+;;;;;;  mc/edit-lines) "../../.emacs.d.real/el-get/multiple-cursors/mc-edit-lines"
+;;;;;;  "multiple-cursors/mc-edit-lines.el" "9b6f7758f2c2ff2d82ecb2865223ce86")
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
-(autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
+(autoload 'mc/edit-lines "../../.emacs.d.real/el-get/multiple-cursors/mc-edit-lines" "\
 Add one cursor to each line of the active region.
 Starts from mark and moves in straight down or up towards the
 line point is on.
 
 \(fn)" t nil)
 
-(autoload 'mc/edit-ends-of-lines "multiple-cursors/mc-edit-lines" "\
+(autoload 'mc/edit-ends-of-lines "../../.emacs.d.real/el-get/multiple-cursors/mc-edit-lines" "\
 Add one cursor to the end of each line in the active region.
 
 \(fn)" t nil)
 
-(autoload 'mc/edit-beginnings-of-lines "multiple-cursors/mc-edit-lines" "\
+(autoload 'mc/edit-beginnings-of-lines "../../.emacs.d.real/el-get/multiple-cursors/mc-edit-lines" "\
 Add one cursor to the beginning of each line in the active region.
 
 \(fn)" t nil)
 
 ;;;***
 
-;;;### (autoloads (mc/mark-sgml-tag-pair mc/mark-all-symbols-like-this-in-defun
+;;;### (autoloads (mc/mark-sgml-tag-pair mc/add-cursor-on-click mc/mark-all-symbols-like-this-in-defun
 ;;;;;;  mc/mark-all-words-like-this-in-defun mc/mark-all-like-this-in-defun
 ;;;;;;  mc/mark-all-like-this-dwim mc/mark-more-like-this-extended
 ;;;;;;  mc/mark-all-in-region mc/mark-all-symbols-like-this mc/mark-all-words-like-this
@@ -211,85 +35,85 @@ Add one cursor to the beginning of each line in the active region.
 ;;;;;;  mc/mark-previous-lines mc/mark-next-lines mc/mark-previous-symbol-like-this
 ;;;;;;  mc/mark-previous-word-like-this mc/mark-previous-like-this
 ;;;;;;  mc/mark-next-symbol-like-this mc/mark-next-word-like-this
-;;;;;;  mc/mark-next-like-this) "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20802 24771 412829 899000))
+;;;;;;  mc/mark-next-like-this) "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more"
+;;;;;;  "multiple-cursors/mc-mark-more.el" "e759625ff023f1fcd6287ca86fc49a5c")
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
-(autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-next-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Find and mark the next part of the buffer matching the currently active region
 With negative ARG, delete the last one instead.
 With zero ARG, skip the last one and mark next.
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-next-word-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-next-word-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-next-symbol-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-next-symbol-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-previous-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-previous-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Find and mark the previous part of the buffer matching the currently active region
 With negative ARG, delete the last one instead.
 With zero ARG, skip the last one and mark next.
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-previous-word-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-previous-word-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-previous-symbol-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-previous-symbol-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-next-lines "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-next-lines "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-previous-lines "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-previous-lines "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/unmark-next-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/unmark-next-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Deselect next part of the buffer matching the currently active region.
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/unmark-previous-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/unmark-previous-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Deselect prev part of the buffer matching the currently active region.
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-all-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Find and mark all the parts of the buffer matching the currently active region
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-all-words-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-words-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-all-symbols-like-this "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-symbols-like-this "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-all-in-region "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-in-region "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Find and mark all the parts in the region matching the given search
 
 \(fn BEG END)" t nil)
 
-(autoload 'mc/mark-more-like-this-extended "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-more-like-this-extended "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Like mark-more-like-this, but then lets you adjust with arrows key.
 The actual adjustment made depends on the final component of the
 key-binding used to invoke the command, with all modifiers removed:
@@ -307,7 +131,7 @@ is one of the above.
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-all-like-this-dwim "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-like-this-dwim "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Tries to guess what you want to mark all of.
 Can be pressed multiple times to increase selection.
 
@@ -315,31 +139,78 @@ With prefix, it behaves the same as original `mc/mark-all-like-this'
 
 \(fn ARG)" t nil)
 
-(autoload 'mc/mark-all-like-this-in-defun "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-like-this-in-defun "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Mark all like this in defun.
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-all-words-like-this-in-defun "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-words-like-this-in-defun "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Mark all words like this in defun.
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-all-symbols-like-this-in-defun "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/mark-all-symbols-like-this-in-defun "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Mark all symbols like this in defun.
 
 \(fn)" t nil)
 
-(autoload 'mc/mark-sgml-tag-pair "multiple-cursors/mc-mark-more" "\
+(autoload 'mc/add-cursor-on-click "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
+Add a cursor where you click.
+
+\(fn EVENT)" t nil)
+
+(autoload 'mc/mark-sgml-tag-pair "../../.emacs.d.real/el-get/multiple-cursors/mc-mark-more" "\
 Mark the tag we're in and its pair for renaming.
 
 \(fn)" t nil)
 
 ;;;***
 
+;;;### (autoloads (mc/sort-regions mc/reverse-regions mc/insert-numbers)
+;;;;;;  "../../.emacs.d.real/el-get/multiple-cursors/mc-separate-operations"
+;;;;;;  "multiple-cursors/mc-separate-operations.el" "accf286ba4f022566929bd919cfef08a")
+;;; Generated autoloads from multiple-cursors/mc-separate-operations.el
+
+(autoload 'mc/insert-numbers "../../.emacs.d.real/el-get/multiple-cursors/mc-separate-operations" "\
+Insert increasing numbers for each cursor, starting at 0 or ARG.
+
+\(fn ARG)" t nil)
+
+(autoload 'mc/reverse-regions "../../.emacs.d.real/el-get/multiple-cursors/mc-separate-operations" "\
+
+
+\(fn)" t nil)
+
+(autoload 'mc/sort-regions "../../.emacs.d.real/el-get/multiple-cursors/mc-separate-operations" "\
+
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (browse-kill-ring browse-kill-ring-default-keybindings)
+;;;;;;  "browse-kill-ring/browse-kill-ring" "../../.emacs.d/el-get/browse-kill-ring/browse-kill-ring.el"
+;;;;;;  "ace72385dc935720626a0447b74e8be0")
+;;; Generated autoloads from ../../.emacs.d/el-get/browse-kill-ring/browse-kill-ring.el
+
+(autoload 'browse-kill-ring-default-keybindings "browse-kill-ring/browse-kill-ring" "\
+Set up M-y (`yank-pop') so that it can invoke `browse-kill-ring'.
+Normally, if M-y was not preceeded by C-y, then it has no useful
+behavior.  This function sets things up so that M-y will invoke
+`browse-kill-ring'.
+
+\(fn)" t nil)
+
+(autoload 'browse-kill-ring "browse-kill-ring/browse-kill-ring" "\
+Display items in the `kill-ring' in another buffer.
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20802 24771
-;;;;;;  412829 899000))
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20802 63799
+;;;;;;  88827 805000))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
@@ -352,145 +223,8 @@ an exceedingly quick way of adding multiple cursors to multiple lines.
 
 ;;;***
 
-;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
-;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20289 32888))
-;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
-
-(autoload 'rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
-Color nested parentheses, brackets, and braces according to their depth.
-
-\(fn &optional ARG)" t nil)
-
-;;;***
-
-;;;### (autoloads (rebase-mode) "magit/rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20802 24771 412829 899000))
-;;; Generated autoloads from magit/rebase-mode.el
-
-(autoload 'rebase-mode "magit/rebase-mode" "\
-Major mode for editing of a Git rebase file.
-
-Rebase files are generated when you run 'git rebase -i' or run
-`magit-interactive-rebase'.  They describe how Git should perform
-the rebase.  See the documentation for git-rebase (e.g., by
-running 'man git-rebase' at the command line) for details.
-
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist '("git-rebase-todo" . rebase-mode))
-
-;;;***
-
-;;;### (autoloads (geben geben-mode) "geben/geben" "geben/geben.el"
-;;;;;;  (20289 32888))
-;;; Generated autoloads from geben/geben.el
-
-(autoload 'geben-mode "geben/geben" "\
-Minor mode for debugging source code with GEBEN.
-The geben-mode buffer commands:
-\\{geben-mode-map}
-
-\(fn &optional ARG)" t nil)
-
-(autoload 'geben "geben/geben" "\
-Start GEBEN, a DBGp protocol frontend - a script debugger.
-Variations are described below.
-
-By default, starts GEBEN listening to port `geben-dbgp-default-port'.
-Prefixed with one \\[universal-argument], asks listening port number interactively and
-starts GEBEN on the port.
-Prefixed with two \\[universal-argument]'s, starts a GEBEN proxy listener.
-Prefixed with three \\[universal-argument]'s, kills a GEBEN listener.
-Prefixed with four \\[universal-argument]'s, kills a GEBEN proxy listener.
-
-GEBEN communicates with script servers, located anywhere local or
-remote, in DBGp protocol (e.g. PHP with Xdebug extension)
-to help you debugging your script with some valuable features:
- - continuation commands like `step in', `step out', ...
- - a kind of breakpoints like `line no', `function call' and
-   `function return'.
- - evaluation
- - stack dump
- - etc.
-
-The script servers should be DBGp protocol enabled.
-Ask to your script server administrator about this setting up
-issue.
-
-Once you've done these setup operation correctly, run GEBEN first
-and your script on your script server second. After some
-negotiation GEBEN will display your script's entry source code.
-The debugging session is started.
-
-In the debugging session the source code buffers are under the
-minor mode  `geben-mode'. Key mapping and other information is
-described its help page.
-
-\(fn &optional ARGS)" t nil)
-
-;;;***
-
-;;;### (autoloads (keep-buffers-query) "keep-buffers/keep-buffers"
-;;;;;;  "keep-buffers/keep-buffers.el" (20289 32888))
-;;; Generated autoloads from keep-buffers/keep-buffers.el
-
-(autoload 'keep-buffers-query "keep-buffers/keep-buffers" "\
-The query function that disable deletion of buffers we protect.
-
-\(fn)" nil nil)
-
-;;;***
-
-;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20802
-;;;;;;  24771 408829 895000))
-;;; Generated autoloads from magit/magit.el
-
-(autoload 'magit-status "magit/magit" "\
-Open a Magit status buffer for the Git repository containing DIR.
-If DIR is not within a Git repository, offer to create a Git
-repository in DIR.
-
-Interactively, a prefix argument means to ask the user which Git
-repository to use even if `default-directory' is under Git
-control.  Two prefix arguments means to ignore `magit-repo-dirs'
-when asking for user input.
-
-\(fn DIR)" t nil)
-
-;;;***
-
-;;;### (autoloads (mo-git-blame-current mo-git-blame-file) "mo-git-blame/mo-git-blame"
-;;;;;;  "mo-git-blame/mo-git-blame.el" (20289 32888))
-;;; Generated autoloads from mo-git-blame/mo-git-blame.el
-
-(autoload 'mo-git-blame-file "mo-git-blame/mo-git-blame" "\
-Calls `git blame' for REVISION of FILE-NAME or `HEAD' if
-REVISION is not given. Initializes the two windows that will show
-the output of 'git blame' and the content.
-
-If FILE-NAME is missing it will be read with `find-file' in
-interactive mode.
-
-ORIGINAL-FILE-NAME defaults to FILE-NAME if not given. This is
-used for tracking renaming and moving of files during iterative
-re-blaming.
-
-With a numeric prefix argument or with NUM-LINES-TO-BLAME only
-the NUM-LINES-TO-BLAME lines before and after point are blamed by
-using git blame's `-L' option. Otherwise the whole file is
-blamed.
-
-\(fn &optional FILE-NAME REVISION ORIGINAL-FILE-NAME NUM-LINES-TO-BLAME)" t nil)
-
-(autoload 'mo-git-blame-current "mo-git-blame/mo-git-blame" "\
-Calls `mo-git-blame-file' for HEAD for the current buffer.
-
-\(fn)" t nil)
-
-;;;***
-
-;;;### (autoloads (notify) "notify/notify" "notify/notify.el" (20289
-;;;;;;  32888))
+;;;### (autoloads (notify) "notify/notify" "notify/notify.el" (20802
+;;;;;;  63513 640827 789000))
 ;;; Generated autoloads from notify/notify.el
 
 (autoload 'notify "notify/notify" "\
@@ -501,18 +235,13 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
-;;;### (autoloads (php-mode php-file-patterns php) "php-mode/php-mode"
-;;;;;;  "php-mode/php-mode.el" (20802 24771 412829 899000))
+;;;### (autoloads (php-mode php) "php-mode/php-mode" "php-mode/php-mode.el"
+;;;;;;  (20802 63704 624827 810000))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
 
 (add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
-
-(defvar php-file-patterns '("\\.php[s345t]?\\'" "\\.phtml\\'" "\\.inc\\'") "\
-List of file patterns for which to automatically invoke `php-mode'.")
-
-(custom-autoload 'php-file-patterns "php-mode/php-mode" nil)
 
 (autoload 'php-mode "php-mode/php-mode" "\
 Major mode for editing PHP code.
@@ -521,10 +250,12 @@ Major mode for editing PHP code.
 
 \(fn)" t nil)
 
+(dolist (pattern '("\\.php[s345t]?\\'" "\\.phtml\\'")) (add-to-list 'auto-mode-alist `(,pattern . php-mode)))
+
 ;;;***
 
 ;;;### (autoloads (svn-status svn-checkout) "psvn/psvn" "psvn/psvn.el"
-;;;;;;  (20289 32888))
+;;;;;;  (20802 63696 276827 804000))
 ;;; Generated autoloads from psvn/psvn.el
 
 (autoload 'svn-checkout "psvn/psvn" "\
@@ -548,8 +279,52 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;***
 
+;;;### (autoloads (global-rainbow-delimiters-mode rainbow-delimiters-mode-disable
+;;;;;;  rainbow-delimiters-mode-enable rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
+;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20802 63679 420827
+;;;;;;  799000))
+;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
+
+(autoload 'rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
+Highlight nested parentheses, brackets, and braces according to their depth.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'rainbow-delimiters-mode-enable "rainbow-delimiters/rainbow-delimiters" "\
+
+
+\(fn)" nil nil)
+
+(autoload 'rainbow-delimiters-mode-disable "rainbow-delimiters/rainbow-delimiters" "\
+
+
+\(fn)" nil nil)
+
+(defvar global-rainbow-delimiters-mode nil "\
+Non-nil if Global-Rainbow-Delimiters mode is enabled.
+See the command `global-rainbow-delimiters-mode' for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-rainbow-delimiters-mode'.")
+
+(custom-autoload 'global-rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" nil)
+
+(autoload 'global-rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
+Toggle Rainbow-Delimiters mode in all buffers.
+With prefix ARG, enable Global-Rainbow-Delimiters mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Rainbow-Delimiters mode is enabled in all buffers where
+`rainbow-delimiters-mode-enable' would do it.
+See `rainbow-delimiters-mode' for more information on Rainbow-Delimiters mode.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads (rainbow-mode) "rainbow-mode/rainbow-mode" "rainbow-mode/rainbow-mode.el"
-;;;;;;  (20289 32888))
+;;;;;;  (20802 63563 832827 940000))
 ;;; Generated autoloads from rainbow-mode/rainbow-mode.el
 
 (autoload 'rainbow-mode "rainbow-mode/rainbow-mode" "\
@@ -560,13 +335,42 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 
 ;;;***
 
-;;;### (autoloads (mouse-secondary-save-then-kill rotate-secondary-selection-yank-pointer
+;;;### (autoloads (sauron-start-hidden sauron-start) "sauron/sauron"
+;;;;;;  "sauron/sauron.el" (20802 63751 964827 806000))
+;;; Generated autoloads from sauron/sauron.el
+
+(autoload 'sauron-start "sauron/sauron" "\
+Start sauron. If the optional parameter HIDDEN is non-nil,
+don't show the sauron window.
+
+\(fn &optional HIDDEN)" t nil)
+
+(autoload 'sauron-start-hidden "sauron/sauron" "\
+Start sauron, but don't show the window.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (scratch) "scratch/scratch" "scratch/scratch.el"
+;;;;;;  (20802 63664 632827 821000))
+;;; Generated autoloads from scratch/scratch.el
+
+(autoload 'scratch "scratch/scratch" "\
+Get a scratch buffer for the current mode.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads (secondary-save-then-kill mouse-secondary-save-then-kill
+;;;;;;  set-secondary-start mouse-save-then-kill-delete-region rotate-secondary-selection-yank-pointer
 ;;;;;;  yank-pop-secondary yank-pop-commands secondary-to-primary
 ;;;;;;  secondary-swap-region primary-to-secondary isearch-yank-secondary
 ;;;;;;  yank-secondary secondary-dwim secondary-selection-yank-secondary-commands
 ;;;;;;  secondary-selection-yank-commands secondary-selection-ring-max)
-;;;;;;  "second-sel/second-sel" "second-sel/second-sel.el" (20289
-;;;;;;  32888))
+;;;;;;  "second-sel/second-sel" "second-sel/second-sel.el" (20802
+;;;;;;  63746 552827 851000))
 ;;; Generated autoloads from second-sel/second-sel.el
 
 (defvar secondary-selection-ring-max 60 "\
@@ -655,6 +459,8 @@ If previous command was a yank-secondary command, then
    `yank-pop-secondary'.
 Else if previous command was a yank command, then `yank-pop'.
 Else if `browse-kill-ring' is defined, then `browse-kill-ring'.
+ If in a `browse-kill-ring' selection-ring buffer, then browse the
+  other selection ring.
 Suggestion: Bind this command to `M-y'.
 
 \(fn &optional ARG)" t nil)
@@ -682,21 +488,55 @@ With prefix arg, rotate that many kills forward or backward.
 
 \(fn ARG)" t nil)
 
-(autoload 'mouse-secondary-save-then-kill "second-sel/second-sel" "\
-Extend or delete secondary selection and save in ring.
-Adds the extended secondary selection to `secondary-selection-ring'.
-Use this in a buffer where you have recently done `\\[mouse-start-secondary]'.
-If you have already made a secondary selection in that buffer, this
-command extends or retracts the selection to where you click.  If you
-do this again in a different position, it extends or retracts again.
-If you do this twice in the same position, it kills the selection.
+(autoload 'mouse-save-then-kill-delete-region "second-sel/second-sel" "\
+Delete text from BEG to END.  Put text on undo list, sharing with RING.
+RING defaults to `kill-ring'.
 
-\(fn CLICK)" t nil)
+\(fn BEG END &optional RING)" nil nil)
+
+(autoload 'set-secondary-start "second-sel/second-sel" "\
+Set start of the secondary selection at point.
+Interactively, or with non-nil optional arg MSGP, display a message.
+
+\(fn &optional MSGP)" t nil)
+
+(autoload 'mouse-secondary-save-then-kill "second-sel/second-sel" "\
+Set or delete the secondary selection according to CLICK.
+Add the updated secondary selection to `secondary-selection-ring'.
+CLICK should be a mouse click event.
+Interactively, or with non-nil optional arg MSGP, display a message.
+
+If the secondary selection already exists in the clicked buffer,
+extend or retract the end that is closest to the CLICK position to
+that position.  But if you have set the selection start position by
+double- or triple-clicking, then extend or retract to the nearest word
+or line boundary instead of exactly to the CLICK position.
+
+If there is no secondary selection in the clicked buffer, but you have
+used `\\[mouse-start-secondary]' or `\\[set-secondary-start]' there to define the start
+position, set the secondary selection between the CLICK position and
+that start position.
+
+Invoking this command (or `\\[secondary-save-then-kill]') in the same location
+immediately after invoking it (or `\\[secondary-save-then-kill]') there deletes the
+text of the secondary selection.
+
+In all cases, add the selected text to `secondary-selection-ring', or
+if it is already at the start of that ring, update it there.
+
+\(fn CLICK &optional MSGP)" t nil)
+
+(autoload 'secondary-save-then-kill "second-sel/second-sel" "\
+Same as `mouse-secondary-save-then-kill', but invoked without the mouse.
+POSITION (point, if interactive) plays the click-position role.
+Interactively, or with non-nil optional arg MSGP, display a message.
+
+\(fn &optional POSITION MSGP)" t nil)
 
 ;;;***
 
 ;;;### (autoloads (describe-unbound-keys) "unbound/unbound" "unbound/unbound.el"
-;;;;;;  (20802 24771 420829 903000))
+;;;;;;  (20802 63839 948827 828000))
 ;;; Generated autoloads from unbound/unbound.el
 
 (autoload 'describe-unbound-keys "unbound/unbound" "\
@@ -707,8 +547,55 @@ Keys are sorted by their complexity; `key-complexity' determines it.
 
 ;;;***
 
+;;;### (autoloads (global-undo-tree-mode undo-tree-mode) "undo-tree/undo-tree"
+;;;;;;  "undo-tree/undo-tree.el" (20802 63642 908827 813000))
+;;; Generated autoloads from undo-tree/undo-tree.el
+
+(autoload 'undo-tree-mode "undo-tree/undo-tree" "\
+Toggle undo-tree mode.
+With no argument, this command toggles the mode.
+A positive prefix argument turns the mode on.
+A negative prefix argument turns it off.
+
+Undo-tree-mode replaces Emacs' standard undo feature with a more
+powerful yet easier to use version, that treats the undo history
+as what it is: a tree.
+
+The following keys are available in `undo-tree-mode':
+
+  \\{undo-tree-map}
+
+Within the undo-tree visualizer, the following keys are available:
+
+  \\{undo-tree-visualizer-map}
+
+\(fn &optional ARG)" t nil)
+
+(defvar global-undo-tree-mode nil "\
+Non-nil if Global-Undo-Tree mode is enabled.
+See the command `global-undo-tree-mode' for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-undo-tree-mode'.")
+
+(custom-autoload 'global-undo-tree-mode "undo-tree/undo-tree" nil)
+
+(autoload 'global-undo-tree-mode "undo-tree/undo-tree" "\
+Toggle Undo-Tree mode in all buffers.
+With prefix ARG, enable Global-Undo-Tree mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Undo-Tree mode is enabled in all buffers where
+`turn-on-undo-tree-mode' would do it.
+See `undo-tree-mode' for more information on Undo-Tree mode.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
-;;;;;;  (20802 24771 420829 903000))
+;;;;;;  (20802 63819 732827 813000))
 ;;; Generated autoloads from vcl-mode/vcl-mode.el
 
 (let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
@@ -720,13 +607,9 @@ Mode for Varnish Command Language
 
 ;;;***
 
-;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20802 24771 420829 903000))
+;;;### (autoloads (web-mode) "web-mode/web-mode" "web-mode/web-mode.el"
+;;;;;;  (20802 63812 192827 804000))
 ;;; Generated autoloads from web-mode/web-mode.el
-
-(let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
-
-(let ((loads (get 'web-mode-faces 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode-faces 'custom-loads (cons '"web-mode/web-mode" loads))))
 
 (autoload 'web-mode "web-mode/web-mode" "\
 Major mode for editing mixed HTML Templates.
@@ -736,7 +619,7 @@ Major mode for editing mixed HTML Templates.
 ;;;***
 
 ;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20802
-;;;;;;  24771 420829 903000))
+;;;;;;  63830 372827 805000))
 ;;; Generated autoloads from wgrep/wgrep.el
 
 (autoload 'wgrep-setup "wgrep/wgrep" "\
@@ -747,9 +630,39 @@ Setup wgrep preparation.
 
 ;;;***
 
+;;;### (autoloads (wgrep-ack-setup wgrep-ack-and-a-half-setup) "wgrep/wgrep-ack"
+;;;;;;  "wgrep/wgrep-ack.el" (20802 63830 372827 805000))
+;;; Generated autoloads from wgrep/wgrep-ack.el
+
+(autoload 'wgrep-ack-and-a-half-setup "wgrep/wgrep-ack" "\
+
+
+\(fn)" nil nil)
+
+(autoload 'wgrep-ack-setup "wgrep/wgrep-ack" "\
+
+
+\(fn)" nil nil)
+(add-hook 'ack-and-a-half-mode-hook 'wgrep-ack-and-a-half-setup)
+(add-hook 'ack-mode-hook 'wgrep-ack-setup)
+
+;;;***
+
+;;;### (autoloads (wgrep-helm-setup) "wgrep/wgrep-helm" "wgrep/wgrep-helm.el"
+;;;;;;  (20802 63830 372827 805000))
+;;; Generated autoloads from wgrep/wgrep-helm.el
+
+(autoload 'wgrep-helm-setup "wgrep/wgrep-helm" "\
+
+
+\(fn)" nil nil)
+(add-hook 'helm-grep-mode-hook 'wgrep-helm-setup)
+
+;;;***
+
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
-;;;;;;  "ws-trim/ws-trim.el" (20289 32888))
+;;;;;;  "ws-trim/ws-trim.el" (20802 63772 888828 146000))
 ;;; Generated autoloads from ws-trim/ws-trim.el
 
 (defvar ws-trim-method-hook '(ws-trim-leading ws-trim-trailing) "\
@@ -925,16 +838,30 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil "zenburn-theme/zenburn-theme" "zenburn-theme/zenburn-theme.el"
-;;;;;;  (20802 40921 984829 33000))
+;;;;;;  (20802 63497 712827 811000))
 ;;; Generated autoloads from zenburn-theme/zenburn-theme.el
 
 (and load-file-name (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 
 ;;;***
 
-;;;### (autoloads nil nil ("dtrt-indent/dtrt-indent-diag.el" "dtrt-indent/dtrt-indent-test.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20804 10249
-;;;;;;  398968 684000))
+;;;### (autoloads nil nil ("../../.emacs.d/el-get/browse-kill-ring/browse-kill-ring.el"
+;;;;;;  "dired-details/dired-details.el" "ediff-trees/ediff-trees.el"
+;;;;;;  "el-get/el-get-autoloads.el" "el-get/el-get-build.el" "el-get/el-get-byte-compile.el"
+;;;;;;  "el-get/el-get-core.el" "el-get/el-get-custom.el" "el-get/el-get-dependencies.el"
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get-methods.el" "el-get/el-get-notify.el"
+;;;;;;  "el-get/el-get-recipes.el" "el-get/el-get-status.el" "escreen/escreen.el"
+;;;;;;  "gpicker/gpicker.el" "htmlr/htmlr.el" "magit/50magit.el"
+;;;;;;  "magit/magit-bisect.el" "magit/magit-key-mode.el" "magit/magit-pkg.el"
+;;;;;;  "multiple-cursors/mc-cycle-cursors.el" "multiple-cursors/mc-edit-lines.el"
+;;;;;;  "multiple-cursors/mc-mark-more.el" "multiple-cursors/mc-separate-operations.el"
+;;;;;;  "php-mode/php-mode-test.el" "rainbow-mode/rainbow-mode-autoloads.el"
+;;;;;;  "rainbow-mode/rainbow-mode-pkg.el" "sauron/sauron-dbus.el"
+;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-identica.el" "sauron/sauron-jabber.el"
+;;;;;;  "sauron/sauron-notifications.el" "sauron/sauron-org.el" "sauron/sauron-twittering.el"
+;;;;;;  "scratch/el-get.el" "transpose-frame/transpose-frame.el"
+;;;;;;  "wgrep/wgrep-test.el" "windcycle/windcycle.el") (20803 1187
+;;;;;;  133052 187000))
 
 ;;;***
 
