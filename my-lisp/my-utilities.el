@@ -143,12 +143,13 @@ using the specified hippie-expand function."
 ;;      regexp)))
 
 (defvar my-multi-occur-buffers-file-name-exclusions '("TAGS")
-  "File names to exclude from my-multi-occur, regardless of path.")
+  "List of file names to exclude from my-multi-occur,
+ignoring the directory path.")
 
 (defvar my-multi-occur-buffers-file-path-exclusions nil
-  "File paths to exclude from my-multi-occur.")
+  "List of file paths to exclude from my-multi-occur.")
 
-(defun my-multi-occur-buffers ()
+(defun my-multi-occur-buffers (&optional non-file-buffers)
   "List of file-visiting buffers, excluding any known unwanted buffers."
   (let* ((list (buffer-list))
          (buffers list))
@@ -156,22 +157,30 @@ using the specified hippie-expand function."
       (let* ((buffer (car buffers))
              (next (cdr buffers))
              (buffer-name (buffer-name buffer))
-             (file-name (buffer-file-name buffer)))
-        ;; Exclude non-file buffers and internal-use buffers.
-        (when (or (not file-name)
-                  (string= (substring buffer-name 0 1) " ")
-                  (member (file-name-nondirectory file-name)
-                          my-multi-occur-buffers-file-name-exclusions)
-                  (member file-name
-                          my-multi-occur-buffers-file-path-exclusions))
+             (file-name (buffer-file-name buffer))
+             (file-name-exclusions my-multi-occur-buffers-file-name-exclusions))
+        ;; Exclude non-file and internal-use buffers.
+        (when (or (string= (substring buffer-name 0 1) " ") ;; internal
+                  (not (or file-name non-file-buffers))
+                  (and file-name
+                       (or (member file-name file-name-exclusions)
+                           (member (file-name-nondirectory file-name)
+                                   file-name-exclusions))))
           (setq list (delq buffer list)))
         (setq buffers next)))
     list))
 
 (defun my-multi-occur (regexp &optional nlines)
-  "Show all lines matching REGEXP in all buffers."
-  (interactive (occur-read-primary-args))
-  (multi-occur (my-multi-occur-buffers) regexp nlines))
+  "Show lines matching REGEXP in all file-visiting buffers.
+With raw prefix arg C-u also include non-file buffers, otherwise
+any numeric prefix argument is passed to `occur' as nlines."
+  (interactive
+   (if (consp current-prefix-arg)
+       (list (car (occur-read-primary-args)) 'non-file-buffers)
+     (occur-read-primary-args)))
+  (if (eq nlines 'non-file-buffers)
+      (multi-occur (my-multi-occur-buffers t) regexp)
+    (multi-occur (my-multi-occur-buffers) regexp nlines)))
 
 (defun my-multi-occur-in-visible-buffers (regexp &optional arg)
   "Show all lines matching REGEXP in the current frame's visible buffers."
