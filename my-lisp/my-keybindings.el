@@ -208,7 +208,7 @@ TODO: Switch to using emulation-mode-map-alists
 \\{my-keys-minor-mode-map}"
     :init-value t
     :global     t
-    :keymap     'my-keys-minor-mode-map)
+    :keymap     my-keys-minor-mode-map)
 
 ;; Disable my custom keys in the minibuffer
   (defun my-keys-minor-mode-minibuffer-setup-hook ()
