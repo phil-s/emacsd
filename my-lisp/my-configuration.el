@@ -496,8 +496,15 @@ return to the save-some-buffers minibuffer prompt."
     (unwind-protect
         ad-do-it
       (fset 'revert-buffer real-revert-buffer))))
-
 (ad-activate 'ask-user-about-supersession-threat)
+
+;; See: http://stackoverflow.com/questions/9748521
+(defadvice save-buffer (around my-save-buffer-mini-window-size)
+  "Don't increase the height of the echo area when saving a file
+when the file path is too long to show on one line."
+  (let ((message-truncate-lines t))
+    ad-do-it))
+(ad-activate 'save-buffer)
 
 ;; Make linum's format calculation more efficient
 (defvar my-linum-format-string "%4d")
