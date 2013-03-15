@@ -588,8 +588,8 @@
    `(w3m-lnum-minibuffer-prompt ((t (:foreground ,zenburn-yellow))))
 
    ;; whitespace-mode
-   `(whitespace-space ((t (:background ,zenburn-bg+1 :foreground ,zenburn-bg+1))))
-   `(whitespace-hspace ((t (:background ,zenburn-bg+1 :foreground ,zenburn-bg+1))))
+   ;; `(whitespace-space ((t (:background ,zenburn-bg+1 :foreground ,zenburn-bg+1))))
+   ;; `(whitespace-hspace ((t (:background ,zenburn-bg+1 :foreground ,zenburn-bg+1))))
    `(whitespace-tab ((t (:background ,zenburn-red-1))))
    `(whitespace-newline ((t (:foreground ,zenburn-bg+1))))
    `(whitespace-trailing ((t (:background ,zenburn-red))))
