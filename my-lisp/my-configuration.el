@@ -218,9 +218,6 @@ See also: `my-copy-buffer-file-name'."
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
          ("%b (Emacs)"))))
 
-;; Full-screen by default.
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
 
