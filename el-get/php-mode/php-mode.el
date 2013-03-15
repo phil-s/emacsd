@@ -11,7 +11,7 @@
 (defconst php-mode-version-number "1.10"
   "PHP Mode version number.")
 
-(defconst php-mode-modified "2013-02-15"
+(defconst php-mode-modified "2013-03-14"
   "PHP Mode build date.")
 
 ;;; License
@@ -197,16 +197,6 @@ You can replace \"en\" with your ISO language code."
 
 ;;;###autoload
 (add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
-
-;;;###autoload
-(defcustom php-file-patterns '("\\.php[s345t]?\\'" "\\.phtml\\'" "\\.inc\\'")
-  "List of file patterns for which to automatically invoke `php-mode'."
-  :type '(repeat (regexp :tag "Pattern"))
-  :set (lambda (sym val)
-         (set-default sym val)
-         (mapc (lambda (i) (add-to-list 'auto-mode-alist (cons i 'php-mode)))
-               val))
-  :group 'php)
 
 (defcustom php-mode-hook nil
   "List of functions to be executed on entry to `php-mode'."
@@ -1527,8 +1517,10 @@ searching the PHP website."
       (1 font-lock-keyword-face)
       (2 font-lock-function-name-face nil t))
 
-    ;; class hierarchy
-    '("\\<\\(self\\|parent\\)\\>" (1 font-lock-constant-face nil nil))
+    ;; self, parent, and static in class contexts
+    '("\\<\\(self\\)\\(?:::\\)" (1 font-lock-constant-face nil nil))
+    '("\\<\\(parent\\)\\(?:::\\|\\s-*(\\)" (1 font-lock-constant-face nil nil))
+    '("\\<\\(static\\)\\(?:::\\)" (1 font-lock-constant-face t nil))
 
     ;; method and variable features
     '("\\<\\(private\\|protected\\|public\\)\\s-+\\$?\\sw+"
@@ -1681,6 +1673,10 @@ The output will appear in the buffer *PHP*."
   '(font-lock-add-keywords 'php-mode '((php-annotations-font-lock-find-annotation (2 'php-annotations-annotation-face t)))))
 
 
+
+;;;###autoload
+(dolist (pattern '("\\.php[s345t]?\\'" "\\.phtml\\'"))
+  (add-to-list 'auto-mode-alist `(,pattern . php-mode)))
 
 (provide 'php-mode)
 
