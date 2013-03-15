@@ -308,11 +308,12 @@ command was winner-undo or winner-redo."
   (capitalize-word arg))
 
 ;; Display non-critical messages with minimal interference.
-;; See also the following:
-;; (minibuffer-message)
-;; (with-temp-message)
 (defun my-unimportant-notification (format-string &rest args)
-  "Display a message temporarily, if/when minibuffer isn't active."
+  "Display a message temporarily, if/when minibuffer isn't active.
+Also see the following:
+`minibuffer-message'
+`with-temp-message'
+`minibuffer-message-timeout'"
   (my--unimportant-notification
    format-string args
    6 ;; seed the remaining attempts counter (maximum)
