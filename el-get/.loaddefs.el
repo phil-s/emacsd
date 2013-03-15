@@ -903,14 +903,11 @@ controlled by the `ws-trim-global-modes' variable.
 
 ;;;***
 
-;;;### (autoloads (color-theme-zenburn) "color-theme-zenburn/zenburn"
-;;;;;;  "color-theme-zenburn/zenburn.el" (20289 32888))
-;;; Generated autoloads from color-theme-zenburn/zenburn.el
+;;;### (autoloads nil "zenburn-theme/zenburn-theme" "zenburn-theme/zenburn-theme.el"
+;;;;;;  (20802 40057 496829 78000))
+;;; Generated autoloads from zenburn-theme/zenburn-theme.el
 
-(autoload 'color-theme-zenburn "color-theme-zenburn/zenburn" "\
-Just some alien fruit salad to keep you in the zone.
-
-\(fn)" t nil)
+(and load-file-name (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 
 ;;;***
 

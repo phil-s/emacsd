@@ -7,8 +7,7 @@
 
 ;; Color theme - Zenburn
 ;; http://www.emacswiki.org/emacs/ColorThemeZenburn
-(when (and (require 'color-theme nil t)
-           (require 'zenburn nil t))
+(when (require 'zenburn-theme nil t)
 
   ;; hl-sexp-mode
   ;; See my-programming.el
@@ -16,7 +15,7 @@
     (set-face-background 'hl-sexp-face "#090909"))
 
   ;; Initialise zenburn
-  (color-theme-zenburn)
+  (load-theme 'zenburn t)
 
   ;; Changes to Zenburn defaults
   ;; hl-line-mode
@@ -35,10 +34,11 @@
    ;; apt-cache search "WenQuanYi Micro"
    ;; sudo apt-get install ttf-wqy-microhei
    ((eq system-type 'gnu/linux)
-    (apply 'custom-theme-set-faces 'user '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))))
+    (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))))
+
    ;; Win32 NTEmacs
    ((eq system-type 'windows-nt)
-    (apply 'custom-theme-set-faces 'user '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New"))))))
+    (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New"))))))
    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -46,13 +46,15 @@
 (defun my-alt-theme ()
   "A really obviously different theme, for when I need it."
   (interactive)
-  (color-theme-blue-mood)
-  (eval-after-load "magit"
-    '(progn
-       (set-face-background 'magit-item-highlight "blue4")
-       (set-face-foreground 'magit-item-highlight nil)
-       (set-face-underline 'magit-item-highlight nil)
-       (set-face-attribute 'magit-item-highlight nil :inherit nil))))
+  (disable-theme 'zenburn)
+  (load-theme 'light-blue t)
+  ;; (eval-after-load "magit"
+  ;;   '(progn
+  ;;      (set-face-background 'magit-item-highlight "blue4")
+  ;;      (set-face-foreground 'magit-item-highlight nil)
+  ;;      (set-face-underline 'magit-item-highlight nil)
+  ;;      (set-face-attribute 'magit-item-highlight nil :inherit nil)))
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -23,8 +23,9 @@
             :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
             :features browse-kill-ring)
 
-     (:name color-theme)
-     (:name color-theme-zenburn)
+     (:name zenburn-theme
+            :type git
+            :url "https://github.com/bbatsov/zenburn-emacs")
 
      (:name deft
             :type git
