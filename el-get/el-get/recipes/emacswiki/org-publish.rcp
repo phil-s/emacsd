@@ -1,0 +1,1 @@
+(:name org-publish :type emacswiki :website "http://www.emacswiki.org/emacs/org-publish.el")
