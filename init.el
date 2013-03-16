@@ -383,12 +383,11 @@
 
 ;; Initialise third-party packages
 
-;; ELPA -- Emacs Lisp Package Archive
-;; TODO: Make el-get take care of ELPA?
-(require 'my-elpa)
-
 ;; Other packages, via el-get
 (require 'my-externals)
+;; el-get handles ELPA/package.el, but I want to distinguish between the
+;; packages installed manually, and the ones installed via el-get:
+(setq package-user-dir "~/.emacs.d/elpa")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
