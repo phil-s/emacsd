@@ -67,8 +67,7 @@
      (:name ffip
             :type git
             :url "git://github.com/dburger/find-file-in-project.git"
-            :post-init (lambda ()
-                         (autoload 'ffip-project-root "find-file-in-project" nil t)))
+            :post-init (autoload 'ffip-project-root "find-file-in-project" nil t))
 
      ;; (:name find-file-in-project
      ;;        :type git
@@ -82,7 +81,7 @@
      (:name gpicker
             :type http
             :url "http://git.savannah.gnu.org/cgit/gpicker.git/plain/gpicker.el"
-            :post-init (lambda ()
+            :post-init (progn
                          (autoload 'gpicker-visit-project "gpicker" nil t)
                          (autoload 'gpicker-find-file "gpicker" nil t)))
 
@@ -132,7 +131,7 @@
      (:name scratch
             :type git
             :url "http://github.com/ieure/scratch-el.git"
-            :post-init (lambda () (autoload 'scratch "scratch" nil t)))
+            :post-init (autoload 'scratch "scratch" nil t))
 
      (:name second-sel
             :type emacswiki)
@@ -184,37 +183,22 @@
 
   ;; Execute el-get
   (if (functionp 'el-get)
-      (el-get 'wait)))
+      (el-get 'sync)))
 
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-;; Modification of the *scratch* Installer from
-;; https://github.com/dimitri/el-get/
-(defun install-el-get ()
-  "So the idea is that you copy/paste this code into your
-*scratch* buffer, hit C-j, and you have a working el-get."
-  (url-retrieve
-   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
-   (lambda (s)
-     (let ((el-get-install-branch "3.stable"))
-       (end-of-buffer)
-       (eval-print-last-sexp)
-       ;; Now configure my custom sources. We need to do this here in the
-       ;; lambda expression callback, because it is called asynchronously
-       ;; whenever the url-retrieve completes, and we need to ensure that
-       ;; has happened.
-       (my-el-get)))))
-
-
-;;;;(require 'el-get)
-(when (not (functionp 'el-get))
-  (let ((el-get (expand-file-name (concat user-emacs-directory
-                                          "el-get/el-get/el-get.el"))))
-    (if (file-exists-p el-get)
-        (load el-get))))
-
-;; Install first if necessary, otherwise just execute.
-(if (not (functionp 'el-get))
-    (install-el-get) ;; also calls (my-el-get)
+(if (not (require 'el-get nil t))
+    (url-retrieve
+     "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
+     (lambda (s)
+       (let ((el-get-install-branch "4.stable"))
+         (goto-char (point-max))
+         (eval-print-last-sexp)
+         ;; Now configure my custom sources. We need to do this here in the
+         ;; lambda expression callback, because it is called asynchronously
+         ;; whenever the url-retrieve completes, and we need to ensure that
+         ;; has happened.
+         (my-el-get))))
   (my-el-get))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
