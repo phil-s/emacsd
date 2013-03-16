@@ -1,3 +1,14 @@
+;; Do things before other initialisation.
+;; ...
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Do things after other initialisation.
+(add-hook 'after-init-hook 'my-local-after-init-hook)
+(defun my-local-after-init-hook ()
+  ;; ...
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-local)

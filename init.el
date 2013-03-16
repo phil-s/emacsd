@@ -376,6 +376,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Support for development on local machine
+(require 'my-local)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Initialise third-party packages
 
 ;; ELPA -- Emacs Lisp Package Archive
@@ -419,9 +424,6 @@
 
 ;; Project support
 (require 'my-projects)
-
-;; Support for development on local machine
-(require 'my-local)
 
 (message "Init file loaded in %ds"
          (destructuring-bind (hi lo ms) (current-time)
