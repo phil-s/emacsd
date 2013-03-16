@@ -195,13 +195,14 @@
   (url-retrieve
    "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
    (lambda (s)
-     (end-of-buffer)
-     (eval-print-last-sexp)
-     ;; Now configure my custom sources. We need to do this here in the
-     ;; lambda expression callback, because it is called asynchronously
-     ;; whenever the url-retrieve completes, and we need to ensure that
-     ;; has happened.
-     (my-el-get))))
+     (let ((el-get-install-branch "3.stable"))
+       (end-of-buffer)
+       (eval-print-last-sexp)
+       ;; Now configure my custom sources. We need to do this here in the
+       ;; lambda expression callback, because it is called asynchronously
+       ;; whenever the url-retrieve completes, and we need to ensure that
+       ;; has happened.
+       (my-el-get)))))
 
 
 ;;;;(require 'el-get)
