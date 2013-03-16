@@ -426,7 +426,7 @@
 (require 'my-projects)
 
 (message "Init file loaded in %ds"
-         (destructuring-bind (hi lo ms) (current-time)
+         (destructuring-bind (hi lo &rest ignore) (current-time)
            (- (+ hi lo) (+ (first my-init-load-start)
                            (second my-init-load-start)))))
 
