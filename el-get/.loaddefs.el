@@ -150,7 +150,7 @@ Commands:
 
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20587 45961))
+;;;;;;  (20802 24771 412829 899000))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
@@ -181,7 +181,7 @@ Add one cursor to the beginning of each line in the active region.
 ;;;;;;  mc/mark-previous-word-like-this mc/mark-previous-like-this
 ;;;;;;  mc/mark-next-symbol-like-this mc/mark-next-word-like-this
 ;;;;;;  mc/mark-next-like-this) "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20659 53539))
+;;;;;;  (20802 24771 412829 899000))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -307,7 +307,8 @@ Mark the tag we're in and its pair for renaming.
 ;;;***
 
 ;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20587 45961))
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20802 24771
+;;;;;;  412829 899000))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
@@ -315,17 +316,6 @@ Anchors the rectangular region at point.
 
 Think of this one as `set-mark' except you're marking a rectangular region. It is
 an exceedingly quick way of adding multiple cursors to multiple lines.
-
-\(fn)" t nil)
-
-;;;***
-
-;;;### (autoloads (offlineimap) "offlineimap/offlineimap" "offlineimap/offlineimap.el"
-;;;;;;  (20530 59020))
-;;; Generated autoloads from offlineimap/offlineimap.el
-
-(autoload 'offlineimap "offlineimap/offlineimap" "\
-Start OfflineIMAP.
 
 \(fn)" t nil)
 
@@ -343,7 +333,7 @@ Color nested parentheses, brackets, and braces according to their depth.
 ;;;***
 
 ;;;### (autoloads (rebase-mode) "magit/rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20289 32888))
+;;;;;;  (20802 24771 412829 899000))
 ;;; Generated autoloads from magit/rebase-mode.el
 
 (autoload 'rebase-mode "magit/rebase-mode" "\
@@ -420,19 +410,19 @@ The query function that disable deletion of buffers we protect.
 
 ;;;***
 
-;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20289
-;;;;;;  32888))
+;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20802
+;;;;;;  24771 408829 895000))
 ;;; Generated autoloads from magit/magit.el
 
 (autoload 'magit-status "magit/magit" "\
-Open a Magit status buffer for the Git repository containing
-DIR.  If DIR is not within a Git repository, offer to create a
-Git repository in DIR.
+Open a Magit status buffer for the Git repository containing DIR.
+If DIR is not within a Git repository, offer to create a Git
+repository in DIR.
 
 Interactively, a prefix argument means to ask the user which Git
-repository to use even if `default-directory' is under Git control.
-Two prefix arguments means to ignore `magit-repo-dirs' when asking for
-user input.
+repository to use even if `default-directory' is under Git
+control.  Two prefix arguments means to ignore `magit-repo-dirs'
+when asking for user input.
 
 \(fn DIR)" t nil)
 
@@ -481,7 +471,7 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 ;;;***
 
 ;;;### (autoloads (php-mode php-file-patterns php) "php-mode/php-mode"
-;;;;;;  "php-mode/php-mode.el" (20587 44126))
+;;;;;;  "php-mode/php-mode.el" (20802 24771 412829 899000))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
@@ -675,7 +665,7 @@ If you do this twice in the same position, it kills the selection.
 ;;;***
 
 ;;;### (autoloads (describe-unbound-keys) "unbound/unbound" "unbound/unbound.el"
-;;;;;;  (20667 63336))
+;;;;;;  (20802 24771 420829 903000))
 ;;; Generated autoloads from unbound/unbound.el
 
 (autoload 'describe-unbound-keys "unbound/unbound" "\
@@ -687,7 +677,7 @@ Keys are sorted by their complexity; `key-complexity' determines it.
 ;;;***
 
 ;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
-;;;;;;  (20587 44126))
+;;;;;;  (20802 24771 420829 903000))
 ;;; Generated autoloads from vcl-mode/vcl-mode.el
 
 (let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
@@ -700,7 +690,7 @@ Mode for Varnish Command Language
 ;;;***
 
 ;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20587 44126))
+;;;;;;  "web-mode/web-mode.el" (20802 24771 420829 903000))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
@@ -714,8 +704,8 @@ Major mode for editing mixed HTML Templates.
 
 ;;;***
 
-;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20587
-;;;;;;  44126))
+;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20802
+;;;;;;  24771 420829 903000))
 ;;; Generated autoloads from wgrep/wgrep.el
 
 (autoload 'wgrep-setup "wgrep/wgrep" "\
@@ -904,20 +894,15 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil "zenburn-theme/zenburn-theme" "zenburn-theme/zenburn-theme.el"
-;;;;;;  (20802 40057 496829 78000))
+;;;;;;  (20802 40921 984829 33000))
 ;;; Generated autoloads from zenburn-theme/zenburn-theme.el
 
 (and load-file-name (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 
 ;;;***
 
-;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "dired-details/dired-details.el" "el-get/el-get-install.el"
-;;;;;;  "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
-;;;;;;  "multiple-cursors/multiple-cursors-core.el"
-;;;;;;  "multiple-cursors/multiple-cursors-pkg.el"
-;;;;;;  "multiple-cursors/multiple-cursors.el"
-;;;;;;  "wgrep/wgrep-test.el") (20625 50482 172961))
+;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el")
+;;;;;;  (20804 8053 725324 405000))
 
 ;;;***
 
