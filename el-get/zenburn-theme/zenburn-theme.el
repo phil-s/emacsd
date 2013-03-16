@@ -53,8 +53,9 @@
       (zenburn-yellow "#f0dfaf")
       (zenburn-yellow-1 "#e0cf9f")
       (zenburn-yellow-2 "#d0bf8f")
+      (zenburn-green-9 "#2e3330")
       (zenburn-green-1 "#5f7f5f")
-      (zenburn-green "#7f9f7f")
+      (zenburn-green   "#7f9f7f")
       (zenburn-green+1 "#8fb28f")
       (zenburn-green+2 "#9fc59f")
       (zenburn-green+3 "#afd8af")
@@ -82,7 +83,11 @@
    `(header-line ((t (:foreground ,zenburn-yellow
                                   :background ,zenburn-bg-1
                                   :box (:line-width -1 :style released-button)))))
-   `(highlight ((t (:background ,zenburn-bg-05))))
+   `(highlight ((t (:background ,zenburn-blue-5))))
+
+   ;; `(highlight ((t (:foreground ,zenburn-green+1 :background ,zenburn-green-9))))
+   ;; `(zenburn-highlight-alerting ((t (:foreground "#e37170" :background "#332323"))))
+   ;; `(zenburn-highlight-subtle ((t (:background "#464646"))))
 
    ;;; compilation
    `(compilation-column-face ((t (:foreground ,zenburn-yellow))))
@@ -121,7 +126,7 @@
      ((t (:foreground ,zenburn-green-1
                       :background ,zenburn-bg-05
                       :box (:line-width -1 :style released-button)))))
-   `(region ((,class (:background ,zenburn-bg-1))
+   `(region ((,class (:foreground ,zenburn-green+1 :background ,zenburn-green-9))
              (t :inverse-video t)))
    `(secondary-selection ((t (:background ,zenburn-bg+2))))
    `(trailing-whitespace ((t (:background ,zenburn-red))))
