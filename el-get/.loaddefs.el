@@ -3,6 +3,37 @@
 ;;; Code:
 
 
+;;;### (autoloads (dtrt-indent-mode dtrt-indent-mode) "dtrt-indent/dtrt-indent"
+;;;;;;  "dtrt-indent/dtrt-indent.el" (20804 10249 123933 346000))
+;;; Generated autoloads from dtrt-indent/dtrt-indent.el
+
+(defvar dtrt-indent-mode nil "\
+Non-nil if Dtrt-Indent mode is enabled.
+See the command `dtrt-indent-mode' for a description of this minor mode.")
+
+(custom-autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" nil)
+
+(autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" "\
+Toggle dtrt-indent mode.
+With no argument, this command toggles the mode.  Non-null prefix
+argument turns on the mode.  Null prefix argument turns off the
+mode.
+
+When dtrt-indent mode is enabled, the proper indentation
+offset will be guessed for newly opened files and adjusted
+transparently.
+
+\(fn &optional ARG)" t nil)
+
+(defvar dtrt-indent-mode nil "\
+Toggle adaptive indentation mode.
+Setting this variable directly does not take effect;
+use either \\[customize] or the function `dtrt-indent-mode'.")
+
+(custom-autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" nil)
+
+;;;***
+
 ;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
 ;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
 ;;;;;;  (20587 44126))
@@ -901,8 +932,9 @@ controlled by the `ws-trim-global-modes' variable.
 
 ;;;***
 
-;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el")
-;;;;;;  (20804 8053 725324 405000))
+;;;### (autoloads nil nil ("dtrt-indent/dtrt-indent-diag.el" "dtrt-indent/dtrt-indent-test.el"
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20804 10249
+;;;;;;  398968 684000))
 
 ;;;***
 

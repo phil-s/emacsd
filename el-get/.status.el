@@ -31,4 +31,6 @@
 :vcl-mode "installed"
 :wgrep "installed"
 :dired-details "installed"
-:unbound "installed")
+:unbound "installed"
+:dtrt-indent "installed"
+)
