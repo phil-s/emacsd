@@ -1,5 +1,60 @@
 (require 'rect)
 
+(define-derived-mode my-edit-rectangle-mode fundamental-mode "Rectangle-Edit"
+  "Major mode for *edit rectangle* buffers."
+  (local-set-key (kbd "C-c C-c") 'my-edit-rectangle-submit))
+
+;; These will be buffer-local in the *edit rectangle* buffer.
+(defvar my-edit-rectangle-start)
+(defvar my-edit-rectangle-end)
+(defvar my-edit-rectangle-buffer)
+(defvar my-edit-rectangle-height)
+(defvar my-edit-rectangle-width)
+
+(defun my-edit-rectangle (start end)
+  "Edit the rectangle in a temporary buffer. C-c C-c applies the changes."
+  (interactive "*r")
+  (let* ((content (extract-rectangle start end))
+         (edit-rectangle-buffer (generate-new-buffer " *edit rectangle*"))
+         (syntax-table (syntax-table))
+         (source-buffer (current-buffer)))
+    (switch-to-buffer edit-rectangle-buffer)
+    (my-edit-rectangle-mode)
+    (set-syntax-table syntax-table)
+    ;; n.b. the local bindings don't stick if we change modes afterwards?
+    (set (make-local-variable 'my-edit-rectangle-start) start)
+    (set (make-local-variable 'my-edit-rectangle-end) end)
+    (set (make-local-variable 'my-edit-rectangle-buffer) source-buffer)
+    (set (make-local-variable 'my-edit-rectangle-height) (length content))
+    (set (make-local-variable 'my-edit-rectangle-width) (length (car content)))
+    (insert-rectangle content)
+    (message (substitute-command-keys
+              "Editing rectangle. Type \\[my-edit-rectangle-submit] to confirm \
+the changes, or \\[kill-buffer] to cancel."))))
+
+(defun my-edit-rectangle-submit ()
+  (interactive)
+  (let ((edit-rectangle-buffer (current-buffer))
+        (start my-edit-rectangle-start)
+        (end my-edit-rectangle-end)
+        (source-buffer my-edit-rectangle-buffer)
+        (width my-edit-rectangle-width)
+        (height my-edit-rectangle-height))
+    ;; Account for possible changes in the dimensions of the
+    ;; edit-buffer's contents by explicitly using the original
+    ;; rectangle's height and width to establish the replacement
+    ;; rectangle.
+    (goto-char (point-min))
+    (let ((remaining (forward-line (1- height))))
+      (insert-char ?\n (if (looking-back "^") remaining (1+ remaining))))
+    (move-to-column width t)
+    (let ((content (extract-rectangle (point-min) (point))))
+      (switch-to-buffer source-buffer)
+      (goto-char start)
+      (delete-rectangle start end)
+      (insert-rectangle content))
+    (kill-buffer edit-rectangle-buffer)))
+
 
 (defun my-copy-rectangle (start end &optional fill)
   "Trigger the read-only behaviour of `kill-rectangle'."

@@ -89,6 +89,7 @@
   (define-key keymap (kbd "s-SPC r")   'mc/mark-all-in-region)
 
   ;; Rectangle editing
+  (define-key keymap (kbd "C-x r e")   'my-edit-rectangle)
   (define-key keymap (kbd "C-x r M-%") 'my-replace-string-rectangle)
   (define-key keymap (kbd "C-x r C-M-%") 'my-replace-regexp-rectangle)
 
