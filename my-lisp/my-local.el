@@ -31,6 +31,17 @@
   (copy-file
    buffer-file-name
    (concat (file-name-sans-extension buffer-file-name) ".backup")
+   t t)
+  ;; Also copy a backup to my home directory, because git will
+  ;; occasionally clobber the backup within the repository as well.
+  ;; (I'm not sure how or why that happens, but I figure a backup
+  ;; outside of the repository will be safe).
+  (copy-file
+   buffer-file-name
+   (expand-file-name
+    (concat "~/.emacs.d.my-lisp."
+            (file-name-nondirectory buffer-file-name)
+            ".backup"))
    t t))
 
 ;;; Local Variables:
