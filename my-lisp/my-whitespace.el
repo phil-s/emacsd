@@ -2,6 +2,8 @@
 ;; Whitespace
 ;;
 
+(defalias 'dw 'delete-trailing-whitespace)
+
 ;; Highlight trailing whitespace by default
 (setq-default show-trailing-whitespace t)
 
