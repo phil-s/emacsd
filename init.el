@@ -112,6 +112,14 @@
 ;; Remember that killing doesn't affect the registers, which
 ;; can make this useful for killing and replacing.
 
+;;;; * Unicode
+;; C-x 8 C-h
+;; http://ergoemacs.org/emacs/emacs_n_unicode.html
+;; If you need to type these chars often, call set-input-method and
+;; give “latin-9-prefix”. That will allow you to type these chars
+;; without typing C-x 8 first.
+;; C-\ calls toggle-input-method.
+
 ;;;; * Multiple windows and frames
 ;; C-x 1     : Single window on this buffer
 ;; C-x 2     : Split windows horizontally
@@ -176,6 +184,12 @@
 ;; M-x debug-on-entry FUNCTION
 ;; M-x cancel-debug-on-entry &optional FUNCTION
 ;; debug &rest DEBUGGER-ARGS
+;; M-x toggle-debug-on-error
+;; M-x toggle-debug-on-quit
+;; setq debug-on-signal
+;; setq debug-on-next-call
+;; setq debug-on-event
+;; setq debug-on-message REGEXP
 
 ;; Edebug -- a source-level debugger for Emacs Lisp
 ;; M-x edebug-defun (C-u C-M-x) Cancel with eval-defun (C-M-x)
