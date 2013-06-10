@@ -110,7 +110,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
                              "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
                              "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
            ))
-   (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
+   (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
                           (drupal-mode) (hack-local-variables))) ;; Oooh.
                 (c-basic-offset . 2)))
    (css-mode . ((css-indent-offset . 2)))

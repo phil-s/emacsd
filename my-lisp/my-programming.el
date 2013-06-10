@@ -102,10 +102,9 @@ manually reshow it. A double toggle will make it reappear"
   (with-current-buffer (help-buffer)
     (unless (local-variable-p 'context-help)
       (set (make-local-variable 'context-help) t))
-    (if (setq context-help (not context-help))
-        (progn
-          (if (not (get-buffer-window (help-buffer)))
-              (display-buffer (help-buffer)))))
+    (when (setq context-help (not context-help))
+      (unless (get-buffer-window (help-buffer))
+        (display-buffer (help-buffer))))
     (message "Context help %s" (if context-help "ON" "OFF"))))
 
 (defun rgr/context-help ()

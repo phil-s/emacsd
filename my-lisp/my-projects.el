@@ -51,7 +51,7 @@
                               (string-match "\\.make\\'" buffer-file-name))
                      (conf-mode)))
            ))
-   (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
+   (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
                           (drupal-mode)
                           (hack-local-variables))) ;; Oooh.
                 (c-basic-offset . 2)))

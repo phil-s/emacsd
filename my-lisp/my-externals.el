@@ -206,7 +206,7 @@
 
 
 ;;;;(require 'el-get)
-(when (not (functionp 'el-get))
+(unless (functionp 'el-get)
   (let ((el-get (expand-file-name (concat user-emacs-directory
                                           "el-get/el-get/el-get.el"))))
     (if (file-exists-p el-get)
