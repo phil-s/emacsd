@@ -446,6 +446,32 @@ an exceedingly quick way of adding multiple cursors to multiple lines.
 
 ;;;***
 
+;;;### (autoloads (php-eldoc-function) "php-eldoc/php-eldoc" "php-eldoc/php-eldoc.el"
+;;;;;;  (20872 22699 154255 608000))
+;;; Generated autoloads from php-eldoc/php-eldoc.el
+
+(autoload 'php-eldoc-function "php-eldoc/php-eldoc" "\
+Get function arguments for PHP function at point.
+
+\(fn)" nil nil)
+
+(add-hook 'php+-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+
+(add-hook 'php-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+
+;;;***
+
+;;;### (autoloads (php-extras-generate-eldoc) "php-eldoc/php-extras-gen-eldoc"
+;;;;;;  "php-eldoc/php-extras-gen-eldoc.el" (20872 22699 158255 608000))
+;;; Generated autoloads from php-eldoc/php-extras-gen-eldoc.el
+
+(autoload 'php-extras-generate-eldoc "php-eldoc/php-extras-gen-eldoc" "\
+Regenerate PHP function argument hash table from php.net. This is slow!
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
 ;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20289 32888))
 ;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
@@ -1027,8 +1053,8 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil nil ("dtrt-indent/dtrt-indent-diag.el" "dtrt-indent/dtrt-indent-test.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20804 10249
-;;;;;;  398968 684000))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "php-eldoc/php-extras-eldoc-functions.el"
+;;;;;;  "wgrep/wgrep-test.el") (20893 23799 692036 365000))
 
 ;;;***
 

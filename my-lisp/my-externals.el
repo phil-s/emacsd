@@ -122,6 +122,10 @@
             :type git
             :url "git://github.com/ejmr/php-mode.git")
 
+     (:name php-eldoc
+            :type git
+            :url "git://github.com/zenozeng/php-eldoc.git")
+
      (:name psvn
             :type http
             :url "http://www.xsteve.at/prg/emacs/psvn.el")
