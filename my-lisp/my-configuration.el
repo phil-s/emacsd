@@ -391,10 +391,10 @@ disabled.")))
   '(progn
      ;; Default terminal history is much too small.
      (setq-default term-buffer-maximum-size 65535)
-     ;; Enable terminal history in line mode.
+     ;; Enable terminal history in line mode (term-mode-map).
      (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
      (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
-     ;; Disable killing and yanking in char mode.
+     ;; Disable killing and yanking in char mode (term-raw-map).
      (mapc
       (lambda (func)
         (eval `(define-key term-raw-map [remap ,func] 'my-interactive-ding)))
@@ -405,13 +405,13 @@ disabled.")))
         kill-region kill-sentence kill-sexp kill-visual-line
         kill-whole-line kill-word subword-backward-kill subword-kill
         yank yank-pop yank-rectangle))
-     ;; Start in line mode.
+     ;; TODO: Will term-mode-hook not work for the following?
      (defadvice term (after my-advice-term-line-mode activate)
-       ;;(term-line-mode)
+       ;;(term-line-mode);;changed my mind.
        (subword-mode 0)
        (set (make-local-variable 'global-hl-line-mode) nil))
      (defadvice ansi-term (after my-advice-ansi-term-line-mode activate)
-       ;;(term-line-mode)
+       ;;(term-line-mode);;changed my mind.
        (subword-mode 0)
        (set (make-local-variable 'global-hl-line-mode) nil))))
 

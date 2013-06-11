@@ -44,6 +44,21 @@
 ;;    (ii)  'M-s C-/' for my-multi-occur-in-visible-buffers
 ;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
+;;;; * Compiling
+;; Libraries:
+;; # Auto?: sudo apt-get build-dep emacs24
+;; # Manual: sudo apt-get install -s libxpm-dev libjpeg62-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libgtk2.0-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev
+;; # libjpeg-62-dev may need to be libjpeg-dev
+;; # sudo apt-get install -s ttf-wqy-microhei
+;; # Maybe: sudo apt-get install -s automake autoconf
+;; # ./autogen.sh
+;; # ./configure --help
+;; # ./configure --prefix=/usr/local/src/emacs/24.3/usr/local --without-sound 2>&1 | tee config.out
+;; # make distclean
+;; # make
+;; # ./src/emacs -Q
+;; # make install
+
 ;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
@@ -318,6 +333,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; M-SPC     : just-one-space
+;; M-\       : delete-horizontal-space
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
@@ -325,7 +342,6 @@
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
-;; C-x z     : repeat
 ;; C-x M-:   : repeat-complex-command
 ;; C-x r x   : copy region to register
 ;; C-x r g   : insert contents of register

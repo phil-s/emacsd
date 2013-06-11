@@ -614,7 +614,7 @@ of the available lines."
 (defun diff-current-buffer-with-disk ()
   "Compare the current buffer with it's disk file."
   (interactive)
-  (let ((diff-switches "-u"))
+  (let ((diff-switches "-u")) ;; unified diff
     (diff-buffer-with-file (current-buffer))))
 
 ;;(defun ediff-file-with-buffer (file-A buf-B &optional startup-hooks job-name merge-buffer-file)

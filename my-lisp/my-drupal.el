@@ -37,6 +37,8 @@
 (fset 'drupal-quick-and-dirty-debugging
       (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
 
+;; Drush
+
 (defun drush-console ()
   "Runs the drush console in a `term' buffer.
 See http://drupal.org/project/phpsh"
@@ -199,7 +201,7 @@ We assume that a buffer is visiting the most recent version of this time."
         "%s" (with-current-buffer (get-file-buffer file-name)
                (visited-file-modtime)))))))
 
-;; variable for the timer object
+;; variables for the timer object
 (defvar drupal-tags-autoupdate-timer nil)
 (defvar drupal-tags-autoupdate-interval 300 "Interval, in seconds.")
 
