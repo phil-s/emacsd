@@ -523,6 +523,12 @@ when the file path is too long to show on one line."
 (defun my-linum-format (line-number)
   (propertize (format my-linum-format-string line-number) 'face 'linum))
 
+;; By default, don't show continuation lines in grep results.
+(add-hook 'grep-mode-hook 'my-grep-mode-hook)
+(defun my-grep-mode-hook ()
+  (setq truncate-lines t)
+  (local-set-key (kbd "<f5>") 'toggle-truncate-lines))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-configuration)
