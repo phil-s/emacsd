@@ -436,6 +436,12 @@ disabled.")))
 ;; Format completion lists in columns rather than rows
 (setq completions-format 'vertical)
 
+;; Don't use a separate control frame for ediff, as it's not working
+;; very well with my current config & window manager.
+;; See also `ediff-setup-control-frame' and my full-screen by default
+;; config above, which modifies `default-frame-alist'.
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 ;; Default to side-by-side comparisons in ediff.
 (setq ediff-split-window-function 'split-window-horizontally)
 
