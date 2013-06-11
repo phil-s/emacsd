@@ -45,7 +45,7 @@
 (defun toggle-show-trailing-whitespace ()
   "Toggle the show-trailing-whitespace variable."
   (interactive)
-  (set-variable 'show-trailing-whitespace (not show-trailing-whitespace)))
+  (setq show-trailing-whitespace (not show-trailing-whitespace)))
 
 (defun hide-trailing-whitespace ()
   "Do not highlight trailing whitespace."

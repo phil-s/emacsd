@@ -41,6 +41,8 @@ The optional argument can be generated with `make-hippie-expand-function'."
     ;; Provide the options in the order in which they are normally generated.
     (delete he-search-string (reverse he-tried-table))))
 
+(declare-function 'he-substitute-string "hippie-exp")
+
 (defmacro my-ido-hippie-expand-with (hippie-expand-function)
   "Generate an interactively-callable function that offers ido-based completion
 using the specified hippie-expand function."
