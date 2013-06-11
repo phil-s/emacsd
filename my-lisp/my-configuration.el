@@ -367,6 +367,9 @@ disabled.")))
 (defun my-erc-mode-hook ()
   (hide-trailing-whitespace))
 
+(eval-after-load "which-func"
+  '(add-to-list 'which-func-non-auto-modes 'erc-mode))
+
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
 (declare-function 'erc-default-target "erc")
 (defun my-notify-erc (match-type nickuserhost message)
