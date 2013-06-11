@@ -34,6 +34,18 @@ use either \\[customize] or the function `dtrt-indent-mode'.")
 
 ;;;***
 
+;;;### (autoloads (ediff-trees) "ediff-trees/ediff-trees" "ediff-trees/ediff-trees.el"
+;;;;;;  (20918 64948 266264 579000))
+;;; Generated autoloads from ediff-trees/ediff-trees.el
+
+(autoload 'ediff-trees "ediff-trees/ediff-trees" "\
+Starts a new ediff session that recursively compares two
+trees.
+
+\(fn ROOT1 ROOT2)" t nil)
+
+;;;***
+
 ;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
 ;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
 ;;;;;;  (20587 44126))
