@@ -201,6 +201,9 @@ command was winner-undo or winner-redo."
         ((memq last-command (list 'winner-redo 'winner-undo))
          (progn (winner-redo)
                 (setq this-command 'winner-redo)))
+        ((and (derived-mode-p 'term-mode)
+              (term-in-char-mode))
+         (term-send-raw-string "f"))
         (t ;else
          (progn (forward-word arg)
                 (setq this-command 'forward-word)))))
@@ -216,6 +219,9 @@ command was winner-undo or winner-redo."
         ((memq last-command (list 'winner-redo 'winner-undo))
          (progn (winner-undo)
                 (setq this-command 'winner-undo)))
+        ((and (derived-mode-p 'term-mode)
+              (term-in-char-mode))
+         (term-send-raw-string "b"))
         (t ;else
          (progn (backward-word arg)
                 (setq this-command 'backward-word)))))
