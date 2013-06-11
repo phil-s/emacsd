@@ -368,6 +368,7 @@ disabled.")))
   (hide-trailing-whitespace))
 
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
+(declare-function 'erc-default-target "erc")
 (defun my-notify-erc (match-type nickuserhost message)
   "Notify when a message is received."
   (notify (format "%s in %s"

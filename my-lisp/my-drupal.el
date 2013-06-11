@@ -135,15 +135,18 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
    "^.*/\\("
    (mapconcat 'shell-quote-argument grep-find-ignored-directories "\\|")
   "\\)$")
-  "Regexp of directories to omit from TAGS. Case sensitive")
+  "Regexp of directories to omit from TAGS. Case sensitive"
+  :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-ignore
   ".*/\\(TAGS\\(\\.new\\)?\\)$"
-  "Regexp of files to omit from TAGS. Case sensitive.")
+  "Regexp of files to omit from TAGS. Case sensitive."
+  :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-pattern
   ".*\\.\\(php\\|module\\|install\\|inc\\|engine\\)\\'"
-  "Regexp of files to index in TAGS. Case insensitive.")
+  "Regexp of files to index in TAGS. Case insensitive."
+  :group 'drupal)
 
 (defvar drupal-tags-autoupdate-buffer "*drupal-tags-autoupdate*")
 
