@@ -193,9 +193,9 @@ any numeric prefix argument is passed to `occur' as nlines."
     (multi-occur visible-buffers regexp)))
 
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
-  "Enable <C-left> to call next-buffer if the last command was
-next-buffer or previous-buffer, and winner-redo if the last
-command was winner-undo or winner-redo."
+  "Enable <C-left> to call `next-buffer' if the last command was
+`next-buffer' or `previous-buffer', and `winner-redo' if the last
+command was `winner-undo' or `winner-redo'."
   (interactive "p")
   (cond ((memq last-command (list 'next-buffer 'previous-buffer))
          (progn (next-buffer)
@@ -211,9 +211,9 @@ command was winner-undo or winner-redo."
                 (setq this-command 'forward-word)))))
 
 (defun my-backward-word-or-buffer-or-windows (&optional arg)
-  "Enable <C-left> to call previous-buffer if the last command
-was next-buffer or previous-buffer, and winner-undo if the last
-command was winner-undo or winner-redo."
+  "Enable <C-left> to call `previous-buffer' if the last command was
+`next-buffer' or `previous-buffer', and `winner-undo' if the last
+command was `winner-undo' or `winner-redo'."
   (interactive "p")
   (cond ((memq last-command (list 'next-buffer 'previous-buffer))
          (progn (previous-buffer)

@@ -74,6 +74,10 @@
 ;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
 
+;; Conditional over-ride with fall-back:
+;; http://stackoverflow.com/questions/16090517/elisp-conditionally-change-keybinding
+;; http://stackoverflow.com/questions/2494096/emacs-key-binding-fallback
+
 ;; Interrogate bindings:
 ;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
 ;; (key-binding KEY &optional ACCEPT-DEFAULT NO-REMAP POSITION) ;; dominant binding
