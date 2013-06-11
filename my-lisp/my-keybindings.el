@@ -116,8 +116,11 @@
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
 
-  ;; compare-windows
+  ;; Diff / Comparison
   (define-key keymap (kbd "C-M-=")     'compare-windows)
+  (define-key keymap (kbd "C-z =")     'diff-current-buffer-with-disk)
+  (define-key keymap (kbd "C-z C-=")   'ediff-current-file)
+  (define-key keymap (kbd "C-x v C-=") 'vc-ediff)
 
   ;; Completions
   (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
