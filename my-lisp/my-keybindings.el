@@ -6,6 +6,10 @@
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 
+;; Global reserved bindings that I want to over-ride in some modes.
+(global-set-key (kbd "C-c o") 'ff-find-other-file)
+(global-set-key (kbd "<f5>")  'ff-find-other-file)
+
 ;; Custom 'apropos' key bindings
 (define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,v,C-v)")
 (define-key Apropos-Prefix (kbd "a")   'apropos)
@@ -46,6 +50,9 @@
 ;; These bindings take precedence over major mode keymaps (as well as
 ;; other minor mode maps in general -- see the advice to `load' below.)
 ;;
+;; Note that reserved bindings (C-c <letter> and F5-F9) should be set
+;; in the global keymap if over-riding them on a per-mode basis may
+;; be desirable.
 
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
 (let ((keymap my-keys-minor-mode-map))
@@ -139,8 +146,6 @@
   (define-key keymap (kbd "C-c s q")   'my-sql-console)
 
   ;; Miscellaneous (mine/third-party)
-  (define-key keymap (kbd "C-c o")     'ff-find-other-file)
-  (define-key keymap (kbd "<f5>")      'ff-find-other-file)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
