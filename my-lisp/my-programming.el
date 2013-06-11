@@ -87,6 +87,9 @@
 ;; eldoc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Don't take up space in the mode line.
+(setq eldoc-minor-mode-string nil)
+
 ;; Highlight the eldoc echo area text
 (defun frob-eldoc-argument-list (string)
   "Upcase and fontify STRING for use with `eldoc-mode'."

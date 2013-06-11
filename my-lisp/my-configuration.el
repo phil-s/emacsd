@@ -244,7 +244,7 @@ See also: `my-copy-buffer-file-name'."
   (setq default-indicate-empty-lines t))
 
 ;; Show approx buffer size in modeline
-(size-indication-mode t)
+;; (size-indication-mode 1)
 
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
@@ -283,6 +283,10 @@ See also: `my-copy-buffer-file-name'."
 disabled.")))
 (add-hook 'find-file-hooks
           'my-find-file-check-make-large-file-read-only-hook)
+
+;; Abbreviated lighter for Abbrev mode
+(eval-after-load "abbrev"
+  '(setcar (cdr (assq 'abbrev-mode minor-mode-alist)) " Abbr"))
 
 ;; ;; Interactively Do Things
 ;; (require 'ido)

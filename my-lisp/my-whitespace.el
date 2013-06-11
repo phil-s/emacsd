@@ -27,6 +27,7 @@
 ;; Use ws-trim mode to strip trailing whitespace automatically
 ;; from edited lines (the default ws-trim-level).
 (when (require 'ws-trim nil 'noerror)
+  (setq ws-trim-mode-line-string nil)
   (global-ws-trim-mode t))
 
 ;; ;; Strip trailing whitespace.
