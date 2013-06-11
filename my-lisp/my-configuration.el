@@ -250,6 +250,9 @@ See also: `my-copy-buffer-file-name'."
 
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
+;; But not email addresses. This is a hack to never match anything.
+;; (submit patch to enable email addresses to be disabled separately?)
+(setq goto-address-mail-regexp "$^")
 
 ;; Use system trash (for emacs 23)
 (setq delete-by-moving-to-trash t)
