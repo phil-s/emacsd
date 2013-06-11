@@ -125,6 +125,12 @@
   ;; WWW
   (define-key keymap (kbd "C-c w s")   'my-www-search)
 
+  ;; Terminals / Shells / REPLs
+  (define-key keymap (kbd "C-c s s")   'my-shell)
+  (define-key keymap (kbd "C-c s a")   'my-ansi-terminal)
+  (define-key keymap (kbd "C-c s d")   'my-drush-console)
+  (define-key keymap (kbd "C-c s q")   'my-sql-console)
+
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c o")     'ff-find-other-file)
   (define-key keymap (kbd "<f5>")      'ff-find-other-file)

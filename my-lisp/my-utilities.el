@@ -686,6 +686,52 @@ or before point."
     (term-char-mode)
     (switch-to-buffer "*ssh*")))
 
+(defun my-terminal ()
+  (interactive)
+  (require 'term)
+  (when (not (and term-ansi-buffer-name
+                  (buffer-name (get-buffer term-ansi-buffer-name))))
+    (call-interactively 'ansi-term))
+  (pop-to-buffer term-ansi-buffer-name '(display-buffer-reuse-window
+                                         . ((reusable-frames . visible))))
+  (delete-other-windows))
+
+(defalias 'my-shell 'my-terminal)
+
+(defun my-sql-console ()
+  (interactive)
+  (let ((sql-buf
+         (catch 'found
+           (mapc (lambda (buf)
+                   (with-current-buffer buf
+                     (when (eq major-mode 'sql-interactive-mode)
+                       (throw 'found buf))))
+                 (buffer-list))
+           nil)))
+    (if sql-buf
+        (pop-to-buffer sql-buf '(display-buffer-reuse-window
+                                 . ((reusable-frames . visible))))
+      (let ((current-prefix-arg '(4)))
+        (call-interactively 'sql-postgres))))
+  (delete-other-windows))
+
+(defun my-drush-console ()
+  (interactive)
+  (when (not (get-buffer "*drush console*"))
+    (call-interactively 'drush-console))
+  (pop-to-buffer "*drush console*" '(display-buffer-reuse-window
+                                     . ((reusable-frames . visible))))
+  (delete-other-windows))
+
+(defun my-pop-to-buffer (buf &optional maximise)
+  "Switch to buffer BUF, and optionally maximise the window in its frame.
+Re-use an existing window containing BUF (in a visible frame) by preference,
+otherwise use the current selected window."
+  (pop-to-buffer buf '(display-buffer-reuse-window
+                       . ((reusable-frames . visible))))
+  (when maximise
+    (delete-other-windows)))
+
 (defun eval-and-replace ()
   "Replace the preceding sexp with its value.
 
