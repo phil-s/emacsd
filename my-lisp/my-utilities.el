@@ -832,7 +832,17 @@ See `fill-paragraph' and `fill-region'."
         (fill-paragraph))
 
       (put this-command 'currently-filled-p (not currently-filled)))))
-
+
+(defmacro with-temporary-advice (function class name &rest body)
+  "Enable the specified advice, evaluate BODY, then disable the advice."
+  `(unwind-protect
+       (progn
+         (ad-enable-advice ,function ,class ,name)
+         (ad-activate ,function)
+         ,@body)
+     (ad-disable-advice ,function ,class ,name)
+     (ad-activate ,function)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
