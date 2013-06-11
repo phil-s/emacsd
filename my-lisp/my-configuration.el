@@ -405,11 +405,13 @@ disabled.")))
         yank yank-pop yank-rectangle))
      ;; Start in line mode.
      (defadvice term (after my-advice-term-line-mode activate)
-       (term-line-mode)
-       (subword-mode 0))
+       ;;(term-line-mode)
+       (subword-mode 0)
+       (set (make-local-variable 'global-hl-line-mode) nil))
      (defadvice ansi-term (after my-advice-ansi-term-line-mode activate)
-       (term-line-mode)
-       (subword-mode 0))))
+       ;;(term-line-mode)
+       (subword-mode 0)
+       (set (make-local-variable 'global-hl-line-mode) nil))))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
