@@ -1,3 +1,7 @@
+;; C-z is a very useful prefix, and we almost never need `suspend-frame'.
+(global-unset-key (kbd "C-z")) ; suspend-frame
+(global-set-key (kbd "C-z C-z") 'suspend-frame)
+
 ;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
