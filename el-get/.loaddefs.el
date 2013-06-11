@@ -222,6 +222,45 @@ that buffer.
 ;;;***
 
 
+
+;;;### (autoloads (key-chord-define key-chord-define-global key-chord-mode)
+;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20870 62091
+;;;;;;  86373 952000))
+;;; Generated autoloads from key-chord/key-chord.el
+
+(autoload 'key-chord-mode "key-chord/key-chord" "\
+Toggle key chord mode.
+With positive ARG enable the mode. With zero or negative arg disable the mode.
+A key chord is two keys that are pressed simultaneously, or one key quickly
+pressed twice.
+See functions `key-chord-define-global' or `key-chord-define'
+and variables `key-chord-two-keys-delay' and `key-chord-one-key-delay'.
+
+\(fn ARG)" t nil)
+
+(autoload 'key-chord-define-global "key-chord/key-chord" "\
+Define a key-chord of two keys in KEYS starting a COMMAND.
+
+KEYS can be a string or a vector of two elements. Currently only elements
+that corresponds to ascii codes in the range 32 to 126 can be used.
+
+COMMAND can be an interactive function, a string, or nil.
+If COMMAND is nil, the key-chord is removed.
+
+\(fn KEYS COMMAND)" t nil)
+
+(autoload 'key-chord-define "key-chord/key-chord" "\
+Define in KEYMAP, a key-chord of two keys in KEYS starting a COMMAND.
+
+KEYS can be a string or a vector of two elements. Currently only elements
+that corresponds to ascii codes in the range 32 to 126 can be used.
+
+COMMAND can be an interactive function, a string, or nil.
+If COMMAND is nil, the key-chord is removed.
+
+\(fn KEYMAP KEYS COMMAND)" nil nil)
+
+;;;***
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
 ;;;;;;  (20802 24771 412829 899000))

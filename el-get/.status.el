@@ -34,4 +34,5 @@
 :unbound "installed"
 :dtrt-indent "installed"
 :lexbind-mode "installed"
+:key-chord "installed"
 )
