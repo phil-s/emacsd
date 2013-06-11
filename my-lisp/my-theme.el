@@ -47,7 +47,8 @@
   "A really obviously different theme, for when I need it."
   (interactive)
   (disable-theme 'zenburn)
-  (load-theme 'light-blue t)
+  ;;(load-theme 'light-blue t)
+  (load-theme 'deeper-blue t)
   ;; (eval-after-load "magit"
   ;;   '(progn
   ;;      (set-face-background 'magit-item-highlight "blue4")

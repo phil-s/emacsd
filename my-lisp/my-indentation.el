@@ -56,6 +56,7 @@
   ;; (global-set-key (kbd "<tab>") 'smart-tab-default)
   ;; ;; This being the case, do I even want smart-tab??
   ;; ;; n.b. without smart-tab, TAB will currently be bound to yas/expand)
+  (setcar (cdr (assq 'smart-tab-mode minor-mode-alist)) " \\t") ;; lighter
   (global-smart-tab-mode 1))
 
 (defvar my-global-smart-tab-major-mode-exceptions

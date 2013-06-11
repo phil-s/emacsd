@@ -87,6 +87,9 @@
 ;; eldoc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Don't take up space in the mode line.
+(setq eldoc-minor-mode-string nil)
+
 ;; Highlight the eldoc echo area text
 (defun frob-eldoc-argument-list (string)
   "Upcase and fontify STRING for use with `eldoc-mode'."
@@ -146,11 +149,15 @@ context-help to false"
 
 ;; Emacs Lisp
 
-;; Parenthesis / sexp matching
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  ;; Automated byte re-compilation.
   (require 'bytecomp)
   (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
+  ;; lexbind-mode indicates `lexical-binding' value.
+  (when (require 'lexbind-mode nil 'noerror)
+    (lexbind-mode 1))
+  ;; Highlight current sexp
   (when (require 'hl-sexp nil 'noerror)
     (hl-sexp-mode 1)))
 
@@ -198,6 +205,8 @@ Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
 (add-hook 'nxml-mode-hook 'my-templates-nxml-mode-hook)
 
 ;; SGML
+(autoload 'sgml-skip-tag-forward "sgml-mode")
+(autoload 'sgml-skip-tag-backward "sgml-mode")
 (defun my-sgml-mode-hook ()
   (local-set-key (kbd "<C-M-right>") 'sgml-skip-tag-forward)
   (local-set-key (kbd "<C-M-left>") 'sgml-skip-tag-backward))

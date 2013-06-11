@@ -34,6 +34,18 @@ use either \\[customize] or the function `dtrt-indent-mode'.")
 
 ;;;***
 
+;;;### (autoloads (ediff-trees) "ediff-trees/ediff-trees" "ediff-trees/ediff-trees.el"
+;;;;;;  (20918 64948 266264 579000))
+;;; Generated autoloads from ediff-trees/ediff-trees.el
+
+(autoload 'ediff-trees "ediff-trees/ediff-trees" "\
+Starts a new ediff session that recursively compares two
+trees.
+
+\(fn ROOT1 ROOT2)" t nil)
+
+;;;***
+
 ;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
 ;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
 ;;;;;;  (20587 44126))
@@ -179,6 +191,88 @@ Commands:
 
 ;;;***
 
+;;;### (autoloads (lexbind-mode lexbind-modeline-content lexbind-lexscratch
+;;;;;;  lexbind-toggle-lexical-binding) "lexbind-mode/lexbind-mode"
+;;;;;;  "lexbind-mode/lexbind-mode.el" (20918 60325 744377 548000))
+;;; Generated autoloads from lexbind-mode/lexbind-mode.el
+
+(autoload 'lexbind-toggle-lexical-binding "lexbind-mode/lexbind-mode" "\
+Toggle the variable `lexical-binding' on and off.  Interactive.
+When called with a numeric argument, set `lexical-binding' to t
+if the argument is positive, nil otherwise.
+Optional argument ARG if nil toggles `lexical-binding', positive
+enables it, non-positive disables it.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'lexbind-lexscratch "lexbind-mode/lexbind-mode" "\
+Make a lexical scratch buffer.
+
+\(fn &optional OTHER-WINDOW)" t nil)
+
+(autoload 'lexbind-modeline-content "lexbind-mode/lexbind-mode" "\
+Generate mode line content to indicate the value of `lexical-binding'.
+Optional argument ARGS if provided, the first argument is taken as the value
+of `lexical-binding'.
+
+\(fn &rest ARGS)" nil nil)
+
+(autoload 'lexbind-mode "lexbind-mode/lexbind-mode" "\
+Toggle Lexbind mode.
+Interactively with no argument, this command toggles the mode.
+A positive prefix argument enables the mode, any other prefix
+argument disables it.  From Lisp, argument omitted or nil enables
+the mode, `toggle' toggles the state.
+
+When lexbind mode is enabled, the mode line of a window will
+contain the string (LEX) for lexical binding, (DYN) for dynamic
+binding, to indicate the state of the lexical-binding variable in
+that buffer.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+
+
+;;;### (autoloads (key-chord-define key-chord-define-global key-chord-mode)
+;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20870 62091
+;;;;;;  86373 952000))
+;;; Generated autoloads from key-chord/key-chord.el
+
+(autoload 'key-chord-mode "key-chord/key-chord" "\
+Toggle key chord mode.
+With positive ARG enable the mode. With zero or negative arg disable the mode.
+A key chord is two keys that are pressed simultaneously, or one key quickly
+pressed twice.
+See functions `key-chord-define-global' or `key-chord-define'
+and variables `key-chord-two-keys-delay' and `key-chord-one-key-delay'.
+
+\(fn ARG)" t nil)
+
+(autoload 'key-chord-define-global "key-chord/key-chord" "\
+Define a key-chord of two keys in KEYS starting a COMMAND.
+
+KEYS can be a string or a vector of two elements. Currently only elements
+that corresponds to ascii codes in the range 32 to 126 can be used.
+
+COMMAND can be an interactive function, a string, or nil.
+If COMMAND is nil, the key-chord is removed.
+
+\(fn KEYS COMMAND)" t nil)
+
+(autoload 'key-chord-define "key-chord/key-chord" "\
+Define in KEYMAP, a key-chord of two keys in KEYS starting a COMMAND.
+
+KEYS can be a string or a vector of two elements. Currently only elements
+that corresponds to ascii codes in the range 32 to 126 can be used.
+
+COMMAND can be an interactive function, a string, or nil.
+If COMMAND is nil, the key-chord is removed.
+
+\(fn KEYMAP KEYS COMMAND)" nil nil)
+
+;;;***
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
 ;;;;;;  (20802 24771 412829 899000))
@@ -347,6 +441,32 @@ Anchors the rectangular region at point.
 
 Think of this one as `set-mark' except you're marking a rectangular region. It is
 an exceedingly quick way of adding multiple cursors to multiple lines.
+
+\(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads (php-eldoc-function) "php-eldoc/php-eldoc" "php-eldoc/php-eldoc.el"
+;;;;;;  (20872 22699 154255 608000))
+;;; Generated autoloads from php-eldoc/php-eldoc.el
+
+(autoload 'php-eldoc-function "php-eldoc/php-eldoc" "\
+Get function arguments for PHP function at point.
+
+\(fn)" nil nil)
+
+(add-hook 'php+-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+
+(add-hook 'php-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+
+;;;***
+
+;;;### (autoloads (php-extras-generate-eldoc) "php-eldoc/php-extras-gen-eldoc"
+;;;;;;  "php-eldoc/php-extras-gen-eldoc.el" (20872 22699 158255 608000))
+;;; Generated autoloads from php-eldoc/php-extras-gen-eldoc.el
+
+(autoload 'php-extras-generate-eldoc "php-eldoc/php-extras-gen-eldoc" "\
+Regenerate PHP function argument hash table from php.net. This is slow!
 
 \(fn)" t nil)
 
@@ -721,7 +841,7 @@ Mode for Varnish Command Language
 ;;;***
 
 ;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20802 24771 420829 903000))
+;;;;;;  "web-mode/web-mode.el" (20894 47131 596669 751000))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
@@ -933,8 +1053,8 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil nil ("dtrt-indent/dtrt-indent-diag.el" "dtrt-indent/dtrt-indent-test.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el") (20804 10249
-;;;;;;  398968 684000))
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "php-eldoc/php-extras-eldoc-functions.el"
+;;;;;;  "wgrep/wgrep-test.el") (20893 23799 692036 365000))
 
 ;;;***
 

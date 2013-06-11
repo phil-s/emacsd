@@ -44,6 +44,7 @@
                              "*.make"))
            ;; (drupal-p . t)
            (ff-search-directories . ("."))
+           ;; Cycle between these files with <f5>
            (ff-other-file-alist . (("\\.module$" (".install" ".info"))
                                    ("\\.install$" (".info"))
                                    ("\\.info$" (".module"))))

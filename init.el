@@ -44,6 +44,21 @@
 ;;    (ii)  'M-s C-/' for my-multi-occur-in-visible-buffers
 ;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
+;;;; * Compiling
+;; Libraries:
+;; # Auto?: sudo apt-get build-dep emacs24
+;; # Manual: sudo apt-get install -s libxpm-dev libjpeg62-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libgtk2.0-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev
+;; # libjpeg-62-dev may need to be libjpeg-dev
+;; # sudo apt-get install -s ttf-wqy-microhei
+;; # Maybe: sudo apt-get install -s automake autoconf
+;; # ./autogen.sh
+;; # ./configure --help
+;; # ./configure --prefix=/usr/local/src/emacs/24.3/usr/local --without-sound 2>&1 | tee config.out
+;; # make distclean
+;; # make
+;; # ./src/emacs -Q
+;; # make install
+
 ;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
@@ -58,6 +73,10 @@
 ;; Remapping Commands:
 ;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
+
+;; Conditional over-ride with fall-back:
+;; http://stackoverflow.com/questions/16090517/elisp-conditionally-change-keybinding
+;; http://stackoverflow.com/questions/2494096/emacs-key-binding-fallback
 
 ;; Interrogate bindings:
 ;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
@@ -111,6 +130,14 @@
 ;;
 ;; Remember that killing doesn't affect the registers, which
 ;; can make this useful for killing and replacing.
+
+;;;; * Unicode
+;; C-x 8 C-h
+;; http://ergoemacs.org/emacs/emacs_n_unicode.html
+;; If you need to type these chars often, call set-input-method and
+;; give “latin-9-prefix”. That will allow you to type these chars
+;; without typing C-x 8 first.
+;; C-\ calls toggle-input-method.
 
 ;;;; * Multiple windows and frames
 ;; C-x 1     : Single window on this buffer
@@ -176,6 +203,12 @@
 ;; M-x debug-on-entry FUNCTION
 ;; M-x cancel-debug-on-entry &optional FUNCTION
 ;; debug &rest DEBUGGER-ARGS
+;; M-x toggle-debug-on-error
+;; M-x toggle-debug-on-quit
+;; setq debug-on-signal
+;; setq debug-on-next-call
+;; setq debug-on-event
+;; setq debug-on-message REGEXP
 
 ;; Edebug -- a source-level debugger for Emacs Lisp
 ;; M-x edebug-defun (C-u C-M-x) Cancel with eval-defun (C-M-x)
@@ -304,6 +337,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; M-SPC     : just-one-space
+;; M-\       : delete-horizontal-space
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
@@ -311,7 +346,6 @@
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
-;; C-x z     : repeat
 ;; C-x M-:   : repeat-complex-command
 ;; C-x r x   : copy region to register
 ;; C-x r g   : insert contents of register

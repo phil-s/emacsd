@@ -16,12 +16,15 @@ INSTALL_INFO = install-info
 .PHONY=install
 
 EFLAGS=
-BATCH=$(EMACS) $(EFLAGS) -batch -q -no-site-file -eval \
-  "(setq load-path (cons (expand-file-name \".\") load-path))"
-
+BATCH=$(EMACS) $(EFLAGS) -batch -Q -L .
+# flet is "obsolete", but there is no valid alternative.  We surpress
+# these warning so that other warning are not overlocked because of
+# the flet noise.
+BATCHC=$(BATCH) -eval "(progn (require 'cl) \
+(put 'flet 'byte-obsolete-info nil))" -f batch-byte-compile
 
 %.elc: %.el
-	$(BATCH) --eval '(byte-compile-file "$<")'
+	@$(BATCHC) $<
 
 all: core docs contrib
 
@@ -38,11 +41,15 @@ magit-pkg.el: magit-pkg.el.in
 	sed -e s/@VERSION@/$(VERSION)/ < $< > $@
 
 50magit.el: $(ELS) magit.elc
-	$(BATCH) -eval "(progn (defvar generated-autoload-file nil) (let ((generated-autoload-file \"$(CURDIR)/50magit.el\") (make-backup-files nil)) (update-directory-autoloads \".\")))"
+	$(BATCH) -eval "\
+(progn (defvar generated-autoload-file nil)\
+  (let ((generated-autoload-file \"$(CURDIR)/50magit.el\")\
+        (make-backup-files nil))\
+    (update-directory-autoloads \".\")))"
 
 magit.elc: magit.el
 	sed -e "s/@GIT_DEV_VERSION@/$(VERSION)/" < magit.el > magit.tmp.el #NO_DIST
-	$(BATCH) --eval '(byte-compile-file "magit.tmp.el")' #NO_DIST
+	@$(BATCHC) magit.tmp.el #NO_DIST
 	mv magit.tmp.elc magit.elc #NO_DIST
 	rm magit.tmp.el #NO_DIST
 
@@ -57,9 +64,9 @@ magit-$(VERSION).tar.gz: $(DIST_FILES) $(DIST_FILES_CONTRIB)
 	mkdir -p magit-$(VERSION)/contrib
 	cp -p $(DIST_FILES) magit-$(VERSION)
 	cp -p $(DIST_FILES_CONTRIB) magit-$(VERSION)/contrib
-	echo "1s/=.*/=$(VERSION)/\nw" | ed -s magit-$(VERSION)/Makefile #NO_DIST
-	echo "g/NO_DIST/d\nw" | ed -s magit-$(VERSION)/Makefile #NO_DIST
-	echo ",s/@GIT_DEV_VERSION@/$(VERSION)/\nw" | ed -s magit-$(VERSION)/magit.el #NO_DIST
+	printf "1s/=.*/=$(VERSION)/\nw\n" | ed -s magit-$(VERSION)/Makefile #NO_DIST
+	printf "g/NO_DIST/d\nw\n" | ed -s magit-$(VERSION)/Makefile #NO_DIST
+	printf ",s/@GIT_DEV_VERSION@/$(VERSION)/\nw\n" | ed -s magit-$(VERSION)/magit.el #NO_DIST
 	tar -cvzf magit-$(VERSION).tar.gz magit-$(VERSION)
 	rm -rf magit-$(VERSION)
 
@@ -68,7 +75,7 @@ elpa: magit-$(VERSION).tar
 magit-$(VERSION).tar: $(ELPA_FILES)
 	mkdir magit-$(VERSION)
 	cp -p $(ELPA_FILES) magit-$(VERSION)
-	echo ",s/@GIT_DEV_VERSION@/$(VERSION)/\nw"  | ed -s magit-$(VERSION)/magit.el #NO_DIST
+	printf ",s/@GIT_DEV_VERSION@/$(VERSION)/\nw\n"  | ed -s magit-$(VERSION)/magit.el #NO_DIST
 	tar -cvf magit-$(VERSION).tar magit-$(VERSION)
 	rm -rf magit-$(VERSION)
 
@@ -77,7 +84,7 @@ install: install_core install_docs
 install_core: core
 	mkdir -p $(ELISP_INSTALL_DIR)
 	install -m 644 $(ELS) $(ELCS) $(ELISP_INSTALL_DIR)
-	echo ",s/@GIT_DEV_VERSION@/$(VERSION)/\nw" | ed -s $(ELISP_INSTALL_DIR)/magit.el #NO_DIST
+	printf ",s/@GIT_DEV_VERSION@/$(VERSION)/\nw\n" | ed -s $(ELISP_INSTALL_DIR)/magit.el #NO_DIST
 	mkdir -p $(DESTDIR)$(SYSCONFDIR)/emacs/site-start.d
 	install -m 644 50magit.el $(DESTDIR)$(SYSCONFDIR)/emacs/site-start.d/50magit.el
 

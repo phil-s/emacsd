@@ -1,21 +1,50 @@
+;;; magit-key-mode.el --- interactively tune git invocation
+
+;; Copyright (C) 2010  Phil Jackson
+
+;; Magit is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; Magit is distributed in the hope that it will be useful, but WITHOUT
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+;; or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+;; License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with Magit.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This library implements `magit-key-mode' which is used throughout
+;; Magit to let the user interactively select the command, switches
+;; and options to call Git with.  It can be though of as a way to
+;; provide "postfix" arguments.
+
+;;; Code:
+
 (require 'magit)
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (defvar magit-key-mode-key-maps '()
   "This will be filled lazily with proper `define-key' built
-  keymaps as they're requested.")
+keymaps as they're requested.")
 
-(defvar magit-key-mode-buf-name "*magit-key*"
-  "Name of the buffer.")
+(defvar magit-key-mode-buf-name "*magit-key: %s*"
+  "Format string to create the name of the magit-key buffer.")
+
+(defvar magit-key-mode-last-buffer nil
+  "Store the last magit-key buffer used.")
 
 (defvar magit-key-mode-current-args nil
   "A hash-table of current argument set (which will eventually
-  make it to the git command-line).")
+make it to the git command-line).")
 
 (defvar magit-key-mode-current-options '()
   "Current option set (which will eventually make it to the git
-  command-line).")
+command-line).")
 
 (defvar magit-log-mode-window-conf nil
   "Will hold the pre-menu configuration of magit.")
@@ -27,16 +56,19 @@
       ("l" "Short" magit-log)
       ("L" "Long" magit-log-long)
       ("h" "Reflog" magit-reflog)
+      ("f" "File log" magit-single-file-log)
       ("rl" "Ranged short" magit-log-ranged)
       ("rL" "Ranged long" magit-log-long-ranged)
       ("rh" "Ranged reflog" magit-reflog-ranged))
      (switches
       ("-m" "Only merge commits" "--merges")
+      ("-do" "Date Order" "--date-order")
       ("-f" "First parent" "--first-parent")
       ("-i" "Case insensitive patterns" "-i")
       ("-pr" "Pickaxe regex" "--pickaxe-regex")
       ("-n" "Name only" "--name-only")
       ("-am" "All match" "--all-match")
+      ("-ab" "All branches" "--branches")
       ("-al" "All" "--all"))
      (arguments
       ("=r" "Relative" "--relative=" read-directory-name)
@@ -45,7 +77,9 @@
       ("=<" "Before" "--before=" read-from-minibuffer)
       ("=s" "Pickaxe search" "-S" read-from-minibuffer)
       ("=a" "Author" "--author=" read-from-minibuffer)
-      ("=g" "Grep" "--grep=" read-from-minibuffer)))
+      ("=g" "Grep" "--grep=" read-from-minibuffer)
+      ("=b" "Branches" "--branches=" read-from-minibuffer)
+      ("=R" "Remotes" "--remotes=" read-from-minibuffer)))
 
     (running
      (actions
@@ -111,7 +145,8 @@
      (man-page "git-tag")
      (actions
       ("t" "Lightweight" magit-tag)
-      ("a" "Annotated" magit-annotated-tag))
+      ("a" "Annotated" magit-annotated-tag)
+      ("k" "Delete" magit-delete-tag))
      (switches
       ("-f" "Force" "-f")))
 
@@ -269,7 +304,7 @@ The user is prompted for the key."
     (goto-char (point-min))
     (let* ((exec (get-text-property (point) 'key-group-executor))
            (exec-alist (if exec `((,exec . ,(point))) nil)))
-      (do nil ((eobp) (nreverse exec-alist))
+      (cl-do nil ((eobp) (nreverse exec-alist))
         (when (not (eq exec (get-text-property (point) 'key-group-executor)))
           (setq exec (get-text-property (point) 'key-group-executor))
           (when exec (push (cons exec (point)) exec-alist)))
@@ -313,25 +348,22 @@ Put it in `magit-key-mode-key-maps' for fast lookup."
                                  (interactive)
                                  (magit-key-mode-help ',for-group)))
 
-    (flet ((defkey (k action)
-             (when (and (lookup-key map (car k))
-                        (not (numberp (lookup-key map (car k)))))
-               (message "Warning: overriding binding for `%s' in %S"
-                        (car k) for-group)
-               (ding)
-               (sit-for 2))
-             (define-key map (car k)
-               `(lambda () (interactive) ,action))))
-      (when actions
-        (dolist (k actions)
-          (defkey k `(magit-key-mode-command ',(nth 2 k)))))
-      (when switches
-        (dolist (k switches)
-          (defkey k `(magit-key-mode-add-option ',for-group ,(nth 2 k)))))
-      (when arguments
-        (dolist (k arguments)
-          (defkey k `(magit-key-mode-add-argument
-                      ',for-group ,(nth 2 k) ',(nth 3 k))))))
+    (let ((defkey (lambda (k action)
+                    (when (and (lookup-key map (car k))
+                               (not (numberp (lookup-key map (car k)))))
+                      (message "Warning: overriding binding for `%s' in %S"
+                               (car k) for-group)
+                      (ding)
+                      (sit-for 2))
+                    (define-key map (car k)
+                      `(lambda () (interactive) ,action)))))
+      (dolist (k actions)
+        (funcall defkey k `(magit-key-mode-command ',(nth 2 k))))
+      (dolist (k switches)
+        (funcall defkey k `(magit-key-mode-add-option ',for-group ,(nth 2 k))))
+      (dolist (k arguments)
+        (funcall defkey k `(magit-key-mode-add-argument
+                            ',for-group ,(nth 2 k) ',(nth 3 k)))))
 
     (push (cons for-group map) magit-key-mode-key-maps)
     map))
@@ -342,17 +374,15 @@ that brought up the key-mode window, so it can be used by the
 command that's eventually invoked.")
 
 (defun magit-key-mode-command (func)
-  (let ((args '()))
-    ;; why can't maphash return a list?!
+  (let ((current-prefix-arg (or current-prefix-arg magit-key-mode-prefix))
+        (magit-custom-options magit-key-mode-current-options))
     (maphash (lambda (k v)
-               (push (concat k (shell-quote-argument v)) args))
+               (push (concat k v) magit-custom-options))
              magit-key-mode-current-args)
-    (let ((magit-custom-options (append args magit-key-mode-current-options))
-          (current-prefix-arg (or current-prefix-arg magit-key-mode-prefix)))
-      (set-window-configuration magit-log-mode-window-conf)
-      (when func
-        (call-interactively func))
-      (magit-key-mode-kill-buffer))))
+    (set-window-configuration magit-log-mode-window-conf)
+    (kill-buffer magit-key-mode-last-buffer)
+    (when func
+      (call-interactively func))))
 
 (defun magit-key-mode-add-argument (for-group arg-name input-func)
   (let ((input (funcall input-func (concat arg-name ": "))))
@@ -361,18 +391,11 @@ command that's eventually invoked.")
 
 (defun magit-key-mode-add-option (for-group option-name)
   "Toggles the appearance of OPTION-NAME in `magit-key-mode-current-options'."
-  (if (not (member option-name magit-key-mode-current-options))
-      (add-to-list 'magit-key-mode-current-options option-name)
-    (setq magit-key-mode-current-options
-          (delete option-name magit-key-mode-current-options)))
+  (if (member option-name magit-key-mode-current-options)
+      (setq magit-key-mode-current-options
+            (delete option-name magit-key-mode-current-options))
+    (add-to-list 'magit-key-mode-current-options option-name))
   (magit-key-mode-redraw for-group))
-
-(defun magit-key-mode-kill-buffer ()
-  (interactive)
-  (kill-buffer magit-key-mode-buf-name))
-
-(defvar magit-log-mode-window-conf nil
-  "Pre-popup window configuration.")
 
 (defun magit-key-mode (for-group &optional original-opts)
   "Mode for magit key selection.
@@ -384,8 +407,9 @@ the key combination highlighted before the description."
   (setq magit-log-mode-window-conf
         (current-window-configuration))
   ;; setup the mode, draw the buffer
-  (let ((buf (get-buffer-create magit-key-mode-buf-name)))
-    (delete-other-windows)
+  (let ((buf (get-buffer-create (format magit-key-mode-buf-name
+                                        (symbol-name for-group)))))
+    (setq magit-key-mode-last-buffer buf)
     (split-window-vertically)
     (other-window 1)
     (switch-to-buffer buf)
@@ -439,8 +463,7 @@ the key combination highlighted before the description."
   (insert (propertize header 'face 'font-lock-keyword-face) "\n"))
 
 (defvar magit-key-mode-args-in-cols nil
-  "When true, draw arguments in columns as with switches and
-  options.")
+  "When true, draw arguments in columns as with switches and options.")
 
 (defun magit-key-mode-draw-args (args)
   "Draw the args part of the menu."
@@ -485,9 +508,9 @@ the key combination highlighted before the description."
      one-col-each)))
 
 (defun magit-key-mode-draw-in-cols (strings one-col-each)
-  "Given a list of strings, print in columns (using `insert'). If
-ONE-COL-EACH is true then don't columify, but rather, draw each
-item on one line."
+  "Given a list of strings, print in columns (using `insert').
+If ONE-COL-EACH is true then don't columify, but rather, draw
+each item on one line."
   (let ((longest-act (apply 'max (mapcar 'length strings))))
     (while strings
       (let ((str (car strings)))
@@ -540,3 +563,4 @@ Return the point before the actions part, if any, nil otherwise."
       magit-key-mode-groups)
 
 (provide 'magit-key-mode)
+;;; magit-key-mode.el ends here
