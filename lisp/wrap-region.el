@@ -1,14 +1,15 @@
 ;;; wrap-region.el --- Wrap text with punctation or tag
 
-;; Copyright (C) 2008-2010 Johan Andersson
+;; Copyright (C) 2008-2012 Johan Andersson
 
 ;; Author: Johan Andersson <johan.rejeep@gmail.com>
 ;; Maintainer: Johan Andersson <johan.rejeep@gmail.com>
-;; Version: 0.1.2
+;; Version: 0.6.0
 ;; Keywords: speed, convenience
 ;; URL: http://github.com/rejeep/wrap-region
 
 ;; This file is NOT part of GNU Emacs.
+
 
 ;;; License:
 
@@ -27,6 +28,7 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+
 ;;; Commentary:
 
 ;; wrap-region is a minor mode that wraps a region with
@@ -34,102 +36,110 @@
 ;; wraps with tags.
 ;;
 ;; To use wrap-region, make sure that this file is in Emacs load-path:
-;; (add-to-list 'load-path "/path/to/directory/or/file")
+;;   (add-to-list 'load-path "/path/to/directory/or/file")
 ;;
 ;; Then require wrap-region:
-;; (require 'wrap-region)
-;;
-;;
+;;   (require 'wrap-region)
+
 ;; To start wrap-region:
-;; (wrap-region-mode t) or M-x wrap-region-mode
+;;   (wrap-region-mode t) or M-x wrap-region-mode
 ;;
-;; If you only want wrap-region active in some mode, use a hook:
-;; (add-hook 'ruby-mode-hook 'wrap-region-mode)
+;; If you only want wrap-region active in some mode, use hooks:
+;;   (add-hook 'ruby-mode-hook 'wrap-region-mode)
 ;;
 ;; Or if you want to activate it in all buffers, use the global mode:
-;; (wrap-region-global-mode t)
-;;
-;;
+;;   (wrap-region-global-mode t)
+
 ;; To wrap a region, select that region and hit one of the punctuation
-;; keys. In "tag-modes" (html-mode, sgml-mode or xml-mode), "<" is
+;; keys. In "tag-modes"" (see `wrap-region-tag-active-modes'), "<" is
 ;; replaced and wraps the region with a tag. To activate this behavior
-;; in a mode other than default, you do:
-;; (add-to-list 'wrap-region-tag-active-modes 'some-tag-mode)
+;; in a mode that is not default:
+;;   (add-to-list 'wrap-region-tag-active-modes 'some-tag-mode)
 ;;
-;; `wrap-region-punctuations-table' contains a few default
-;; punctuations that wraps. You can add you own like this:
-;; (wrap-region-add-punctuation "#" "#")
+;; `wrap-region-table' contains the default punctuations
+;; that wraps. You can add and remove new wrappers by using the
+;; functions `wrap-region-add-wrapper' and
+;; `wrap-region-remove-wrapper' respectively.
+;;   (wrap-region-add-wrapper "`" "'")                  ; hit ` then region -> `region'
+;;   (wrap-region-add-wrapper "/*" "*/" "/")            ; hit / then region -> /*region*/
+;;   (wrap-region-add-wrapper "$" "$" nil 'latex-mode)  ; hit $ then region -> $region$ in latex-mode
+;;   (wrap-region-remove-wrapper "(")
+;;   (wrap-region-remove-wrapper "$" 'latex-mode)
+;;
+;; Some modes may have conflicting key bindings with wrap-region. To
+;; avoid conflicts, the list `wrap-region-except-modes' contains names
+;; of modes where wrap-region should not be activated (note, only in
+;; the global mode). You can add new modes like this:
+;;   (add-to-list 'wrap-region-except-modes 'conflicting-mode)
 
 
 ;;; Code:
 
-(defvar wrap-region-insert-twice nil
-  "If this is non nil, when inserting a punctuation, the corresponding
-punctuation will be inserted after and the cursor will be placed
-between them.")
+(require 'edmacro)
+(eval-when-compile
+  (require 'cl))
+
+
+(defstruct wrap-region-wrapper key left right modes)
 
 (defvar wrap-region-mode-map (make-sparse-keymap)
   "Keymap for `wrap-region-mode'.")
 
-(defvar wrap-region-punctuations-table
-  (let ((table (make-hash-table :test 'equal)))
-    (puthash "\"" "\"" table)
-    (puthash "'"  "'"  table)
-    (puthash "("  ")"  table)
-    (puthash "{"  "}"  table)
-    (puthash "["  "]"  table)
-    (puthash "<"  ">"  table)
-    table)
-  "A map with all punctuations and their right corresponding punctuation.")
+(defvar wrap-region-table (make-hash-table :test 'equal)
+  "Table with wrapper pairs.")
 
-(defvar wrap-region-tag-active-modes '(html-mode sgml-mode rhtml-mode)
-  "List of modes where < should be used as a tag instead of a regular punctuation.")
+(defvar wrap-region-tag-active-modes '(html-mode sgml-mode rhtml-mode nxml-mode nxhtml-mode)
+  "List of modes that uses tags.")
 
-(defvar wrap-region-hook '()
-  "Hook for `wrap-region-mode'.")
+(defvar wrap-region-except-modes '(calc-mode dired-mode)
+  "A list of modes in which `wrap-region-mode' should not be activated.")
 
-(defvar wrap-region-state-active nil
-  "t if insert twice is active. nil otherwise.")
+(defvar wrap-region-hook nil
+  "Called when `wrap-region-mode' is turned on.")
 
-(defvar wrap-region-state-pos nil
-  "The position when insert twice was last activated. nil if not active.")
+(defvar wrap-region-before-wrap-hook nil
+  "Called before wrapping.")
 
+(defvar wrap-region-after-wrap-hook nil
+  "Called after wrapping.")
 
-(defun wrap-region-with-punctuation-or-insert ()
-  "Wraps region if any. Otherwise insert punctuations."
-  (interactive)
-  (let ((key (char-to-string last-input-char)))
-    (if mark-active
-        (if (and (member major-mode wrap-region-tag-active-modes) (string= key "<"))
+(defvar wrap-region-only-with-negative-prefix nil
+  "Only wrap if the trigger key is prefixed with a negative value.")
+
+(defvar wrap-region-keep-mark nil
+  "Keep the wrapped region active.")
+
+(defun wrap-region-trigger (arg key)
+  "Called when trigger key is pressed."
+  (let* ((wrapper (wrap-region-find key)))
+    (if (and wrapper
+             (region-active-p)
+             (if wrap-region-only-with-negative-prefix (< arg 0) t))
+        (if (wrap-region-insert-tag-p key)
             (wrap-region-with-tag)
-          (wrap-region key (wrap-region-right-buddy key) (region-beginning) (region-end)))
-      (wrap-region-insert key))))
+          (wrap-region-with-punctuations
+           (wrap-region-wrapper-left wrapper)
+           (wrap-region-wrapper-right wrapper)))
+      (wrap-region-fallback key))))
 
-(defun wrap-region (left right beg end)
-  "Wraps region from BEG to END with LEFT and RIGHT."
-  (save-excursion
-    (goto-char beg)
-    (insert left)
-    (goto-char (+ end (length left)))
-    (insert right)))
+(defun wrap-region-find (key)
+  "Find first wrapper with trigger KEY that should be active in MAJOR-MODE."
+  (let ((wrappers (gethash key wrap-region-table)))
+    (or
+     (find-if
+      (lambda (wrapper)
+        (member major-mode (wrap-region-wrapper-modes wrapper)))
+      wrappers)
+     (find-if
+      (lambda (wrapper)
+        (not (wrap-region-wrapper-modes wrapper)))
+      wrappers))))
 
-(defun wrap-region-insert (left)
-  "Inserts LEFT and its right buddy if `wrap-region-insert-twice' is non nil."
-  (if wrap-region-insert-twice
-      (wrap-region-insert-twice left)
-    (insert left)))
-
-(defun wrap-region-insert-twice (left)
-  "Inserts LEFT and its right buddy."
-  (cond ((and wrap-region-state-active (wrap-region-match left))
-         (forward-char 1)
-         (wrap-region-reset))
-        (t
-         (insert left)
-         (when (wrap-region-right-buddy left)
-           (save-excursion
-             (insert (wrap-region-right-buddy left)))
-           (wrap-region-activate)))))
+(defun wrap-region-insert-tag-p (key)
+  "Check if tag should be inserted or not."
+  (and
+   (equal key "<")
+   (member major-mode wrap-region-tag-active-modes)))
 
 (defun wrap-region-with-tag ()
   "Wraps region with tag."
@@ -138,63 +148,153 @@ between them.")
          (tag-name (car split))
          (left (concat "<" tag ">"))
          (right (concat "</" tag-name ">")))
-    (wrap-region left right (region-beginning) (region-end))))
+    (wrap-region-with left right)))
 
-(defun wrap-region-right-buddy (left)
-  "Returns right buddy to LEFT."
-  (gethash left wrap-region-punctuations-table))
+(defun wrap-region-with-punctuations (left right)
+  "Wraps region with LEFT and RIGHT punctuations."
+  (wrap-region-with left right))
 
-(defun wrap-region-add-punctuation (left right)
-  "Adds a new punctuation pair."
-  (puthash left right wrap-region-punctuations-table))
+(defun wrap-region-with (left right)
+  "Wraps region with LEFT and RIGHT."
+  (run-hooks 'wrap-region-before-wrap-hook)
+  (let ((beg (region-beginning))
+        (end (region-end))
+        (pos (point))
+        (deactivate-mark nil))
+    (save-excursion
+      (goto-char beg)
+      (insert left)
+      (goto-char (+ end (length left)))
+      (insert right))
+    (if wrap-region-keep-mark
+        (let* ((beg-p (eq beg pos))
+               (beg* (+ beg (length left)))
+               (end* (+ end (length left)))
+               (pos* (if beg-p beg* end*)))
+          (push-mark (if beg-p end* beg*) nil t)
+          (goto-char (if beg-p beg* end*)))
+      (deactivate-mark)))
+  (run-hooks 'wrap-region-after-wrap-hook))
 
-(defun wrap-region-match (key)
-  "Returns t if the current position is an enclosing match with
-KEY. nil otherwise."
-  (let ((before (char-to-string (char-before)))
-        (after  (char-to-string (char-after))))
-    (and (string= key after)
-         (string= after (wrap-region-right-buddy before)))))
+(defun wrap-region-fallback (key)
+  "Execute function that KEY was bound to before `wrap-region-mode'."
+  (let ((wrap-region-mode nil))
+    (execute-kbd-macro
+     (edmacro-parse-keys key))))
 
-(defun wrap-region-reset ()
-  "Set insert twice to inactive."
-  (setq wrap-region-state-pos nil)
-  (setq wrap-region-state-active nil))
+(defun wrap-region-add-wrappers (wrappers)
+  "Add WRAPPERS by calling `wrap-region-add-wrapper' for each one."
+  (mapc
+   (lambda (wrapper)
+     (apply 'wrap-region-add-wrapper wrapper))
+   wrappers))
 
-(defun wrap-region-activate ()
-  "Set insert twice to active at current point."
-  (setq wrap-region-state-pos (point))
-  (setq wrap-region-state-active t))
+(defun wrap-region-add-wrapper (left right &optional key mode-or-modes)
+  "Add new LEFT and RIGHT wrapper.
 
-(defun wrap-region-command ()
-  "Called after a command is executed.
-If the executed command moved the cursor, then insert twice is set inactive."
-  (if (and wrap-region-state-active
-           (/= (point) wrap-region-state-pos))
-      (wrap-region-reset)))
+Optional KEY is the trigger key and MODE-OR-MODES is a single
+mode or multiple modes that the wrapper should trigger in."
+  (or key (setq key left))
+  (let ((wrappers (gethash key wrap-region-table))
+        (modes
+         (if mode-or-modes
+             (if (listp mode-or-modes)
+                 mode-or-modes
+               (list mode-or-modes)))))
+    (if wrappers
+        (let ((wrapper-exactly-same
+               (find-if
+                (lambda (wrapper)
+                  (and
+                   (equal (wrap-region-wrapper-key wrapper) key)
+                   (equal (wrap-region-wrapper-left wrapper) left)
+                   (equal (wrap-region-wrapper-right wrapper) right)))
+                wrappers)))
+          (if wrapper-exactly-same
+              (when (wrap-region-wrapper-modes wrapper-exactly-same)
+                (if modes
+                    (setf
+                     (wrap-region-wrapper-modes wrapper-exactly-same)
+                     (union modes (wrap-region-wrapper-modes wrapper-exactly-same)))
+                  (let ((new-wrapper (make-wrap-region-wrapper :key key :left left :right right)))
+                    (puthash key (cons new-wrapper wrappers) wrap-region-table))))
+            (let* ((new-wrapper (make-wrap-region-wrapper :key key :left left :right right :modes modes))
+                   (wrapper-same-trigger
+                    (find-if
+                     (lambda (wrapper)
+                       (equal (wrap-region-wrapper-key wrapper) key))
+                     wrappers))
+                   (wrapper-same-trigger-modes
+                    (wrap-region-wrapper-modes wrapper-same-trigger)))
+              (when (and wrapper-same-trigger wrapper-same-trigger-modes)
+                (let ((new-modes (nset-difference (wrap-region-wrapper-modes wrapper-same-trigger) modes)))
+                  (if new-modes
+                      (setf (wrap-region-wrapper-modes wrapper-same-trigger) new-modes)
+                    (setq wrappers (delete wrapper-same-trigger wrappers)))))
+              (puthash key (cons new-wrapper wrappers) wrap-region-table))))
+      (let ((new-wrapper (make-wrap-region-wrapper :key key :left left :right right :modes modes)))
+        (puthash key (list new-wrapper) wrap-region-table))))
+  (wrap-region-define-trigger key))
 
-(defun wrap-region-backward-delete-char ()
-  "Deletes an enclosing pair backwards if insert twice is active.
- Otherwise it falls back to default."
-  (interactive)
-  (cond ((and wrap-region-state-active (wrap-region-match (char-to-string (char-before))))
-         (forward-char 1)
-         (backward-delete-char 2))
-        (t
-         (let ((wrap-region-mode nil)
-               (original-func (key-binding (kbd "DEL"))))
-           (call-interactively original-func))))
-  (wrap-region-reset))
+(defun wrap-region-remove-wrapper (key &optional mode-or-modes)
+  "Remove wrapper with trigger KEY or exclude from MODE-OR-MODES.
 
-(defun wrap-region-define-keys ()
-  "Defines all key bindings."
-  (if wrap-region-insert-twice
-      (define-key wrap-region-mode-map (kbd "DEL") 'wrap-region-backward-delete-char))
-  (maphash (lambda (left right)
-             (define-key wrap-region-mode-map left 'wrap-region-with-punctuation-or-insert)
-             (if wrap-region-insert-twice
-                 (define-key wrap-region-mode-map right 'wrap-region-with-punctuation-or-insert)))
-           wrap-region-punctuations-table))
+If MODE-OR-MODES is not present, all wrappers for KEY are removed."
+  (if mode-or-modes
+      (let ((wrappers (gethash key wrap-region-table))
+            (modes
+             (if mode-or-modes
+                 (if (listp mode-or-modes)
+                     mode-or-modes
+                   (list mode-or-modes)))))
+        (mapc
+         (lambda (mode)
+           (let ((wrapper-including-mode
+                  (find-if
+                   (lambda (wrapper)
+                     (member mode (wrap-region-wrapper-modes wrapper)))
+                   wrappers)))
+             (when wrapper-including-mode
+               (let ((new-modes (delete mode (wrap-region-wrapper-modes wrapper-including-mode))))
+                 (if new-modes
+                     (setf (wrap-region-wrapper-modes wrapper-including-mode) new-modes)
+                   (puthash key (delete wrapper-including-mode wrappers) wrap-region-table))))))
+         modes))
+    (wrap-region-destroy-wrapper key)))
+
+(defun wrap-region-destroy-wrapper (key)
+  "Remove the wrapper bound to KEY, no questions asked."
+  (remhash key wrap-region-table)
+  (wrap-region-unset-key key))
+
+(defun wrap-region-define-wrappers ()
+  "Defines defaults wrappers."
+  (mapc
+   (lambda (pair)
+     (apply 'wrap-region-add-wrapper pair))
+   '(("\"" "\"")
+     ("'"  "'")
+     ("("  ")")
+     ("{"  "}")
+     ("["  "]")
+     ("<"  ">"))))
+
+(defun wrap-region-define-trigger (key)
+  "Defines KEY as wrapper."
+  (wrap-region-define-key
+   key
+   `(lambda (arg)
+      (interactive "p")
+      (wrap-region-trigger arg ,key))))
+
+(defun wrap-region-unset-key (key)
+  "Remove KEY from `wrap-region-mode-map'."
+  (wrap-region-define-key key))
+
+(defun wrap-region-define-key (key &optional fn)
+  "Binds KEY to FN in `wrap-region-mode-map'."
+  (define-key wrap-region-mode-map (read-kbd-macro key) fn))
+
 
 ;;;###autoload
 (define-minor-mode wrap-region-mode
@@ -203,20 +303,19 @@ If the executed command moved the cursor, then insert twice is set inactive."
   :lighter " wr"
   :keymap wrap-region-mode-map
   (when wrap-region-mode
-    (wrap-region-define-keys)
-    (wrap-region-reset)
-    (add-hook 'post-command-hook 'wrap-region-command)
+    (wrap-region-define-wrappers)
     (run-hooks 'wrap-region-hook)))
 
 ;;;###autoload
 (defun turn-on-wrap-region-mode ()
   "Turn on `wrap-region-mode'"
   (interactive)
-  (wrap-region-mode +1))
+  (unless (member major-mode wrap-region-except-modes)
+    (wrap-region-mode +1)))
 
 ;;;###autoload
 (defun turn-off-wrap-region-mode ()
-  "Turn off `wrap-region-mode'"
+  "Turn off `wrap-region-mode'."
   (interactive)
   (wrap-region-mode -1))
 
