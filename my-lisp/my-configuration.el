@@ -309,26 +309,22 @@ disabled.")))
              (eq last-input-event ?\r))
     (dired-find-file)))
 
-;; Enable dired-x by default
-(add-hook 'dired-load-hook
-          (lambda ()
-            (load "dired-x")
-            ;; Set dired-x global variables here.  For example:
-            ;; (setq dired-guess-shell-gnutar "gtar")
-            ;; (setq dired-x-hands-off-my-keys nil)
-            ))
-;; (add-hook 'dired-mode-hook
-;;           (lambda ()
-;;             ;; Set dired-x buffer-local variables here.  For example:
-;;             ;; (dired-omit-mode 1)
-;;             ))
-
-;; Use dired-details
 (eval-after-load "dired"
   '(progn
+     ;; Enable dired-x by default
+     (require 'dired-x)
+     ;; Set dired-x global variables here.  For example:
+     ;; (setq dired-guess-shell-gnutar "gtar")
+     ;; (setq dired-x-hands-off-my-keys nil)
+
+     ;; dired-details hides unwanted information by default
      (require 'dired-details)
      (dired-details-install)
      (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle)))
+
+(add-hook 'dired-mode-hook 'my-dired-mode-hook)
+(defun my-dired-mode-hook ()
+  (dired-omit-mode 1))
 
 ;; Use ControlMaster with TRAMP by default
 (setq tramp-default-method "scpc"
