@@ -33,4 +33,5 @@
 :dired-details "installed"
 :unbound "installed"
 :dtrt-indent "installed"
+:lexbind-mode "installed"
 )

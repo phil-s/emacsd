@@ -96,6 +96,10 @@
             :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
             :features keep-buffers)
 
+     (:name lexbind-mode
+            :type git
+            :url "git://github.com/spacebat/lexbind-mode.git")
+
      (:name magit)
 
      (:name mo-git-blame)

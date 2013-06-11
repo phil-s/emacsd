@@ -150,11 +150,15 @@ context-help to false"
 
 ;; Emacs Lisp
 
-;; Parenthesis / sexp matching
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  ;; Automated byte re-compilation.
   (require 'bytecomp)
   (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
+  ;; lexbind-mode indicates `lexical-binding' value.
+  (when (require 'lexbind-mode nil 'noerror)
+    (lexbind-mode 1))
+  ;; Highlight current sexp
   (when (require 'hl-sexp nil 'noerror)
     (hl-sexp-mode 1)))
 
