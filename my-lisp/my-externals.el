@@ -128,6 +128,10 @@
      (:name htmlr
             :type emacswiki)
 
+     (:name ibuffer-vc
+            :type git
+            :url "git://github.com/purcell/ibuffer-vc.git")
+
      (:name iedit)
 
      (:name image-dimensions-minor-mode

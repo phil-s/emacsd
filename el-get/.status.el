@@ -54,4 +54,5 @@
 :diff-hl "installed"
 :font-lock-studio "installed"
 :smart-tabs-mode "installed"
+:ibuffer-vc "installed"
 )
