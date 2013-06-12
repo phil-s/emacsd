@@ -747,8 +747,8 @@ or before point."
 (defun my-terminal ()
   (interactive)
   (require 'term)
-  (when (not (and term-ansi-buffer-name
-                  (buffer-name (get-buffer term-ansi-buffer-name))))
+  (unless (and term-ansi-buffer-name
+               (buffer-name (get-buffer term-ansi-buffer-name)))
     (call-interactively 'ansi-term))
   (pop-to-buffer term-ansi-buffer-name '(display-buffer-reuse-window
                                          . ((reusable-frames . visible))))
@@ -775,7 +775,7 @@ or before point."
 
 (defun my-drush-console ()
   (interactive)
-  (when (not (get-buffer "*drush console*"))
+  (unless (get-buffer "*drush console*")
     (call-interactively 'drush-console))
   (pop-to-buffer "*drush console*" '(display-buffer-reuse-window
                                      . ((reusable-frames . visible))))

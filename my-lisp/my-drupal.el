@@ -9,7 +9,7 @@
                       (or (file-symlink-p (directory-file-name tag-dir))
                           tag-dir))))
         (visit-tags-table tag-dir t)
-        (when (not (timerp drupal-tags-autoupdate-timer))
+        (unless (timerp drupal-tags-autoupdate-timer)
           (drupal-tags-autoupdate-start)))))
 
   ;; PHP configuration for Drupal
@@ -168,9 +168,9 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 Do not replace the original file unless there are differences."
   (format
    (concat
-    "cd \"%s\";"
-    " find . \\( -type d -regex \"%s\" -prune \\)"
-    " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)"
+    "cd \"%s\";";dir
+    " find . \\( -type d -regex \"%s\" -prune \\)";prune
+    " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
     " | etags --language=php --output=TAGS.new -"
     " && ! cmp --silent TAGS TAGS.new"
     " && mv -f TAGS.new TAGS;"
@@ -231,8 +231,8 @@ We assume that a buffer is visiting the most recent version of this time."
         (when proc
           (set-process-sentinel proc 'drupal-tags-sentinel)))
       (bury-buffer drupal-tags-autoupdate-buffer)
-      (when (not (verify-visited-file-modtime
-                  (get-file-buffer tags-file-name)))
+      (unless (verify-visited-file-modtime
+               (get-file-buffer tags-file-name))
         (setq tags-completion-table nil)))))
 
 ;; start functions
