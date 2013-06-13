@@ -152,6 +152,15 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 
 (defvar drupal-tags-autoupdate-buffer "*drupal-tags-autoupdate*")
 
+(defvar drupal-tags-autoupdate-enabled t
+  "Set to nil to disable TAGS autoupdate functionality.")
+
+(defun drupal-tags-autoupdate-toggle ()
+  (interactive)
+  (setq drupal-tags-autoupdate-enabled (not drupal-tags-autoupdate-enabled))
+  (message "drupal-tags-autoupdate is now %s."
+           (if drupal-tags-autoupdate-enabled "enabled" "disabled")))
+
 ;; (defun drupal-tags-autoupdate-command ()
 ;;   (concat
 ;;    "cd " (file-name-directory tags-file-name) ";"
@@ -218,22 +227,22 @@ We assume that a buffer is visiting the most recent version of this time."
 ;; callback function
 (defun drupal-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
-  (let ((dir (file-name-directory tags-file-name))
-        (tags-modified (my-buffer-file-last-modified tags-file-name)))
-    (when (and tags-modified
-               (> (my-directory-tree-last-modified dir)
-                  tags-modified))
-      (save-window-excursion
-        (let ((message-truncate-lines t))
-          (async-shell-command (drupal-tags-autoupdate-command dir)
-                               drupal-tags-autoupdate-buffer)))
-      (let ((proc (get-buffer-process drupal-tags-autoupdate-buffer)))
-        (when proc
-          (set-process-sentinel proc 'drupal-tags-sentinel)))
-      (bury-buffer drupal-tags-autoupdate-buffer)
-      (unless (verify-visited-file-modtime
-               (get-file-buffer tags-file-name))
-        (setq tags-completion-table nil)))))
+  (when drupal-tags-autoupdate-enabled
+    (let ((dir (file-name-directory tags-file-name))
+          (tags-modified (my-buffer-file-last-modified tags-file-name)))
+      (when (and tags-modified
+                 (> (my-directory-tree-last-modified dir)
+                    tags-modified))
+        (save-window-excursion
+          (let ((message-truncate-lines t))
+            (async-shell-command (drupal-tags-autoupdate-command dir)
+                                 drupal-tags-autoupdate-buffer)))
+        (let ((proc (get-buffer-process drupal-tags-autoupdate-buffer)))
+          (when proc
+            (set-process-sentinel proc 'drupal-tags-sentinel)))
+        (bury-buffer drupal-tags-autoupdate-buffer)
+        (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
+          (setq tags-completion-table nil))))))
 
 ;; start functions
 (defun drupal-tags-autoupdate-start ()
