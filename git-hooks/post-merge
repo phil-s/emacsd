@@ -1,0 +1,24 @@
+#!/bin/sh
+# post-merge
+
+# This hook is invoked by git merge, which happens when a git
+# pull is done on a local repository. The hook takes a single
+# parameter, a status flag specifying whether or not the merge
+# being done was a squash merge.
+
+squash=$1 # 1 for "merge --squash", 0 otherwise
+
+# This hook cannot affect the outcome of git merge and is not
+# executed, if the merge failed due to conflicts.
+
+# This hook can be used in conjunction with a corresponding
+# pre-commit hook to save and restore any form of metadata
+# associated with the working tree (eg: permissions/ownership,
+# ACLS, etc). See contrib/hooks/setgitperms.perl for an
+# example of how to do this.
+
+# n.b. pwd will be this working copy's root directory.
+git_dir=$(pwd)
+
+# recompile my-lisp directory to account for upstream modifications.
+emacs -Q --batch --eval "(byte-recompile-directory \"${git_dir}/my-lisp/\")"

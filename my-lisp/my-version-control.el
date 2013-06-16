@@ -114,4 +114,17 @@ doing this instead."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Check that my git hooks are active for this .emacs.d repository.
+(let* ((git-hooks (concat user-emacs-directory "/.git/hooks"))
+       (my-hooks (concat user-emacs-directory "/git-hooks"))
+       (hook-files (directory-files my-hooks nil "[^.]")))
+  (when (file-directory-p git-hooks) ;; we're in a git repo
+    (mapc (lambda (hook)
+            (unless (file-exists-p (expand-file-name
+                                    (concat git-hooks "/" hook)))
+              (message "%s git hook not installed." hook)))
+          hook-files)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-version-control)
