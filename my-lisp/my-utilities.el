@@ -843,6 +843,23 @@ See `fill-paragraph' and `fill-region'."
      (ad-disable-advice ,function ,class ,name)
      (ad-activate ,function)))
 
+(defun delight (spec &optional value file)
+  "Modify the lighter value displayed in the mode line for the given mode SPEC
+if and when the mode is loaded.
+
+SPEC can be either a mode symbol, or a list of the form ((MODE VALUE FILE) ...)
+
+VALUE is the replacement lighter value, or nil to disable. VALUE is typically
+a string, but may have other values. See `minor-mode-alist' for details.
+
+The optional FILE argument is the file to pass to `eval-after-load'.
+If FILE is nil then the mode symbol is passed as the required feature."
+  (let ((spec (if (consp spec) spec (list (list spec value file)))))
+    (while spec
+      (destructuring-bind (mode &optional value file) (pop spec)
+        (eval-after-load (or file mode)
+          `(setcar (cdr (assq ',mode minor-mode-alist)) ',value))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
