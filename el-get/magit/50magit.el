@@ -3,8 +3,8 @@
 ;;; Code:
 
 
-;;;### (autoloads (magit-status) "magit" "magit.el" (20901 46610
-;;;;;;  542054 433000))
+;;;### (autoloads (magit-status) "magit" "magit.el" (20931 41259
+;;;;;;  455032 654000))
 ;;; Generated autoloads from magit.el
 
 (autoload 'magit-status "magit" "\
@@ -22,7 +22,7 @@ when asking for user input.
 ;;;***
 
 ;;;### (autoloads (magit-blame-mode) "magit-blame" "magit-blame.el"
-;;;;;;  (20901 46610 538054 179000))
+;;;;;;  (20931 41259 455032 654000))
 ;;; Generated autoloads from magit-blame.el
 
 (autoload 'magit-blame-mode "magit-blame" "\
@@ -33,7 +33,7 @@ Display blame information inline.
 ;;;***
 
 ;;;### (autoloads (turn-on-magit-flow magit-flow-mode) "magit-flow"
-;;;;;;  "magit-flow.el" (20901 46610 542054 433000))
+;;;;;;  "magit-flow.el" (20919 2025 297414 329000))
 ;;; Generated autoloads from magit-flow.el
 
 (autoload 'magit-flow-mode "magit-flow" "\
@@ -49,7 +49,7 @@ Unconditionally turn on `magit-flow-mode'.
 ;;;***
 
 ;;;### (autoloads (turn-on-magit-stgit magit-stgit-mode) "magit-stgit"
-;;;;;;  "magit-stgit.el" (20901 46610 542054 433000))
+;;;;;;  "magit-stgit.el" (20919 2025 301414 278000))
 ;;; Generated autoloads from magit-stgit.el
 
 (autoload 'magit-stgit-mode "magit-stgit" "\
@@ -65,7 +65,7 @@ Unconditionally turn on `magit-stgit-mode'.
 ;;;***
 
 ;;;### (autoloads (turn-on-magit-svn magit-svn-mode) "magit-svn"
-;;;;;;  "magit-svn.el" (20901 46610 542054 433000))
+;;;;;;  "magit-svn.el" (20919 2025 301414 278000))
 ;;; Generated autoloads from magit-svn.el
 
 (autoload 'magit-svn-mode "magit-svn" "\
@@ -81,7 +81,7 @@ Unconditionally turn on `magit-svn-mode'.
 ;;;***
 
 ;;;### (autoloads (turn-on-magit-topgit magit-topgit-mode) "magit-topgit"
-;;;;;;  "magit-topgit.el" (20901 46610 542054 433000))
+;;;;;;  "magit-topgit.el" (20919 2025 301414 278000))
 ;;; Generated autoloads from magit-topgit.el
 
 (autoload 'magit-topgit-mode "magit-topgit" "\
@@ -97,8 +97,8 @@ Unconditionally turn on `magit-topgit-mode'.
 ;;;***
 
 ;;;### (autoloads (global-magit-wip-save-mode magit-wip-save-mode
-;;;;;;  magit-wip-mode) "magit-wip" "magit-wip.el" (20901 46610 542054
-;;;;;;  433000))
+;;;;;;  magit-wip-mode) "magit-wip" "magit-wip.el" (20919 2025 301414
+;;;;;;  278000))
 ;;; Generated autoloads from magit-wip.el
 
 (defvar magit-wip-mode nil "\
@@ -147,8 +147,8 @@ See `magit-wip-save-mode' for more information on Magit-Wip-Save mode.
 
 ;;;***
 
-;;;### (autoloads (rebase-mode) "rebase-mode" "rebase-mode.el" (20901
-;;;;;;  46610 542054 433000))
+;;;### (autoloads (rebase-mode) "rebase-mode" "rebase-mode.el" (20919
+;;;;;;  2025 305414 227000))
 ;;; Generated autoloads from rebase-mode.el
 
 (autoload 'rebase-mode "rebase-mode" "\
@@ -166,7 +166,7 @@ running 'man git-rebase' at the command line) for details.
 ;;;***
 
 ;;;### (autoloads nil nil ("magit-bisect.el" "magit-key-mode.el"
-;;;;;;  "magit-pkg.el") (20901 46613 143469 990000))
+;;;;;;  "magit-pkg.el") (20931 41273 867872 13000))
 
 ;;;***
 
