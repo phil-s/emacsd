@@ -19,43 +19,18 @@
 ;;            (eldoc-mode nil "eldoc")
 ;;            (rainbow-mode)
 ;;            (emacs-lisp-mode "Elisp" "lisp-mode")))
-;;
-;; (delight) ;; initialise using customised value of `delighted' variable.
 
 ;;; Code:
 
 (defvar delighted ()
   "List of specs for modifying the display of mode names in the mode line.")
 
-;; (defcustom delighted ()
-;;   "List of specs for modifying the display of mode names in the mode line."
-;;   :group 'delight
-;;   :link '(variable-link mode-name)
-;;   :link '(variable-link minor-mode-alist)
-;;   :link '(variable-link mode-line-format)
-;;   :type '(repeat
-;;           (list (symbol :tag "Mode function"
-;;                         :value "")
-;;                 (choice :tag "Mode line display"
-;;                         (const :tag "Hidden" nil)
-;;                         (string :tag "String")
-;;                         (symbol :tag "Symbol" :value "")
-;;                         (sexp :tag "List" :value ""))
-;;                 (choice :tag "After loading"
-;;                         :help-echo "The FILE argument for `eval-after-load'."
-;;                         (const :tag "Feature matching the function symbol" nil)
-;;                         (symbol :tag "Provided feature" :value "")
-;;                         (file :tag "Library file" :value "")))))
-
 ;;;###autoload
-(defun delight (&optional spec value file)
+(defun delight (spec &optional value file)
   "Modify the lighter value displayed in the mode line for the given mode SPEC
 if and when the mode is loaded.
 
 SPEC can be either a mode symbol, or a list of the form ((MODE VALUE FILE) ...)
-
-If SPEC is nil then no new specifications are added, but if the `delighted'
-variable has been customised then its specification will be initialised.
 
 For minor modes, VALUE is the replacement lighter value (or nil to disable).
 VALUE is typically a string, but may have other values. See `minor-mode-alist'
