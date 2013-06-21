@@ -5,7 +5,7 @@
   ;; Define external sources
   (setq
    el-get-sources
-   '((:name el-get
+   `((:name el-get
             :type git
             :url "git://github.com/dimitri/el-get.git")
 
@@ -44,7 +44,8 @@
 
      (:name ediff-binary-hexl
             :type http
-            :url "file:///home/phil/.emacs.d/local-repository/ediff-binary-hexl.el")
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/ediff-binary-hexl.el"))
 
      (:name ediff-trees
             :type emacswiki)
@@ -153,7 +154,8 @@
 
      (:name windcycle
             :type http
-            :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/windcycle.el")
             :features windcycle)
 
      (:name unbound
@@ -163,7 +165,8 @@
 
      (:name vcl-mode
             :type http
-            :url "file:///home/phil/.emacs.d/local-repository/vcl-mode.el")
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/vcl-mode.el"))
 
      (:name web-mode
             :type git
