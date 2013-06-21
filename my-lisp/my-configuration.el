@@ -248,6 +248,15 @@ See also: `my-copy-buffer-file-name'."
 ;; Show approx buffer size in modeline
 ;; (size-indication-mode 1)
 
+;; Shorter mode names text in the mode line.
+(delight '((abbrev-mode " Abv" abbrev)
+           (smart-tab-mode " \\t" smart-tab)
+           (eldoc-mode nil eldoc)
+           (ws-trim-mode nil ws-trim)
+           (rainbow-mode)
+           (emacs-lisp-mode "Elisp" lisp-mode)
+           (lisp-interaction-mode "Elisp:Int" lisp-mode)))
+
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 ;; But not email addresses. This is a hack to never match anything.
@@ -288,10 +297,6 @@ See also: `my-copy-buffer-file-name'."
 disabled.")))
 (add-hook 'find-file-hooks
           'my-find-file-check-make-large-file-read-only-hook)
-
-;; Abbreviated lighter for Abbrev mode
-(eval-after-load "abbrev"
-  '(setcar (cdr (assq 'abbrev-mode minor-mode-alist)) " Abbr"))
 
 ;; ;; Interactively Do Things
 ;; (require 'ido)
