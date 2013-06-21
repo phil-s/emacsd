@@ -36,4 +36,5 @@
 :lexbind-mode "installed"
 :key-chord "installed"
 :php-eldoc "installed"
+:delight "installed"
 )

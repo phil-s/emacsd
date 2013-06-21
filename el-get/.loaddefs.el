@@ -3,6 +3,29 @@
 ;;; Code:
 
 
+;;;### (autoloads (delight) "delight/delight" "delight/delight.el"
+;;;;;;  (20932 12443 827101 51000))
+;;; Generated autoloads from delight/delight.el
+
+(autoload 'delight "delight/delight" "\
+Modify the lighter value displayed in the mode line for the given mode SPEC
+if and when the mode is loaded.
+
+SPEC can be either a mode symbol, or a list of the form ((MODE VALUE FILE) ...)
+
+For minor modes, VALUE is the replacement lighter value (or nil to disable).
+VALUE is typically a string, but may have other values. See `minor-mode-alist'
+for details.
+
+For major modes, VALUE is a string to which `mode-name' will be set.
+
+The optional FILE argument is the file to pass to `eval-after-load'.
+If FILE is nil then the mode symbol is passed as the required feature.
+
+\(fn SPEC &optional VALUE FILE)" nil nil)
+
+;;;***
+
 ;;;### (autoloads (dtrt-indent-mode dtrt-indent-mode) "dtrt-indent/dtrt-indent"
 ;;;;;;  "dtrt-indent/dtrt-indent.el" (20804 10249 123933 346000))
 ;;; Generated autoloads from dtrt-indent/dtrt-indent.el

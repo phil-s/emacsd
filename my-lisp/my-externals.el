@@ -31,6 +31,11 @@
             :type git
             :url "git://jblevins.org/git/deft.git")
 
+     (:name delight
+            :type http
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/delight.el"))
+
      ;; (:name dictionary-el
      ;;        :type apt-get)
 
