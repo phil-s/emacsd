@@ -4,9 +4,9 @@
 ;;
 ;; Enables you to customise the mode names displayed in the mode line.
 ;;
-;; For major modes, the buffer-local `mode-name' variable is set. This
-;; is the 'pretty name' of the major mode, so may also be re-used in
-;; other contexts if the mode name needs to be displayed.
+;; For major modes, the buffer-local `mode-name' variable is modified,
+;; with advice around the `format-mode-line' function ensuring that the
+;; original value is used in contexts outside of mode line redraws.
 ;;
 ;; For minor modes, the associated value in `minor-mode-alist' is set.
 ;;
@@ -36,7 +36,8 @@ For minor modes, VALUE is the replacement lighter value (or nil to disable).
 VALUE is typically a string, but may have other values. See `minor-mode-alist'
 for details.
 
-For major modes, VALUE is a string to which `mode-name' will be set.
+For major modes, VALUE is typically a string to which `mode-name' will be set,
+but any value suitable for `mode-line-format' may be used.
 
 The optional FILE argument is the file to pass to `eval-after-load'.
 If FILE is nil then the mode symbol is passed as the required feature."
@@ -52,7 +53,19 @@ If FILE is nil then the mode symbol is passed as the required feature."
                (setcar (cdr minor-delight) ',value))))))))
 
 (defun delight-major-mode ()
-  "Delight the 'pretty name' of the current buffer's major mode."
+  "Delight the 'pretty name' of the current buffer's major mode
+during mode-line redraws. For other uses of `mode-name', this
+delight will be inhibited."
   (let ((major-delight (assq major-mode delighted)))
     (when major-delight
-      (setq mode-name (cadr major-delight)))))
+      (set (make-local-variable 'mode-name-glum) mode-name)
+      (set (make-local-variable 'mode-name-delighted) (cadr major-delight))
+      (setq mode-name '(inhibit-mode-name-delight
+                        mode-name-glum
+                        mode-name-delighted)))))
+
+(defadvice format-mode-line (around delight-glum-mode-name activate)
+  "Delighted major modes must exhibit their original glum `mode-name' when
+`format-mode-line' is called. See `delight-major-mode'."
+  (let ((inhibit-mode-name-delight t))
+    ad-do-it))
