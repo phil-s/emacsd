@@ -21,4 +21,4 @@ squash=$1 # 1 for "merge --squash", 0 otherwise
 git_dir=$(pwd)
 
 # recompile my-lisp directory to account for upstream modifications.
-emacs -Q --batch --eval "(byte-recompile-directory \"${git_dir}/my-lisp/\")"
+emacs -Q --batch --eval "(progn (let ((my-lisp (expand-file-name \"${git_dir}/my-lisp\"))) (add-to-list 'load-path my-lisp) (byte-recompile-directory my-lisp)))"
