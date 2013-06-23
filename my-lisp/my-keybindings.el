@@ -1,6 +1,14 @@
+;; C-z is a very useful prefix, and we almost never need `suspend-frame'.
+(global-unset-key (kbd "C-z")) ; suspend-frame
+(global-set-key (kbd "C-z C-z") 'suspend-frame)
+
 ;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
+
+;; Global reserved bindings that I want to over-ride in some modes.
+(global-set-key (kbd "C-c o") 'ff-find-other-file)
+(global-set-key (kbd "<f5>")  'ff-find-other-file)
 
 ;; Custom 'apropos' key bindings
 (define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,v,C-v)")
@@ -42,6 +50,9 @@
 ;; These bindings take precedence over major mode keymaps (as well as
 ;; other minor mode maps in general -- see the advice to `load' below.)
 ;;
+;; Note that reserved bindings (C-c <letter> and F5-F9) should be set
+;; in the global keymap if over-riding them on a per-mode basis may
+;; be desirable.
 
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
 (let ((keymap my-keys-minor-mode-map))
@@ -89,6 +100,7 @@
   (define-key keymap (kbd "s-SPC r")   'mc/mark-all-in-region)
 
   ;; Rectangle editing
+  (define-key keymap (kbd "C-x r e")   'my-edit-rectangle)
   (define-key keymap (kbd "C-x r M-%") 'my-replace-string-rectangle)
   (define-key keymap (kbd "C-x r C-M-%") 'my-replace-regexp-rectangle)
 
@@ -115,8 +127,11 @@
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
 
-  ;; compare-windows
+  ;; Diff / Comparison
   (define-key keymap (kbd "C-M-=")     'compare-windows)
+  (define-key keymap (kbd "C-z =")     'diff-current-buffer-with-disk)
+  (define-key keymap (kbd "C-z C-=")   'ediff-current-file)
+  (define-key keymap (kbd "C-x v C-=") 'vc-ediff)
 
   ;; Completions
   (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
@@ -124,9 +139,13 @@
   ;; WWW
   (define-key keymap (kbd "C-c w s")   'my-www-search)
 
+  ;; Terminals / Shells / REPLs
+  (define-key keymap (kbd "C-c s s")   'my-shell)
+  (define-key keymap (kbd "C-c s a")   'my-ansi-terminal)
+  (define-key keymap (kbd "C-c s d")   'my-drush-console)
+  (define-key keymap (kbd "C-c s q")   'my-sql-console)
+
   ;; Miscellaneous (mine/third-party)
-  (define-key keymap (kbd "C-c o")     'ff-find-other-file)
-  (define-key keymap (kbd "<f5>")      'ff-find-other-file)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
@@ -208,7 +227,7 @@ TODO: Switch to using emulation-mode-map-alists
 \\{my-keys-minor-mode-map}"
     :init-value t
     :global     t
-    :keymap     'my-keys-minor-mode-map)
+    :keymap     my-keys-minor-mode-map)
 
 ;; Disable my custom keys in the minibuffer
   (defun my-keys-minor-mode-minibuffer-setup-hook ()
@@ -218,7 +237,7 @@ TODO: Switch to using emulation-mode-map-alists
 
   (defadvice load (after give-my-keybindings-priority)
     "Try to ensure that my keybindings always have priority."
-    (when (not (eq (car (car minor-mode-map-alist)) 'my-keys-minor-mode))
+    (unless (eq (car (car minor-mode-map-alist)) 'my-keys-minor-mode)
       (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
         (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
         (add-to-list 'minor-mode-map-alist mykeys))))

@@ -44,6 +44,21 @@
 ;;    (ii)  'M-s C-/' for my-multi-occur-in-visible-buffers
 ;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
+;;;; * Compiling
+;; Libraries:
+;; # Auto?: sudo apt-get build-dep emacs24
+;; # Manual: sudo apt-get install -s libxpm-dev libjpeg62-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libgtk2.0-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev
+;; # libjpeg-62-dev may need to be libjpeg-dev
+;; # sudo apt-get install -s ttf-wqy-microhei
+;; # Maybe: sudo apt-get install -s automake autoconf
+;; # ./autogen.sh
+;; # ./configure --help
+;; # ./configure --prefix=/usr/local/src/emacs/24.3/usr/local --without-sound 2>&1 | tee config.out
+;; # make distclean
+;; # make
+;; # ./src/emacs -Q
+;; # make install
+
 ;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
@@ -58,6 +73,10 @@
 ;; Remapping Commands:
 ;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
+
+;; Conditional over-ride with fall-back:
+;; http://stackoverflow.com/questions/16090517/elisp-conditionally-change-keybinding
+;; http://stackoverflow.com/questions/2494096/emacs-key-binding-fallback
 
 ;; Interrogate bindings:
 ;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
@@ -318,6 +337,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; M-SPC     : just-one-space
+;; M-\       : delete-horizontal-space
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
@@ -325,7 +346,6 @@
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
-;; C-x z     : repeat
 ;; C-x M-:   : repeat-complex-command
 ;; C-x r x   : copy region to register
 ;; C-x r g   : insert contents of register
@@ -390,6 +410,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Support for development on local machine
+(require 'my-local)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Initialise third-party packages
 
 ;; ELPA -- Emacs Lisp Package Archive
@@ -434,13 +459,13 @@
 ;; Project support
 (require 'my-projects)
 
-;; Support for development on local machine
-(require 'my-local)
-
-(message "Init file loaded in %ds"
-         (destructuring-bind (hi lo &rest ignore) (current-time)
-           (- (+ hi lo) (+ (first my-init-load-start)
-                           (second my-init-load-start)))))
+(message "Init file loaded in %.2fs"
+         (destructuring-bind
+             ((now-high now-low now-ms &rest now-ignore)
+              (ini-high ini-low ini-ms &rest ini-ignore))
+             (list (current-time) my-init-load-start)
+           (- (string-to-number (format "%d.%d" now-low now-ms))
+              (string-to-number (format "%d.%d" ini-low ini-ms)))))
 
 ;;; Local Variables:
 ;;; outline-regexp: ";;;; "

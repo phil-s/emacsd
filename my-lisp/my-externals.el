@@ -5,7 +5,7 @@
   ;; Define external sources
   (setq
    el-get-sources
-   '((:name el-get
+   `((:name el-get
             :type git
             :url "git://github.com/dimitri/el-get.git")
 
@@ -23,12 +23,18 @@
             :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
             :features browse-kill-ring)
 
-     (:name color-theme)
-     (:name color-theme-zenburn)
+     (:name zenburn-theme
+            :type git
+            :url "https://github.com/bbatsov/zenburn-emacs")
 
      (:name deft
             :type git
             :url "git://jblevins.org/git/deft.git")
+
+     (:name delight
+            :type http
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/delight.el"))
 
      ;; (:name dictionary-el
      ;;        :type apt-get)
@@ -43,7 +49,8 @@
 
      (:name ediff-binary-hexl
             :type http
-            :url "file:///home/phil/.emacs.d/local-repository/ediff-binary-hexl.el")
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/ediff-binary-hexl.el"))
 
      (:name ediff-trees
             :type emacswiki)
@@ -95,6 +102,12 @@
             :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
             :features keep-buffers)
 
+     (:name key-chord)
+
+     (:name lexbind-mode
+            :type git
+            :url "git://github.com/spacebat/lexbind-mode.git")
+
      (:name magit)
 
      (:name mo-git-blame)
@@ -114,6 +127,10 @@
      (:name php-mode
             :type git
             :url "git://github.com/ejmr/php-mode.git")
+
+     (:name php-eldoc
+            :type git
+            :url "git://github.com/zenozeng/php-eldoc.git")
 
      (:name psvn
             :type http
@@ -142,21 +159,19 @@
 
      (:name windcycle
             :type http
-            :url "file:///home/phil/.emacs.d/local-repository/windcycle.el"
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/windcycle.el")
             :features windcycle)
 
      (:name unbound
             :type emacswiki)
 
-     (:name unfill
-            :type git
-            :url "https://github.com/purcell/unfill.git")
-
      (:name undo-tree)
 
      (:name vcl-mode
             :type http
-            :url "file:///home/phil/.emacs.d/local-repository/vcl-mode.el")
+            :url ,(concat "file://" (expand-file-name user-emacs-directory)
+                          "local-repository/vcl-mode.el"))
 
      (:name web-mode
             :type git
@@ -198,17 +213,18 @@
   (url-retrieve
    "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
    (lambda (s)
-     (end-of-buffer)
-     (eval-print-last-sexp)
-     ;; Now configure my custom sources. We need to do this here in the
-     ;; lambda expression callback, because it is called asynchronously
-     ;; whenever the url-retrieve completes, and we need to ensure that
-     ;; has happened.
-     (my-el-get))))
+     (let ((el-get-install-branch "3.stable"))
+       (end-of-buffer)
+       (eval-print-last-sexp)
+       ;; Now configure my custom sources. We need to do this here in the
+       ;; lambda expression callback, because it is called asynchronously
+       ;; whenever the url-retrieve completes, and we need to ensure that
+       ;; has happened.
+       (my-el-get)))))
 
 
 ;;;;(require 'el-get)
-(when (not (functionp 'el-get))
+(unless (functionp 'el-get)
   (let ((el-get (expand-file-name (concat user-emacs-directory
                                           "el-get/el-get/el-get.el"))))
     (if (file-exists-p el-get)

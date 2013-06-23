@@ -102,10 +102,9 @@ manually reshow it. A double toggle will make it reappear"
   (with-current-buffer (help-buffer)
     (unless (local-variable-p 'context-help)
       (set (make-local-variable 'context-help) t))
-    (if (setq context-help (not context-help))
-        (progn
-          (if (not (get-buffer-window (help-buffer)))
-              (display-buffer (help-buffer)))))
+    (when (setq context-help (not context-help))
+      (unless (get-buffer-window (help-buffer))
+        (display-buffer (help-buffer))))
     (message "Context help %s" (if context-help "ON" "OFF"))))
 
 (defun rgr/context-help ()
@@ -147,11 +146,15 @@ context-help to false"
 
 ;; Emacs Lisp
 
-;; Parenthesis / sexp matching
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  ;; Automated byte re-compilation.
   (require 'bytecomp)
   (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
+  ;; lexbind-mode indicates `lexical-binding' value.
+  (when (require 'lexbind-mode nil 'noerror)
+    (lexbind-mode 1))
+  ;; Highlight current sexp
   (when (require 'hl-sexp nil 'noerror)
     (hl-sexp-mode 1)))
 

@@ -191,16 +191,28 @@ With zero ARG, skip the last one and mark next."
   (mc/maybe-multiple-cursors-mode))
 
 ;;;###autoload
-(defun mc/unmark-next-like-this (arg)
+(defun mc/unmark-next-like-this ()
   "Deselect next part of the buffer matching the currently active region."
   (interactive)
   (mc/mark-next-like-this -1))
 
 ;;;###autoload
-(defun mc/unmark-previous-like-this (arg)
+(defun mc/unmark-previous-like-this ()
   "Deselect prev part of the buffer matching the currently active region."
   (interactive)
   (mc/mark-previous-like-this -1))
+
+;;;###autoload
+(defun mc/skip-to-next-like-this ()
+  "Skip the current one and select the next part of the buffer matching the currently active region."
+  (interactive)
+  (mc/mark-next-like-this 0))
+
+;;;###autoload
+(defun mc/skip-to-previous-like-this ()
+  "Skip the current one and select the prev part of the buffer matching the currently active region."
+  (interactive)
+  (mc/mark-previous-like-this 0))
 
 ;;;###autoload
 (defun mc/mark-all-like-this ()
@@ -225,15 +237,28 @@ With zero ARG, skip the last one and mark next."
       (multiple-cursors-mode 1)
     (multiple-cursors-mode 0)))
 
+(defun mc--select-thing-at-point (thing)
+  (let ((bound (bounds-of-thing-at-point thing)))
+    (when bound
+      (set-mark (car bound))
+      (goto-char (cdr bound))
+      bound)))
+
+(defun mc--select-thing-at-point-or-bark (thing)
+  (unless (or (region-active-p) (mc--select-thing-at-point thing))
+    (error "Mark a region or set cursor on a %s." thing)))
+
 ;;;###autoload
 (defun mc/mark-all-words-like-this ()
   (interactive)
+  (mc--select-thing-at-point-or-bark 'word)
   (let ((mc/enclose-search-term 'words))
     (mc/mark-all-like-this)))
 
 ;;;###autoload
 (defun mc/mark-all-symbols-like-this ()
   (interactive)
+  (mc--select-thing-at-point-or-bark 'symbol)
   (let ((mc/enclose-search-term 'symbols))
     (mc/mark-all-like-this)))
 
@@ -259,49 +284,68 @@ With zero ARG, skip the last one and mark next."
 ;;;###autoload
 (defun mc/mark-more-like-this-extended ()
   "Like mark-more-like-this, but then lets you adjust with arrows key.
-The actual adjustment made depends on the final component of the
-key-binding used to invoke the command, with all modifiers removed:
+The adjustments work like this:
 
-   <up>    Mark previous like this
-   <down>  Mark next like this
-   <left>  If last was previous, skip it
-           If last was next, remove it
-   <right> If last was next, skip it
-           If last was previous, remove it
+   <up>    Mark previous like this and set direction to 'up
+   <down>  Mark next like this and set direction to 'down
 
-Then, continue to read input events and further add or move marks
-as long as the input event read (with all modifiers removed)
-is one of the above."
+If direction is 'up:
+
+   <left>  Skip past the cursor furthest up
+   <right> Remove the cursor furthest up
+
+If direction is 'down:
+
+   <left>  Remove the cursor furthest down
+   <right> Skip past the cursor furthest down
+
+The bindings for these commands can be changed. See `mc/mark-more-like-this-extended-keymap'."
   (interactive)
-  (let ((first t)
-        (ev last-command-event)
-        (cmd 'mc/mark-next-like-this)
-        (arg 1)
-        last echo-keystrokes)
-    (while cmd
-      (let ((base (event-basic-type ev)))
-        (cond ((eq base 'left)
-               (if (eq last 'mc/mark-previous-like-this)
-                   (setq cmd last arg 0)
-                 (setq cmd 'mc/mark-next-like-this arg -1)))
-              ((eq base 'up)
-               (setq cmd 'mc/mark-previous-like-this arg 1))
-              ((eq base 'right)
-               (if (eq last 'mc/mark-next-like-this)
-                   (setq cmd last arg 0)
-                 (setq cmd 'mc/mark-previous-like-this arg -1)))
-              ((eq base 'down)
-               (setq cmd 'mc/mark-next-like-this arg 1))
-              (first
-               (setq cmd 'mc/mark-next-like-this arg 1))
-              (t
-               (setq cmd nil))))
-      (when cmd
-        (ignore-errors
-          (funcall cmd arg))
-        (setq first nil last cmd)
-        (setq ev (read-event "Use arrow keys for more marks: "))))
-    (push ev unread-command-events)))
+  (mc/mmlte--down)
+  (set-temporary-overlay-map mc/mark-more-like-this-extended-keymap t))
+
+(defvar mc/mark-more-like-this-extended-direction nil
+  "When using mc/mark-more-like-this-extended are we working on the next or previous cursors?")
+
+(make-variable-buffer-local 'mc/mark-more-like-this-extended)
+
+(defun mc/mmlte--message ()
+  (if (eq mc/mark-more-like-this-extended-direction 'up)
+      (message "<up> to mark previous, <left> to skip, <right> to remove, <down> to mark next")
+    (message "<down> to mark next, <right> to skip, <left> to remove, <up> to mark previous")))
+
+(defun mc/mmlte--up ()
+  (interactive)
+  (mc/mark-previous-like-this 1)
+  (setq mc/mark-more-like-this-extended-direction 'up)
+  (mc/mmlte--message))
+
+(defun mc/mmlte--down ()
+  (interactive)
+  (mc/mark-next-like-this 1)
+  (setq mc/mark-more-like-this-extended-direction 'down)
+  (mc/mmlte--message))
+
+(defun mc/mmlte--left ()
+  (interactive)
+  (if (eq mc/mark-more-like-this-extended-direction 'down)
+      (mc/unmark-next-like-this)
+    (mc/skip-to-previous-like-this))
+  (mc/mmlte--message))
+
+(defun mc/mmlte--right ()
+  (interactive)
+  (if (eq mc/mark-more-like-this-extended-direction 'up)
+      (mc/unmark-previous-like-this)
+    (mc/skip-to-next-like-this))
+  (mc/mmlte--message))
+
+(defvar mc/mark-more-like-this-extended-keymap (make-sparse-keymap))
+
+(define-key mc/mark-more-like-this-extended-keymap (kbd "<up>") 'mc/mmlte--up)
+(define-key mc/mark-more-like-this-extended-keymap (kbd "<down>") 'mc/mmlte--down)
+(define-key mc/mark-more-like-this-extended-keymap (kbd "<left>") 'mc/mmlte--left)
+(define-key mc/mark-more-like-this-extended-keymap (kbd "<right>") 'mc/mmlte--right)
 
 (defvar mc--restrict-mark-all-to-symbols nil)
 
@@ -314,7 +358,8 @@ With prefix, it behaves the same as original `mc/mark-all-like-this'"
   (interactive "P")
   (if arg
       (mc/mark-all-like-this)
-    (if (and (mc--no-region-and-in-sgmlish-mode)
+    (if (and (not (use-region-p))
+             (derived-mode-p 'sgml-mode)
              (mc--on-tag-name-p))
         (mc/mark-sgml-tag-pair)
       (let ((before (mc/num-cursors)))
@@ -332,10 +377,6 @@ With prefix, it behaves the same as original `mc/mark-all-like-this'"
             (mc/mark-all-like-this)))
         (when (<= (mc/num-cursors) before)
           (mc/mark-all-like-this))))))
-
-(defun mc--no-region-and-in-sgmlish-mode ()
-  (and (not (use-region-p))
-       (derived-mode-p 'sgml-mode)))
 
 (defun mc--in-defun ()
   (bounds-of-thing-at-point 'defun))
@@ -355,6 +396,7 @@ With prefix, it behaves the same as original `mc/mark-all-like-this'"
 (defun mc/mark-all-words-like-this-in-defun ()
   "Mark all words like this in defun."
   (interactive)
+  (mc--select-thing-at-point-or-bark 'word)
   (if (mc--in-defun)
       (save-restriction
         (widen)
@@ -366,6 +408,7 @@ With prefix, it behaves the same as original `mc/mark-all-like-this'"
 (defun mc/mark-all-symbols-like-this-in-defun ()
   "Mark all symbols like this in defun."
   (interactive)
+  (mc--select-thing-at-point-or-bark 'symbol)
   (if (mc--in-defun)
       (save-restriction
         (widen)
@@ -397,6 +440,23 @@ With prefix, it behaves the same as original `mc/mark-all-like-this'"
     (and context
          (>= (point) beg)
          (<= (point) end))))
+
+;;;###autoload
+(defun mc/add-cursor-on-click (event)
+  "Add a cursor where you click."
+  (interactive "e")
+  (mouse-minibuffer-check event)
+  ;; Use event-end in case called from mouse-drag-region.
+  ;; If EVENT is a click, event-end and event-start give same value.
+  (let ((position (event-end event)))
+    (if (not (windowp (posn-window position)))
+        (error "Position not in text area of window"))
+    (select-window (posn-window position))
+    (if (numberp (posn-point position))
+        (save-excursion
+          (goto-char (posn-point position))
+          (mc/create-fake-cursor-at-point)))
+    (mc/maybe-multiple-cursors-mode)))
 
 ;;;###autoload
 (defun mc/mark-sgml-tag-pair ()

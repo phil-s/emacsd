@@ -5,9 +5,12 @@
   ;; Configure local TAGS
   (let ((tag-dir (locate-dominating-file default-directory "TAGS")))
     (when tag-dir
-      (visit-tags-table tag-dir t)
-      (when (not (timerp drupal-tags-autoupdate-timer))
-        (drupal-tags-autoupdate-start))))
+      (let ((tag-dir (file-name-as-directory
+                      (or (file-symlink-p (directory-file-name tag-dir))
+                          tag-dir))))
+        (visit-tags-table tag-dir t)
+        (unless (timerp drupal-tags-autoupdate-timer)
+          (drupal-tags-autoupdate-start)))))
 
   ;; PHP configuration for Drupal
   ;; n.b. php-mode is derived from c-mode
@@ -34,16 +37,24 @@
 (fset 'drupal-quick-and-dirty-debugging
       (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
 
+;; Drush
+
 (defun drush-console ()
-  "Connect to a remote host by SSH."
+  "Runs the drush console in a `term' buffer.
+See http://drupal.org/project/phpsh"
   (interactive)
   (require 'term)
-  (let* ((args "-u 1 console")
-         (switches (split-string-and-unquote args)))
-    (set-buffer (apply 'make-term "drush console" "drush" nil switches))
+  (let* ((drush-args "-u 1 console")
+         (switches (split-string-and-unquote drush-args))
+         (buf (apply 'make-term "drush console" "drush" nil switches)))
+    ;; Enable term mode for the process buffer.
+    (set-buffer buf)
     (term-mode)
     (term-char-mode)
-    (switch-to-buffer "*drush console*")))
+    ;; Don't highlight trailing whitespace.
+    (setq show-trailing-whitespace nil)
+    ;; Select the buffer.
+    (switch-to-buffer buf)))
 
 ;;
 ;; TAGS
@@ -110,7 +121,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
                              "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
                              "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
            ))
-   (php-mode . ((eval . (when (not (eq major-mode 'drupal-mode))
+   (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
                           (drupal-mode) (hack-local-variables))) ;; Oooh.
                 (c-basic-offset . 2)))
    (css-mode . ((css-indent-offset . 2)))
@@ -126,15 +137,29 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
    "^.*/\\("
    (mapconcat 'shell-quote-argument grep-find-ignored-directories "\\|")
   "\\)$")
-  "Regexp of directories to omit from TAGS. Case sensitive")
+  "Regexp of directories to omit from TAGS. Case sensitive"
+  :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-ignore
   ".*/\\(TAGS\\(\\.new\\)?\\)$"
-  "Regexp of files to omit from TAGS. Case sensitive.")
+  "Regexp of files to omit from TAGS. Case sensitive."
+  :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-pattern
   ".*\\.\\(php\\|module\\|install\\|inc\\|engine\\)\\'"
-  "Regexp of files to index in TAGS. Case insensitive.")
+  "Regexp of files to index in TAGS. Case insensitive."
+  :group 'drupal)
+
+(defvar drupal-tags-autoupdate-buffer "*drupal-tags-autoupdate*")
+
+(defvar drupal-tags-autoupdate-enabled t
+  "Set to nil to disable TAGS autoupdate functionality.")
+
+(defun drupal-tags-autoupdate-toggle ()
+  (interactive)
+  (setq drupal-tags-autoupdate-enabled (not drupal-tags-autoupdate-enabled))
+  (message "drupal-tags-autoupdate is now %s."
+           (if drupal-tags-autoupdate-enabled "enabled" "disabled")))
 
 ;; (defun drupal-tags-autoupdate-command ()
 ;;   (concat
@@ -152,9 +177,9 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 Do not replace the original file unless there are differences."
   (format
    (concat
-    "cd \"%s\";"
-    " find . \\( -type d -regex \"%s\" -prune \\)"
-    " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)"
+    "cd \"%s\";";dir
+    " find . \\( -type d -regex \"%s\" -prune \\)";prune
+    " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
     " | etags --language=php --output=TAGS.new -"
     " && ! cmp --silent TAGS TAGS.new"
     " && mv -f TAGS.new TAGS;"
@@ -185,26 +210,44 @@ We assume that a buffer is visiting the most recent version of this time."
         "%s" (with-current-buffer (get-file-buffer file-name)
                (visited-file-modtime)))))))
 
-;; variable for the timer object
+;; variables for the timer object
 (defvar drupal-tags-autoupdate-timer nil)
-(defvar drupal-tags-autoupdate-interval 300)
+(defvar drupal-tags-autoupdate-interval 300 "Interval, in seconds.")
+
+;; shell process sentinel
+(defun drupal-tags-sentinel (process signal)
+  "Process signals from the TAGS update shell process."
+  (when (memq (process-status process) '(exit signal))
+    ;; Unlike `shell-command', the output buffer is not automatically
+    ;; killed if it is empty upon `async-shell-command' completion.
+    (let ((buf (get-buffer drupal-tags-autoupdate-buffer)))
+      (when (eq 0 (buffer-size buf))
+        (kill-buffer buf)))))
 
 ;; callback function
 (defun drupal-tags-autoupdate-callback ()
-  (let ((dir (file-name-directory tags-file-name))
-        (tags-modified (my-buffer-file-last-modified tags-file-name)))
-    (when (and tags-modified
-               (> (my-directory-tree-last-modified dir)
-                  tags-modified))
-      (save-window-excursion
-        (async-shell-command (drupal-tags-autoupdate-command dir)
-                             "*drupal-tags-autoupdate*"))
-      (when (not (verify-visited-file-modtime
-                  (get-file-buffer tags-file-name)))
-        (setq tags-completion-table nil)))))
+  "Check whether the TAGS file is out of date, and rebuild it if necessary."
+  (when drupal-tags-autoupdate-enabled
+    (let ((dir (file-name-directory tags-file-name))
+          (tags-modified (my-buffer-file-last-modified tags-file-name)))
+      (when (and tags-modified
+                 (> (my-directory-tree-last-modified dir)
+                    tags-modified))
+        (save-window-excursion
+          (let ((message-truncate-lines t))
+            (async-shell-command (drupal-tags-autoupdate-command dir)
+                                 drupal-tags-autoupdate-buffer)))
+        (let ((proc (get-buffer-process drupal-tags-autoupdate-buffer)))
+          (when proc
+            (set-process-sentinel proc 'drupal-tags-sentinel)))
+        (bury-buffer drupal-tags-autoupdate-buffer)
+        (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
+          (setq tags-completion-table nil))))))
 
 ;; start functions
 (defun drupal-tags-autoupdate-start ()
+  "Start (or re-start) the TAGS file autoupdate mechanism.
+The update interval is set according to `drupal-tags-autoupdate-interval'."
   (interactive)
   (when (timerp drupal-tags-autoupdate-timer)
     (cancel-timer drupal-tags-autoupdate-timer))
@@ -221,6 +264,7 @@ We assume that a buffer is visiting the most recent version of this time."
 
 ;; stop function
 (defun drupal-tags-autoupdate-stop ()
+  "Stop the TAGS file autoupdate mechanism."
   (interactive)
   (when (timerp drupal-tags-autoupdate-timer)
     (cancel-timer drupal-tags-autoupdate-timer))

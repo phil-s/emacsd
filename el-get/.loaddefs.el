@@ -3,6 +3,72 @@
 ;;; Code:
 
 
+;;;### (autoloads (delight) "delight/delight" "delight/delight.el"
+;;;;;;  (20932 12443 827101 51000))
+;;; Generated autoloads from delight/delight.el
+
+(autoload 'delight "delight/delight" "\
+Modify the lighter value displayed in the mode line for the given mode SPEC
+if and when the mode is loaded.
+
+SPEC can be either a mode symbol, or a list of the form ((MODE VALUE FILE) ...)
+
+For minor modes, VALUE is the replacement lighter value (or nil to disable).
+VALUE is typically a string, but may have other values. See `minor-mode-alist'
+for details.
+
+For major modes, VALUE is a string to which `mode-name' will be set.
+
+The optional FILE argument is the file to pass to `eval-after-load'.
+If FILE is nil then the mode symbol is passed as the required feature.
+
+\(fn SPEC &optional VALUE FILE)" nil nil)
+
+;;;***
+
+;;;### (autoloads (dtrt-indent-mode dtrt-indent-mode) "dtrt-indent/dtrt-indent"
+;;;;;;  "dtrt-indent/dtrt-indent.el" (20804 10249 123933 346000))
+;;; Generated autoloads from dtrt-indent/dtrt-indent.el
+
+(defvar dtrt-indent-mode nil "\
+Non-nil if Dtrt-Indent mode is enabled.
+See the command `dtrt-indent-mode' for a description of this minor mode.")
+
+(custom-autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" nil)
+
+(autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" "\
+Toggle dtrt-indent mode.
+With no argument, this command toggles the mode.  Non-null prefix
+argument turns on the mode.  Null prefix argument turns off the
+mode.
+
+When dtrt-indent mode is enabled, the proper indentation
+offset will be guessed for newly opened files and adjusted
+transparently.
+
+\(fn &optional ARG)" t nil)
+
+(defvar dtrt-indent-mode nil "\
+Toggle adaptive indentation mode.
+Setting this variable directly does not take effect;
+use either \\[customize] or the function `dtrt-indent-mode'.")
+
+(custom-autoload 'dtrt-indent-mode "dtrt-indent/dtrt-indent" nil)
+
+;;;***
+
+;;;### (autoloads (ediff-trees) "ediff-trees/ediff-trees" "ediff-trees/ediff-trees.el"
+;;;;;;  (20918 64948 266264 579000))
+;;; Generated autoloads from ediff-trees/ediff-trees.el
+
+(autoload 'ediff-trees "ediff-trees/ediff-trees" "\
+Starts a new ediff session that recursively compares two
+trees.
+
+\(fn ROOT1 ROOT2)" t nil)
+
+;;;***
+
 ;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
 ;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
 ;;;;;;  (20587 44126))
@@ -148,9 +214,91 @@ Commands:
 
 ;;;***
 
+;;;### (autoloads (lexbind-mode lexbind-modeline-content lexbind-lexscratch
+;;;;;;  lexbind-toggle-lexical-binding) "lexbind-mode/lexbind-mode"
+;;;;;;  "lexbind-mode/lexbind-mode.el" (20918 60325 744377 548000))
+;;; Generated autoloads from lexbind-mode/lexbind-mode.el
+
+(autoload 'lexbind-toggle-lexical-binding "lexbind-mode/lexbind-mode" "\
+Toggle the variable `lexical-binding' on and off.  Interactive.
+When called with a numeric argument, set `lexical-binding' to t
+if the argument is positive, nil otherwise.
+Optional argument ARG if nil toggles `lexical-binding', positive
+enables it, non-positive disables it.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'lexbind-lexscratch "lexbind-mode/lexbind-mode" "\
+Make a lexical scratch buffer.
+
+\(fn &optional OTHER-WINDOW)" t nil)
+
+(autoload 'lexbind-modeline-content "lexbind-mode/lexbind-mode" "\
+Generate mode line content to indicate the value of `lexical-binding'.
+Optional argument ARGS if provided, the first argument is taken as the value
+of `lexical-binding'.
+
+\(fn &rest ARGS)" nil nil)
+
+(autoload 'lexbind-mode "lexbind-mode/lexbind-mode" "\
+Toggle Lexbind mode.
+Interactively with no argument, this command toggles the mode.
+A positive prefix argument enables the mode, any other prefix
+argument disables it.  From Lisp, argument omitted or nil enables
+the mode, `toggle' toggles the state.
+
+When lexbind mode is enabled, the mode line of a window will
+contain the string (LEX) for lexical binding, (DYN) for dynamic
+binding, to indicate the state of the lexical-binding variable in
+that buffer.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+
+
+;;;### (autoloads (key-chord-define key-chord-define-global key-chord-mode)
+;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20870 62091
+;;;;;;  86373 952000))
+;;; Generated autoloads from key-chord/key-chord.el
+
+(autoload 'key-chord-mode "key-chord/key-chord" "\
+Toggle key chord mode.
+With positive ARG enable the mode. With zero or negative arg disable the mode.
+A key chord is two keys that are pressed simultaneously, or one key quickly
+pressed twice.
+See functions `key-chord-define-global' or `key-chord-define'
+and variables `key-chord-two-keys-delay' and `key-chord-one-key-delay'.
+
+\(fn ARG)" t nil)
+
+(autoload 'key-chord-define-global "key-chord/key-chord" "\
+Define a key-chord of two keys in KEYS starting a COMMAND.
+
+KEYS can be a string or a vector of two elements. Currently only elements
+that corresponds to ascii codes in the range 32 to 126 can be used.
+
+COMMAND can be an interactive function, a string, or nil.
+If COMMAND is nil, the key-chord is removed.
+
+\(fn KEYS COMMAND)" t nil)
+
+(autoload 'key-chord-define "key-chord/key-chord" "\
+Define in KEYMAP, a key-chord of two keys in KEYS starting a COMMAND.
+
+KEYS can be a string or a vector of two elements. Currently only elements
+that corresponds to ascii codes in the range 32 to 126 can be used.
+
+COMMAND can be an interactive function, a string, or nil.
+If COMMAND is nil, the key-chord is removed.
+
+\(fn KEYMAP KEYS COMMAND)" nil nil)
+
+;;;***
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20587 45961))
+;;;;;;  (20802 24771 412829 899000))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
@@ -181,7 +329,7 @@ Add one cursor to the beginning of each line in the active region.
 ;;;;;;  mc/mark-previous-word-like-this mc/mark-previous-like-this
 ;;;;;;  mc/mark-next-symbol-like-this mc/mark-next-word-like-this
 ;;;;;;  mc/mark-next-like-this) "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20659 53539))
+;;;;;;  (20802 24771 412829 899000))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -307,7 +455,8 @@ Mark the tag we're in and its pair for renaming.
 ;;;***
 
 ;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20587 45961))
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20802 24771
+;;;;;;  412829 899000))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
@@ -320,12 +469,27 @@ an exceedingly quick way of adding multiple cursors to multiple lines.
 
 ;;;***
 
-;;;### (autoloads (offlineimap) "offlineimap/offlineimap" "offlineimap/offlineimap.el"
-;;;;;;  (20530 59020))
-;;; Generated autoloads from offlineimap/offlineimap.el
+;;;### (autoloads (php-eldoc-function) "php-eldoc/php-eldoc" "php-eldoc/php-eldoc.el"
+;;;;;;  (20872 22699 154255 608000))
+;;; Generated autoloads from php-eldoc/php-eldoc.el
 
-(autoload 'offlineimap "offlineimap/offlineimap" "\
-Start OfflineIMAP.
+(autoload 'php-eldoc-function "php-eldoc/php-eldoc" "\
+Get function arguments for PHP function at point.
+
+\(fn)" nil nil)
+
+(add-hook 'php+-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+
+(add-hook 'php-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+
+;;;***
+
+;;;### (autoloads (php-extras-generate-eldoc) "php-eldoc/php-extras-gen-eldoc"
+;;;;;;  "php-eldoc/php-extras-gen-eldoc.el" (20872 22699 158255 608000))
+;;; Generated autoloads from php-eldoc/php-extras-gen-eldoc.el
+
+(autoload 'php-extras-generate-eldoc "php-eldoc/php-extras-gen-eldoc" "\
+Regenerate PHP function argument hash table from php.net. This is slow!
 
 \(fn)" t nil)
 
@@ -343,7 +507,7 @@ Color nested parentheses, brackets, and braces according to their depth.
 ;;;***
 
 ;;;### (autoloads (rebase-mode) "magit/rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20289 32888))
+;;;;;;  (20802 24771 412829 899000))
 ;;; Generated autoloads from magit/rebase-mode.el
 
 (autoload 'rebase-mode "magit/rebase-mode" "\
@@ -420,19 +584,19 @@ The query function that disable deletion of buffers we protect.
 
 ;;;***
 
-;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20289
-;;;;;;  32888))
+;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20802
+;;;;;;  24771 408829 895000))
 ;;; Generated autoloads from magit/magit.el
 
 (autoload 'magit-status "magit/magit" "\
-Open a Magit status buffer for the Git repository containing
-DIR.  If DIR is not within a Git repository, offer to create a
-Git repository in DIR.
+Open a Magit status buffer for the Git repository containing DIR.
+If DIR is not within a Git repository, offer to create a Git
+repository in DIR.
 
 Interactively, a prefix argument means to ask the user which Git
-repository to use even if `default-directory' is under Git control.
-Two prefix arguments means to ignore `magit-repo-dirs' when asking for
-user input.
+repository to use even if `default-directory' is under Git
+control.  Two prefix arguments means to ignore `magit-repo-dirs'
+when asking for user input.
 
 \(fn DIR)" t nil)
 
@@ -481,7 +645,7 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 ;;;***
 
 ;;;### (autoloads (php-mode php-file-patterns php) "php-mode/php-mode"
-;;;;;;  "php-mode/php-mode.el" (20587 44126))
+;;;;;;  "php-mode/php-mode.el" (20802 24771 412829 899000))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
@@ -675,7 +839,7 @@ If you do this twice in the same position, it kills the selection.
 ;;;***
 
 ;;;### (autoloads (describe-unbound-keys) "unbound/unbound" "unbound/unbound.el"
-;;;;;;  (20667 63336))
+;;;;;;  (20802 24771 420829 903000))
 ;;; Generated autoloads from unbound/unbound.el
 
 (autoload 'describe-unbound-keys "unbound/unbound" "\
@@ -686,26 +850,8 @@ Keys are sorted by their complexity; `key-complexity' determines it.
 
 ;;;***
 
-;;;### (autoloads (unfill-region unfill-paragraph) "unfill/unfill"
-;;;;;;  "unfill/unfill.el" (20587 44126))
-;;; Generated autoloads from unfill/unfill.el
-
-(autoload 'unfill-paragraph "unfill/unfill" "\
-Replace newline chars in current paragraph by single spaces.
-This command does the inverse of `fill-paragraph'.
-
-\(fn)" t nil)
-
-(autoload 'unfill-region "unfill/unfill" "\
-Replace newline chars in region from START to END by single spaces.
-This command does the inverse of `fill-region'.
-
-\(fn START END)" t nil)
-
-;;;***
-
 ;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
-;;;;;;  (20587 44126))
+;;;;;;  (20802 24771 420829 903000))
 ;;; Generated autoloads from vcl-mode/vcl-mode.el
 
 (let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
@@ -718,7 +864,7 @@ Mode for Varnish Command Language
 ;;;***
 
 ;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20587 44126))
+;;;;;;  "web-mode/web-mode.el" (20894 47131 596669 751000))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
@@ -732,8 +878,8 @@ Major mode for editing mixed HTML Templates.
 
 ;;;***
 
-;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20587
-;;;;;;  44126))
+;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20802
+;;;;;;  24771 420829 903000))
 ;;; Generated autoloads from wgrep/wgrep.el
 
 (autoload 'wgrep-setup "wgrep/wgrep" "\
@@ -921,24 +1067,17 @@ controlled by the `ws-trim-global-modes' variable.
 
 ;;;***
 
-;;;### (autoloads (color-theme-zenburn) "color-theme-zenburn/zenburn"
-;;;;;;  "color-theme-zenburn/zenburn.el" (20289 32888))
-;;; Generated autoloads from color-theme-zenburn/zenburn.el
+;;;### (autoloads nil "zenburn-theme/zenburn-theme" "zenburn-theme/zenburn-theme.el"
+;;;;;;  (20802 40921 984829 33000))
+;;; Generated autoloads from zenburn-theme/zenburn-theme.el
 
-(autoload 'color-theme-zenburn "color-theme-zenburn/zenburn" "\
-Just some alien fruit salad to keep you in the zone.
-
-\(fn)" t nil)
+(and load-file-name (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 
 ;;;***
 
-;;;### (autoloads nil nil ("color-theme/color-theme-autoloads.el"
-;;;;;;  "dired-details/dired-details.el" "el-get/el-get-install.el"
-;;;;;;  "el-get/el-get.el" "multiple-cursors/mc-cycle-cursors.el"
-;;;;;;  "multiple-cursors/multiple-cursors-core.el"
-;;;;;;  "multiple-cursors/multiple-cursors-pkg.el"
-;;;;;;  "multiple-cursors/multiple-cursors.el"
-;;;;;;  "wgrep/wgrep-test.el") (20625 50482 172961))
+;;;### (autoloads nil nil ("dtrt-indent/dtrt-indent-diag.el" "dtrt-indent/dtrt-indent-test.el"
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "php-eldoc/php-extras-eldoc-functions.el"
+;;;;;;  "wgrep/wgrep-test.el") (20893 23799 692036 365000))
 
 ;;;***
 

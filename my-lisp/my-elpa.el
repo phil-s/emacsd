@@ -20,11 +20,11 @@
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 
 ;;; Initialise:
-(if (not (functionp 'package-initialize))
-    (let ((elpa-package
-           (expand-file-name (concat user-emacs-directory "elpa/package.el"))))
-      (if (and (file-exists-p elpa-package)
+(unless (functionp 'package-initialize)
+  (let ((elpa-package (expand-file-name
+                       (concat user-emacs-directory "elpa/package.el"))))
+    (when (and (file-exists-p elpa-package)
                (load elpa-package))
-          (package-initialize))))
+      (package-initialize))))
 
 (provide 'my-elpa)

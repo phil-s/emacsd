@@ -100,12 +100,14 @@ when `auto-save-mode' is invoked manually.")
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
 
-;; Improve the dedicated window facility.
-;; See also: `toggle-window-dedicated'
-;; http://stackoverflow.com/questions/5151620
-(defadvice pop-to-buffer (before cancel-other-window first)
-  (ad-set-arg 1 nil))
-(ad-activate 'pop-to-buffer)
+;; The arguments to `pop-to-buffer' have changed in Emacs 24.
+;; I suspect this code is simply defunct now, and can be removed.
+;; ;; Improve the dedicated window facility.
+;; ;; See also: `toggle-window-dedicated'
+;; ;; http://stackoverflow.com/questions/5151620
+;; (defadvice pop-to-buffer (before cancel-other-window first)
+;;   (ad-set-arg 1 nil))
+;; (ad-activate 'pop-to-buffer)
 
 ;; Always add a final newline
 (setq require-trailing-newline t)
@@ -218,9 +220,6 @@ See also: `my-copy-buffer-file-name'."
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
          ("%b (Emacs)"))))
 
-;; Full-screen by default.
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
 
@@ -247,10 +246,22 @@ See also: `my-copy-buffer-file-name'."
   (setq default-indicate-empty-lines t))
 
 ;; Show approx buffer size in modeline
-(size-indication-mode t)
+;; (size-indication-mode 1)
+
+;; Shorter mode names text in the mode line.
+(delight '((abbrev-mode " Abv" abbrev)
+           (smart-tab-mode " \\t" smart-tab)
+           (eldoc-mode nil eldoc)
+           (ws-trim-mode nil ws-trim)
+           (rainbow-mode)
+           (emacs-lisp-mode "Elisp" lisp-mode)
+           (lisp-interaction-mode "Elisp:Int" lisp-mode)))
 
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
+;; But not email addresses. This is a hack to never match anything.
+;; (submit patch to enable email addresses to be disabled separately?)
+(setq goto-address-mail-regexp "$^")
 
 ;; Use system trash (for emacs 23)
 (setq delete-by-moving-to-trash t)
@@ -308,26 +319,22 @@ disabled.")))
              (eq last-input-event ?\r))
     (dired-find-file)))
 
-;; Enable dired-x by default
-(add-hook 'dired-load-hook
-          (lambda ()
-            (load "dired-x")
-            ;; Set dired-x global variables here.  For example:
-            ;; (setq dired-guess-shell-gnutar "gtar")
-            ;; (setq dired-x-hands-off-my-keys nil)
-            ))
-;; (add-hook 'dired-mode-hook
-;;           (lambda ()
-;;             ;; Set dired-x buffer-local variables here.  For example:
-;;             ;; (dired-omit-mode 1)
-;;             ))
-
-;; Use dired-details
 (eval-after-load "dired"
   '(progn
+     ;; Enable dired-x by default
+     (require 'dired-x)
+     ;; Set dired-x global variables here.  For example:
+     ;; (setq dired-guess-shell-gnutar "gtar")
+     ;; (setq dired-x-hands-off-my-keys nil)
+
+     ;; dired-details hides unwanted information by default
      (require 'dired-details)
      (dired-details-install)
      (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle)))
+
+(add-hook 'dired-mode-hook 'my-dired-mode-hook)
+(defun my-dired-mode-hook ()
+  (dired-omit-mode 1))
 
 ;; Use ControlMaster with TRAMP by default
 (setq tramp-default-method "scpc"
@@ -365,7 +372,11 @@ disabled.")))
 (defun my-erc-mode-hook ()
   (hide-trailing-whitespace))
 
+(eval-after-load "which-func"
+  '(add-to-list 'which-func-non-auto-modes 'erc-mode))
+
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
+(declare-function 'erc-default-target "erc")
 (defun my-notify-erc (match-type nickuserhost message)
   "Notify when a message is received."
   (notify (format "%s in %s"
@@ -388,10 +399,10 @@ disabled.")))
   '(progn
      ;; Default terminal history is much too small.
      (setq-default term-buffer-maximum-size 65535)
-     ;; Enable terminal history in line mode.
+     ;; Enable terminal history in line mode (term-mode-map).
      (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
      (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
-     ;; Disable killing and yanking in char mode.
+     ;; Disable killing and yanking in char mode (term-raw-map).
      (mapc
       (lambda (func)
         (eval `(define-key term-raw-map [remap ,func] 'my-interactive-ding)))
@@ -402,13 +413,15 @@ disabled.")))
         kill-region kill-sentence kill-sexp kill-visual-line
         kill-whole-line kill-word subword-backward-kill subword-kill
         yank yank-pop yank-rectangle))
-     ;; Start in line mode.
+     ;; TODO: Will term-mode-hook not work for the following?
      (defadvice term (after my-advice-term-line-mode activate)
-       (term-line-mode)
-       (subword-mode 0))
+       ;;(term-line-mode);;changed my mind.
+       (subword-mode 0)
+       (set (make-local-variable 'global-hl-line-mode) nil))
      (defadvice ansi-term (after my-advice-ansi-term-line-mode activate)
-       (term-line-mode)
-       (subword-mode 0))))
+       ;;(term-line-mode);;changed my mind.
+       (subword-mode 0)
+       (set (make-local-variable 'global-hl-line-mode) nil))))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
@@ -432,6 +445,12 @@ disabled.")))
 
 ;; Format completion lists in columns rather than rows
 (setq completions-format 'vertical)
+
+;; Don't use a separate control frame for ediff, as it's not working
+;; very well with my current config & window manager.
+;; See also `ediff-setup-control-frame' and my full-screen by default
+;; config above, which modifies `default-frame-alist'.
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;; Default to side-by-side comparisons in ediff.
 (setq ediff-split-window-function 'split-window-horizontally)
@@ -496,8 +515,15 @@ return to the save-some-buffers minibuffer prompt."
     (unwind-protect
         ad-do-it
       (fset 'revert-buffer real-revert-buffer))))
-
 (ad-activate 'ask-user-about-supersession-threat)
+
+;; See: http://stackoverflow.com/questions/9748521
+(defadvice save-buffer (around my-save-buffer-mini-window-size)
+  "Don't increase the height of the echo area when saving a file
+when the file path is too long to show on one line."
+  (let ((message-truncate-lines t))
+    ad-do-it))
+(ad-activate 'save-buffer)
 
 ;; Make linum's format calculation more efficient
 (defvar my-linum-format-string "%4d")
@@ -514,6 +540,12 @@ return to the save-some-buffers minibuffer prompt."
 
 (defun my-linum-format (line-number)
   (propertize (format my-linum-format-string line-number) 'face 'linum))
+
+;; By default, don't show continuation lines in grep results.
+(add-hook 'grep-mode-hook 'my-grep-mode-hook)
+(defun my-grep-mode-hook ()
+  (setq truncate-lines t)
+  (local-set-key (kbd "<f5>") 'toggle-truncate-lines))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

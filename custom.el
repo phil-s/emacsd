@@ -6,6 +6,7 @@
  '(case-fold-search t)
  '(confirm-kill-emacs (quote y-or-n-p))
  '(current-language-environment "Latin-1")
+ '(custom-safe-themes (quote ("4e89c70455cea42887121c649f53c475442b30d4607d5035ff7b7b46c66c868b" "00db6503bcfb4b91e9a5eefcc1d06b30fd30b65174ca35bd66bb35ceef26ca2a" default)))
  '(default-input-method "latin-1-prefix")
  '(dnd-protocol-alist (quote (("^file:///" . dnd-open-local-file) ("^file://" . dnd-open-file) ("^file:[A-Za-z]%3a" . dnd-open-local-file-fix-url) ("^file:" . dnd-open-local-file) ("^\\(https?\\|ftp\\|file\\|nfs\\)://" . dnd-open-file))))
  '(fic-highlighted-words (quote ("FIXME" "TODO" "KLUDGE")))
@@ -29,8 +30,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))
- '(tks-time-face ((t (:foreground "#cc9933"))))
+ '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))
+ '(tks-time-face ((t (:foreground "#cc9933"))) t)
  '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
  '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
 ;; WARNING: my-theme.el over-rides (custom-set-faces) for the 'user
