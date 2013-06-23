@@ -320,16 +320,16 @@ Add one cursor to the beginning of each line in the active region.
 
 ;;;***
 
-;;;### (autoloads (mc/mark-sgml-tag-pair mc/mark-all-symbols-like-this-in-defun
+;;;### (autoloads (mc/mark-sgml-tag-pair mc/add-cursor-on-click mc/mark-all-symbols-like-this-in-defun
 ;;;;;;  mc/mark-all-words-like-this-in-defun mc/mark-all-like-this-in-defun
 ;;;;;;  mc/mark-all-like-this-dwim mc/mark-more-like-this-extended
 ;;;;;;  mc/mark-all-in-region mc/mark-all-symbols-like-this mc/mark-all-words-like-this
-;;;;;;  mc/mark-all-like-this mc/unmark-previous-like-this mc/unmark-next-like-this
-;;;;;;  mc/mark-previous-lines mc/mark-next-lines mc/mark-previous-symbol-like-this
-;;;;;;  mc/mark-previous-word-like-this mc/mark-previous-like-this
-;;;;;;  mc/mark-next-symbol-like-this mc/mark-next-word-like-this
-;;;;;;  mc/mark-next-like-this) "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
-;;;;;;  (20802 24771 412829 899000))
+;;;;;;  mc/mark-all-like-this mc/skip-to-previous-like-this mc/skip-to-next-like-this
+;;;;;;  mc/unmark-previous-like-this mc/unmark-next-like-this mc/mark-previous-lines
+;;;;;;  mc/mark-next-lines mc/mark-previous-symbol-like-this mc/mark-previous-word-like-this
+;;;;;;  mc/mark-previous-like-this mc/mark-next-symbol-like-this
+;;;;;;  mc/mark-next-word-like-this mc/mark-next-like-this) "multiple-cursors/mc-mark-more"
+;;;;;;  "multiple-cursors/mc-mark-more.el" (20935 32282 8228 681000))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -379,12 +379,22 @@ With zero ARG, skip the last one and mark next.
 (autoload 'mc/unmark-next-like-this "multiple-cursors/mc-mark-more" "\
 Deselect next part of the buffer matching the currently active region.
 
-\(fn ARG)" t nil)
+\(fn)" t nil)
 
 (autoload 'mc/unmark-previous-like-this "multiple-cursors/mc-mark-more" "\
 Deselect prev part of the buffer matching the currently active region.
 
-\(fn ARG)" t nil)
+\(fn)" t nil)
+
+(autoload 'mc/skip-to-next-like-this "multiple-cursors/mc-mark-more" "\
+Skip the current one and select the next part of the buffer matching the currently active region.
+
+\(fn)" t nil)
+
+(autoload 'mc/skip-to-previous-like-this "multiple-cursors/mc-mark-more" "\
+Skip the current one and select the prev part of the buffer matching the currently active region.
+
+\(fn)" t nil)
 
 (autoload 'mc/mark-all-like-this "multiple-cursors/mc-mark-more" "\
 Find and mark all the parts of the buffer matching the currently active region
@@ -408,19 +418,22 @@ Find and mark all the parts in the region matching the given search
 
 (autoload 'mc/mark-more-like-this-extended "multiple-cursors/mc-mark-more" "\
 Like mark-more-like-this, but then lets you adjust with arrows key.
-The actual adjustment made depends on the final component of the
-key-binding used to invoke the command, with all modifiers removed:
+The adjustments work like this:
 
-   <up>    Mark previous like this
-   <down>  Mark next like this
-   <left>  If last was previous, skip it
-           If last was next, remove it
-   <right> If last was next, skip it
-           If last was previous, remove it
+   <up>    Mark previous like this and set direction to 'up
+   <down>  Mark next like this and set direction to 'down
 
-Then, continue to read input events and further add or move marks
-as long as the input event read (with all modifiers removed)
-is one of the above.
+If direction is 'up:
+
+   <left>  Skip past the cursor furthest up
+   <right> Remove the cursor furthest up
+
+If direction is 'down:
+
+   <left>  Remove the cursor furthest down
+   <right> Skip past the cursor furthest down
+
+The bindings for these commands can be changed. See `mc/mark-more-like-this-extended-keymap'.
 
 \(fn)" t nil)
 
@@ -446,6 +459,11 @@ Mark all words like this in defun.
 Mark all symbols like this in defun.
 
 \(fn)" t nil)
+
+(autoload 'mc/add-cursor-on-click "multiple-cursors/mc-mark-more" "\
+Add a cursor where you click.
+
+\(fn EVENT)" t nil)
 
 (autoload 'mc/mark-sgml-tag-pair "multiple-cursors/mc-mark-more" "\
 Mark the tag we're in and its pair for renaming.
