@@ -470,7 +470,7 @@ an exceedingly quick way of adding multiple cursors to multiple lines.
 ;;;***
 
 ;;;### (autoloads (php-eldoc-function) "php-eldoc/php-eldoc" "php-eldoc/php-eldoc.el"
-;;;;;;  (20872 22699 154255 608000))
+;;;;;;  (20935 32282 20228 681000))
 ;;; Generated autoloads from php-eldoc/php-eldoc.el
 
 (autoload 'php-eldoc-function "php-eldoc/php-eldoc" "\
@@ -485,7 +485,7 @@ Get function arguments for PHP function at point.
 ;;;***
 
 ;;;### (autoloads (php-extras-generate-eldoc) "php-eldoc/php-extras-gen-eldoc"
-;;;;;;  "php-eldoc/php-extras-gen-eldoc.el" (20872 22699 158255 608000))
+;;;;;;  "php-eldoc/php-extras-gen-eldoc.el" (20935 32282 24228 681000))
 ;;; Generated autoloads from php-eldoc/php-extras-gen-eldoc.el
 
 (autoload 'php-extras-generate-eldoc "php-eldoc/php-extras-gen-eldoc" "\
@@ -644,18 +644,13 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
-;;;### (autoloads (php-mode php-file-patterns php) "php-mode/php-mode"
-;;;;;;  "php-mode/php-mode.el" (20802 24771 412829 899000))
+;;;### (autoloads (php-mode php) "php-mode/php-mode" "php-mode/php-mode.el"
+;;;;;;  (20935 32282 24228 681000))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
 
 (add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
-
-(defvar php-file-patterns '("\\.php[s345t]?\\'" "\\.phtml\\'" "\\.inc\\'") "\
-List of file patterns for which to automatically invoke `php-mode'.")
-
-(custom-autoload 'php-file-patterns "php-mode/php-mode" nil)
 
 (autoload 'php-mode "php-mode/php-mode" "\
 Major mode for editing PHP code.
@@ -663,6 +658,8 @@ Major mode for editing PHP code.
 \\{php-mode-map}
 
 \(fn)" t nil)
+
+(dolist (pattern '("\\.php[s345t]?\\'" "\\.phtml\\'")) (add-to-list 'auto-mode-alist `(,pattern . php-mode)))
 
 ;;;***
 
