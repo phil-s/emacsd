@@ -14,3 +14,6 @@
 /erc/*
 /lisp/__nxhtml__
 /image-dired/
+
+# my-lisp/*.elc is byte-compiled automatically upon git merge
+/my-lisp/*.elc
