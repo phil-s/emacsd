@@ -880,16 +880,12 @@ Mode for Varnish Command Language
 
 ;;;***
 
-;;;### (autoloads (web-mode web-mode-faces web-mode) "web-mode/web-mode"
-;;;;;;  "web-mode/web-mode.el" (20894 47131 596669 751000))
+;;;### (autoloads (web-mode) "web-mode/web-mode" "web-mode/web-mode.el"
+;;;;;;  (20935 32282 28228 681000))
 ;;; Generated autoloads from web-mode/web-mode.el
 
-(let ((loads (get 'web-mode 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode 'custom-loads (cons '"web-mode/web-mode" loads))))
-
-(let ((loads (get 'web-mode-faces 'custom-loads))) (if (member '"web-mode/web-mode" loads) nil (put 'web-mode-faces 'custom-loads (cons '"web-mode/web-mode" loads))))
-
 (autoload 'web-mode "web-mode/web-mode" "\
-Major mode for editing mixed HTML Templates.
+Major mode for editing web templates.
 
 \(fn)" t nil)
 
