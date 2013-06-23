@@ -703,6 +703,23 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 
 ;;;***
 
+;;;### (autoloads (sauron-start-hidden sauron-start) "sauron/sauron"
+;;;;;;  "sauron/sauron.el" (20935 33430 820225 816000))
+;;; Generated autoloads from sauron/sauron.el
+
+(autoload 'sauron-start "sauron/sauron" "\
+Start sauron. If the optional parameter HIDDEN is non-nil,
+don't show the sauron window.
+
+\(fn &optional HIDDEN)" t nil)
+
+(autoload 'sauron-start-hidden "sauron/sauron" "\
+Start sauron, but don't show the window.
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (mouse-secondary-save-then-kill rotate-secondary-selection-yank-pointer
 ;;;;;;  yank-pop-secondary yank-pop-commands secondary-to-primary
 ;;;;;;  secondary-swap-region primary-to-secondary isearch-yank-secondary
@@ -1075,9 +1092,11 @@ controlled by the `ws-trim-global-modes' variable.
 
 ;;;***
 
-;;;### (autoloads nil nil ("dtrt-indent/dtrt-indent-diag.el" "dtrt-indent/dtrt-indent-test.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el" "php-eldoc/php-extras-eldoc-functions.el"
-;;;;;;  "wgrep/wgrep-test.el") (20893 23799 692036 365000))
+;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el"
+;;;;;;  "sauron/sauron-dbus.el" "sauron/sauron-erc.el" "sauron/sauron-identica.el"
+;;;;;;  "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
+;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "wgrep/wgrep-test.el")
+;;;;;;  (20935 33431 631581 916000))
 
 ;;;***
 
