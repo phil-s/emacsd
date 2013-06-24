@@ -9,6 +9,10 @@
             :type git
             :url "git://github.com/dimitri/el-get.git")
 
+     (:name ace-jump-mode
+            :type git
+            :url "https://github.com/winterTTr/ace-jump-mode/")
+
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
@@ -96,6 +100,10 @@
             :type emacswiki)
 
      (:name iedit)
+
+     (:name jump-char
+            :type git
+            :url "https://github.com/lewang/jump-char")
 
      (:name keep-buffers
             :type http

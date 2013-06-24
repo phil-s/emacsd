@@ -37,4 +37,6 @@
 :key-chord "installed"
 :php-eldoc "installed"
 :delight "installed"
+:ace-jump-mode "installed"
+:jump-char "installed"
 )

@@ -214,6 +214,32 @@ Commands:
 
 ;;;***
 
+;;;### (autoloads (jump-char-backward jump-char-forward) "jump-char/jump-char"
+;;;;;;  "jump-char/jump-char.el" (20935 42616 504202 907000))
+;;; Generated autoloads from jump-char/jump-char.el
+
+(autoload 'jump-char-forward "jump-char/jump-char" "\
+With UNIVERSAL prefix arg <C-u>, invoke `ace-jump-line-mode'
+
+
+; next
+
+, previous
+
+search_char next
+
+press current binding for `jump-char-forward' / `jump-char-backward' to reuse
+last input.
+
+\(fn ARG &optional BACKWARD)" t nil)
+
+(autoload 'jump-char-backward "jump-char/jump-char" "\
+backward movement version of `jump-char-forward'
+
+\(fn ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads (lexbind-mode lexbind-modeline-content lexbind-lexscratch
 ;;;;;;  lexbind-toggle-lexical-binding) "lexbind-mode/lexbind-mode"
 ;;;;;;  "lexbind-mode/lexbind-mode.el" (20918 60325 744377 548000))
