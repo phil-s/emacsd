@@ -103,6 +103,10 @@
 ;; where <c> represents the modifier required. See C-x @ C-h for the list.
 ;; e.g. "C-x @ m x" is equivalent to "M-x". Most useful for Super & Hyper.
 
+;; To create functions which facilitate a 'repeating' key, use:
+;; http://stackoverflow.com/q/17201738/324105
+;; (set-temporary-overlay-map MAP &optional KEEP-PRED)
+
 ;;;; * Keyboard macros
 ;;   C-x (         or F3   Begins recording.
 ;;                    F3   Insert counter (if recording has already commenced).
