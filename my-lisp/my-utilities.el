@@ -482,6 +482,22 @@ within the current buffer-file-name."
          (dir-list (reverse (cdr (member dir (reverse bfn-list))))))
     (when dir-list
       (mapconcat 'identity dir-list "/"))))
+
+(defun my-directory-files (directory &optional full match nosort)
+  "Like `directory-files', but excluding \".\" and \"..\"."
+  (let ((files (cons nil (directory-files directory full match nosort))))
+    (let ((parent files)
+          (current (cdr files))
+          (exclude (list "." ".."))
+          (file nil))
+      (while (and current exclude)
+        (setq file (car current))
+        (if (not (member file exclude))
+            (setq parent current)
+          (setcdr parent (cdr current))
+          (setq exclude (delete file exclude)))
+        (setq current (cdr current)))
+      (cdr files))))
 
 (defun my-before-save-create-directory-maybe ()
   "Offer to create the file's parent directories, if they do not exist."
@@ -773,6 +789,27 @@ or before point."
         (call-interactively 'sql-postgres))))
   (delete-other-windows))
 
+(defun my-sql-command-buffer ()
+  (interactive)
+  (let ((sql-buf (current-buffer)))
+    (if (null (sql-buffer-live-p sql-buf))
+        (error "Buffer %s is not a working SQLi buffer" sql-buf)
+      (let ((product sql-product)
+            (cmd-buf
+             (or (and (boundp 'my-sql-command-buffer)
+                      (buffer-live-p (get-buffer my-sql-command-buffer))
+                      (get-buffer my-sql-command-buffer))
+                 (generate-new-buffer
+                  (format "*SQL ctl: %s*" (buffer-name sql-buf))))))
+        (setq-local my-sql-command-buffer cmd-buf)
+        (my-pop-to-buffer cmd-buf)
+        (unless (eq major-mode 'sql-mode)
+          (sql-mode)
+          (setq sql-product product)
+          (sql-highlight-product)
+          (setq sql-buffer sql-buf)
+          (run-hooks 'sql-set-sqli-hook))))))
+
 (defun my-drush-console ()
   (interactive)
   (unless (get-buffer "*drush console*")
@@ -842,7 +879,6 @@ See `fill-paragraph' and `fill-region'."
          ,@body)
      (ad-disable-advice ,function ,class ,name)
      (ad-activate ,function)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
