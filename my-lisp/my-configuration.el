@@ -90,8 +90,7 @@ when `auto-save-mode' is invoked manually.")
 (setq message-log-max 10000)
 
 ;; Make scripts executable
-(add-hook 'after-save-hook
-          'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
 ;; Streamline parent directory creation when saving files.
 (add-hook 'before-save-hook 'my-before-save-create-directory-maybe)
@@ -334,6 +333,8 @@ disabled.")))
 
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 (defun my-dired-mode-hook ()
+  (local-set-key (kbd "<backtab>") 'dired-omit-mode)
+  (local-set-key (kbd "<f5>") 'dired-omit-mode)
   (dired-omit-mode 1))
 
 ;; Use ControlMaster with TRAMP by default
