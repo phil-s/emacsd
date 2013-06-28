@@ -85,10 +85,12 @@
 ;; (global-key-binding KEYS &optional ACCEPT-DEFAULT)
 ;; (local-key-binding KEYS &optional ACCEPT-DEFAULT)
 
-;; On non-standard terminals, the input-decode-map keymap can be used
+;; Terminal emulators:
+;; For non-standard terminals, the input-decode-map keymap can be used
 ;; to define mappings between terminal codes and normal emacs keys.
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Translation-Keymaps.html
-;; http://stackoverflow.com/questions/4351044/binding-m-up-m-down-in-emacs-23-1-1/4360658#4360658
+;; http://stackoverflow.com/a/4360658/324105
+;; http://unix.stackexchange.com/a/79561
 
 ;; Buffer-local keymaps / Minor mode keymap over-rides:
 ;; http://stackoverflow.com/a/13102821/324105
@@ -214,6 +216,10 @@
 ;; setq debug-on-event
 ;; setq debug-on-message REGEXP
 
+;; Spinning:
+;; setq debug-on-quit t
+;; When the problem occurs, hit C-g for a backtrace.
+
 ;; Edebug -- a source-level debugger for Emacs Lisp
 ;; M-x edebug-defun (C-u C-M-x) Cancel with eval-defun (C-M-x)
 ;; M-x edebug-all-defs -- Toggle edebugging of all definitions
@@ -242,13 +248,13 @@
 ;; (Note that if the time is instead being spent in non-vc-related
 ;; functions, this technique will not show it, but you can instrument
 ;; further packages if you like.)
-;;
-;; See also:
-;; http://cx4a.org/hack/emacs-native-profiler.html
 
-;; Spinning:
-;; Set debug-on-quit to t
-;; When the problem happens, hit C-g for a backtrace.
+;; CPU & Memory ('Native Profiler')
+;; M-x profiler-start
+;; M-x profiler-report
+;; M-x profiler-reset
+;; M-x profiler-stop
+;; M-x profiler-*
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
