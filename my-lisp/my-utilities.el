@@ -760,20 +760,22 @@ or before point."
     (term-char-mode)
     (switch-to-buffer "*ssh*")))
 
-(defun my-terminal ()
-  (interactive)
+(defun my-terminal (retain-window-layout)
+  (interactive "P")
   (require 'term)
   (unless (and term-ansi-buffer-name
                (buffer-name (get-buffer term-ansi-buffer-name)))
     (call-interactively 'ansi-term))
-  (pop-to-buffer term-ansi-buffer-name '(display-buffer-reuse-window
+  (pop-to-buffer term-ansi-buffer-name '((display-buffer-reuse-window
+                                          display-buffer-same-window)
                                          . ((reusable-frames . visible))))
-  (delete-other-windows))
+  (unless retain-window-layout
+    (delete-other-windows)))
 
 (defalias 'my-shell 'my-terminal)
 
-(defun my-sql-console ()
-  (interactive)
+(defun my-sql-console (retain-window-layout)
+  (interactive "P")
   (let ((sql-buf
          (catch 'found
            (mapc (lambda (buf)
@@ -783,11 +785,13 @@ or before point."
                  (buffer-list))
            nil)))
     (if sql-buf
-        (pop-to-buffer sql-buf '(display-buffer-reuse-window
+        (pop-to-buffer sql-buf '((display-buffer-reuse-window
+                                  display-buffer-same-window)
                                  . ((reusable-frames . visible))))
       (let ((current-prefix-arg '(4)))
         (call-interactively 'sql-postgres))))
-  (delete-other-windows))
+  (unless retain-window-layout
+    (delete-other-windows)))
 
 (defun my-sql-command-buffer ()
   (interactive)
@@ -810,13 +814,15 @@ or before point."
           (setq sql-buffer sql-buf)
           (run-hooks 'sql-set-sqli-hook))))))
 
-(defun my-drush-console ()
-  (interactive)
+(defun my-drush-console (retain-window-layout)
+  (interactive "P")
   (unless (get-buffer "*drush console*")
     (call-interactively 'drush-console))
-  (pop-to-buffer "*drush console*" '(display-buffer-reuse-window
+  (pop-to-buffer "*drush console*" '((display-buffer-reuse-window
+                                      display-buffer-same-window)
                                      . ((reusable-frames . visible))))
-  (delete-other-windows))
+  (unless retain-window-layout
+    (delete-other-windows)))
 
 (defun my-pop-to-buffer (buf &optional maximise)
   "Switch to buffer BUF, and optionally maximise the window in its frame.
