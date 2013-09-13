@@ -515,6 +515,16 @@ within the current buffer-file-name."
        (interactive "P")
        (let* ((fn-list (dired-get-marked-files nil arg)))
          (mapc 'find-file fn-list)))))
+
+(defun my-find-iname-grep-dired (dir pattern regexp)
+  "`find-grep-dired' with additional file-name pattern argument."
+  (interactive
+   "DFind-name (directory): \nsFind-name (filename wildcard): \nsFind-grep (grep regexp): ")
+  (find-dired dir (concat "-iname " (shell-quote-argument pattern) " "
+                          "-type f -exec " grep-program " " find-grep-options " -e "
+                          (shell-quote-argument regexp) " "
+                          (shell-quote-argument "{}") " "
+                          (shell-quote-argument ";"))))
 
 ;; Add a non-regexp `dired-do-query-replace-regexp' equivalent.
 (eval-after-load 'dired
