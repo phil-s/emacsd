@@ -462,6 +462,21 @@ Does not set point.  Does nothing if mark ring is empty."
       (yank-pop arg)
     (error (insert (get-register 'jp/yank)))))
 
+;; Write a copy of the current buffer or region to a file.
+(defun my-write-copy-to-file ()
+  "Write a copy of the current buffer or region to a file."
+  (interactive)
+  (let* ((curr (buffer-file-name))
+         (new (read-file-name
+               "Copy to file: " nil nil nil
+               (and curr (file-name-nondirectory curr))))
+         (mustbenew (if (and curr (file-equal-p new curr)) 'excl t)))
+    (if (use-region-p)
+        (write-region (region-beginning) (region-end) new nil nil nil mustbenew)
+      (save-restriction
+        (widen)
+        (write-region (point-min) (point-max) new nil nil nil mustbenew)))))
+
 ;; Grab copy of the current buffer's filename.
 (defun my-copy-buffer-file-name (&optional arg)
   "Copy the buffer's filename to the kill ring.

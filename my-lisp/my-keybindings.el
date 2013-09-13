@@ -148,6 +148,7 @@
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
+  (define-key keymap (kbd "C-c W")     'my-write-copy-to-file)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
   (define-key keymap (kbd "M-p")       'scroll-one-line-back)
   (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
