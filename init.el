@@ -409,10 +409,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Find my third-party and custom lisp libraries
-(add-to-list 'load-path (file-name-as-directory
-                         (expand-file-name "~/.emacs.d/lisp")))
-(add-to-list 'load-path (file-name-as-directory
-                         (expand-file-name "~/.emacs.d/my-lisp")))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/my-lisp"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
