@@ -39,4 +39,6 @@
 :delight "installed"
 :ace-jump-mode "installed"
 :jump-char "installed"
+:packed "installed"
+:auto-compile "installed"
 )

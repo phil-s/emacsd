@@ -22,6 +22,11 @@
      ;; (:name asciidoc
      ;;        :type elpa)
 
+     (:name auto-compile
+            :depends packed
+            :type git
+            :url "https://github.com/tarsius/auto-compile")
+
      (:name browse-kill-ring
             :type http
             :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
@@ -131,6 +136,10 @@
             :type http
             :url "http://gist.github.com/raw/519635/yank-visible.el"
             :loads "outline-copy-visible")
+
+     (:name packed
+            :type git
+            :url "https://github.com/tarsius/packed")
 
      (:name php-mode
             :type git

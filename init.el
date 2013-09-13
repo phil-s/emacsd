@@ -395,6 +395,14 @@
 
 (defvar my-init-load-start (current-time))
 
+;; Recompile .elc files automatically whenever necessary. Enable this early.
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/packed"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
+(require 'auto-compile)
+(auto-compile-on-save-mode 1)
+(auto-compile-on-load-mode 1)
+
+;; Load 'customized' variables and faces.
 (setq custom-file (expand-file-name "~/.emacs.d/custom.el"))
 (load custom-file)
 

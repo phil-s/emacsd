@@ -148,9 +148,10 @@ context-help to false"
 
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
-  ;; Automated byte re-compilation.
-  (require 'bytecomp)
-  (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
+  ;; ;; Automated byte re-compilation.
+  ;; ;; Now replaced by the auto-compile library.
+  ;; (require 'bytecomp)
+  ;; (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
   ;; lexbind-mode indicates `lexical-binding' value.
   (when (require 'lexbind-mode nil 'noerror)
     (lexbind-mode 1))
@@ -158,11 +159,11 @@ context-help to false"
   (when (require 'hl-sexp nil 'noerror)
     (hl-sexp-mode 1)))
 
-(defun my-auto-byte-recompile ()
-  "Byte compile if a corresponding .elc file already exists.
-Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
-  (when (file-exists-p (byte-compile-dest-file buffer-file-name))
-    (byte-compile-file buffer-file-name)))
+;; (defun my-auto-byte-recompile ()
+;;   "Byte compile if a corresponding .elc file already exists.
+;; Use as a buffer-local after-save-hook, for emacs-lisp-mode buffers."
+;;   (when (file-exists-p (byte-compile-dest-file buffer-file-name))
+;;     (byte-compile-file buffer-file-name)))
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
