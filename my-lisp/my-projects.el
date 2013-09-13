@@ -63,6 +63,9 @@
    (javascript-generic-mode . ((eval . (progn
                                          (js-mode)
                                          (hack-local-variables))))) ;; Oooh.
+   (makefile-gmake-mode . ((eval . (progn (conf-mode)
+                                          (hack-local-variables)))))
+   (dired-mode . ((dired-omit-mode . t)))
    ))
 
 ;; (defun my-dir-locals-php-hook ()

@@ -1,34 +1,20 @@
-;; n.b. php-mode is the modified version provided by nxhtml
-;; at: lisp/nxhtml/related/php-mode.el. lisp/nxhtml/related
-;; was added to the load path by nxhtml/autostart.el (which
-;; is loaded in my-programming.el prior to defining the PHP
-;; autoloads).
-(load "php-mode") ;load the real php-mode
-;; (Removed nXhtml)
 ;; See my-externals for php-mode source.
+(load "php-mode") ;load the real php-mode
 
 ;; Custom php-mode configuration
 (add-hook 'php-mode-hook 'my-php-mode-hook t)
 
-;; (Removed nXhtml)
-;; ;; .php files use nxhtml-mumamo-mode
-;; (add-hook 'nxhtml-mumamo-mode-hook 'my-nxhtml-mumamo-mode-hook t)
-;; (defun my-nxhtml-mumamo-mode-hook ()
-;;   (and (buffer-file-name)
-;;        (string-match "\\.php\\'" (buffer-file-name))
-;;        (not (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
-;;        (php-mode)))
-
-
-;; Check the `c-offsets-alist' variable and `c-set-offset' function.
-
-
 (defconst my-php-style
+  ;; Check the `c-offsets-alist' variable and `c-set-offset' function.
   '((c-offsets-alist . ((arglist-close . c-lineup-close-paren))))
   "My PHP programming style")
 (c-add-style "my-php-style" my-php-style)
 
-;; ;; Configure imenu usage with php-imenu (also provided by nxhtml)
+;; Assume that we *only* use `php-mode' for pure PHP files.
+;; (as we actually use `web-mode' for mixed-mode templates.)
+(setq php-template-compatibility nil)
+
+;; ;; Configure imenu usage with php-imenu (this was in nxhtml).
 ;; (autoload 'php-imenu-create-index "php-imenu" nil t)
 
 (defun my-php-mode-hook ()

@@ -22,6 +22,8 @@
 ;; http://stackoverflow.com/questions/9771339
 ;; ;; Invoking external interactive scripts
 ;; http://stackoverflow.com/questions/13674100/properly-invoking-an-interactive-script-from-elisp
+;; ;; Online reference for all standard Emacs variables and functions.
+;; http://bruce-connor.github.io/emacs-online-documentation/
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
@@ -256,6 +258,9 @@
 ;; M-x profiler-stop
 ;; M-x profiler-*
 
+;; Dope -- DOtemacs ProfilEr.. A per-sexp-evaltime profiler.
+;; https://raw.github.com/emacsmirror/dope/master/dope.el
+;; M-x dope-quick-start will show a little introduction tutorial.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; * Elisp executable scripts

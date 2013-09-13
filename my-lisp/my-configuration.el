@@ -174,6 +174,11 @@ when `auto-save-mode' is invoked manually.")
   (let ((text-scale-mode-amount -1))
     (text-scale-mode)))
 
+(defadvice ibuffer-do-print (before print-buffer-query activate)
+  "Require user confirmation before printing current/marked buffers."
+  (unless (y-or-n-p "Print buffer(s)? ")
+    (error "Cancelled")))
+
 ;; Enable find-file-at-point key-bindings.
 (ffap-bindings) ; see variable `ffap-bindings'
 (setq ffap-url-regexp nil) ; disable URL features in ffap

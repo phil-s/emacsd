@@ -17,7 +17,13 @@
 
 ;; ;; Redefine tab-stop-list if tab-width is modified
 ;; ;; (set-variable) calls (set). If we advise (set) and (setq),
-;; ;; we'll have a comprehensive solution.
+;; ;; we'll (probably?) have a comprehensive solution. Advising
+;; ;; such a common primitive seems like a severe action to take
+;; ;; for this purpose, however. A better move might be to compare
+;; ;; the tab width to the tab-stop list after the local variables
+;; ;; have been determined, and re-configure if necessary at that
+;; ;; stage.
+;;
 ;; (defadvice set (after after-set-regenerate-tab-stop-list)
 ;;   "Re-generate tab-stop-list when tab-width is modified."
 ;;   (if (equal (symbol-name (ad-get-arg 0)) "tab-width")
@@ -32,7 +38,9 @@
 
 ;; Use tab-width 4 by default
 (set-default 'tab-width 4)
-(set-variable 'tab-width 4) ; to invoke after-set-variable-regenerate-tab-stop-list
+(setq tab-width 4)
+(setq tab-stop-list (generate-tab-stop-list))
+;; See also the above advice `after-set-variable-regenerate-tab-stop-list'
 
 ;; tab-width is already buffer-local
 ;; tab-stop-list needs to be likewise, otherwise

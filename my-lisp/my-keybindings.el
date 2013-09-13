@@ -146,7 +146,7 @@
   (define-key keymap (kbd "C-c s q")   'my-sql-console)
 
   ;; Miscellaneous (mine/third-party)
-  (define-key keymap (kbd "C-c C-v")   'my-copy-buffer-file-name)
+  (define-key keymap (kbd "C-c v")     'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "C-c W")     'my-write-copy-to-file)
   (define-key keymap (kbd "M-n")       'scroll-one-line-ahead)
@@ -194,6 +194,7 @@
 (defalias 'llll 'find-my-lisp-dir)
 (defalias 'llle 'find-el-get-dir)
 (defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
+(defalias 'rb   'revert-buffer)
 (defalias 'ws   'whitespace-mode)
 
 (defun my-keybindings-after-init-hook ()

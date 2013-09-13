@@ -15,5 +15,8 @@
 /lisp/__nxhtml__
 /image-dired/
 
+session.*
+my-lisp/my-local.backup
+
 # my-lisp/*.elc is byte-compiled automatically upon git merge
 /my-lisp/*.elc
