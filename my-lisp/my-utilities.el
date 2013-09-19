@@ -524,12 +524,38 @@ within the current buffer-file-name."
 ;; Add a 'F'ind marked files keybinding to dired
 (eval-after-load "dired"
   '(progn
-     (define-key dired-mode-map "F" 'my-dired-find-file)
+     ;; my-dired-find-file
+     (define-key dired-mode-map (kbd "F") 'my-dired-find-file)
      (defun my-dired-find-file (&optional arg)
        "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
        (interactive "P")
        (let* ((fn-list (dired-get-marked-files nil arg)))
-         (mapc 'find-file fn-list)))))
+         (mapc 'find-file fn-list)))
+
+     ;; my-dired-create-file
+     (define-key dired-mode-map (kbd "_") 'my-dired-create-file)
+     (defun my-dired-create-file (file)
+       "Create a file called FILE.
+    If FILE already exists, signal an error."
+       (interactive
+        (list (read-file-name "Create file: " (dired-current-directory))))
+       (let* ((expanded (expand-file-name file))
+              (try expanded)
+              (dir (directory-file-name (file-name-directory expanded)))
+              new)
+         (if (file-exists-p expanded)
+             (error "Cannot create file %s: file exists" expanded))
+         ;; Find the topmost nonexistent parent dir (variable `new')
+         (while (and try (not (file-exists-p try)) (not (equal new try)))
+           (setq new try
+                 try (directory-file-name (file-name-directory try))))
+         (when (not (file-exists-p dir))
+           (make-directory dir t))
+         (write-region "" nil expanded t)
+         (when new
+           (dired-add-file new)
+           (dired-move-to-filename))))
+     )) ;; end of eval-after-load "dired"
 
 (defun my-find-iname-grep-dired (dir pattern regexp)
   "`find-grep-dired' with additional file-name pattern argument."
