@@ -1,3 +1,8 @@
+(defun my-local-repository-url-for (library)
+  "Provide a URL for a library in the local-repository directory."
+  (concat "file://" (expand-file-name user-emacs-directory)
+          "local-repository/" library))
+
 (defun my-el-get ()
   "Define custom sources and call el-get."
   (interactive)
@@ -32,18 +37,13 @@
             :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
             :features browse-kill-ring)
 
-     (:name zenburn-theme
-            :type git
-            :url "https://github.com/bbatsov/zenburn-emacs")
-
      (:name deft
             :type git
             :url "git://jblevins.org/git/deft.git")
 
      (:name delight
             :type http
-            :url ,(concat "file://" (expand-file-name user-emacs-directory)
-                          "local-repository/delight.el"))
+            :url ,(my-local-repository-url-for "delight.el"))
 
      ;; (:name dictionary-el
      ;;        :type apt-get)
@@ -58,8 +58,7 @@
 
      (:name ediff-binary-hexl
             :type http
-            :url ,(concat "file://" (expand-file-name user-emacs-directory)
-                          "local-repository/ediff-binary-hexl.el"))
+            :url ,(my-local-repository-url-for "ediff-binary-hexl.el"))
 
      (:name ediff-trees
             :type emacswiki)
@@ -176,8 +175,7 @@
 
      (:name windcycle
             :type http
-            :url ,(concat "file://" (expand-file-name user-emacs-directory)
-                          "local-repository/windcycle.el")
+            :url ,(my-local-repository-url-for "windcycle.el")
             :features windcycle)
 
      (:name unbound
@@ -187,8 +185,7 @@
 
      (:name vcl-mode
             :type http
-            :url ,(concat "file://" (expand-file-name user-emacs-directory)
-                          "local-repository/vcl-mode.el"))
+            :url ,(my-local-repository-url-for "vcl-mode.el"))
 
      (:name web-mode
             :type git
@@ -205,6 +202,10 @@
      ;; (:name yasnippet
      ;;        :type git-svn
      ;;        :url "http://yasnippet.googlecode.com/svn/trunk/")
+
+     (:name zenburn-theme
+            :type git
+            :url "https://github.com/bbatsov/zenburn-emacs")
 
      ;; Colour readability tool.
      ;; Available by default in Emacs 24, so would need to restrict
