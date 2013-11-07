@@ -14,6 +14,7 @@
 /erc/*
 /lisp/__nxhtml__
 /image-dired/
+/url
 
 session.*
 my-lisp/my-local.backup
