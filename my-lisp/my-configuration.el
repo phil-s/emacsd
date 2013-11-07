@@ -225,7 +225,8 @@ See also: `my-copy-buffer-file-name'."
 ;; as appropriate.
 (setq frame-title-format
       '(buffer-file-name
-        ("%b (Emacs) %f")
+        ("%b (Emacs) %f"
+         (my-image-dimensions (" " my-image-dimensions)))
         (dired-directory
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
          ("%b (Emacs)"))))
