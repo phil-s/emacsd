@@ -22,16 +22,11 @@
 (mapc
  (lambda (language-mode-hook)
    (add-hook language-mode-hook 'my-coding-config))
- '(cperl-mode-hook
+ '(prog-mode-hook
+   ;; plus anything not derived from prog-mode:
    css-mode-hook
-   emacs-lisp-mode-hook
-   ielm-mode-hook
-   js-mode-hook
-   lisp-interaction-mode-hook
-   perl-mode-hook
-   php-mode-hook
-   python-mode-hook
-   sh-mode-hook))
+   inferior-emacs-lisp-mode-hook
+   python-mode-hook))
 
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
