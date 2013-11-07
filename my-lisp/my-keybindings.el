@@ -11,7 +11,7 @@
 (global-set-key (kbd "<f5>")  'ff-find-other-file)
 
 ;; Custom 'apropos' key bindings
-(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,v,C-v)")
+(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,s,v,C-v)")
 (define-key Apropos-Prefix (kbd "a")   'apropos)
 (define-key Apropos-Prefix (kbd "C-a") 'apropos)
 (define-key Apropos-Prefix (kbd "d")   'apropos-documentation)
@@ -19,6 +19,7 @@
 (define-key Apropos-Prefix (kbd "c")   'apropos-command)
 (define-key Apropos-Prefix (kbd "i")   'info-apropos)
 (define-key Apropos-Prefix (kbd "l")   'apropos-library)
+(define-key Apropos-Prefix (kbd "s")   'apropos-internal) ;; s = symbols
 (define-key Apropos-Prefix (kbd "v")   'apropos-variable)
 (define-key Apropos-Prefix (kbd "C-v") 'apropos-value)
 
