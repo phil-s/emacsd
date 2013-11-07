@@ -547,6 +547,7 @@ mode by making the buffer read only and/or by disabling all self-
 inserting keys (typically by using `suppress-keymap').  The heuristic
 detects both these cases."
   (if (or buffer-read-only
+	  (window-minibuffer-p)
 	  (null (where-is-internal 'self-insert-command nil 'non-ascii)))
       0
     1))
