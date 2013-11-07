@@ -6,6 +6,7 @@
   :init-value nil
   :lighter my-image-dimensions
   (require 'image-mode)
+  (require 'cl) ;; destructuring-bind
   (when (not my-image-dimensions)
     (let ((image (image-get-display-property)))
       (when image
