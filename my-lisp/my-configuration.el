@@ -10,6 +10,8 @@
   (setq default-buffer-file-coding-system 'utf-8))
 ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+;; Latin-4 facilitates macron accents (e.g. a- => ā).
+(setq default-input-method "latin-4-postfix")
 
 ;; Put other files and dirs into .emacs.d
 (setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
