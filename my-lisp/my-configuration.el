@@ -421,14 +421,11 @@ disabled.")))
         kill-region kill-sentence kill-sexp kill-visual-line
         kill-whole-line kill-word subword-backward-kill subword-kill
         yank yank-pop yank-rectangle))
-     ;; TODO: Will term-mode-hook not work for the following?
-     (defadvice term (after my-advice-term-line-mode activate)
-       ;;(term-line-mode);;changed my mind.
+     ;; Terminal buffer configuration.
+     (add-hook 'term-mode-hook 'my-term-mode-hook)
+     (defun my-term-mode-hook ()
        (subword-mode 0)
-       (set (make-local-variable 'global-hl-line-mode) nil))
-     (defadvice ansi-term (after my-advice-ansi-term-line-mode activate)
-       ;;(term-line-mode);;changed my mind.
-       (subword-mode 0)
+       (setq show-trailing-whitespace nil)
        (set (make-local-variable 'global-hl-line-mode) nil))))
 
 ;; Shell mode
