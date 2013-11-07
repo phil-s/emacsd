@@ -124,6 +124,10 @@ when `auto-save-mode' is invoked manually.")
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
 
+;; Smarter line breaks when filling: Don't break a line after the
+;; first word of a sentence, or before the last word of a paragraph.
+(add-to-list 'fill-nobreak-predicate 'fill-single-word-nobreak-p)
+
 ;; TODO: Idea: Implement a "recently-closed files" group in ibuffer.
 ;; Collapsed by default. Selecting a buffer from this list will
 ;; re-visit the file.
