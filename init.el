@@ -499,12 +499,7 @@
 (require 'my-projects)
 
 (message "Init file loaded in %.2fs"
-         (destructuring-bind
-             ((now-high now-low now-ms &rest now-ignore)
-              (ini-high ini-low ini-ms &rest ini-ignore))
-             (list (current-time) my-init-load-start)
-           (- (string-to-number (format "%d.%d" now-low now-ms))
-              (string-to-number (format "%d.%d" ini-low ini-ms)))))
+         (time-to-seconds (time-since my-init-load-start)))
 
 ;;; Local Variables:
 ;;; outline-regexp: ";;;; "
