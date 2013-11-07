@@ -138,6 +138,7 @@
 
   ;; WWW
   (define-key keymap (kbd "C-c w s")   'my-www-search)
+  (define-key keymap (kbd "C-c w w")   'my-render-url) ;; use 'eww in 24.4
 
   ;; Terminals / Shells / REPLs
   (define-key keymap (kbd "C-c s s")   'my-shell)

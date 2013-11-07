@@ -793,6 +793,21 @@ point. This function returns a list (string) for use in `interactive'."
   "URL for WWW search, with %s placeholder for search string"
   :group 'www)
 
+
+(defalias 'my-render-url 'my-eww)
+(defun my-eww (url)
+  "Render URL as HTML."
+  (declare (obsolete eww "24.4"))
+  (interactive "sURL: ")
+  (require 'shr)
+  (url-retrieve
+   url
+   (lambda (&optional status cbargs)
+     (let ((markup (current-buffer)))
+       (delete-region (point-min) (1+ url-http-end-of-headers))
+       (shr-render-buffer markup)
+       (kill-buffer markup)))))
+
 (defun my-www-search (string)
   "Ask a WWW browser to perform a web search for a given string.
 Prompts for a string, defaulting to the active region or the current word at
@@ -800,16 +815,18 @@ or before point."
   (interactive (my-region-or-word "WWW search: "))
   (browse-url (format my-www-search-url (url-hexify-string string))))
 
+(defvar my-ssh-history nil)
 (defun my-ssh (args)
   "Connect to a remote host by SSH."
-  (interactive "sssh ")
-  (eval-when-compile
-    (require 'term))
-  (let ((switches (split-string-and-unquote args)))
-    (set-buffer (apply 'make-term "ssh" "ssh" nil switches))
+  (interactive
+   (list (read-from-minibuffer "ssh " nil nil nil 'my-ssh-history)))
+  (let* ((switches (split-string-and-unquote args))
+         (name (concat "ssh " args))
+         (termbuf (apply 'make-term name "ssh" nil switches)))
+    (set-buffer termbuf)
     (term-mode)
     (term-char-mode)
-    (switch-to-buffer "*ssh*")))
+    (switch-to-buffer termbuf)))
 
 (defun my-terminal (retain-window-layout)
   (interactive "P")
