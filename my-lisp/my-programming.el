@@ -224,6 +224,9 @@ context-help to false"
                    (interactive "^p")
                    (forward-paragraph arg)
                    (forward-line)))
+  ;; Don't highlight long lines
+  (set (make-local-variable 'whitespace-style)
+       (remq 'lines-tail (remq 'lines whitespace-style)))
   ;; Show colours
   (rainbow-mode 1))
 
