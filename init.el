@@ -86,6 +86,7 @@
 ;; (minor-mode-key-binding KEY &optional ACCEPT-DEFAULT) ;; discover keymap(s)
 ;; (global-key-binding KEYS &optional ACCEPT-DEFAULT)
 ;; (local-key-binding KEYS &optional ACCEPT-DEFAULT)
+;; http://stackoverflow.com/q/18801018/324105
 
 ;; Terminal emulators:
 ;; For non-standard terminals, the input-decode-map keymap can be used
@@ -96,6 +97,15 @@
 
 ;; Buffer-local keymaps / Minor mode keymap over-rides:
 ;; http://stackoverflow.com/a/13102821/324105
+;;
+;; (add-hook '<major-mode>-hook
+;;   (lambda ()
+;;     (let ((oldmap (cdr (assoc '<minor-mode> minor-mode-map-alist)))
+;;           (newmap (make-sparse-keymap)))
+;;       (set-keymap-parent newmap oldmap)
+;;       (define-key newmap [<thekeyIwanttohide>] nil)
+;;       (make-local-variable 'minor-mode-overriding-map-alist)
+;;       (push `(<minor-mode> . ,newmap) minor-mode-overriding-map-alist))))
 
 ;; In Windows you can add this to to your .emacs to enable hyper and super:
 ;; (setq w32-apps-modifier 'hyper)
@@ -112,19 +122,22 @@
 ;; (set-temporary-overlay-map MAP &optional KEEP-PRED)
 
 ;;;; * Keyboard macros
-;;   C-x (         or F3   Begins recording.
-;;                    F3   Insert counter (if recording has already commenced).
-;;   C-x )         or F4   Ends recording.
-;;   C-x e         or F4   Executes the last recorded keyboard macro.
-;;                         Additional e or F4 presses repeat the macro.
-;;   C-u <n> C-x ) or F4   End macro and repeat an additional <n>-1 times.
+;;   C-x (          or F3  Begin recording.
+;;                     F3  Insert counter (if recording has already commenced).
+;;   C-u <n> C-x (  or F3  Begin recording with initial counter value <n>.
+;;   C-x )          or F4  End recording.
+;;   C-u <n> C-x )  or F4  End recording, then execute the macro <n>-1 times.
+;;   C-x e          or F4  Execute the last recorded keyboard macro.
+;;       e          or F4  Additional e or F4 presses repeat the macro.
+;;   C-u <n> C-x e  or F4  Execute the last recorded keyboard macro <n> times.
+;;   C-x C-k r             Apply the last macro to each line of the region.
 ;;   C-x C-k e             Edit a keyboard macro (RET for most recent).
 ;;   C-x C-k b             Set a key-binding.
 ;;
-;; If find yourself using lots of macros, you can even name them
+;; If you find yourself using lots of macros, you can even name them
 ;; for later use, and save them to your init file.
-;;   M-x name-last-kbd-macro (name) RET
-;;   M-x insert-kbd-macro (name) RET
+;;   M-x name-last-kbd-macro RET (name) RET
+;;   M-x insert-kbd-macro RET (name) RET
 ;;
 ;; For more documentation:
 ;;   C-h k C-x (
@@ -305,19 +318,24 @@
 
 ;;;; * Tramp
 
-;; sudo multihop/proxy
+;; Configure tramp-default-proxies-alist
+;; or C-h i g (tramp) Ad-hoc multi-hops RET
 
-;; (add-to-list 'tramp-default-proxies-alist
-;;              '("scmp-qa\\'" "\\`root\\'" "/ssh:%h:"))))
-
-;; (require 'tramp)
-;; (add-to-list 'tramp-default-proxies-alist
-;;              '(nil "\\`root\\'" "/ssh:%h:"))
-;; (add-to-list 'tramp-default-proxies-alist
-;;              '((regexp-quote (system-name)) nil nil))
+;; sudo on remote host:
+;; C-x C-f /ssh:you@remotehost|sudo:remotehost:/path/to/file RET
+;; Important: Do NOT use "sudo::"  ^^^^^^^^^^^^ (always specify the host)
+;; (You can still use sudo:: on localhost)
 ;;
-;; Then you can edit remote root files with 【Ctrl+x ctrl+f】
-;; /sudo:root@remote-host:<path-to-root-owned-file>
+;; As this still uses the proxy mechanism underneath,
+;; `tramp-default-proxies-alist' should now include the
+;; value ("remotehost" "root" "/ssh:you@remotehost:")
+;;
+;; Meaning that the proxy /ssh:you@remotehost: is going to be used
+;; whenever you request a file as root@remotehost.
+
+;; Remote shell emacsclient talking to local emacs server
+;; http://snarfed.org/emacsclient_in_tramp_remote_shells
+;; http://blog.habnab.it/blog/2013/06/25/emacsclient-and-tramp/
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
