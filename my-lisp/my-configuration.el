@@ -349,7 +349,7 @@ disabled.")))
   (dired-omit-mode 1))
 
 ;; Use ControlMaster with TRAMP by default
-(setq tramp-default-method "scpc"
+(setq tramp-default-method "ssh"
       tramp-default-user   "phil")
 
 ;; Enable directory local variables with remote files.
