@@ -414,6 +414,8 @@ disabled.")))
      ;; Enable terminal history in line mode (term-mode-map).
      (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
      (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
+     ;; Enable ESC-x as a substitute for M-x (which sends term-send-raw-meta)
+     (define-key term-raw-map (kbd "<escape> x") 'execute-extended-command)
      ;; Disable killing and yanking in char mode (term-raw-map).
      (mapc
       (lambda (func)
