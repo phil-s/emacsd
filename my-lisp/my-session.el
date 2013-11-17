@@ -45,8 +45,13 @@
 ;; savehist-minibuffer-history-variables, which gets added to
 ;; as individual features are utilised.
 (setq savehist-additional-variables
-      '(kill-ring))
+      '(kill-ring
+        my-ssh-history
+        ))
 (savehist-mode 1)
+;; n.b. Code elsewhere should use:
+;; (eval-after-load "savehist"
+;;   '(add-to-list 'savehist-additional-variables 'some-var))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
