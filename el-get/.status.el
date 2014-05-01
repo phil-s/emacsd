@@ -41,4 +41,5 @@
 :packed "installed"
 :auto-compile "installed"
 :fic-mode "installed"
+:git-modes "installed"
 )

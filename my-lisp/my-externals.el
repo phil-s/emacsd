@@ -87,6 +87,10 @@
             :options ("zxf")
             :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
 
+     (:name git-modes
+            :type git
+            :url "git://github.com/magit/git-modes.git")
+
      (:name gpicker
             :type http
             :url "http://git.savannah.gnu.org/cgit/gpicker.git/plain/gpicker.el"
@@ -114,7 +118,8 @@
             :type git
             :url "git://github.com/spacebat/lexbind-mode.git")
 
-     (:name magit)
+     (:name magit
+            :depends git-modes)
 
      (:name mo-git-blame)
 

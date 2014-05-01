@@ -22,11 +22,26 @@ Magit User Manual
 *****************
 
 Magit is an interface to the version control system Git, implemented as
-an extension to Emacs.  Magit supports GNU Emacs version 22 or later.
-It may work with other emacsen, but Magit developers do not intend to
-investigate and fix bugs that only appear in unsupported versions.
-Patches to fix bugs in other emacsen or volunteers to maintain
-compatibility are still welcome.
+an Emacs extension.
+
+   Unlike Emacs's native Version Control package which strives to
+provide a unified interface to various version control systems, Magit
+only supports Git and can therefor better take advantage of its native
+features.
+
+   Magit supports GNU Emacs 23.2 or later; 24.1 or later is recommended.
+Magit supports Git 1.7.2.5 or later; 1.8.2 or later is recommended.
+The minimal versions are those available in Debian oldstable.
+
+   When something breaks please see the curated list of known issues
+(https://github.com/magit/magit/wiki/Known-Issues) and the FAQ
+(https://github.com/magit/magit/wiki/FAQ).  If that doesn't help check
+the list of all open issues issues
+(https://github.com/magit/magit/issues).
+
+   If everything else fails please open a new issue or ask for help on
+the mailing list
+(https://groups.google.com/forum/?fromgroups#!forum/magit).
 
 * Menu:
 
@@ -50,12 +65,11 @@ compatibility are still welcome.
 * Interactive Rebasing::
 * Rewriting::
 * Pushing and Pulling::
-* Bisecting::
 * Submodules::
+* Bisecting::
+* Finding commits not merged upstream::
 * Using Magit Extensions::
 * Using Git Directly::
-* Customization::
-* Frequently Asked Questions::
 * GNU Free Documentation License::
 
 
@@ -74,18 +88,19 @@ rebasing, and other common Git operations.
 most common Git operations convenient.  Thus, Magit will likely not
 save you from learning Git itself.
 
-   This manual provides a tour of all Magit features.  It does not give
-an introduction to version control in general, or to Git in particular.
+   This manual provides a tour of many Magit features.  It isn't an
+introduction to version control in general, or to Git in particular.
 
-   The main entry point to Magit is `M-x magit-status', which will put
-you in Magit's status buffer.  You will be using it frequently, so it
-is probably a good idea to bind `magit-status' to a key of your choice.
+   The main entry point to Magit is `M-x magit-status', which puts you
+in Magit's status buffer.  You will be using it frequently, so it is
+probably a good idea to globally bind `magit-status' to a key of your
+choice.
 
    In addition to the status buffer, Magit will also create buffers that
 show lists of commits, buffers with diffs, and other kinds of buffers.
-All these buffers are in `magit-mode' and have the same key bindings.
-Not all commands make sense in all contexts, but a given key will
-always do the same thing in all Magit buffers.
+All these buffers are in a mode derived from `magit-mode' and have the
+similar key bindings.  Not all commands make sense in all contexts, but
+a given key will do the same thing in different Magit buffers.
 
    Naturally, Magit runs the `git' command to do most of the work.  The
 `*magit-process*' buffer contains the transcript of the most recent
@@ -97,24 +112,14 @@ File: magit.info,  Node: Acknowledgments,  Next: Sections,  Prev: Introduction, 
 2 Acknowledgments
 *****************
 
-Marius Vollmer started the whole project.  Thanks !
+Our thank goes to all current and past contributors, Marius Vollmer who
+started the project, and all retired and current maintainers, Phil
+Jackson, Peter J. Weisberg, Rémi Vanicat, Nicolas Dudebout, Yann
+Hodique, and Jonas Bernoulli.
 
-   From day one of the first Magit announcement, John Wiegley has
-contributed numerous fixes, UI improvements, and new features.  Thanks!
-
-   Linh Dang and Christian Neukirchen also contributed from day one.
-Thanks!
-
-   Phil Hagelberg joined a few days later.  Thanks!
-
-   Alex Ott contributed support for git svn.  Thanks!
-
-   Marcin Bachry contributed bug fixes and support for decorated logs.
-Thanks!
-
-   Alexey Voinov fixed bugs.  Thanks!
-
-   Rémi Vanicat helped with Tramp support.  Thanks!
+   For a full list of contributors, see the AUTHORS.md file at the
+top-level directory of this distribution or at
+`https://github.com/magit/magit/tree/master/AUTHORS.md'.
 
 
 File: magit.info,  Node: Sections,  Next: Status,  Prev: Acknowledgments,  Up: Top
@@ -272,18 +277,17 @@ File: magit.info,  Node: Staging and Committing,  Next: History,  Prev: Untracke
 ************************
 
 Committing with Git is a two step process: first you add the changes
-you want to commit to a 'staging area', and then you commit them to the
-repository.  This allows you to only commit a subset of your local
-changes.
+you want to commit to a 'staging area' or 'index', and then you commit
+them to the repository.  This allows you to only commit a subset of the
+changes in the working tree.  If you are not familiar with this concept
+yet, then you should change that as soon as possible using one of the
+fine Git tutorials.  If you don't, then Git and by extension Magit will
+seem rather strange.
 
-   Magit allows you to ignore the staging area if you wish.  As long as
-your staging area is unused, Magit will show your uncomitted changes in
-a section named _Changes_.
-
-   When the staging area is in use, Magit uses two sections: _Unstaged
-changes_ and _Staged changes_.  The _Staged changes_ section shows the
-changes that will be included in the next commit, while the _Unstaged
-changes_ section shows the changes that will be left out.
+   Magit shows uncommitted changes in two sections, depending on whether
+the changes have been staged yet.  The _Staged changes_ section shows
+the changes that will be included in the next commit, while the
+_Unstaged changes_ section shows the changes that will be left out.
 
    To move an unstaged hunk into the staging area, move point into the
 hunk and type `s'.  Likewise, to unstage a hunk, move point into it and
@@ -314,48 +318,28 @@ typing `k'.  The changes to discard are selected as with `s' and `u'.
    Before committing, you should write a short description of the
 changes.
 
-   Type `c' to pop up a buffer where you can write your change
+   Type `c c' to pop up a buffer where you can write your change
 description.  Once you are happy with the description, type `C-c C-c'
 in that buffer to perform the commit.
 
    If you want to write changes in a `ChangeLog' file, you can use `C-x
 4 a' on a diff hunk.
 
-   Typing `c' when the staging area is unused is a special situation.
+   Typing `c c' when the staging area is unused is a special situation.
 Normally, the next commit would be empty, but you can configure Magit
 to do something more useful by customizing the
 `magit-commit-all-when-nothing-staged' variable.  One choice is to
 instruct the subsequent `C-c C-c' to commit all changes.  Another
-choice is stage everything at the time of hitting `c'.
-
-   You can type `C-c C-a' in the buffer with the change description to
-toggle a flag that determines whether the next commit will _amend_ the
-current commit in HEAD.
+choice is stage everything at the time of hitting `c c'.
 
    Typing `M-n' or `M-p' will cycle through the
 `log-edit-comment-ring', which will have your previous log messages.
 This is particularly useful if you have a hook that occasionally causes
 git to refuse your commit.
 
-   Typing `C-c C-s' will toggle the `--signoff' option.  The default is
-determined by the `magit-commit-signoff' customization variable.
-
-   Typing `C-c C-e' will toggle the `--allow-empty' option.  This
-allows you to make commits that serve as notes, without including any
-changes.
-
-   Typing `C-c C-t' will toggle the option to specify the name and
-email address for the commit's author.  The default is determined by
-the `user.name' and `user.email' git configuration settings.
-
-   If you change your mind and don't want to go ahead with your commit
-while you are in the `*magit-log-edit*' buffer, you can just switch to
-another buffer, continue editing there, staging and unstaging things
-until you are happy, and then return to the `*magit-log-edit*' buffer,
-maybe via `C-x b', or by hitting `c' again in a Magit buffer.
-
-   If you want to erase the `*magit-log-edit*' buffer and bury it, you
-can hit `C-c C-k' in it.
+   To abort a commit use `C-c C-k'.  The commit message is saved and
+can later be retrieved in the commit message buffer using `M-p' and
+`M-a'.
 
    Typing `C' will also pop up the change description buffer, but in
 addition, it will try to insert a ChangeLog-style entry for the change
@@ -808,6 +792,12 @@ different order.  You could pick them from the reflog, for example.
 associated with rewriting.  These commands all start with the `r'
 prefix key.
 
+   (Unless you already do so, we recommend that you don't use the
+functionality described here.  It is semi-deprecated and will be
+removed once its unique features have been ported to the `git rebase
+--interactive' workflow.  Even now the latter is almost always the
+better option.)
+
    Typing `r b' will start a rewrite operation.  You will be prompted
 for a _base_ commit.  This commit and all subsequent commits up until
 the current head are then put in a list of _Pending commits_, after
@@ -854,7 +844,7 @@ changes that you still need to rewrite, and you can apply hunks from
 it, like from any other diff.
 
 
-File: magit.info,  Node: Pushing and Pulling,  Next: Bisecting,  Prev: Rewriting,  Up: Top
+File: magit.info,  Node: Pushing and Pulling,  Next: Submodules,  Prev: Rewriting,  Up: Top
 
 20 Pushing and Pulling
 **********************
@@ -893,26 +883,27 @@ branch, Magit shows them in a section called _Unpulled changes_.  Typing
 `F F' will fetch and merge them into the current branch.
 
 
-File: magit.info,  Node: Submodules,  Next: Using Magit Extensions,  Prev: Bisecting,  Up: Top
+File: magit.info,  Node: Submodules,  Next: Bisecting,  Prev: Pushing and Pulling,  Up: Top
 
 21 Submodules
 *************
 
 `o u'
-     Update the submodules, with a prefix argument it will initializing.
+     Update the submodules, with a prefix argument it will also
+     initialize them.
 
 `o i'
      Initialize the submodules.
 
 `o b'
-     Update and initialize the submodules in one go.
+     Update and initialize the submodules in one go (same as C-u o u).
 
 `o s'
      Synchronizes submodules' remote URL configuration setting to the
      value specified in .gitmodules.
 
 
-File: magit.info,  Node: Bisecting,  Next: Submodules,  Prev: Pushing and Pulling,  Up: Top
+File: magit.info,  Node: Bisecting,  Next: Finding commits not merged upstream,  Prev: Submodules,  Up: Top
 
 22 Bisecting
 ************
@@ -942,9 +933,35 @@ their state.
 r'.
 
 
-File: magit.info,  Node: Using Magit Extensions,  Next: Using Git Directly,  Prev: Submodules,  Up: Top
+File: magit.info,  Node: Finding commits not merged upstream,  Next: Using Magit Extensions,  Prev: Bisecting,  Up: Top
 
-23 Magit Extensions
+23 Finding commits not merged upstream
+**************************************
+
+One of the comforts of git is that it can tell you which commits have
+been merged upstream but not locally and vice versa.  Git's sub-command
+for this is `cherry' (not to be confused with `cherry-pick').  Magit
+has support for this by invoking `magit-cherry' which is bound to `y'
+by default.
+
+   Magit will then ask you first for the upstream revision (which
+defaults to the currently tracked remote branch if any) and the head
+revision (which defaults to the current branch) to use in the
+comparison.  You will then see a new buffer in which all commits are
+listed with a directional marker, their revision and the commit
+message's first line.  The directional marker is either `+' indicating
+a commit that's present in upstream but not in head or `-' which
+indicates a commit present in head but not in upstream.
+
+   From this list you can use the usual key bindings for cherry-picking
+individual commits (`a' for cherry-picking without committing and `A'
+for the same plus the automatic commit).  The buffer is refreshed
+automatically after each cherry-pick.
+
+
+File: magit.info,  Node: Using Magit Extensions,  Next: Using Git Directly,  Prev: Finding commits not merged upstream,  Up: Top
+
+24 Magit Extensions
 *******************
 
 * Menu:
@@ -953,12 +970,11 @@ File: magit.info,  Node: Using Magit Extensions,  Next: Using Git Directly,  Pre
 * Interfacing with Subversion::
 * Interfacing with Topgit::
 * Interfacing with StGit::
-* Developing Extensions::
 
 
 File: magit.info,  Node: Activating extensions,  Next: Interfacing with Subversion,  Up: Using Magit Extensions
 
-23.1 Activating extensions
+24.1 Activating extensions
 ==========================
 
 Magit comes with a couple of shipped extensions that allow interaction
@@ -996,7 +1012,7 @@ line in the `config' file.
 
 File: magit.info,  Node: Interfacing with Subversion,  Next: Interfacing with Topgit,  Prev: Activating extensions,  Up: Using Magit Extensions
 
-23.2 Interfacing with Subversion
+24.2 Interfacing with Subversion
 ================================
 
 Typing `N r' runs `git svn rebase', typing `N c' runs `git svn dcommit'
@@ -1010,13 +1026,13 @@ the user will also be prompted for a branch to search in.
 
 File: magit.info,  Node: Interfacing with Topgit,  Next: Interfacing with StGit,  Prev: Interfacing with Subversion,  Up: Using Magit Extensions
 
-23.3 Interfacing with Topgit
+24.3 Interfacing with Topgit
 ============================
 
 Topgit (http://repo.or.cz/r/topgit.git) is a patch queue manager that
 aims at being close as possible to raw Git, which makes it easy to use
 with Magit.  In particular, it does not require to use a different set
-of commands for "commit", "update",… operations.
+of commands for "commit", "update", and other operations.
 
    `magit-topgit.el' provides basic integration with Magit, mostly by
 providing a "Topics" section.
@@ -1032,17 +1048,17 @@ dependencies of that branch.  This should be mostly transparent, except
 in case of conflicts.
 
 
-File: magit.info,  Node: Interfacing with StGit,  Next: Developing Extensions,  Prev: Interfacing with Topgit,  Up: Using Magit Extensions
+File: magit.info,  Node: Interfacing with StGit,  Prev: Interfacing with Topgit,  Up: Using Magit Extensions
 
-23.4 Interfacing with StGit
+24.4 Interfacing with StGit
 ===========================
 
 StGit (http://www.procode.org/stgit) is a Python application providing
 similar functionality to Quilt (i.e. pushing/popping patches to/from a
-stack) on top of Git.  These operations are performed using Git commands
-and the patches are stored as Git commit objects, allowing easy merging
-of the StGit patches into other repositories using standard Git
-functionality.
+stack) on top of Git.  These operations are performed using Git
+commands and the patches are stored as Git commit objects, allowing
+easy merging of the StGit patches into other repositories using
+standard Git functionality.
 
    `magit-stgit.el' provides basic integration with Magit, mostly by
 providing a "Series" section, whose patches can be seen as regular
@@ -1055,106 +1071,9 @@ as well as you can delete them using the "discard" action.
 commands let you perform the respective StGit operations.
 
 
-File: magit.info,  Node: Developing Extensions,  Prev: Interfacing with StGit,  Up: Using Magit Extensions
+File: magit.info,  Node: Using Git Directly,  Next: GNU Free Documentation License,  Prev: Using Magit Extensions,  Up: Top
 
-23.5 Developing Extensions
-==========================
-
-Magit provides a generic mechanism to allow cooperation with Git-related
-systems, such as foreign VCS, patch systems,…
-
-   In particular it allows to:
-
-   * Define sections to display specific information about the current
-     state of the repository, and place them relatively to existing
-     sections.
-
-     `magit-define-inserter' automagically defines two hooks called
-     `magit-before-insert-SECTION-hook' and
-     `magit-after-insert-SECTION-hook' that allow to generate and place
-     more sections.
-
-     In the following example, we use the builtin "stashes" section to
-     place our own "foo" one.
-
-          (magit-define-inserter foo ()
-            (magit-git-section 'foo
-                               "Foo:" 'foo-wash-function
-                               "foo" "arg1" "arg2"))
-          (add-hook 'magit-after-insert-stashes-hook 'magit-insert-foo)
-
-   * Define new types of objects in those sections.
-
-     The function `foo-wash-function' defined above post-processes each
-     line of the output of the "git foo arg1 arg2" command, and is able
-     to associate a type to certain lines.
-
-     A simple implementation could be:
-
-          (defun foo-wash-function ()
-            (let ((foo (buffer-substring (line-beginning-position) (line-end-position))))
-              (goto-char (line-beginning-position))
-              (magit-with-section foo 'foo
-                (magit-set-section-info foo)
-                (forward-line))))
-
-     In this case, every line of the command output is transformed into
-     an object of type `'foo'.
-
-   * Alter behavior of generic commands to dispatch them correctly to
-     the relevant system, optionally making use of the newly defined
-     types.
-
-          (magit-add-action (item info "discard")
-            ((foo)
-             (do-something-meaningful-for-discarding-a-foo)))
-
-     This will alter the behavior of `k', when applied to those objects.
-
-   * Plug a different logic into basic commands, to reflect the
-     presence of the extension.
-
-     `magit-define-command' automagically defines a
-     `magit-CMD-command-hook' that can contain a list of functions to
-     call before the actual core code.  Execution stops after the first
-     hook that returns a non-nil value.  This leaves room for extension
-     logic.
-
-          (add-hook 'magit-create-branch-command-hook 'foo-create-branch)
-
-     The function `foo-create-branch' will be called each time an
-     attempt is made to create a branch, and can, for example, react to
-     a certain name convention.
-
-   * Define new commands and associated menu.
-
-     This part is not really specific to extensions, except that menus
-     take place in the "Extensions" submenu.
-
-
-   It is suggested that Magit extensions authors stick to the
-convention of making extensions minor modes.  This has many advantages,
-including the fact that users are able to toggle extensions, and that
-it's easy to configure a specific set of extensions for a given
-repository.
-
-   Shipped extensions can serve as an example of how to develop new
-extensions.
-
-   Basically a `foo' extension should provide a `magit-foo-mode' minor
-mode, as well as a `turn-on-magit-foo' function.  The main task of the
-minor mode is to register/unregister the various hooks that the
-extension requires.  The registered actions on the other hand can be
-left alone and activated globally, since they can be run only on
-displayed items, which won't happen when the minor mode is off.
-
-   Don't forget to call `magit-refresh' when the minor mode is toggled
-interactively, so that the relevant sections can be shown or hidden.
-
-
-File: magit.info,  Node: Using Git Directly,  Next: Customization,  Prev: Using Magit Extensions,  Up: Top
-
-24 Using Git Directly
+25 Using Git Directly
 *********************
 
 For situations when Magit doesn't do everything you need, you can run
@@ -1163,225 +1082,7 @@ it, and refresh the status buffer.  The output can be viewed by typing
 `$'.
 
 
-File: magit.info,  Node: Customization,  Next: Frequently Asked Questions,  Prev: Using Git Directly,  Up: Top
-
-25 Customization
-****************
-
-The following variables can be used to adapt Magit to your workflow:
-
-`magit-git-executable'
-     The name of the Git executable.
-
-`magit-git-standard-options'
-     Standard options when running Git.
-
-`magit-repo-dirs'
-     Directories containing Git repositories.
-
-     Magit will look into these directories for Git repositories and
-     offer them as choices for `magit-status'.
-
-`magit-repo-dirs-depth'
-     The maximum depth to look for Git repos.
-
-     When looking for a Git repository below the directories in
-     `magit-repo-dirs', Magit will only descend this many levels deep.
-
-`magit-save-some-buffers'
-     Non-nil means that `magit-status' will save modified buffers
-     before running.  Setting this to `t' will ask which buffers to
-     save, setting it to `'dontask' will save all modified buffers
-     without asking.
-
-`magit-save-some-buffers-predicate'
-     Specifies a predicate function on `magit-save-some-buffers' to
-     determine which unsaved buffers should be prompted for saving.
-
-`magit-commit-all-when-nothing-staged'
-     Determines what `magit-log-edit' does when nothing is staged.
-     Setting this to `nil' will make it do nothing, setting it to `t'
-     will arrange things so that the actual commit command will use the
-     `--all' option, setting it to `'ask' will first ask for
-     confirmation whether to do this, and setting it to `'ask-stage'
-     will cause all changes to be staged, after a confirmation.
-
-`magit-commit-signoff'
-     When performing `git commit' adds `--signoff'.
-
-`magit-log-cutoff-length'
-     The maximum number of commits to show in the `log' and `whazzup'
-     buffers.
-
-`magit-log-infinite-length'
-     Number of log used to show as maximum for
-     `magit-log-cutoff-length'.
-
-`magit-log-auto-more'
-     Insert more log entries automatically when moving past the last
-     entry.
-
-     Only considered when moving past the last entry with
-     `magit-goto-next-section'.
-
-`magit-process-popup-time'
-     Popup the process buffer if a command takes longer than this many
-     seconds.
-
-`magit-revert-item-confirm'
-     Require acknowledgment before reverting an item.
-
-`magit-log-edit-confirm-cancellation'
-     Require acknowledgment before canceling the log edit buffer.
-
-`magit-remote-ref-format'
-     What format to use for autocompleting refs, in particular for
-     remotes.
-
-     Autocompletion is used by functions like `magit-checkout',
-     `magit-interactive-rebase' and others which offer branch name
-     completion.
-
-     The value `'name-then-remote' means remotes will be of the form
-     `name (remote)', while the value `'remote-slash-name' means that
-     they'll be of the form `remote/name'. For example something listed
-     as `remotes/upstream/next' by `git branch -l -a' will be offered
-     as `next (upstream)' and `upstream/next'.
-
-`magit-process-connection-type'
-     Connection type used for the git process.
-
-     `nil' mean pipe, it is usually faster and more efficient, and work
-     on cygwin.  `t' mean pty, it enable magit to prompt for passphrase
-     when needed.
-
-`magit-completing-read-function'
-     Function to be called when requesting input from the user.
-
-`magit-create-branch-behaviour'
-     Where magit will create a new branch if not supplied a branchname
-     or ref.
-
-     The value `'at-head' means a new branch will be created at the tip
-     of your current branch, while the value `'at-point' means magit
-     will try to find a valid reference at point...
-
-`magit-status-buffer-switch-function'
-     Function for `magit-status' to use for switching to the status
-     buffer.
-
-     The function is given one argument, the status buffer.
-
-`magit-rewrite-inclusive'
-     Whether magit includes the selected base commit in a rewrite
-     operation.
-
-     `t' means both the selected commit as well as any subsequent
-     commits will be rewritten.  This is magit's default behaviour,
-     equivalent to `git rebase -i ${REV~1}'
-
-       A'---B'---C'---D'
-       ^
-
-     `nil' means the selected commit will be literally used as `base',
-     so only subsequent commits will be rewritten.  This is consistent
-     with git-rebase, equivalent to `git rebase -i ${REV}', yet more
-     cumbersome to use from the status buffer.
-
-       A---B'---C'---D'
-       ^
-
-`magit-topgit-executable'
-     The name of the TopGit executable.
-
-`magit-topgit-branch-prefix'
-     Convention prefix for topic branch creation.
-
-
-
-File: magit.info,  Node: Frequently Asked Questions,  Next: GNU Free Documentation License,  Prev: Customization,  Up: Top
-
-26 Frequently Asked Questions
-*****************************
-
-* Menu:
-
-* FAQ - Changes::
-* FAQ 1 - Troubleshooting::
-* FAQ 2 - Display issues::
-
-
-File: magit.info,  Node: FAQ - Changes,  Next: FAQ 1 - Troubleshooting,  Up: Frequently Asked Questions
-
-26.1 Changes
-============
-
-   * v1.1: Changed the way extensions work.  Previously, they were
-     enabled unconditionally once the library was loaded.  Now they are
-     minor modes that need to be activated explicitly (potentially on a
-     per-repository basis).  See *note Activating extensions::.
-
-
-
-File: magit.info,  Node: FAQ 1 - Troubleshooting,  Next: FAQ 2 - Display issues,  Prev: FAQ - Changes,  Up: Frequently Asked Questions
-
-26.2 Troubleshooting
-====================
-
-* Menu:
-
-* FAQ 1-1::    How do I get raw error messages from git?
-
-
-File: magit.info,  Node: FAQ 1-1,  Up: FAQ 1 - Troubleshooting
-
-26.2.1 Question 1.1
--------------------
-
-How do I get raw error messages from git?
-
-Answer
-......
-
-If a command goes wrong, you can hit `$' to access the git process
-buffer.  There, the entire trace for the latest operation is available.
-
-
-File: magit.info,  Node: FAQ 2 - Display issues,  Prev: FAQ 1 - Troubleshooting,  Up: Frequently Asked Questions
-
-26.3 Display issues
-===================
-
-* Menu:
-
-* FAQ 2-1::    How do I fix international characters display?
-
-
-File: magit.info,  Node: FAQ 2-1,  Up: FAQ 2 - Display issues
-
-26.3.1 Question 2.1
--------------------
-
-How do I fix international characters display?
-
-Answer
-......
-
-Please make sure your Magit buffer uses a compatible coding system.  In
-the particular case of file names, git itself quotes them by default.
-You can disable this with one of the following approaches:
-
-     $ git config core.quotepath false
-
-   or
-
-     (setq magit-git-standard-options (append magit-git-standard-options
-                                              '("-c" "core.quotepath=false")))
-
-   The latter might not work in old versions of git.
-
-
-File: magit.info,  Node: GNU Free Documentation License,  Prev: Frequently Asked Questions,  Up: Top
+File: magit.info,  Node: GNU Free Documentation License,  Prev: Using Git Directly,  Up: Top
 
 Appendix A GNU Free Documentation License
 *****************************************
@@ -1816,47 +1517,40 @@ permit their use in free software.
 
 Tag Table:
 Node: Top725
-Node: Introduction1701
-Node: Acknowledgments3173
-Node: Sections3853
-Node: Status6403
-Node: Untracked files9142
-Node: Staging and Committing10347
-Node: History14463
-Node: Reflogs17645
-Node: Commit Buffer18049
-Node: Diffing19375
-Node: Tagging20362
-Node: Resetting20812
-Node: Stashing22336
-Node: Branches and Remotes23407
-Node: Branches Popup24228
-Node: Remotes Popup25490
-Node: Branches in the Branch Manager25841
-Node: Remotes in the Branch Manager27013
-Node: Wazzup27574
-Node: Merging28367
-Node: Rebasing29417
-Node: Interactive Rebasing30243
-Node: Rewriting31538
-Node: Pushing and Pulling34563
-Node: Submodules36492
-Node: Bisecting36912
-Node: Using Magit Extensions38131
-Node: Activating extensions38428
-Node: Interfacing with Subversion39813
-Node: Interfacing with Topgit40413
-Node: Interfacing with StGit41444
-Node: Developing Extensions42443
-Node: Using Git Directly46224
-Node: Customization46595
-Node: Frequently Asked Questions51173
-Node: FAQ - Changes51443
-Node: FAQ 1 - Troubleshooting51854
-Node: FAQ 1-152102
-Node: FAQ 2 - Display issues52407
-Node: FAQ 2-152636
-Node: GNU Free Documentation License53261
+Node: Introduction2260
+Node: Acknowledgments3753
+Node: Sections4290
+Node: Status6840
+Node: Untracked files9579
+Node: Staging and Committing10784
+Node: History14023
+Node: Reflogs17205
+Node: Commit Buffer17609
+Node: Diffing18935
+Node: Tagging19922
+Node: Resetting20372
+Node: Stashing21896
+Node: Branches and Remotes22967
+Node: Branches Popup23788
+Node: Remotes Popup25050
+Node: Branches in the Branch Manager25401
+Node: Remotes in the Branch Manager26573
+Node: Wazzup27134
+Node: Merging27927
+Node: Rebasing28977
+Node: Interactive Rebasing29803
+Node: Rewriting31098
+Node: Pushing and Pulling34407
+Node: Submodules36337
+Node: Bisecting36785
+Node: Finding commits not merged upstream38020
+Node: Using Magit Extensions39286
+Node: Activating extensions39582
+Node: Interfacing with Subversion40967
+Node: Interfacing with Topgit41567
+Node: Interfacing with StGit42605
+Node: Using Git Directly43574
+Node: GNU Free Documentation License43962
 
 End Tag Table
 
