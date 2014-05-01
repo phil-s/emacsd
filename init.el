@@ -53,6 +53,11 @@
 ;; # libjpeg-62-dev may need to be libjpeg-dev
 ;; # sudo apt-get install -s ttf-wqy-microhei
 ;; # Maybe: sudo apt-get install -s automake autoconf
+;;
+;; From git repository working copy:
+;; # git clean -f -d -x -q && git pull && ./autogen.sh && ./configure --prefix=/home/phil/emacs/emacs24/emacs-24.4/usr/local --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make && make install && reminder "Emacs build successful" now || reminder "Failed to build Emacs" now
+;;
+;; From tarball:
 ;; # make distclean
 ;; # ./autogen.sh
 ;; # ./configure --help
