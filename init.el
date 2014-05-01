@@ -53,10 +53,10 @@
 ;; # libjpeg-62-dev may need to be libjpeg-dev
 ;; # sudo apt-get install -s ttf-wqy-microhei
 ;; # Maybe: sudo apt-get install -s automake autoconf
+;; # make distclean
 ;; # ./autogen.sh
 ;; # ./configure --help
 ;; # ./configure --prefix=/usr/local/src/emacs/24.3/usr/local --without-sound 2>&1 | tee config.out
-;; # make distclean
 ;; # make
 ;; # ./src/emacs -Q
 ;; # make install
@@ -119,7 +119,11 @@
 
 ;; To create functions which facilitate a 'repeating' key, use:
 ;; http://stackoverflow.com/q/17201738/324105
-;; (set-temporary-overlay-map MAP &optional KEEP-PRED)
+;; `set-temporary-overlay-map' < 24.4; `set-transient-map' >= 24.4
+;; (set-temporary-overlay-map
+;;  (let ((map (make-sparse-keymap)))
+;;    (define-key map (kbd "=") 'foo)
+;;    map)))
 
 ;;;; * Keyboard macros
 ;;   C-x (          or F3  Begin recording.
@@ -347,6 +351,14 @@
 ;; M-x locate-library
 ;; M-x list-load-path-shadows
 
+;; How to relocate user directory using dummy init.el:
+;; http://stackoverflow.com/a/21769015/324105
+;; (setq user-emacs-directory "~/fake/.emacs.d/")
+;; (load (locate-user-emacs-file "init.el"))
+
+;; Using $HOME to run alternative/side-by-side configurations:
+;; http://stackoverflow.com/a/21569451/324105
+
 ;; My libraries:
 ;; See also: custom aliases in my-keybindings.el
 
@@ -369,9 +381,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
+;;;
+;;; Never forget that modifying a (quote)d argument == self-modifying code!
+;;; http://stackoverflow.com/q/16670989/324105
+;;;
+;;; Look into http://nullprogram.com/tags/elfeed/
+;;; And Email solutions for Emacs. (mu4e? notmuch? wanderlust? gnus?? mew??)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; M-SPC     : just-one-space
-;; M-\       : delete-horizontal-space
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
 ;; M-m       : back-to-indentation
@@ -379,7 +395,6 @@
 ;; M-C       : my-capitalize-word
 ;; C-c w s   : my-www-search
 ;; C-c n     : deft
-;; C-x M-:   : repeat-complex-command
 ;; C-x r x   : copy region to register
 ;; C-x r g   : insert contents of register
 ;; C-x r SPC : point-to-register

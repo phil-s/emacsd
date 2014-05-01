@@ -11,7 +11,7 @@
 (global-set-key (kbd "<f5>")  'ff-find-other-file)
 
 ;; Custom 'apropos' key bindings
-(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,s,v,C-v)")
+(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,v,C-v)")
 (define-key Apropos-Prefix (kbd "a")   'apropos)
 (define-key Apropos-Prefix (kbd "C-a") 'apropos)
 (define-key Apropos-Prefix (kbd "d")   'apropos-documentation)
@@ -19,7 +19,6 @@
 (define-key Apropos-Prefix (kbd "c")   'apropos-command)
 (define-key Apropos-Prefix (kbd "i")   'info-apropos)
 (define-key Apropos-Prefix (kbd "l")   'apropos-library)
-(define-key Apropos-Prefix (kbd "s")   'apropos-internal) ;; s = symbols
 (define-key Apropos-Prefix (kbd "v")   'apropos-variable)
 (define-key Apropos-Prefix (kbd "C-v") 'apropos-value)
 
@@ -119,7 +118,7 @@
   (define-key keymap (kbd "<S-left>")  'windmove-left)
   (define-key keymap (kbd "<S-right>") 'windmove-right)
 
-  ;; Miscellaneous window/buffer manipulation
+  ;; Miscellaneous frame/window/buffer manipulation
   (define-key keymap (kbd "M-o")       'expand-other-window)
   (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
   (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
@@ -127,6 +126,7 @@
   (define-key keymap (kbd "C-c C-\\")  'transpose-frame)
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
+  (define-key keymap (kbd "<f7>")      'other-frame)
 
   ;; Diff / Comparison
   (define-key keymap (kbd "C-M-=")     'compare-windows)
@@ -173,6 +173,7 @@
   (define-key keymap (kbd "C-c M-q")   'my-toggle-fill-paragraph)
   (define-key keymap (kbd "C-c x e")   'eval-and-replace)
   (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
+  (define-key keymap (kbd "M-C")       'my-capitalize-word)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
@@ -182,7 +183,8 @@
   (define-key keymap (kbd "C-h C-v")   'find-variable)
   (define-key keymap (kbd "C-h C-l")   'find-library)
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
-  (define-key keymap (kbd "M-C")       'my-capitalize-word)
+  (define-key keymap (kbd "<f6>")      'rgrep)
+  (define-key keymap (kbd "C-x v <")   'vc-resolve-conflicts)
   )
 
 ;; Make emacs consistent with xkcd :)

@@ -15,26 +15,13 @@
       (setq tab-stop-list (generate-tab-stop-list))))
 (ad-activate 'set-variable)
 
-;; ;; Redefine tab-stop-list if tab-width is modified
-;; ;; (set-variable) calls (set). If we advise (set) and (setq),
-;; ;; we'll (probably?) have a comprehensive solution. Advising
-;; ;; such a common primitive seems like a severe action to take
-;; ;; for this purpose, however. A better move might be to compare
-;; ;; the tab width to the tab-stop list after the local variables
-;; ;; have been determined, and re-configure if necessary at that
-;; ;; stage.
-;;
-;; (defadvice set (after after-set-regenerate-tab-stop-list)
-;;   "Re-generate tab-stop-list when tab-width is modified."
-;;   (if (equal (symbol-name (ad-get-arg 0)) "tab-width")
-;;       (setq tab-stop-list (generate-tab-stop-list))))
-;; (ad-activate 'set)
+;; That's a little ridiculous in retrospect. Just make a custom
+;; function and/or binding for setting tab-width and remember to
+;; use it! (C-z C-i ?)
 
-;; ;; (defadvice setq (after after-setq-regenerate-tab-stop-list)
-;; ;;   "Re-generate tab-stop-list when tab-width is modified."
-;; ;;   (if (equal (symbol-name (ad-get-arg 0)) "tab-width")
-;; ;;       (setq tab-stop-list (generate-tab-stop-list))))
-;; ;; (ad-activate 'setq)
+;; An enhancement might be to compare the tab width to the tab-stop
+;; list after the local variables have been determined, and
+;; re-configure if necessary at that stage.
 
 ;; Use tab-width 4 by default
 (set-default 'tab-width 4)
@@ -56,6 +43,7 @@
 
 ;; Disallow tabs in elisp indentation (it mixes tabs and spaces)
 (add-hook 'emacs-lisp-mode-hook '(lambda () (set-variable 'indent-tabs-mode nil)))
+;; (triggers the advice, but ew. just call a custom function.)
 
 ;; Smart Tabs (usually) does the Right Thing when I press the TAB key
 (when (require 'smart-tab nil 'noerror)
@@ -67,7 +55,7 @@
   (global-smart-tab-mode 1))
 
 (defvar my-global-smart-tab-major-mode-exceptions
-  '(org-mode term-mode shell-mode eshell-mode erc-mode Custom-mode)
+  '(org-mode term-mode shell-mode eshell-mode erc-mode Custom-mode eww-mode)
   "List of major modes for which `smart-tab-mode' should not be enabled.")
 
 ;; Smart Tabs occasionally does the Wrong Thing,

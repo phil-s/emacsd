@@ -334,6 +334,9 @@ disabled.")))
 ;; Guess the target directory (as prompt) when one is needed.
 (setq dired-dwim-target t)
 
+;; Do not omit .. in dired -- it's useful.
+(setq dired-omit-files "^\\.?#\\|^\\.$")
+
 ;; Enable RET during an isearch in dired to immediately visit the file.
 ;; http://stackoverflow.com/questions/4471835/emacs-dired-mode-and-isearch
 (add-hook 'isearch-mode-end-hook 'my-isearch-mode-end-hook)
@@ -344,6 +347,7 @@ disabled.")))
              (eq last-input-event ?\r))
     (dired-find-file)))
 
+;; This wasn't working from `dired-load-hook'.
 (eval-after-load "dired"
   '(progn
      ;; Enable dired-x by default
@@ -586,6 +590,11 @@ when the file path is too long to show on one line."
 ;;          (nconc grep-find-ignored-files
 ;;                 '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff"
 ;;                   "*.pdf" "*.doc"))))
+
+;; www / web / eww
+(add-hook 'eww-mode-hook 'my-eww-mode-hook)
+(defun my-eww-mode-hook ()
+  (setq show-trailing-whitespace nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
