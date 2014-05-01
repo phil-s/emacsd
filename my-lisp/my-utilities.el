@@ -797,6 +797,12 @@ point. This function returns a list (string) for use in `interactive'."
                                       (region-beginning) (region-end)))
                                 (current-word)))))
 
+(defun my-hyphenate (beginning end)
+  "Place hyphens between words in region."
+  (interactive "*r")
+  (save-excursion
+    (replace-regexp "[[:space:]\n]+" "-" nil beginning end)))
+
 (defcustom my-www-search-url
   "http://google.com/search?num=100&q=%s"
   "URL for WWW search, with %s placeholder for search string"
