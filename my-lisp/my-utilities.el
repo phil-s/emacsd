@@ -618,6 +618,12 @@ See also the documentation of the variable `tags-file-name'."
         tags-loop-operate `(perform-replace ',from ',to t nil ',delimited
                                             nil multi-query-replace-map))
   (tags-loop-continue (or file-list-form t)))
+
+(defun my-replace-regexp-group (from to group)
+  "In all matches for regexp FROM, replace the content of GROUP with TO."
+  (interactive "sFrom: \nsTo: \nnGroup: ")
+  (while (re-search-forward from nil t)
+    (replace-match to nil nil nil group)))
 
 ;; Toggle between a vertical and horizontal window split
 (defun toggle-window-split ()

@@ -172,6 +172,7 @@
   (define-key keymap (kbd "C-c M-w")   'whitespace-toggle-options)
   (define-key keymap (kbd "C-c M-q")   'my-toggle-fill-paragraph)
   (define-key keymap (kbd "C-c x e")   'eval-and-replace)
+  (define-key keymap (kbd "C-z C-M-%") 'my-replace-regexp-group)
   (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
   (define-key keymap (kbd "M-C")       'my-capitalize-word)
 
