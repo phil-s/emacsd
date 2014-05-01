@@ -505,6 +505,8 @@
          (time-to-seconds (time-since my-init-load-start)))
 
 ;;; Local Variables:
+;;; page-delimiter: ";;;; "
 ;;; outline-regexp: ";;;; "
-;;; eval:(progn (outline-minor-mode 1) (while (re-search-forward "^;;;; \\* " nil t) (outline-toggle-children)))
+;;; eval:(outline-minor-mode 1)
+;;; eval:(while (re-search-forward "^;;;; \\* " nil t) (outline-toggle-children))
 ;;; End:

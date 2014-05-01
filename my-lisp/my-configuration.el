@@ -58,11 +58,20 @@ when `auto-save-mode' is invoked manually.")
 (blink-cursor-mode -1)
 (setq x-stretch-cursor t)
 
+;; Hide the tool bar
+(tool-bar-mode -1)
+
 ;; Scroll-bar on the right-hand side
-(menu-bar-right-scroll-bar)
+(set-scroll-bar-mode 'right)
 
 ;; Retain point when scrolling off-screen and back
 (setq scroll-preserve-screen-position t)
+
+;; Ignore case when searching and matching, and when reading
+;; buffer names and file names
+(setq case-fold-search t
+      read-buffer-completion-ignore-case t
+      read-file-name-completion-ignore-case t)
 
 ;; Place killed text into the clipboard
 (setq x-select-enable-clipboard t)
@@ -88,8 +97,14 @@ when `auto-save-mode' is invoked manually.")
 (when (require 'keep-buffers nil t)
   (keep-buffers-mode 1))
 
+;; Ask for confirmation when exiting
+(setq confirm-kill-emacs 'y-or-n-p)
+
 ;; A much larger message history
 (setq message-log-max 10000)
+
+;; Increase maximum length of history lists
+(setq history-length 100)
 
 ;; Make scripts executable
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -380,6 +395,15 @@ disabled.")))
       sauron-nick-insensitivity 0)
 
 ;; erc-mode (for IRC)
+(eval-after-load "erc"
+  '(progn
+     ;; Add the following modules:
+     ;; dcc: Provide Direct Client-to-Client support
+     ;; keep-place: Leave point above un-viewed text
+     ;; ;; log: Save buffers in logs
+     (setq erc-modules (nconc erc-modules '(dcc keep-place))) ;; log
+     (erc-update-modules)))
+
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
   (hide-trailing-whitespace))
@@ -555,6 +579,13 @@ when the file path is too long to show on one line."
 (defun my-grep-mode-hook ()
   (setq truncate-lines t)
   (local-set-key (kbd "<f5>") 'toggle-truncate-lines))
+
+;; ;; Don't grep for images or documents. (?)
+;; (eval-after-load "grep"
+;;   '(setq grep-find-ignored-files
+;;          (nconc grep-find-ignored-files
+;;                 '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff"
+;;                   "*.pdf" "*.doc"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

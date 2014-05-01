@@ -16,6 +16,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; SVN (Subversion)
+
+;; (setq vc-svn-global-switches
+;;       '("--username" "phils" "--password" "password"))
+
+(setq svn-log-edit-show-diff-for-commit t)
+
 ;; Start the psvn interface with M-x svn-status
 ;; PSVN customisations
 (eval-after-load 'psvn
