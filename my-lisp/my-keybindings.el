@@ -267,6 +267,17 @@ TODO: Switch to using emulation-mode-map-alists
 
 ;; (global-set-key (kbd "s-x") 'my-keys-pass-through)
 
+(defun my-buffer-local-set-key (key command)
+  ;; Helper intended for use in local variables. e.g.:
+  ;; eval: (my-buffer-local-set-key (kbd "C-c f") 'foo)
+  (interactive "KSet key buffer-locally: \nCSet key %s buffer-locally to command: ")
+  (let ((oldmap (current-local-map))
+        (newmap (make-sparse-keymap)))
+    (when oldmap
+      (set-keymap-parent newmap oldmap))
+    (define-key newmap key command)
+    (use-local-map newmap)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-keybindings)
