@@ -1,6 +1,5 @@
 (:el-get "installed"
 :zenburn-theme "installed"
-:find-file-in-project "removed"
 :keep-buffers "installed"
 :notify "installed"
 :geben "installed"

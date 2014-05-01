@@ -272,7 +272,7 @@ When binary files differ, set the trigger variable." (condition-case err (progn 
 ;;;***
 
 ;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
-;;;;;;  "ffip/find-file-in-project.el" (20289 32888))
+;;;;;;  "ffip/find-file-in-project.el" (21346 5180 344357 317000))
 ;;; Generated autoloads from ffip/find-file-in-project.el
 
 (autoload 'find-file-in-project "ffip/find-file-in-project" "\
