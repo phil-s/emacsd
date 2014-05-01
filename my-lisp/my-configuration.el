@@ -410,7 +410,14 @@ disabled.")))
 
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
-  (hide-trailing-whitespace))
+  (hide-trailing-whitespace)
+  (setq-local page-delimiter ;; e.g. [Fri Jan  5 2013]
+              (rx (sequence
+                   "[" (or "Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun")
+                   " " (or "Jan" "Feb" "Mar" "Apr" "May" "Jun"
+                           "Jul" "Aug" "Sep" "Oct" "Nov" "Dec")
+                   " " (optional " ") (repeat 1 2 digit)
+                   " " (= 4 digit) "]"))))
 
 (eval-after-load "which-func"
   '(add-to-list 'which-func-non-auto-modes 'erc-mode))
