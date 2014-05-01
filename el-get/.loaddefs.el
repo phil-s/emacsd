@@ -792,11 +792,16 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
-;;;### (autoloads (php-mode php) "php-mode/php-mode" "php-mode/php-mode.el"
-;;;;;;  (20935 32282 24228 681000))
+;;;### (autoloads (php-mode php-extra-constants php) "php-mode/php-mode"
+;;;;;;  "php-mode/php-mode.el" (21345 65296 244409 7000))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
+
+(defvar php-extra-constants 'nil "\
+A list of additional strings to treat as PHP constants.")
+
+(custom-autoload 'php-extra-constants "php-mode/php-mode" t)
 
 (add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
 
@@ -807,7 +812,7 @@ Major mode for editing PHP code.
 
 \(fn)" t nil)
 
-(dolist (pattern '("\\.php[s345t]?\\'" "\\.phtml\\'")) (add-to-list 'auto-mode-alist `(,pattern . php-mode)))
+(dolist (pattern '("\\.php[s345t]?\\'" "\\.phtml\\'" "Amkfile" "\\.amk$")) (add-to-list 'auto-mode-alist `(,pattern . php-mode) t))
 
 ;;;***
 

@@ -5,6 +5,130 @@ Changes for PHP Mode by Version
 because when I (Eric James Michael Ritz) took over the project I did
 not have a record of all changes available.
 
+1.13
+----
+
+* Update version to 1.13
+* Merge branch 'ejmr/highlight-variables-in-strings'
+* Merge commit '38e1940e950d47737fed30a5bd5d4e75e0faf103'
+* Append file patterns to auto-mode-alist
+* Guard propertize functions for Emacs that don't support it.
+* Add more tests for highlighting variable interpolation
+* Create a unit test for highlighting interpolated variables
+* Avoid calling syntax-propertize-rules as may be unavailable.
+* README: Explicitly mention the oldest supported Emacs
+* Merge branch 'heredoc-support'
+* README: Replace mention of ‘run-tests.sh’ with ‘make tests’
+* Explain the expected behavior of the test for GitHub issue 124
+* Added unit test for GitHub issue 124
+* Replaced run-tests.sh with a Makefile
+* Replaced `put-text-property' with macro `c-put-char-property'
+* Added initial support for propertizing a heredoc as a string
+* Merge branch 'fix-highlighting-final-keyword'
+* Update php-mode-modified
+* Add a simple script to test syntax highlighting for ‘final’
+* Add a template script for creating test cases
+* Fix ‘final’ not highlighted as a keyword in some methods
+* Merge branch 'github/pr/127'
+* Update php-mode-modified
+* Removed unused defconst.
+* Added PREG constants to the list of predefined constants.
+* Fix byte compile error again; resurfaced in after a merge.
+* Add Andrei Chițu to the list of contributors
+* fix inclusion of `web-mode-extra-php-keywords` in `php-keywords`
+* Update Changelog for version 1.12
+
+1.12
+----
+
+* Automatically enable PHP Mode for Amaka scripts
+* Also enable PHP Mode for Amaka scripts using the ‘*.amk’ extension
+* Use mode-specific functions for defun movement
+* Treat `const` as a keyword instead of a type-hint
+* Add `enddeclare` to the list of keywords
+* Treat `eval` as a built-in keyword
+* Show links to the official site and wiki when customizing PHP Mode
+* Update php-mode-modified for changes made today
+* Add FILTER_SANITIZE_FULL_SPECIAL_CHARS to the list of constants
+* Fix an error about php-extra-constants being void
+* Use extra constants and keywords from Web Mode if available
+* README: Replace ‘php-mode’ with ‘PHP Mode’ for consistency
+* README: Update the ‘Status’ section
+* README: Use the spelling ‘GitHub’ consistently
+* README: Add installation instructions
+* Address the compiler warning regarding `c-syntactic-context`
+* GitHub-Issue: 102 (Unit Test)
+* Fix indentation error involving magic constants
+* Merge branch 'ejmr/issue-102'
+* Stop marching indentation for try-catch blocks
+* GitHub-Issue: 100 (Unit Test)
+* Fix two errors with the regex for matching namespace imports
+* GitHub-Issue: 115 (Unit Test)
+* Use the PEAR indentation style by default for unit tests
+* Align chained method calls inside of arrays
+* Update php-mode-modified
+* Merge branch 'ejmr/align-method-calls-in-arrays'
+* Update php-mode-modified for byte-compiler fixes
+* Merge branch 'github/pr/123'
+* README: Document use of Web Mode constants and keywords
+* Merge branch 'ejmr/web-mode-constants'
+* Change the test for Issue 100 to require correct indentation
+* Line-up multiple namespaces in a multi-line ‘use’ statement
+* Merge branch 'ejmr/multiline-use-statements'
+* Increase the version number to 1.12
+* Fix the compiler warning about `add-log-current-defun-header-regexp`
+* Add (require 'speedbar) as functions are used.
+* Remove eval-when-compile.
+* Add (require 'etags) as etag functions are used.
+* Added newline at end of file restriction to Symfony2 style.
+* Fix regex for namespaces in function calls
+
+
+1.11
+----
+
+* Add STDOUT, STDIN, and STDERR to the php-constants list
+* Add Symfony2 coding style.
+* Add a full copy of the license
+* Add proper statement-case-intro indent for symfony2
+* Added "function" as a PHP keyword.
+* Added function php-lineup-arglist
+* Added gitignore with *.elc
+* Associate file extensions when installing from an Elisp repository
+* Be nice to PSR standards (there should be 4 spaces)
+* Correct indentation for array arguments (tests/issues-14.php)
+* Correct syntax highlighting for ‘parent’ and ‘self’
+* Describe php-extra-constants in the README
+* Describe php-template-compatibility in the README
+* Do not expect failure for test issue-19
+* Do not trigger search error in php-mode-test-issue-19
+* Document Subword Mode in the README
+* Document support for the Symfony2 style in the README
+* Fix chained method alignment
+* Fix indentation of statements after ‘foreach’ without braces
+* Highlight ‘static’ as a constant when it appears in a class context
+* Improve the docstring for php-create-regexp-for-method
+* Improve the plain-text formatting of the README
+* Introduce php-extra-constants
+* Introduce php-template-compatility
+* Introduce ‘C-c C-w’ to toggle Subword Mode
+* Issue #73, correct behavior of `delete-indentation`.
+* List all methods via Imenu regardless of their visibility
+* Make `with-php-mode-test` aware of the Symfony2 coding style
+* README: Change the absolute link to the Changelog to a relative link
+* README: Correct the documentation for chained-method call alignment
+* README: Document how chained method alignment may fail
+* README: Reword the mention of Web Mode for clarity
+* README: Use syntax highlighting for the method alignment example
+* Re-define C-M-h to mark-defun instead of c-mark-function
+* Remove the unnecessary &optional from the with-php-mode-test macro
+* Set brace-list-entry to offset of four
+* Tests: Remove executable permissions from the issue 27 test
+* Treat ‘abstract’ as a keyword
+* Use "magic" comments in PHP files to simplify indentation testing
+* Use magic for tests of issues #14, #19, #27, #29, #42
+* Workaround "bug" in `load-theme`
+
 
 1.10
 ----

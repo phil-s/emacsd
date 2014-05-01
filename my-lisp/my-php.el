@@ -44,19 +44,10 @@
       ;; (php-imenu-setup)
 
       ;; Find documentation online
-      (local-set-key (kbd "<f1>") 'my-php-symbol-lookup))))
+      (local-set-key (kbd "<f1>") 'php-search-documentation))))
 
 (defun php-imenu-setup ()
   (setq imenu-create-index-function (function php-imenu-create-index))
   ;; uncomment if you prefer speedbar:
   ;;(setq php-imenu-alist-postprocessor (function reverse))
   (imenu-add-menubar-index))
-
-(defun my-php-symbol-lookup ()
-  "Find the symbol at point in the online PHP documentation."
-  (interactive)
-  (let ((symbol (symbol-at-point)))
-    (if (not symbol)
-        (message "No symbol at point.")
-      (browse-url (concat "http://php.net/manual-lookup.php?pattern="
-                          (symbol-name symbol))))))
