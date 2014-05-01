@@ -162,6 +162,17 @@ trees.
 
 ;;;***
 
+;;;### (autoloads (fic-mode) "fic-mode/fic-mode" "fic-mode/fic-mode.el"
+;;;;;;  (21345 63049 108430 436000))
+;;; Generated autoloads from fic-mode/fic-mode.el
+
+(autoload 'fic-mode "fic-mode/fic-mode" "\
+Fic mode -- minor mode for highlighting FIXME/TODO in comments
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
 ;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
 ;;;;;;  (20587 44126))

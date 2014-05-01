@@ -41,4 +41,5 @@
 :jump-char "installed"
 :packed "installed"
 :auto-compile "installed"
+:fic-mode "installed"
 )

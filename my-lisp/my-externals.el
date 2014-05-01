@@ -72,7 +72,7 @@
      ;; highlight FIXME TODO BUG and KLUDGE in comments and strings
      (:name fic-mode
             :type http
-            :url "http://www.emacswiki.org/emacs/download/fic-mode.el"
+            :url ,(my-local-repository-url-for "fic-mode.el")
             :features fic-mode)
 
      (:name find-file-in-tags

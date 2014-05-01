@@ -15,7 +15,7 @@
   (local-set-key (kbd "<S-return>") 'newline)
   (whitespace-mode 1)
   ;;(which-function-mode 1)
-  ;;(turn-on-fic-mode)
+  (fic-mode 1)
   ;;(imenu-add-menubar-index)
   )
 
@@ -27,6 +27,9 @@
    css-mode-hook
    inferior-emacs-lisp-mode-hook
    python-mode-hook))
+
+;; Highlighted keywords in strings and comments.
+(setq fic-highlighted-words '("TODO" "DEBUG" "FIXME" "BUG" "KLUDGE"))
 
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
