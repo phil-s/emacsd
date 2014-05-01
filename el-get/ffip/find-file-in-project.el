@@ -214,7 +214,7 @@ setting the `ffip-project-root' variable."
          (file-path (if (> (length file-paths) 1)
                         (ffip-completing-read "Disambiguate: " file-paths)
                       (car file-paths))))
-    (find-file file-path)))
+    (find-file (expand-file-name file-path (ffip-project-root)))))
 
 (defun ffip-map-keys (map)
   "Return a list of all the keys in MAP."
