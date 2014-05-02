@@ -996,6 +996,40 @@ See `fill-paragraph' and `fill-region'."
      (ad-disable-advice ,function ,class ,name)
      (ad-activate ,function)))
 
+
+(defun my-load-all-in-directory (dir &optional file-pattern)
+  "`load' all elisp libraries in directory DIR which are not already loaded.
+
+Optionally consider only filenames matching regexp FILE-PATTERN, which is
+matched against each base filename (i.e. `file-name-nondirectory'). By default
+all .el and .elc files are considered.
+
+Note that the matching files are processed sans-extension, thus prioritising
+and loading .elc files over .el files. So even if FILE-PATTERN matched only
+the .el files, the .elc variants would be loaded instead, where present."
+  (interactive "D")
+  (let ((file-pattern (or file-pattern ".+\\.elc?$"))
+        (libraries-loaded (mapcar #'file-name-sans-extension
+                                  (delq nil (mapcar #'car load-history)))))
+    (dolist (file (directory-files dir t file-pattern t))
+      (let ((library (file-name-sans-extension file)))
+        (unless (member library libraries-loaded)
+          (load library)
+          (push library libraries-loaded))))))
+
+;; It's simpler without FILE-PATTERN:
+;;
+;; (defun my-load-all-in-directory (dir)
+;;   "`load' all elisp libraries in directory DIR which are not already loaded."
+;;   (interactive "D")
+;;   (let ((libraries-loaded (mapcar #'file-name-sans-extension
+;;                                   (delq nil (mapcar #'car load-history)))))
+;;     (dolist (file (directory-files dir t ".+\\.elc?$" t))
+;;       (let ((library (file-name-sans-extension file)))
+;;         (unless (member library libraries-loaded)
+;;           (load library)
+;;           (push library libraries-loaded))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
