@@ -1,7 +1,7 @@
 (defun my-local-repository-url-for (library)
   "Provide a URL for a library in the local-repository directory."
   (concat "file://" (expand-file-name user-emacs-directory)
-          "local-repository/" library))
+          "local-repository/" library ".el"))
 
 (defun my-el-get ()
   "Define custom sources and call el-get."
@@ -43,7 +43,7 @@
 
      (:name delight
             :type http
-            :url ,(my-local-repository-url-for "delight.el"))
+            :url ,(my-local-repository-url-for "delight"))
 
      ;; (:name dictionary-el
      ;;        :type apt-get)
@@ -58,7 +58,7 @@
 
      (:name ediff-binary-hexl
             :type http
-            :url ,(my-local-repository-url-for "ediff-binary-hexl.el"))
+            :url ,(my-local-repository-url-for "ediff-binary-hexl"))
 
      (:name ediff-trees
             :type emacswiki)
@@ -72,7 +72,7 @@
      ;; highlight FIXME TODO BUG and KLUDGE in comments and strings
      (:name fic-mode
             :type http
-            :url ,(my-local-repository-url-for "fic-mode.el")
+            :url ,(my-local-repository-url-for "fic-mode")
             :features fic-mode)
 
      (:name find-file-in-tags
@@ -105,7 +105,7 @@
 
      (:name image-dimensions-minor-mode
             :type http
-            :url ,(my-local-repository-url-for "image-dimensions-minor-mode.el"))
+            :url ,(my-local-repository-url-for "image-dimensions-minor-mode"))
 
      (:name jump-char
             :type git
@@ -178,7 +178,7 @@
 
      (:name windcycle
             :type http
-            :url ,(my-local-repository-url-for "windcycle.el")
+            :url ,(my-local-repository-url-for "windcycle")
             :features windcycle)
 
      (:name unbound
@@ -188,7 +188,7 @@
 
      (:name vcl-mode
             :type http
-            :url ,(my-local-repository-url-for "vcl-mode.el"))
+            :url ,(my-local-repository-url-for "vcl-mode"))
 
      (:name web-mode
             :type git
