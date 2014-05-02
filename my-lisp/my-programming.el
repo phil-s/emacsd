@@ -210,7 +210,8 @@ context-help to false"
 (add-hook 'sgml-mode-hook 'my-sgml-mode-hook)
 (add-hook 'web-mode-hook 'my-sgml-mode-hook)
 
-(setq web-mode-autocompletes nil)
+(setq web-mode-autocompletes nil
+      web-mode-tag-auto-close-style 0)
 
 ;; HTML
 ;;(add-to-list 'auto-mode-alist '("\\.html\\'" . html-helper-mode))
