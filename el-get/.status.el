@@ -42,4 +42,5 @@
 :auto-compile "installed"
 :fic-mode "installed"
 :git-modes "installed"
+:image-dimensions-minor-mode "installed"
 )

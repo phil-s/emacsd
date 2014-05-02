@@ -503,9 +503,6 @@
 ;; Non-programming text modes
 (require 'my-text)
 
-;; Images
-(require 'my-images)
-
 ;; Version control systems
 (require 'my-version-control)
 

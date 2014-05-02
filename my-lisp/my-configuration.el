@@ -240,7 +240,7 @@ See also: `my-copy-buffer-file-name'."
 ;; as appropriate, image dimensions, which-function, etc...
 (setq frame-title-format
       '(buffer-file-name
-        ("%b (Emacs) %f" my-image-dimensions
+        ("%b (Emacs) %f" image-dimensions-minor-mode-dimensions
          (which-func-mode (" " which-func-format)))
         (dired-directory
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
@@ -610,6 +610,9 @@ when the file path is too long to show on one line."
 (add-hook 'eww-mode-hook 'my-eww-mode-hook)
 (defun my-eww-mode-hook ()
   (setq show-trailing-whitespace nil))
+
+;; Show image dimensions in the mode line. See also frame-title-format.
+(eval-after-load 'image-mode '(require 'image-dimensions-minor-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

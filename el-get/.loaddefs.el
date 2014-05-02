@@ -393,6 +393,18 @@ Commands:
 
 ;;;***
 
+;;;### (autoloads nil "image-dimensions-minor-mode/image-dimensions-minor-mode"
+;;;;;;  "image-dimensions-minor-mode/image-dimensions-minor-mode.el"
+;;;;;;  (21140 36471 866143 792000))
+;;; Generated autoloads from image-dimensions-minor-mode/image-dimensions-minor-mode.el
+
+(autoload 'image-dimensions-minor-mode "image-dimensions-minor-mode/image-dimensions-minor-mode" "\
+Displays the image dimensions in the mode line.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads (jump-char-backward jump-char-forward) "jump-char/jump-char"
 ;;;;;;  "jump-char/jump-char.el" (20935 42616 504202 907000))
 ;;; Generated autoloads from jump-char/jump-char.el

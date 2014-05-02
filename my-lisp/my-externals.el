@@ -103,6 +103,10 @@
 
      (:name iedit)
 
+     (:name image-dimensions-minor-mode
+            :type http
+            :url ,(my-local-repository-url-for "image-dimensions-minor-mode.el"))
+
      (:name jump-char
             :type git
             :url "https://github.com/lewang/jump-char")
