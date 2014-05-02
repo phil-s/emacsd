@@ -14,8 +14,8 @@
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
   (local-set-key (kbd "<S-return>") 'newline)
   (whitespace-mode 1)
-  ;;(which-function-mode 1)
   (fic-mode 1)
+  (which-function-mode 1)
   ;;(imenu-add-menubar-index)
   )
 

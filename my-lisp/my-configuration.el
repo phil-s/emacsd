@@ -237,13 +237,19 @@ See also: `my-copy-buffer-file-name'."
     [remap delete-char] 'delete-char))
 
 ;; Set titlebar text to buffer name, along with the file/directory path
-;; as appropriate.
+;; as appropriate, image dimensions, which-function, etc...
 (setq frame-title-format
       '(buffer-file-name
-        ("%b (Emacs) %f" my-image-dimensions)
+        ("%b (Emacs) %f" my-image-dimensions
+         (which-func-mode (" " which-func-format)))
         (dired-directory
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
          ("%b (Emacs)"))))
+
+;; Don't display which-function in the mode line.
+(eval-after-load "which-func"
+  '(setq mode-line-misc-info
+         (assq-delete-all 'which-func-mode mode-line-misc-info)))
 
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
