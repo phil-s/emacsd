@@ -767,6 +767,29 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
       (incf arg)))
   (up-list arg))
 
+;; Include any header comment when using narrow-to-defun
+(defun my-narrow-to-defun ()
+  (interactive)
+  (narrow-to-defun) ;; Default behaviour.
+  (when (buffer-narrowed-p)
+    (save-excursion
+      (let ((min (point-min))
+            (max (point-max)))
+        (goto-char min)
+        (widen)
+        ;; If there's a preceding comment.
+        (when (forward-comment -1)
+          ;; Skip back over ALL preceding comments & whitespace.
+          (while (forward-comment -1))
+          ;; Skip forwards over any page delimiters within those comments.
+          (when (and page-delimiter (not (string= page-delimiter "")))
+            (while (re-search-forward page-delimiter min t)))
+          ;; Skip past any leading whitespace.
+          (skip-chars-forward "[:space:]\n")
+          ;; This is the new point to narrow from.
+          (setq min (point)))
+        (narrow-to-region min max)))))
+
 (defun my-extend-selection (arg &optional incremental)
   "Mark the symbol surrounding point.
 Subsequent calls mark higher levels of sexps.

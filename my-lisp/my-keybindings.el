@@ -6,9 +6,12 @@
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 
-;; Global reserved bindings that I want to over-ride in some modes.
+;; Global bindings that I want to over-ride in some modes.
 (global-set-key (kbd "C-c o") 'ff-find-other-file)
 (global-set-key (kbd "<f5>")  'ff-find-other-file)
+
+;; Remapped commands. Simpler when there are multiple bindings.
+(global-set-key [remap narrow-to-defun] 'my-narrow-to-defun)
 
 ;; Custom 'apropos' key bindings
 (define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,v,C-v)")
