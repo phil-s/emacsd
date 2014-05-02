@@ -120,7 +120,7 @@ If FILE is nil then the mode symbol is passed as the required feature.
 ;;;***
 
 ;;;### (autoloads (dtrt-indent-mode dtrt-indent-mode) "dtrt-indent/dtrt-indent"
-;;;;;;  "dtrt-indent/dtrt-indent.el" (20804 10249 123933 346000))
+;;;;;;  "dtrt-indent/dtrt-indent.el" (20935 32282 720228 681000))
 ;;; Generated autoloads from dtrt-indent/dtrt-indent.el
 
 (defvar dtrt-indent-mode nil "\
@@ -151,7 +151,7 @@ use either \\[customize] or the function `dtrt-indent-mode'.")
 ;;;***
 
 ;;;### (autoloads (ediff-trees) "ediff-trees/ediff-trees" "ediff-trees/ediff-trees.el"
-;;;;;;  (20918 64948 266264 579000))
+;;;;;;  (20935 32281 984228 683000))
 ;;; Generated autoloads from ediff-trees/ediff-trees.el
 
 (autoload 'ediff-trees "ediff-trees/ediff-trees" "\
@@ -421,7 +421,7 @@ backward movement version of `jump-char-forward'
 
 ;;;### (autoloads (lexbind-mode lexbind-modeline-content lexbind-lexscratch
 ;;;;;;  lexbind-toggle-lexical-binding) "lexbind-mode/lexbind-mode"
-;;;;;;  "lexbind-mode/lexbind-mode.el" (20918 60325 744377 548000))
+;;;;;;  "lexbind-mode/lexbind-mode.el" (20935 32281 984228 683000))
 ;;; Generated autoloads from lexbind-mode/lexbind-mode.el
 
 (autoload 'lexbind-toggle-lexical-binding "lexbind-mode/lexbind-mode" "\
@@ -464,8 +464,8 @@ that buffer.
 
 
 ;;;### (autoloads (key-chord-define key-chord-define-global key-chord-mode)
-;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20870 62091
-;;;;;;  86373 952000))
+;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20935 32281
+;;;;;;  984228 683000))
 ;;; Generated autoloads from key-chord/key-chord.el
 
 (autoload 'key-chord-mode "key-chord/key-chord" "\
@@ -534,7 +534,7 @@ Add one cursor to the beginning of each line in the active region.
 ;;;;;;  mc/mark-next-lines mc/mark-previous-symbol-like-this mc/mark-previous-word-like-this
 ;;;;;;  mc/mark-previous-like-this mc/mark-next-symbol-like-this
 ;;;;;;  mc/mark-next-word-like-this mc/mark-next-like-this) "multiple-cursors/mc-mark-more"
-;;;;;;  "multiple-cursors/mc-mark-more.el" (20935 32282 8228 681000))
+;;;;;;  "multiple-cursors/mc-mark-more.el" (20935 34277 528223 706000))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -1593,7 +1593,7 @@ Mode for Varnish Command Language
 ;;;***
 
 ;;;### (autoloads (web-mode) "web-mode/web-mode" "web-mode/web-mode.el"
-;;;;;;  (20935 32282 28228 681000))
+;;;;;;  (20935 34456 976223 257000))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (autoload 'web-mode "web-mode/web-mode" "\
@@ -1617,7 +1617,7 @@ Setup wgrep preparation.
 
 ;;;### (autoloads (global-ws-trim-mode ws-trim-mode turn-on-ws-trim
 ;;;;;;  ws-trim-buffer ws-trim-region ws-trim-line) "ws-trim/ws-trim"
-;;;;;;  "ws-trim/ws-trim.el" (20289 32888))
+;;;;;;  "ws-trim/ws-trim.el" (21055 32063 742797 205000))
 ;;; Generated autoloads from ws-trim/ws-trim.el
 
 (defvar ws-trim-method-hook '(ws-trim-leading ws-trim-trailing) "\
@@ -1793,7 +1793,7 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil "zenburn-theme/zenburn-theme" "zenburn-theme/zenburn-theme.el"
-;;;;;;  (20802 40921 984829 33000))
+;;;;;;  (20935 32282 32228 681000))
 ;;; Generated autoloads from zenburn-theme/zenburn-theme.el
 
 (and load-file-name (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
@@ -1801,11 +1801,10 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "packed/packed-git.el" "packed/packed-pkg.el" "packed/packed.el"
 ;;;;;;  "sauron/sauron-dbus.el" "sauron/sauron-erc.el" "sauron/sauron-identica.el"
 ;;;;;;  "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
 ;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "wgrep/wgrep-test.el")
-;;;;;;  (20935 33431 631581 916000))
+;;;;;;  (21346 6813 243976 465000))
 
 ;;;***
 
