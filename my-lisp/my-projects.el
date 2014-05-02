@@ -27,6 +27,11 @@
            (tab-width . 8)
            (eval . (whitespace-mode -1))))))
 
+(dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs)
+(dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs)
+(dir-locals-set-directory-class "/usr/share/emacs" 'emacs)
+(dir-locals-set-directory-class "~/emacs" 'emacs)
+
 ;; Generic read-only class
 (dir-locals-set-class-variables
  'read-only
