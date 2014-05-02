@@ -130,6 +130,7 @@
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
   (define-key keymap (kbd "<f7>")      'other-frame)
+  (define-key keymap (kbd "C-x n n")   'my-narrow-to-region)
 
   ;; Diff / Comparison
   (define-key keymap (kbd "C-M-=")     'compare-windows)

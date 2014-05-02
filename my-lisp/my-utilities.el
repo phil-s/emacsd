@@ -790,6 +790,24 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
           (setq min (point)))
         (narrow-to-region min max)))))
 
+(defun my-narrow-to-region (start end arg)
+  "Restrict editing in this buffer to the current region.
+
+With prefix arg, narrow in a new indirect buffer."
+  (interactive "r\nP")
+  (if arg
+      (my-narrow-to-region-indirect start end)
+    (narrow-to-region start end)))
+
+(defun my-narrow-to-region-indirect (start end)
+  "Restrict editing in this buffer to the current region, indirectly."
+  (interactive "r")
+  (deactivate-mark)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-region start end))
+    (switch-to-buffer buf)))
+
 (defun my-extend-selection (arg &optional incremental)
   "Mark the symbol surrounding point.
 Subsequent calls mark higher levels of sexps.
