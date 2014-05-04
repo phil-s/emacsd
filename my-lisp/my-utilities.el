@@ -1028,7 +1028,6 @@ See `fill-paragraph' and `fill-region'."
      (ad-disable-advice ,function ,class ,name)
      (ad-activate ,function)))
 
-
 (defun my-load-all-in-directory (dir &optional file-pattern)
   "`load' all elisp libraries in directory DIR which are not already loaded.
 
@@ -1061,7 +1060,29 @@ the .el files, the .elc variants would be loaded instead, where present."
 ;;         (unless (member library libraries-loaded)
 ;;           (load library)
 ;;           (push library libraries-loaded))))))
-
+
+(defun my-copy-eterm-color-terminfo (hostspec)
+  "Copy the eterm-color terminfo files to a remote host.
+HOSTSPEC is a tramp host specification, e.g. \"/ssh:HOSTSPEC:/remote/path\"."
+  ;; http://stackoverflow.com/a/21006365/324105
+  (interactive
+   (let ((hosts (mapcar (lambda (x)
+                          (cond ((stringp x) x)
+                                ((null (car x)) (cadr x))
+                                (t (concat (car x) "@" (cadr x)))))
+                        (apply 'append
+                               (mapcar
+                                (lambda (x)
+                                  (remove-if-not 'identity
+                                                 (apply (car x) (cdr x))))
+                                (tramp-get-completion-function "ssh"))))))
+     (list (completing-read "Hostname: " hosts nil 'confirm nil nil hosts nil))))
+  (let ((destdir (format "/ssh:%s:~/.terminfo/e/" hostspec)))
+    (unless (file-directory-p destdir)
+      (dired-create-directory destdir))
+    (copy-file (concat data-directory "e/eterm-color") destdir)
+    (copy-file (concat data-directory "e/eterm-color.ti") destdir)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
