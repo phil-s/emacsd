@@ -1,71 +1,122 @@
 ;;; delight.el - A dimmer switch for your lighter text.
+;;
+;; Author: Phil S.
+;; URL: http://www.emacswiki.org/emacs/DelightedModes
+;; Version: 1.02
 
 ;; Commentary:
 ;;
 ;; Enables you to customise the mode names displayed in the mode line.
 ;;
-;; For major modes, the buffer-local `mode-name' variable is modified,
-;; with advice around the `format-mode-line' function ensuring that the
-;; original value is used in contexts outside of mode line redraws.
-;;
+;; For major modes, the buffer-local `mode-name' variable is modified.
 ;; For minor modes, the associated value in `minor-mode-alist' is set.
 ;;
 ;; Example usage:
 ;;
+;; (require 'delight)
+;;
 ;; (delight 'abbrev-mode " Abv" "abbrev")
 ;;
 ;; (delight '((abbrev-mode " Abv" "abbrev")
-;;            (smart-tab-mode " \\t" smart-tab)
+;;            (smart-tab-mode " \\t" "smart-tab")
 ;;            (eldoc-mode nil "eldoc")
 ;;            (rainbow-mode)
-;;            (emacs-lisp-mode "Elisp" "lisp-mode")))
+;;            (emacs-lisp-mode "Elisp" :major)))
+;;
+;; Important note:
+;;
+;; Although strings are common, any mode-line construct is permitted
+;; as the value (for both minor and major modes); so before you
+;; override a value you should check the existing one, as you may
+;; want to replicate any structural elements in your replacement
+;; if it turns out not to be a simple string.
+;;
+;; For major modes, M-: mode-name
+;; For minor modes, M-: (cadr (assq 'MODE minor-mode-alist))
+;; for the minor MODE in question.
+;;
+;; Conversely, you may incorporate additional mode-line constructs in
+;; your replacement values, if you so wish. e.g.:
+;;
+;; (delight 'emacs-lisp-mode
+;;          '("Elisp" (lexical-binding ":Lex" ":Dyn"))
+;;          :major)
+;;
+;; See `mode-line-format' for information about mode-line constructs,
+;; and M-: (info "(elisp) Mode Line Format") for further details.
+;;
+;; Also bear in mind that some modes may dynamically update these
+;; values themselves (for instance dired-mode updates mode-name if
+;; you change the sorting criteria) in which cases this library may
+;; prove inadequate.
+
+;;; Changelog:
+;;
+;; 1.02 - Bug fix for missing 'cl requirement for destructuring-bind macro.
+;; 1.01 - Added support for using the keyword :major as the FILE argument
+;;        for major modes, to avoid also processing them as minor modes.
 
 ;;; Code:
 
-(defvar delighted ()
-  "List of specs for modifying the display of mode names in the mode line.")
+(eval-when-compile
+  (require 'cl))
+
+(defvar delighted-modes ()
+  "List of specs for modifying the display of mode names in the mode line.
+
+See `delight'.")
 
 ;;;###autoload
 (defun delight (spec &optional value file)
   "Modify the lighter value displayed in the mode line for the given mode SPEC
 if and when the mode is loaded.
 
-SPEC can be either a mode symbol, or a list of the form ((MODE VALUE FILE) ...)
+SPEC can be either a mode symbol, or a list containing multiple elements of
+the form (MODE VALUE FILE). In the latter case the two optional arguments are
+omitted, as they are instead specified for each element of the list.
 
-For minor modes, VALUE is the replacement lighter value (or nil to disable).
-VALUE is typically a string, but may have other values. See `minor-mode-alist'
-for details.
+For minor modes, VALUE is the replacement lighter value (or nil to disable)
+to set in the `minor-mode-alist' variable. For major modes VALUE is the
+replacement buffer-local `mode-name' value to use when a buffer changes to
+that mode.
 
-For major modes, VALUE is typically a string to which `mode-name' will be set,
-but any value suitable for `mode-line-format' may be used.
+In both cases VALUE is commonly a string, but may in fact contain any valid
+mode-line construct. See `mode-line-format' for details.
 
-The optional FILE argument is the file to pass to `eval-after-load'.
-If FILE is nil then the mode symbol is passed as the required feature."
+The FILE argument is passed through to `eval-after-load'. If FILE is nil then
+the mode symbol is passed as the required feature. Both of these cases are
+relevant to minor modes only.
+
+For major modes you should specify the keyword :major as the value of FILE,
+to prevent the mode being treated as a minor mode."
   (add-hook 'after-change-major-mode-hook 'delight-major-mode)
   (let ((glum (if (consp spec) spec (list (list spec value file)))))
     (while glum
       (destructuring-bind (mode &optional value file) (pop glum)
-        (assq-delete-all mode delighted)
-        (add-to-list 'delighted (list mode value file))
-        (eval-after-load (or file mode)
-          `(let ((minor-delight (assq ',mode minor-mode-alist)))
-             (when minor-delight
-               (setcar (cdr minor-delight) ',value))))))))
+        (assq-delete-all mode delighted-modes)
+        (add-to-list 'delighted-modes (list mode value file))
+        (unless (eq file :major)
+          (eval-after-load (or file mode)
+            `(let ((minor-delight (assq ',mode minor-mode-alist)))
+               (when minor-delight
+                 (setcar (cdr minor-delight) ',value)))))))))
 
 (defun delight-major-mode ()
   "Delight the 'pretty name' of the current buffer's major mode
-during mode-line redraws. For other uses of `mode-name', this
-delight will be inhibited."
-  (let ((major-delight (assq major-mode delighted)))
-    (when major-delight
-      (set (make-local-variable 'mode-name-glum) mode-name)
-      (set (make-local-variable 'mode-name-delighted) (cadr major-delight))
-      (setq mode-name '(inhibit-mode-name-delight
-                        mode-name-glum
-                        mode-name-delighted)))))
+when displayed in the mode-line.
 
-(defadvice format-mode-line (around delight-glum-mode-name activate)
-  "Delighted major modes must exhibit their original glum `mode-name' when
+When `mode-name' is displayed in other contexts (such as in the
+`describe-mode' help buffer), its original value will be used."
+  (let ((major-delight (assq major-mode delighted-modes)))
+    (when major-delight
+      (setq mode-name `(inhibit-mode-name-delight
+                        ,mode-name ;; glum
+                        ,(cadr major-delight)))))) ;; delighted
+
+(defadvice format-mode-line (around delighted-modes-are-glum activate)
+  "Delighted modes should exhibit their original `mode-name' when
 `format-mode-line' is called. See `delight-major-mode'."
   (let ((inhibit-mode-name-delight t))
     ad-do-it))
+
+(provide 'delight)

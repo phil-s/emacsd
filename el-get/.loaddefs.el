@@ -96,24 +96,32 @@ multiple files is toggled as follows:
 
 ;;;***
 
-;;;### (autoloads (delight) "delight/delight" "delight/delight.el"
-;;;;;;  (20932 12443 827101 51000))
+;;;### (autoloads nil "delight/delight" "delight/delight.el" (21349
+;;;;;;  48405 527752 480000))
 ;;; Generated autoloads from delight/delight.el
 
 (autoload 'delight "delight/delight" "\
 Modify the lighter value displayed in the mode line for the given mode SPEC
 if and when the mode is loaded.
 
-SPEC can be either a mode symbol, or a list of the form ((MODE VALUE FILE) ...)
+SPEC can be either a mode symbol, or a list containing multiple elements of
+the form (MODE VALUE FILE). In the latter case the two optional arguments are
+omitted, as they are instead specified for each element of the list.
 
-For minor modes, VALUE is the replacement lighter value (or nil to disable).
-VALUE is typically a string, but may have other values. See `minor-mode-alist'
-for details.
+For minor modes, VALUE is the replacement lighter value (or nil to disable)
+to set in the `minor-mode-alist' variable. For major modes VALUE is the
+replacement buffer-local `mode-name' value to use when a buffer changes to
+that mode.
 
-For major modes, VALUE is a string to which `mode-name' will be set.
+In both cases VALUE is commonly a string, but may in fact contain any valid
+mode-line construct. See `mode-line-format' for details.
 
-The optional FILE argument is the file to pass to `eval-after-load'.
-If FILE is nil then the mode symbol is passed as the required feature.
+The FILE argument is passed through to `eval-after-load'. If FILE is nil then
+the mode symbol is passed as the required feature. Both of these cases are
+relevant to minor modes only.
+
+For major modes you should specify the keyword :major as the value of FILE,
+to prevent the mode being treated as a minor mode.
 
 \(fn SPEC &optional VALUE FILE)" nil nil)
 

@@ -280,13 +280,29 @@ See also: `my-copy-buffer-file-name'."
 ;; (size-indication-mode 1)
 
 ;; Shorter mode names text in the mode line.
-(delight '((abbrev-mode " Abv" abbrev)
-           (smart-tab-mode " \\t" smart-tab)
-           (eldoc-mode nil eldoc)
-           (ws-trim-mode nil ws-trim)
-           (rainbow-mode)
-           (emacs-lisp-mode "Elisp" lisp-mode)
-           (lisp-interaction-mode "Elisp:Int" lisp-mode)))
+(let ((my-lexbind-indicator
+       ;; Indicate/toggle dynamic/lexical binding in elisp buffers.
+       '(:propertize
+         (lexical-binding ":Lex" ":Dyn")
+         mouse-face mode-line-highlight
+         local-map (keymap (mode-line
+                            keymap (down-mouse-1
+                                    "Toggle" . lexbind-toggle-lexical-binding)))
+         help-echo (lambda (window object pos)
+                     (format "Switch to %s binding"
+                             (if lexical-binding "dynamic" "lexical"))))))
+  ;; Override specified mode names in the mode line.
+  (delight `((abbrev-mode " Abv" abbrev)
+             (smart-tab-mode " \\t" smart-tab)
+             (eldoc-mode nil eldoc)
+             (ws-trim-mode nil ws-trim)
+             (rainbow-mode)
+             (lexbind-mode)
+             (dired-mode "Dired" :major)
+             (emacs-lisp-mode
+              ("Elisp" ,my-lexbind-indicator) :major)
+             (lisp-interaction-mode
+              ("iElisp" ,my-lexbind-indicator) :major))))
 
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
