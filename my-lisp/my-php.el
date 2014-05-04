@@ -37,6 +37,12 @@
       (setq c-electric-flag nil)
       ;; electric behaviours appear to be bad/unwanted in php-mode
 
+      ;; Per-line comments preferred over block comments.
+      (setq-local comment-style 'indent)
+      (setq-local comment-start "//")
+      (setq-local comment-padding " ")
+      (setq-local comment-end "")
+
       ;; This is bugging out recently. Not sure why. Thought it
       ;; was a conflict with (my-coding-config), but not certain
       ;; any longer. Commenting out for now.
