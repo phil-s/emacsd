@@ -784,29 +784,43 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
           ;; Skip forwards over any page delimiters within those comments.
           (when (and page-delimiter (not (string= page-delimiter "")))
             (while (re-search-forward page-delimiter min t)))
-          ;; Skip past any leading whitespace.
+          ;; Skip past any blank lines.
           (skip-chars-forward "[:space:]\n")
+          (beginning-of-line)
           ;; This is the new point to narrow from.
           (setq min (point)))
         (narrow-to-region min max)))))
 
-(defun my-narrow-to-region (start end arg)
-  "Restrict editing in this buffer to the current region.
-
-With prefix arg, narrow in a new indirect buffer."
-  (interactive "r\nP")
-  (if arg
-      (my-narrow-to-region-indirect start end)
-    (narrow-to-region start end)))
-
 (defun my-narrow-to-region-indirect (start end)
-  "Restrict editing in this buffer to the current region, indirectly."
+  "`narrow-to-region' in a cloned indirect buffer in the other window.
+
+See `clone-indirect-buffer'."
   (interactive "r")
   (deactivate-mark)
   (let ((buf (clone-indirect-buffer nil nil)))
     (with-current-buffer buf
       (narrow-to-region start end))
-    (switch-to-buffer buf)))
+    (pop-to-buffer buf)))
+
+(defun my-narrow-to-page-indirect (&optional arg)
+  "`narrow-to-page' in a cloned indirect buffer in the other window.
+
+See `clone-indirect-buffer'."
+  (interactive "P")
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-page arg))
+    (pop-to-buffer buf)))
+
+(defun my-narrow-to-defun-indirect (&optional _arg)
+  "`narrow-to-defun' in a cloned indirect buffer in the other window.
+
+See `clone-indirect-buffer'."
+  (interactive)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-defun _arg))
+    (pop-to-buffer buf)))
 
 (defun my-extend-selection (arg &optional incremental)
   "Mark the symbol surrounding point.
