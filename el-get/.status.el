@@ -43,4 +43,6 @@
 :fic-mode "installed"
 :git-modes "installed"
 :image-dimensions-minor-mode "installed"
+:noflet "installed"
+:ace-link "installed"
 )

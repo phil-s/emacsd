@@ -1898,10 +1898,10 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "sauron/sauron-dbus.el" "sauron/sauron-erc.el" "sauron/sauron-identica.el"
-;;;;;;  "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
-;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "wgrep/wgrep-test.el")
-;;;;;;  (21346 6813 243976 465000))
+;;;;;;  "noflet/let-while-tests.el" "noflet/noflet.el" "sauron/sauron-dbus.el"
+;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-identica.el" "sauron/sauron-jabber.el"
+;;;;;;  "sauron/sauron-notifications.el" "sauron/sauron-org.el" "sauron/sauron-twittering.el"
+;;;;;;  "wgrep/wgrep-test.el") (21349 57808 324460 933000))
 
 ;;;***
 

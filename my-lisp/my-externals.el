@@ -14,6 +14,12 @@
             :type git
             :url "git://github.com/dimitri/el-get.git")
 
+     (:name ace-link
+            :depends (ace-jump-mode noflet)
+            :type git
+            :url "https://github.com/abo-abo/ace-link.git"
+            :post-init (ace-link-setup-default))
+
      (:name ace-jump-mode
             :type git
             :url "https://github.com/winterTTr/ace-jump-mode/")
@@ -131,6 +137,10 @@
             :type git
             :url "https://github.com/magnars/multiple-cursors.el.git"
             :features multiple-cursors)
+
+     (:name noflet
+            :type git
+            :url "https://github.com/nicferrier/emacs-noflet.git")
 
      (:name notify)
 
