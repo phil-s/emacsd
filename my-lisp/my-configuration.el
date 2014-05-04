@@ -489,7 +489,12 @@ disabled.")))
      (defun my-term-mode-hook ()
        (subword-mode 0)
        (setq show-trailing-whitespace nil)
-       (set (make-local-variable 'global-hl-line-mode) nil))))
+       (set (make-local-variable 'global-hl-line-mode) nil)
+       ;; Fix some keys when (term-in-char-mode).
+       (define-key term-raw-map (kbd "<C-left>")
+         (lambda () (interactive) (term-send-raw-string "b")))
+       (define-key term-raw-map (kbd "<C-right>")
+         (lambda () (interactive) (term-send-raw-string "f"))))))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
