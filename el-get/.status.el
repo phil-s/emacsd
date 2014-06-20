@@ -45,4 +45,5 @@
 :image-dimensions-minor-mode "installed"
 :noflet "installed"
 :ace-link "installed"
+:elisp-slime-nav "installed"
 )

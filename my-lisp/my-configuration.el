@@ -295,6 +295,7 @@ See also: `my-copy-buffer-file-name'."
   (delight `((abbrev-mode " Abv" abbrev)
              (smart-tab-mode " \\t" smart-tab)
              (eldoc-mode nil eldoc)
+             (elisp-slime-nav-mode nil elisp-slime-nav)
              (ws-trim-mode nil ws-trim)
              (rainbow-mode)
              (lexbind-mode)

@@ -5,6 +5,7 @@
 ;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
+(global-set-key (kbd "M-.") 'etags-select-find-tag)
 
 ;; Global bindings that I want to over-ride in some modes.
 (global-set-key (kbd "C-c o") 'ff-find-other-file)
@@ -165,7 +166,6 @@
   (define-key keymap (kbd "M-s C-/")   'my-multi-occur-in-visible-buffers)
   (define-key keymap (kbd "C-c c")     'clone-line)
   (define-key keymap (kbd "C-M-z")     'zap-to-char-backwards)
-  (define-key keymap (kbd "M-.")       'etags-select-find-tag)
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
   (define-key keymap (kbd "C-c C-f")   'my-find-file-in-project)

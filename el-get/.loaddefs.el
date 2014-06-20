@@ -247,8 +247,46 @@ trees.
 
 ;;;***
 
-;;;### (autoloads (fic-mode) "fic-mode/fic-mode" "fic-mode/fic-mode.el"
-;;;;;;  (21345 63049 108430 436000))
+;;;### (autoloads nil "elisp-slime-nav/elisp-slime-nav" "elisp-slime-nav/elisp-slime-nav.el"
+;;;;;;  (21412 10834 174484 571000))
+;;; Generated autoloads from elisp-slime-nav/elisp-slime-nav.el
+
+(autoload 'elisp-slime-nav-mode "elisp-slime-nav/elisp-slime-nav" "\
+Enable Slime-style navigation of elisp symbols using M-. and M-,
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'turn-on-elisp-slime-nav-mode "elisp-slime-nav/elisp-slime-nav" "\
+Explicitly enable `elisp-slime-nav-mode'.
+
+\(fn)" nil nil)
+
+(autoload 'elisp-slime-nav-find-elisp-thing-at-point "elisp-slime-nav/elisp-slime-nav" "\
+Find the elisp thing at point, be it a function, variable, library or face.
+
+With a prefix arg, or if there is no thing at point, prompt for
+the symbol to jump to.
+
+Argument SYM-NAME is the thing to find.
+
+\(fn SYM-NAME)" t nil)
+
+(autoload 'elisp-slime-nav-describe-elisp-thing-at-point "elisp-slime-nav/elisp-slime-nav" "\
+Display the full documentation of the elisp thing at point.
+
+The named subject may be a function, variable, library or face.
+
+With a prefix arg, or if there is not \"thing\" at point, prompt
+for the symbol to jump to.
+
+Argument SYM-NAME is the thing to find.
+
+\(fn SYM-NAME)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "fic-mode/fic-mode" "fic-mode/fic-mode.el"
+;;;;;;  (21347 39948 490968 137000))
 ;;; Generated autoloads from fic-mode/fic-mode.el
 
 (autoload 'fic-mode "fic-mode/fic-mode" "\

@@ -69,6 +69,10 @@
      (:name ediff-trees
             :type emacswiki)
 
+     (:name elisp-slime-nav
+            :type git
+            :url "https://github.com/purcell/elisp-slime-nav.git")
+
      (:name escreen)
 
      ;; (:name espect
