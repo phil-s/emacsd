@@ -1,3 +1,5 @@
+;;;; * Global bindings
+
 ;; C-z is a very useful prefix, and we almost never need `suspend-frame'.
 (global-unset-key (kbd "C-z")) ; suspend-frame
 (global-set-key (kbd "C-z C-z") 'suspend-frame)
@@ -6,30 +8,22 @@
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
+(global-set-key (kbd "C-y") 'jp/yank)
+(global-set-key (kbd "M-y") 'jp/yank-pop)
 
 ;; Global bindings that I want to over-ride in some modes.
 (global-set-key (kbd "C-c o") 'ff-find-other-file)
 (global-set-key (kbd "<f5>")  'ff-find-other-file)
 
-;; Remapped commands. Simpler when there are multiple bindings.
+;; Remappings to alternative/custom commands.
+(global-set-key [remap backward-up-list] 'backward-up-sexp)
 (global-set-key [remap narrow-to-defun] 'my-narrow-to-defun)
 
-;; Custom 'apropos' key bindings
-(define-prefix-command 'Apropos-Prefix nil "Apropos (a,d,f,i,l,v,C-v)")
-(define-key Apropos-Prefix (kbd "a")   'apropos)
-(define-key Apropos-Prefix (kbd "C-a") 'apropos)
-(define-key Apropos-Prefix (kbd "d")   'apropos-documentation)
-(define-key Apropos-Prefix (kbd "f")   'apropos-command)
-(define-key Apropos-Prefix (kbd "c")   'apropos-command)
-(define-key Apropos-Prefix (kbd "i")   'info-apropos)
-(define-key Apropos-Prefix (kbd "l")   'apropos-library)
-(define-key Apropos-Prefix (kbd "v")   'apropos-variable)
-(define-key Apropos-Prefix (kbd "C-v") 'apropos-value)
-
-;; Bind 'l' to [back] in Help mode, to match Info mode.
-(add-hook 'help-mode-hook (lambda () (local-set-key (kbd "l") 'help-go-back)))
+;;;; * Other key maps, etc
 
 ;; Use 'e' to enter wgrep mode (like editable occur buffers).
+(eval-when-compile
+  (defvar grep-mode-map))
 (add-hook 'wgrep-setup-hook 'my-wgrep-setup-hook)
 (defun my-wgrep-setup-hook ()
   (define-key grep-mode-map (kbd "e") 'wgrep-change-to-wgrep-mode))
@@ -45,8 +39,26 @@
 ;; (and `browse-kill-ring.el').  I do.  If you do that, then
 ;; load `second-sel.el' first.
 
-(global-set-key (kbd "M-y") 'jp/yank-pop)
-(global-set-key (kbd "C-y") 'jp/yank)
+;;;; * Help and documentation bindings
+
+;; Custom 'apropos' key bindings
+(global-set-key (kbd "C-h C-a") 'my-apropos-prefix)
+(define-prefix-command 'my-apropos-prefix nil "Apropos (a,d,f,i,l,o,v,C-v)")
+(define-key my-apropos-prefix (kbd "a")   'apropos)
+(define-key my-apropos-prefix (kbd "C-a") 'apropos)
+(define-key my-apropos-prefix (kbd "d")   'apropos-documentation)
+(define-key my-apropos-prefix (kbd "c")   'apropos-command)
+(define-key my-apropos-prefix (kbd "f")   'apropos-command)
+(define-key my-apropos-prefix (kbd "i")   'info-apropos)
+(define-key my-apropos-prefix (kbd "l")   'apropos-library)
+(define-key my-apropos-prefix (kbd "o")   'apropos-user-option)
+(define-key my-apropos-prefix (kbd "v")   'apropos-variable)
+(define-key my-apropos-prefix (kbd "C-v") 'apropos-value)
+
+;; Bind 'l' to [back] in Help mode, to match Info mode.
+(add-hook 'help-mode-hook (lambda () (local-set-key (kbd "l") 'help-go-back)))
+
+;;;; my-keys-minor-mode
 
 ;;
 ;; Global minor mode: `my-keys-minor-mode'
@@ -62,7 +74,7 @@
 (let ((keymap my-keys-minor-mode-map))
   ;; Apropos
   (define-key keymap (kbd "C-h a")     'apropos-command)
-  (define-key keymap (kbd "C-h C-a")   'Apropos-Prefix)
+  (define-key keymap (kbd "C-h C-a")   'my-apropos-prefix)
 
   ;; Use ibuffer in place of list-buffers
   (define-key keymap (kbd "C-x C-b")   'ibuffer)
@@ -182,6 +194,7 @@
   (define-key keymap (kbd "C-z C-M-%") 'my-replace-regexp-group)
   (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
   (define-key keymap (kbd "M-C")       'my-capitalize-word)
+  (define-key keymap (kbd "s-j")       'ace-jump-mode)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
@@ -193,6 +206,7 @@
   (define-key keymap (kbd "C-x C-j")   'dired-jump)
   (define-key keymap (kbd "<f6>")      'rgrep)
   (define-key keymap (kbd "C-x v <")   'vc-resolve-conflicts)
+  (define-key keymap (kbd "M-C")       'my-capitalize-word)
   )
 
 ;; Make emacs consistent with xkcd :)
@@ -200,7 +214,8 @@
 ;; key map, as the map is displayed in the mode's docstring.)
 (global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
 
-;; Custom aliases
+;;;; Custom aliases
+
 (defalias 'll   'load-dot-emacs)
 (defalias 'lll  'find-dot-emacs)
 (defalias 'llll 'find-my-lisp-dir)
@@ -208,6 +223,8 @@
 (defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
 (defalias 'rb   'revert-buffer)
 (defalias 'ws   'whitespace-mode)
+
+;;;; * Emacs initialisation house-keeping.
 
 (defun my-keybindings-after-init-hook ()
   "Define and enable our minor mode after the init file has been loaded.
@@ -288,3 +305,10 @@ TODO: Switch to using emulation-mode-map-alists
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-keybindings)
+
+;;; Local Variables:
+;;; page-delimiter: "^;;;; "
+;;; outline-regexp: ";;;; "
+;;; eval: (outline-minor-mode 1)
+;;; eval: (while (re-search-forward "^;;;; \\* " nil t) (outline-toggle-children))
+;;; End:
