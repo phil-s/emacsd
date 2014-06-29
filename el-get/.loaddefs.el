@@ -173,8 +173,8 @@ multiple files is toggled as follows:
 
 ;;;***
 
-;;;### (autoloads nil "delight/delight" "delight/delight.el" (21349
-;;;;;;  48405 527752 480000))
+;;;### (autoloads nil "delight/delight" "delight/delight.el" (21384
+;;;;;;  30628 654909 885000))
 ;;; Generated autoloads from delight/delight.el
 
 (autoload 'delight "delight/delight" "\
@@ -191,7 +191,8 @@ replacement buffer-local `mode-name' value to use when a buffer changes to
 that mode.
 
 In both cases VALUE is commonly a string, but may in fact contain any valid
-mode-line construct. See `mode-line-format' for details.
+mode-line construct. For details see the `mode-line-format' variable, and
+Info node `(elisp) Mode Line Format'.
 
 The FILE argument is passed through to `eval-after-load'. If FILE is nil then
 the mode symbol is passed as the required feature. Both of these cases are
