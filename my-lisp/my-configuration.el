@@ -473,6 +473,18 @@ disabled.")))
           :icon "emacs-snapshot"
           :timeout -1))
 
+(defadvice erc-display-message (before sauron-notify-disconnect)
+  "Make Sauron announce any permanent disconnection."
+  (let ((msg (ad-get-arg 3)))
+    (when (and (eq msg 'disconnected-noreconnect)
+               (featurep 'sauron))
+      (sauron-add-event
+       'erc 5 (propertize (replace-regexp-in-string
+                           "\\`[[:space:]\n]+" ""
+                           (erc-format-message 'disconnected-noreconnect))
+                          'face 'warning)))))
+(ad-activate 'erc-display-message)
+
 ;; Git
 (add-hook 'magit-mode-hook 'my-magit-mode-hook)
 (defun my-magit-mode-hook ()
