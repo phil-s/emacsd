@@ -2,7 +2,7 @@
 ;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8) ;; also see `my-frame-config'
 (set-keyboard-coding-system 'utf-8)
 (set-locale-environment "en_NZ.UTF-8")
 (setq-default buffer-file-coding-system 'utf-8)
@@ -275,6 +275,7 @@ See also: `my-copy-buffer-file-name'."
   "Custom behaviours for new frames."
   (with-selected-frame frame
     ;; do things
+    (set-terminal-coding-system 'utf-8)
     ))
 ;; Run now, for non-daemon Emacs...
 (my-frame-config (selected-frame))
