@@ -1936,11 +1936,51 @@ controlled by the `ws-trim-global-modes' variable.
 
 ;;;***
 
+;;;### (autoloads nil "ztree-diff/ztree-diff" "ztree-diff/ztree-diff.el"
+;;;;;;  (21423 24092 470872 188000))
+;;; Generated autoloads from ztree-diff/ztree-diff.el
+
+(autoload 'ztreediff-mode "ztree-diff/ztree-diff" "\
+A minor mode for displaying the difference of the directory trees in text mode.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'ztree-diff "ztree-diff/ztree-diff" "\
+Creates an interactive buffer with the directory tree of the path given
+
+\(fn DIR1 DIR2)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "ztree-diff/ztree-dir" "ztree-diff/ztree-dir.el"
+;;;;;;  (21423 24092 470872 188000))
+;;; Generated autoloads from ztree-diff/ztree-dir.el
+
+(autoload 'ztree-dir "ztree-diff/ztree-dir" "\
+Creates an interactive buffer with the directory tree of the path given
+
+\(fn PATH)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "ztree-diff/ztree-view" "ztree-diff/ztree-view.el"
+;;;;;;  (21423 24092 470872 188000))
+;;; Generated autoloads from ztree-diff/ztree-view.el
+
+(autoload 'ztree-mode "ztree-diff/ztree-view" "\
+A major mode for displaying the directory tree in text mode.
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "noflet/let-while-tests.el" "noflet/noflet.el" "sauron/sauron-dbus.el"
-;;;;;;  "sauron/sauron-erc.el" "sauron/sauron-identica.el" "sauron/sauron-jabber.el"
-;;;;;;  "sauron/sauron-notifications.el" "sauron/sauron-org.el" "sauron/sauron-twittering.el"
-;;;;;;  "wgrep/wgrep-test.el") (21349 57808 324460 933000))
+;;;;;;  "sauron/sauron-dbus.el" "sauron/sauron-erc.el" "sauron/sauron-identica.el"
+;;;;;;  "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
+;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "smartrep/smartrep.el"
+;;;;;;  "smartrep/test-smartrep.el" "wgrep/wgrep-test.el" "ztree-diff/ztree-diff-model.el"
+;;;;;;  "ztree-diff/ztree-pkg.el" "ztree-diff/ztree-util.el") (21423
+;;;;;;  24092 835278 967000))
 
 ;;;***
 

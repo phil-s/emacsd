@@ -224,6 +224,10 @@
             :type git
             :url "https://github.com/bbatsov/zenburn-emacs")
 
+     (:name ztree-diff
+            :type git
+            :url "https://github.com/fourier/ztree.git")
+
      ;; Colour readability tool.
      ;; Available by default in Emacs 24, so would need to restrict
      ;; this to versions less than that.

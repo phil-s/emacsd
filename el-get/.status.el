@@ -46,4 +46,5 @@
 :noflet "installed"
 :ace-link "installed"
 :elisp-slime-nav "installed"
+:ztree-diff "installed"
 )
