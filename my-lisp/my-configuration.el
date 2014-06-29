@@ -310,6 +310,8 @@ See also: `my-copy-buffer-file-name'."
              (ws-trim-mode nil ws-trim)
              (rainbow-mode)
              (lexbind-mode)
+             (auto-revert-mode " Rvt" autorevert)
+             (magit-auto-revert-mode " MRvt" magit)
              (dired-mode "Dired" :major)
              (emacs-lisp-mode
               ("Elisp" ,my-lexbind-indicator) :major)
