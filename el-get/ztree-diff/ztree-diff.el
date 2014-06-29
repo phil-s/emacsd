@@ -97,6 +97,8 @@ dot (like .git) are ignored")
     (,(kbd "v") . ztree-diff-view-file)
     (,(kbd "d") . ztree-diff-simple-diff-files)
     (,(kbd "r") . ztree-diff-partial-rescan)
+    (,(kbd "n") . next-line)
+    (,(kbd "p") . previous-line)
     ([f5] . ztree-diff-full-rescan)))
 
 
