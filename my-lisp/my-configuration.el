@@ -489,7 +489,7 @@ disabled.")))
      (add-hook 'term-mode-hook 'my-term-mode-hook)
      (defun my-term-mode-hook ()
        (subword-mode 0)
-       (setq show-trailing-whitespace nil)
+       (hide-trailing-whitespace)
        (set (make-local-variable 'global-hl-line-mode) nil)
        ;; Fix some keys when (term-in-char-mode).
        (define-key term-raw-map (kbd "<C-left>")
@@ -631,10 +631,15 @@ when the file path is too long to show on one line."
 ;; www / web / eww
 (add-hook 'eww-mode-hook 'my-eww-mode-hook)
 (defun my-eww-mode-hook ()
-  (setq show-trailing-whitespace nil))
+  (hide-trailing-whitespace))
 
 ;; Show image dimensions in the mode line. See also frame-title-format.
 (eval-after-load 'image-mode '(require 'image-dimensions-minor-mode))
+
+;; ztree-diff
+(add-hook 'ztree-mode 'my-ztree-mode-hook)
+(defun my-ztree-mode-hook ()
+  (hide-trailing-whitespace))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
