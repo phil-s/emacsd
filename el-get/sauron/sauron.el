@@ -341,7 +341,9 @@ timestamp."
 Returns the new priority."
   (let ((prio prio) (nick (plist-get props :sender)))
     (if (and nick (not (sr-fresh-nick-event nick))) ;;
-      (setq prio 2) ;; set prio to 2 for nicks we got events for recently
+        ;; (setq prio 2) ;; set prio to 2 for nicks we got events for recently
+        ;; FIXME ^^ `sr-fresh-nick-event' is wrong:
+        ;; https://github.com/djcb/sauron/issues/12#issuecomment-47056517
       (progn
 	(when (sr-pattern-matches msg sauron-watch-patterns 'string-match)
 	  (incf prio))
