@@ -143,6 +143,16 @@ when `auto-save-mode' is invoked manually.")
 ;; first word of a sentence, or before the last word of a paragraph.
 (add-to-list 'fill-nobreak-predicate 'fill-single-word-nobreak-p)
 
+;; ibuffer config.
+(eval-when-compile
+  (defvar ibuffer-filtering-qualifiers)
+  (defvar ibuffer-filtering-alist)
+  (declare-function ibuffer-current-buffer "ibuffer")
+  (declare-function ibuffer-update "ibuffer")
+  (declare-function ibuffer-jump-to-buffer "ibuf-ext")
+  (declare-function ibuffer-push-filter "ibuf-ext")
+  (declare-function text-scale-mode "face-remap"))
+
 ;; TODO: Idea: Implement a "recently-closed files" group in ibuffer.
 ;; Collapsed by default. Selecting a buffer from this list will
 ;; re-visit the file.
@@ -422,6 +432,11 @@ disabled.")))
       sauron-nick-insensitivity 0)
 
 ;; erc-mode (for IRC)
+(eval-when-compile
+  (defvar erc-modules)
+  (declare-function erc-default-target "erc")
+  (declare-function erc-update-modules "erc"))
+
 (eval-after-load "erc"
   '(progn
      ;; Add the following modules:
@@ -446,7 +461,6 @@ disabled.")))
   '(add-to-list 'which-func-non-auto-modes 'erc-mode))
 
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
-(declare-function 'erc-default-target "erc")
 (defun my-notify-erc (match-type nickuserhost message)
   "Notify when a message is received."
   (notify (format "%s in %s"
@@ -465,6 +479,11 @@ disabled.")))
   (hide-trailing-whitespace))
 
 ;; Term mode
+(eval-when-compile
+  (defvar term-mode-map)
+  (defvar term-raw-map)
+  (declare-function term-send-raw-string "term"))
+
 (eval-after-load "term"
   '(progn
      ;; Default terminal history is much too small.
@@ -539,8 +558,7 @@ disabled.")))
                       (message "Not applicable: no file")
                     (add-hook 'ediff-after-quit-hook-internal
                               'my-save-some-buffers-with-ediff-quit t)
-                    (save-excursion
-                      (set-buffer buf)
+                    (with-current-buffer buf
                       (let ((enable-recursive-minibuffers t))
                         (ediff-current-file)
                         (recursive-edit))))
