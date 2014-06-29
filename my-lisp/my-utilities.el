@@ -975,6 +975,16 @@ otherwise use the current selected window."
   (when maximise
     (delete-other-windows)))
 
+(defun my-ibuffer ()
+  "Switch to ibuffer. Exit ibuffer, if current."
+  (interactive)
+  (if (eq major-mode 'ibuffer-mode)
+      (ibuffer-quit)
+    (let ((win (get-buffer-window "*Ibuffer*" (selected-frame))))
+      (if (window-live-p win)
+          (select-window win)
+        (ibuffer)))))
+
 (defun eval-and-replace ()
   "Replace the preceding sexp with its value.
 
