@@ -518,8 +518,14 @@
 ;; Project support
 (require 'my-projects)
 
-(message "Init file loaded in %.2fs"
-         (time-to-seconds (time-since my-init-load-start)))
+;; Display the time taken to start Emacs.
+(let ((my-init-time (time-to-seconds (time-since my-init-load-start))))
+  (add-hook 'after-init-hook
+            `(lambda ()
+               (message "Init time was %.2fs (%.2fs in %s)."
+                        (time-to-seconds (time-since before-init-time))
+                        ,my-init-time
+                        (file-name-nondirectory user-init-file)))))
 
 ;;; Local Variables:
 ;;; page-delimiter: ";;;; "
