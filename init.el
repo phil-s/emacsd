@@ -436,6 +436,7 @@
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/packed"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
+(setq load-prefer-newer t)
 (require 'auto-compile)
 (auto-compile-on-save-mode 1)
 (auto-compile-on-load-mode 1)
