@@ -148,9 +148,9 @@
   (define-key keymap (kbd "C-x 4 n p") 'my-narrow-to-page-indirect)
   (define-key keymap (kbd "C-x 4 n d") 'my-narrow-to-defun-indirect)
 
-  ;; Diff / Comparison
+  ;; Diff / Comparison, and Version control
   (define-key keymap (kbd "C-M-=")     'compare-windows)
-  (define-key keymap (kbd "C-z =")     'diff-current-buffer-with-disk)
+  (define-key keymap (kbd "C-z =")     'my-diff-buffer-with-file)
   (define-key keymap (kbd "C-z C-=")   'ediff-current-file)
   (define-key keymap (kbd "C-x v C-=") 'vc-ediff)
   (define-key keymap (kbd "C-x v C-f") 'my-vc-visit-file-revision)

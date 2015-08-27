@@ -687,8 +687,8 @@ of the available lines."
 ;;
 ;; Diff the current buffer with the file contents
 ;;
-(defun diff-current-buffer-with-disk ()
-  "Compare the current buffer with it's disk file."
+(defun my-diff-buffer-with-file ()
+  "Compare the current modified buffer with the saved version."
   (interactive)
   (let ((diff-switches "-u")) ;; unified diff
     (diff-buffer-with-file (current-buffer))))
