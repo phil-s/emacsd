@@ -72,6 +72,11 @@
   (disable-theme 'zenburn)
   ;;(load-theme 'light-blue t)
   (load-theme 'deeper-blue t)
+  (eval-after-load "whitespace"
+    '(custom-theme-set-faces
+      'deeper-blue
+      '(whitespace-space ((t . (:foreground "grey16"))) t)
+      '(whitespace-newline ((t . (:foreground "grey16"))) t)))
   ;; (eval-after-load "magit"
   ;;   '(progn
   ;;      (set-face-background 'magit-item-highlight "blue4")
