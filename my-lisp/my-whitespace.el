@@ -29,6 +29,7 @@
 ;; Use ws-trim mode to strip trailing whitespace automatically
 ;; from edited lines (the default ws-trim-level).
 (when (require 'ws-trim nil 'noerror)
+  (setq ws-trim-global-modes '(guess (not term-mode)))
   (global-ws-trim-mode t))
 
 ;; ;; Strip trailing whitespace.
@@ -49,6 +50,14 @@
 (defun hide-trailing-whitespace ()
   "Do not highlight trailing whitespace."
   (setq show-trailing-whitespace nil))
+
+;; Hide trailing whitespace in all of the following modes.
+(mapc (lambda (mode)
+        (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
+                  'hide-trailing-whitespace))
+      '(calendar eww help log-view magit magit-popup sauron sql-interactive
+                 sx-compose sx-inbox sx-question-list sx-question
+                 term))
 
 ;(defun toggle-whitespace-mode ()
 ;  "Toggle whitespace-mode."
