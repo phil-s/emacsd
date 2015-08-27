@@ -11,6 +11,7 @@
 ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 ;; Latin-4 facilitates macron accents (e.g. a- => ā).
+;; n.b. If `current-language-environment' is customized, it clobbers this.
 (setq default-input-method "latin-4-postfix")
 
 ;; Put other files and dirs into .emacs.d
@@ -271,11 +272,13 @@ See also: `my-copy-buffer-file-name'."
 ;; Full-screen by default.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Per-frame/terminal configuration.
 (defun my-frame-config (frame)
   "Custom behaviours for new frames."
   (with-selected-frame frame
     ;; do things
-    (set-terminal-coding-system 'utf-8)
+    (unless window-system
+      (set-terminal-coding-system 'utf-8))
     ))
 ;; Run now, for non-daemon Emacs...
 (my-frame-config (selected-frame))
