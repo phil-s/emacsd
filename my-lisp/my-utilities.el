@@ -943,7 +943,8 @@ or before point."
                                           display-buffer-same-window)
                                          . ((reusable-frames . visible))))
   (unless retain-window-layout
-    (delete-other-windows)))
+    (delete-other-windows))
+  (setq-local term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
 (defalias 'my-shell 'my-terminal)
 

@@ -544,6 +544,11 @@ disabled.")))
      (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
      ;; Enable ESC-x as a substitute for M-x (which sends term-send-raw-meta)
      (define-key term-raw-map (kbd "<escape> x") 'execute-extended-command)
+     ;; Fix forward/backward word when (term-in-char-mode).
+     (define-key term-raw-map (kbd "<C-left>")
+       (lambda () (interactive) (term-send-raw-string "b")))
+     (define-key term-raw-map (kbd "<C-right>")
+       (lambda () (interactive) (term-send-raw-string "f")))
      ;; Disable killing and yanking in char mode (term-raw-map).
      (mapc
       (lambda (func)
@@ -554,18 +559,13 @@ disabled.")))
         kill-forward-chars kill-line kill-paragraph kill-rectangle
         kill-region kill-sentence kill-sexp kill-visual-line
         kill-whole-line kill-word subword-backward-kill subword-kill
-        yank yank-pop yank-rectangle))
-     ;; Terminal buffer configuration.
-     (add-hook 'term-mode-hook 'my-term-mode-hook)
-     (defun my-term-mode-hook ()
-       (subword-mode 0)
-       (hide-trailing-whitespace)
-       (set (make-local-variable 'global-hl-line-mode) nil)
-       ;; Fix some keys when (term-in-char-mode).
-       (define-key term-raw-map (kbd "<C-left>")
-         (lambda () (interactive) (term-send-raw-string "b")))
-       (define-key term-raw-map (kbd "<C-right>")
-         (lambda () (interactive) (term-send-raw-string "f"))))))
+        yank yank-pop yank-rectangle))))
+
+;; Terminal buffer configuration.
+(add-hook 'term-mode-hook 'my-term-mode-hook)
+(defun my-term-mode-hook ()
+  (subword-mode 0)
+  (set (make-local-variable 'global-hl-line-mode) nil))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)

@@ -17,6 +17,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))
+ '(term-color-blue ((t (:background "blue2" :foreground "deep sky blue"))))
+ '(term-color-cyan ((t (:background "cyan" :foreground "cyan3"))))
+ '(term-color-green ((t (:background "green3" :foreground "green2"))))
+ '(term-color-magenta ((t (:background "#cf3360" :foreground "#ff3377"))))
+ '(term-color-red ((t (:background "red3" :foreground "orange red"))))
+ '(term-color-yellow ((t (:background "yellow3" :foreground "yellow2"))))
  '(tks-time-face ((t (:foreground "#cc9933"))))
  '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
  '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
