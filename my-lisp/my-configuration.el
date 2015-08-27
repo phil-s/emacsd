@@ -272,11 +272,44 @@ See also: `my-copy-buffer-file-name'."
 ;; Full-screen by default.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+(defun my-terminal-visible-bell ()
+  "A friendlier visual bell effect."
+  (invert-face 'mode-line)
+  (run-with-timer 0.1 nil 'invert-face 'mode-line))
+
+(defun my-visible-bell-activate ()
+  "Use `my-terminal-visible-bell' as the `ring-bell-function'."
+  (interactive)
+  (setq visible-bell nil
+        ring-bell-function 'my-terminal-visible-bell))
+
+(defun my-configure-visible-bell ()
+  "Use a nicer visual bell in terminals."
+  ;; (if window-system
+  ;;     (setq visible-bell t
+  ;;           ring-bell-function nil)
+  ;;   (my-visible-bell-activate))
+
+  ;; standard visible-bell is awful under xmonad, so just use:
+  (my-visible-bell-activate)
+  )
+
+;; (defun my-configure-visible-bell ()
+;;   "Use a nicer visual bell in terminals."
+;;   (if window-system
+;;       (setq visible-bell t
+;;             ring-bell-function nil)
+;;     (setq visible-bell nil
+;;           ring-bell-function 'my-terminal-visible-bell)))
+
+(add-hook 'focus-in-hook 'my-configure-visible-bell)
+
 ;; Per-frame/terminal configuration.
 (defun my-frame-config (frame)
   "Custom behaviours for new frames."
   (with-selected-frame frame
     ;; do things
+    (my-configure-visible-bell)
     (unless window-system
       (set-terminal-coding-system 'utf-8))
     ))
