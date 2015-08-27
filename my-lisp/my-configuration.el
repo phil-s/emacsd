@@ -509,12 +509,33 @@ disabled.")))
      ;; dcc: Provide Direct Client-to-Client support
      ;; keep-place: Leave point above un-viewed text
      ;; ;; log: Save buffers in logs
+     ;; ;; using `erc-log-mode' instead (see below).
+     ;; ;; (is that the same thing?)
      (setq erc-modules (nconc erc-modules '(dcc keep-place))) ;; log
      (erc-update-modules)))
+
+;; Auto-log (and restore!?) channels
+(setq-default erc-enable-logging t)
+(setq erc-save-buffer-on-part nil
+      erc-save-queries-on-quit nil
+      erc-log-write-after-send t
+      erc-log-write-after-insert t
+      ;; erc-log-insert-log-on-open t ;; So bad. Why?
+      erc-log-channels-directory (file-name-as-directory
+                                  (concat user-emacs-directory "erc"))
+      erc-server-reconnect-attempts 12
+      erc-server-reconnect-timeout 5
+      erc-prompt 'my-erc-prompt
+      )
+
+(defun my-erc-prompt ()
+  "Prompt generator function assigned to the `erc-prompt' variable."
+  (concat "[" (buffer-name) "]>"))
 
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
   (hide-trailing-whitespace)
+  (erc-log-mode 1)
   (setq-local page-delimiter ;; e.g. [Fri Jan  5 2013]
               (rx (sequence
                    "[" (or "Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun")
@@ -527,6 +548,8 @@ disabled.")))
   '(add-to-list 'which-func-non-auto-modes 'erc-mode))
 
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
+(eval-when-compile
+  (declare-function erc-default-target "erc"))
 (defun my-notify-erc (match-type nickuserhost message)
   "Notify when a message is received."
   (notify (format "%s in %s"
@@ -539,6 +562,7 @@ disabled.")))
           :icon "emacs-snapshot"
           :timeout -1))
 
+;; Use `erc-disconnected-hook' instead?
 (defadvice erc-display-message (before sauron-notify-disconnect)
   "Make Sauron announce any permanent disconnection."
   (let ((msg (ad-get-arg 3)))
