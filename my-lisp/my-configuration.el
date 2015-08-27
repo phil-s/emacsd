@@ -200,6 +200,8 @@ when `auto-save-mode' is invoked manually.")
 ;; TODO: Find how to make C-x 0 resets to this same smaller size.
 ;; (an issue since fixing a previous bug)
 ;;(autoload 'text-scale-mode "face-remap")
+(eval-when-compile
+  (declare-function text-scale-mode "face-remap"))
 (add-hook 'ibuffer-mode-hook 'my-ibuffer-mode-hook)
 (defun my-ibuffer-mode-hook ()
   (require 'face-remap)
