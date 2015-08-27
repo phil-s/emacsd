@@ -47,6 +47,10 @@
             :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
             :features browse-kill-ring)
 
+     (:name dash
+            :type git
+            :url "git://github.com/magnars/dash.el.git")
+
      (:name deft
             :type git
             :url "git://jblevins.org/git/deft.git")

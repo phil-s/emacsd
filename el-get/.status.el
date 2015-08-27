@@ -49,4 +49,5 @@
 :ztree-diff "installed"
 :macrostep "installed"
 :async "installed"
+:dash "installed"
 )

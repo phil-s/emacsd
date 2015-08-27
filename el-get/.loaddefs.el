@@ -2116,7 +2116,8 @@ A major mode for displaying the directory tree in text mode.
 ;;;***
 
 ;;;### (autoloads nil nil ("async/async-pkg.el" "async/async-test.el"
-;;;;;;  "async/smtpmail-async.el" "el-get/el-get-install.el" "el-get/el-get.el"
+;;;;;;  "async/smtpmail-async.el" "dash/dash-functional.el" "dash/dash.el"
+;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el"
 ;;;;;;  "macrostep/macrostep-test.el" "sauron/sauron-dbus.el" "sauron/sauron-erc.el"
 ;;;;;;  "sauron/sauron-identica.el" "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
 ;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "smartrep/smartrep.el"
