@@ -22,8 +22,10 @@
 ;; http://stackoverflow.com/questions/9771339
 ;; ;; Invoking external interactive scripts
 ;; http://stackoverflow.com/questions/13674100/properly-invoking-an-interactive-script-from-elisp
-;; ;; Online reference for all standard Emacs variables and functions.
+;; ;; Online reference for all standard Emacs variables and functions:
 ;; http://bruce-connor.github.io/emacs-online-documentation/
+;; ;; Elisp package development and testing:
+;; http://emacs.stackexchange.com/a/2324/454
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
