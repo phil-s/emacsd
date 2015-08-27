@@ -47,4 +47,5 @@
 :ace-link "installed"
 :elisp-slime-nav "installed"
 :ztree-diff "installed"
+:macrostep "installed"
 )

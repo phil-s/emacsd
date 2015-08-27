@@ -596,8 +596,6 @@ that buffer.
 \(fn &optional ARG)" t nil)
 
 ;;;***
-
-
 
 ;;;### (autoloads (key-chord-define key-chord-define-global key-chord-mode)
 ;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20935 32281
@@ -637,6 +635,35 @@ If COMMAND is nil, the key-chord is removed.
 \(fn KEYMAP KEYS COMMAND)" nil nil)
 
 ;;;***
+
+;;;### (autoloads (macrostep-expand macrostep-mode) "macrostep/macrostep"
+;;;;;;  "macrostep/macrostep.el" (21620 4491 312635 949000))
+;;; Generated autoloads from macrostep/macrostep.el
+
+(autoload 'macrostep-mode "macrostep/macrostep" "\
+Minor mode for inline expansion of macros in Emacs Lisp source buffers.
+
+\\<macrostep-keymap>Progressively expand macro forms with \\[macrostep-expand], collapse them with \\[macrostep-collapse],
+and move back and forth with \\[macrostep-next-macro] and \\[macrostep-prev-macro].
+Use \\[macrostep-collapse-all] or collapse all visible expansions to
+quit and return to normal editing.
+
+\\{macrostep-keymap}
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'macrostep-expand "macrostep/macrostep" "\
+Expand the Elisp macro form following point by one step.
+
+Enters `macrostep-mode' if it is not already active, making the
+buffer temporarily read-only. If macrostep-mode is active and the
+form following point is not a macro form, search forward in the
+buffer and expand the next macro form found, if any.
+
+\(fn)" t nil)
+
+;;;***
+
 ;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
 ;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
 ;;;;;;  (20802 24771 412829 899000))
@@ -1975,8 +2002,8 @@ A major mode for displaying the directory tree in text mode.
 ;;;***
 
 ;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "sauron/sauron-dbus.el" "sauron/sauron-erc.el" "sauron/sauron-identica.el"
-;;;;;;  "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
+;;;;;;  "macrostep/macrostep-test.el" "sauron/sauron-dbus.el" "sauron/sauron-erc.el"
+;;;;;;  "sauron/sauron-identica.el" "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
 ;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "smartrep/smartrep.el"
 ;;;;;;  "smartrep/test-smartrep.el" "wgrep/wgrep-test.el" "ztree-diff/ztree-diff-model.el"
 ;;;;;;  "ztree-diff/ztree-pkg.el" "ztree-diff/ztree-util.el") (21423

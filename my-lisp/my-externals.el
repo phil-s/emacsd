@@ -132,6 +132,10 @@
             :type git
             :url "git://github.com/spacebat/lexbind-mode.git")
 
+     (:name macrostep
+            :type git
+            :url "https://github.com/joddie/macrostep.git")
+
      (:name magit
             :depends git-modes)
 
