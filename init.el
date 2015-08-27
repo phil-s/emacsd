@@ -590,6 +590,11 @@
 ;; Project support
 (require 'my-projects)
 
+;; Start server (but don't restart).
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+
 ;; Log uptime to `my-emacs-uptime-log'.
 (add-hook 'kill-emacs-hook 'my-log-emacs-uptime)
 
