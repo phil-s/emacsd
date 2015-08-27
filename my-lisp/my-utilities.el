@@ -1111,7 +1111,8 @@ the .el files, the .elc variants would be loaded instead, where present."
 
 (defun my-copy-eterm-color-terminfo (hostspec)
   "Copy the eterm-color terminfo files to a remote host.
-HOSTSPEC is a tramp host specification, e.g. \"/ssh:HOSTSPEC:/remote/path\"."
+HOSTSPEC is a tramp host specification such as \"localhost\"
+or \"user@example.com\""
   ;; http://stackoverflow.com/a/21006365/324105
   (interactive
    (let ((hosts (mapcar (lambda (x)

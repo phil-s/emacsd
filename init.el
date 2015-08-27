@@ -53,6 +53,7 @@
 ;; # libjpeg-62-dev may need to be libjpeg-dev
 ;; # sudo apt-get install -s ttf-wqy-microhei
 ;; # Maybe: sudo apt-get install -s automake autoconf
+;; # eterm-color support: sudo apt-get install ncurses-term
 ;;
 ;; From git repository working copy:
 ;; # git clean -f -d -x -q && git pull && ./autogen.sh && ./configure --prefix=/home/phil/emacs/emacs24/emacs-24.4/usr/local --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make && make install && reminder "Emacs build successful" now || reminder "Failed to build Emacs" now
@@ -65,6 +66,21 @@
 ;; # make
 ;; # ./src/emacs -Q
 ;; # make install
+
+;;;; * Integration
+;; TERM / eterm-color
+;;
+;; http://www.emacswiki.org/emacs/AnsiTermHints
+;;
+;; The Emacs Wiki explains that you should copy (or symlink) the eterm-color
+;; and eterm-color.ti files from the /usr/share/emacs/xx.x/etc/e directory
+;; on your local system to the ~/.terminfo/e/ directory (or alternatively,
+;; system-wide at /usr/share/terminfo/e/).
+;;
+;; Of course you can also do likewise on any remote host you connect to.
+;;
+;; On Debian-based systems you administer, you can apt-get install
+;; ncurses-term, which includes /usr/share/terminfo/e/eterm-color.
 
 ;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
