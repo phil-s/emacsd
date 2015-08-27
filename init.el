@@ -208,6 +208,38 @@
 ;; without typing C-x 8 first.
 ;; C-\ calls toggle-input-method.
 
+;;;; * Printing objects
+
+;; prin1 - Output a printed representation of the argument with quoting.
+;;         Output will be readable if possible.
+;;
+;; prin1-char - Return a string representation of the argument, which
+;;              must be a character.
+;;
+;; prin1-to-string - Return a string representation of the argument with
+;;                   quoting. Like prin1 but returns the string rather than
+;;                   outputting it. Output will be readable if possible.
+;;
+;; princ - Output the printed representation of the argument
+;;         without quoting.
+;;
+;; princ-list (OBSOLETE) - Print all arguments with princ followed by
+;;              a newline. Use mapc and princ instead.
+;;
+;; print - Output the printed representaton of the argument with newlines
+;;         around it. Output will be quoted and readable if possible.
+;;
+;; print-buffer - Paginate and print buffer contents.
+;;
+;; print-diary-entries - Print a hard copy of the diary display.
+;;
+;; print-help-return-message (OBSOLETE) - use help-print-return-message instead.
+;;
+;; print-region - Paginate and print the region contents.
+;;
+;; pp - Output a pretty-printed representation of the argument with quoting.
+;;      Output will be readable if possible. See also pp-* functions.
+
 ;;;; * Multiple windows and frames
 ;; C-x 1     : Single window on this buffer
 ;; C-x 2     : Split windows horizontally
