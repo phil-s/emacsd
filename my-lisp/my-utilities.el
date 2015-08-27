@@ -512,6 +512,7 @@ current buffer with the target dired buffer\" (i.e. kill the original
 buffer). A double (C-u C-u) prefix argument triggers the normal prefix
 argument behaviour of `dired-jump'."
   (interactive "P")
+  (require 'dired-x)
   (cond
    ((equal arg '(4))
     (let ((origin (current-buffer))

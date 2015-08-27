@@ -207,6 +207,7 @@
   (define-key keymap (kbd "C-h C-v")   'find-variable)
   (define-key keymap (kbd "C-h C-l")   'find-library)
   (define-key keymap (kbd "C-x C-j")   'my-dired-jump)
+  (define-key keymap (kbd "C-x 4 C-j") 'dired-jump-other-window)
   (define-key keymap (kbd "<f6>")      'rgrep)
   (define-key keymap (kbd "C-x v <")   'vc-resolve-conflicts)
   (define-key keymap (kbd "M-C")       'my-capitalize-word)

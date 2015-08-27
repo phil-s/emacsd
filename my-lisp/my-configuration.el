@@ -402,6 +402,8 @@ disabled.")))
 ;; (ido-mode t)
 ;; (setq ido-enable-flex-matching t) ;; enable fuzzy matching
 
+;;; Dired
+
 ;; Don't allow dragging and dropping files into dired
 (setq dired-dnd-protocol-alist nil)
 
@@ -410,6 +412,18 @@ disabled.")))
 
 ;; Do not omit .. in dired -- it's useful.
 (setq dired-omit-files "^\\.?#\\|^\\.$")
+;;
+;; ...except when we are inserting sub-directories,
+;; as it just makes things messy in those cases.
+(defadvice dired-insert-subdir (before my-dired-omit-parents)
+  "Omit parent .. directories if inserting subdirectories."
+  (setq-local dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$"))
+(ad-activate 'dired-insert-subdir)
+
+;; Override the default suggested commands for '!' binding.
+(setq dired-guess-shell-alist-user
+      '(("\\.pdf\\'" "evince")
+        ("\\.ps\\'" "evince")))
 
 ;; Enable RET during an isearch in dired to immediately visit the file.
 ;; http://stackoverflow.com/questions/4471835/emacs-dired-mode-and-isearch
@@ -421,19 +435,30 @@ disabled.")))
              (eq last-input-event ?\r))
     (dired-find-file)))
 
-;; This wasn't working from `dired-load-hook'.
-(eval-after-load "dired"
-  '(progn
-     ;; Enable dired-x by default
-     (require 'dired-x)
-     ;; Set dired-x global variables here.  For example:
-     ;; (setq dired-guess-shell-gnutar "gtar")
-     ;; (setq dired-x-hands-off-my-keys nil)
+;; n.b. We bind C-x C-j to `my-dired-jump' in my-keys-minor-mode, so
+;; this won't really be used. The custom function facilitates using
+;; C-u C-x C-j instead of typing 'a' on the '..' entry in a dired
+;; buffer (and of course works with non-directory buffers too).
+(autoload 'dired-jump "dired-x"
+  "Jump to Dired buffer corresponding to current buffer." t)
 
-     ;; dired-details hides unwanted information by default
-     (require 'dired-details)
-     (dired-details-install)
-     (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle)))
+(autoload 'dired-jump-other-window "dired-x"
+  "Like \\[dired-jump] (dired-jump) but in other window." t)
+
+(add-hook 'dired-load-hook 'my-dired-load-hook)
+(defun my-dired-load-hook ()
+  "Used with `dired-load-hook'."
+  (require 'dired-x)
+  ;; Set dired-x global variables here.  For example:
+  ;; (setq dired-guess-shell-gnutar "gtar")
+  ;; (setq dired-x-hands-off-my-keys nil)
+
+  ;; dired-details hides unwanted information by default.
+  ;; n.b. Recent versions of Emacs include `dired-hide-details-mode',
+  ;; so in time we could switch to that.
+  (require 'dired-details)
+  (dired-details-install)
+  (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle))
 
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 (defun my-dired-mode-hook ()
