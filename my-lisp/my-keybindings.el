@@ -210,6 +210,7 @@
   (define-key keymap (kbd "<f6>")      'rgrep)
   (define-key keymap (kbd "C-x v <")   'vc-resolve-conflicts)
   (define-key keymap (kbd "M-C")       'my-capitalize-word)
+  (define-key keymap (kbd "s-\\")      'toggle-truncate-lines)
   )
 
 ;; Make emacs consistent with xkcd :)
