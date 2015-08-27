@@ -85,6 +85,9 @@
 ;; eldoc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Support eldoc for eval-expression (Emacs 24.4).
+(add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
+
 ;; Highlight the eldoc echo area text
 (defun frob-eldoc-argument-list (string)
   "Upcase and fontify STRING for use with `eldoc-mode'."
