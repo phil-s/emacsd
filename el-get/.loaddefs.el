@@ -363,7 +363,7 @@ trees.
 ;;;***
 
 ;;;### (autoloads nil "elisp-slime-nav/elisp-slime-nav" "elisp-slime-nav/elisp-slime-nav.el"
-;;;;;;  (21412 10834 174484 571000))
+;;;;;;  (21982 28935 500003 796000))
 ;;; Generated autoloads from elisp-slime-nav/elisp-slime-nav.el
 
 (autoload 'elisp-slime-nav-mode "elisp-slime-nav/elisp-slime-nav" "\
@@ -400,8 +400,8 @@ Argument SYM-NAME is the thing to find.
 
 ;;;***
 
-;;;### (autoloads nil "fic-mode/fic-mode" "fic-mode/fic-mode.el"
-;;;;;;  (21347 39948 490968 137000))
+;;;### (autoloads (fic-mode) "fic-mode/fic-mode" "fic-mode/fic-mode.el"
+;;;;;;  (21346 60917 583825 761000))
 ;;; Generated autoloads from fic-mode/fic-mode.el
 
 (autoload 'fic-mode "fic-mode/fic-mode" "\
