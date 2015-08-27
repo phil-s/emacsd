@@ -505,6 +505,24 @@ With a prefix arg, use the file's truename."
         (message "No buffer filename")
       (message filename)
       (kill-new filename))))
+
+(defun my-dired-jump (arg)
+  "Like `dired-jump', but a single (C-u) prefix arg means \"replace the
+current buffer with the target dired buffer\" (i.e. kill the original
+buffer). A double (C-u C-u) prefix argument triggers the normal prefix
+argument behaviour of `dired-jump'."
+  (interactive "P")
+  (cond
+   ((equal arg '(4))
+    (let ((origin (current-buffer))
+          (current-prefix-arg nil))
+      (call-interactively 'dired-jump)
+      (kill-buffer origin)))
+   ((equal arg '(16))
+    (let ((current-prefix-arg '(4)))
+      (call-interactively 'dired-jump)))
+   (t
+    (call-interactively 'dired-jump))))
 
 (defun my-parent-of-dir-in-buffer-file-name (dir)
   "Return the path to the parent of the named directory (arg),
