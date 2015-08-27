@@ -47,25 +47,38 @@
 ;;    (iii) 'e' in occur-mode to edit. 'C-c C-c' to end.
 
 ;;;; * Compiling
-;; Libraries:
+;; Sources:
+;; git clone git://git.savannah.gnu.org/emacs.git
+;; https://ftp.gnu.org/gnu/emacs/
+;; https://alpha.gnu.org/gnu/emacs/
+
+;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s libxpm-dev libjpeg62-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libgtk2.0-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev
-;; # libjpeg-62-dev may need to be libjpeg-dev
-;; # sudo apt-get install -s ttf-wqy-microhei
-;; # Maybe: sudo apt-get install -s automake autoconf
+;; # Manual: sudo apt-get install -s automake autoconf libxpm-dev libjpeg-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libxaw7-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev ttf-wqy-microhei ttf-ancient-fonts libxft-dev libfreetype6-dev ncurses-term
+
+;; # Fonts: libxft-dev libfreetype6-dev
+;; # My preferred font: sudo apt-get install ttf-wqy-microhei
+;; # Other unicode glyphs are in Symbola: sudo apt-get install ttf-ancient-fonts
 ;; # eterm-color support: sudo apt-get install ncurses-term
+;; # Include libgtk2.0-dev iff using the GTK toolkit instead of lucid.
 ;;
-;; From git repository working copy:
-;; # git clean -f -d -x -q && git pull && ./autogen.sh && ./configure --prefix=/home/phil/emacs/emacs24/emacs-24.4/usr/local --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make && make install && reminder "Emacs build successful" now || reminder "Failed to build Emacs" now
+;; From git repository working copy, or extracted tarball:
+;; Assumes we're installing to ../usr/local relative to build dir.
+
+;; WARNING: git clean -f -d -x -q *silently deletes all untracked files and
+;; directories*. If you have any untracked patches-in-progress, or similar,
+;; that’s liable to ruin your day.  The purpose is to reset the working copy
+;; to a pristine state, as if it were freshly cloned. If that’s not what you
+;; want, please don’t run that command.
+
+;; # ([ -d .git ] && git clean -f -d -x -q && git pull || ([ -f Makefile ] && make distclean) || true) && ./autogen.sh && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make && make install && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs")
+
+;; Without duplicate message strings (but logic flow is less obvious):
+;; # ([ -d .git ] && git clean -f -d -x -q && git pull || ([ -f Makefile ] && make distclean) || true) && ./autogen.sh && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make && make install && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg"
+
 ;;
-;; From tarball:
-;; # make distclean
-;; # ./autogen.sh
+;; Configuration options:
 ;; # ./configure --help
-;; # ./configure --prefix=/usr/local/src/emacs/24.3/usr/local --without-sound 2>&1 | tee config.out
-;; # make
-;; # ./src/emacs -Q
-;; # make install
 
 ;;;; * Integration
 ;; TERM / eterm-color
