@@ -99,6 +99,7 @@
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
 ;; http://www.masteringemacs.org/articles/2011/02/08/mastering-key-bindings-emacs/
+;; http://emacs.stackexchange.com/questions/3815/key-translation/3839#3839
 
 ;; Don't define C-c <letter>, or F5-F9 as keys in Lisp programs.
 ;; Sequences consisting of C-c and a letter (either upper or lower
@@ -114,13 +115,22 @@
 ;; http://stackoverflow.com/questions/16090517/elisp-conditionally-change-keybinding
 ;; http://stackoverflow.com/questions/2494096/emacs-key-binding-fallback
 
-;; Interrogate bindings:
+;; Query bindings for keys:
 ;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
 ;; (key-binding KEY &optional ACCEPT-DEFAULT NO-REMAP POSITION) ;; dominant binding
 ;; (minor-mode-key-binding KEY &optional ACCEPT-DEFAULT) ;; discover keymap(s)
 ;; (global-key-binding KEYS &optional ACCEPT-DEFAULT)
 ;; (local-key-binding KEYS &optional ACCEPT-DEFAULT)
 ;; http://stackoverflow.com/q/18801018/324105
+;;
+;; Query key sequence used to invoke current command:
+;; (this-single-command-keys)
+;; (this-command-keys)
+;; (this-command-keys-vector)
+;; (clear-this-command-keys)
+;;
+;; Display keys for command:
+;; (substitute-command-keys)
 
 ;; Terminal emulators:
 ;; For non-standard terminals, the input-decode-map keymap can be used
