@@ -13,6 +13,36 @@
     (pop-to-buffer log-view-buffer)))
 (ad-activate 'log-view-diff-changeset)
 
+(defun my-vc-visit-file-revision (file rev)
+  "Visit revision REV of FILE in another window.
+With prefix argument, uses the current window instead.
+If the current file is named `F', the revision is named `F.~REV~'.
+If `F.~REV~' already exists, use it instead of checking it out again."
+  ;; based on `vc-revision-other-window'.
+  (interactive
+   (let ((file (expand-file-name
+                (read-file-name
+                 (if (buffer-file-name)
+                     (format "File (%s): " (file-name-nondirectory
+                                            (buffer-file-name)))
+                   "File: ")))))
+     (require 'vc)
+     (unless (vc-backend file)
+       (error "File %s is not under version control" file))
+     (list file (vc-read-revision
+                 "Revision to visit (default is working revision): "
+                 (list file)))))
+  (require 'vc)
+  (unless (vc-backend file)
+    (error "File %s is not under version control" file))
+  (let ((revision (if (string-equal rev "")
+                      (vc-working-revision file)
+                    rev))
+        (visit (if current-prefix-arg
+                   'switch-to-buffer
+                 'switch-to-buffer-other-window)))
+    (funcall visit (vc-find-revision file revision))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; SVN (Subversion)

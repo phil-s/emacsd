@@ -153,6 +153,7 @@
   (define-key keymap (kbd "C-z =")     'diff-current-buffer-with-disk)
   (define-key keymap (kbd "C-z C-=")   'ediff-current-file)
   (define-key keymap (kbd "C-x v C-=") 'vc-ediff)
+  (define-key keymap (kbd "C-x v C-f") 'my-vc-visit-file-revision)
 
   ;; Completions
   (define-key keymap (kbd "C-c /")     'my-ido-hippie-expand)
