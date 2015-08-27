@@ -8,14 +8,20 @@
 ;;       filename)))
 
 (defun set-region-read-only (begin end)
-  "See http://stackoverflow.com/questions/7410125"
+  "Sets the read-only text property on the marked region.
+
+Use `set-region-writeable' to remove this property."
+  ;; See http://stackoverflow.com/questions/7410125
   (interactive "r")
   (let ((modified (buffer-modified-p)))
     (add-text-properties begin end '(read-only t))
     (set-buffer-modified-p modified)))
 
 (defun set-region-writeable (begin end)
-  "See http://stackoverflow.com/questions/7410125"
+  "Removes the read-only text property from the marked region.
+
+Use `set-region-read-only' to set this property."
+  ;; See http://stackoverflow.com/questions/7410125
   (interactive "r")
   (let ((modified (buffer-modified-p))
         (inhibit-read-only t))
