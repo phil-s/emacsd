@@ -289,8 +289,29 @@ context-help to false"
 ;; SQL
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
+  "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
   (abbrev-mode 1)
-  (setq show-trailing-whitespace nil))
+  (setq show-trailing-whitespace nil)
+  (when (eq sql-product 'postgres)
+    ;; Allow symbol chars in database names in prompt.
+    ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
+    (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\)*=[#>] ")))
+
+(add-hook 'sql-login-hook 'my-sql-login-hook)
+(defun my-sql-login-hook ()
+  "Custom SQL log-in behaviours. See `sql-login-hook'."
+  ;; n.b. If you are looking for a response and need to parse the
+  ;; response, use `sql-redirect-value' instead of `comint-send-string'.
+  (when (eq sql-product 'postgres)
+    (let ((proc (get-buffer-process (current-buffer))))
+      ;; Display readable bytea data
+      (comint-send-string proc "SET bytea_output = 'escape';\n")
+      ;; Terminate query with :G instead of ; to use expanded display
+      (comint-send-string ; \set G '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
+       proc "\\set G '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")
+      ;; But actually :L is much easier to type, and a mnemonic for "long"
+      (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
+       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
 (define-abbrev-table 'sql-mode-abbrev-table
   (mapcar (lambda (v) (list v (upcase v) nil 1))
