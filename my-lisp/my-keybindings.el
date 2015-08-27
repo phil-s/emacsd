@@ -197,6 +197,7 @@
   (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
   (define-key keymap (kbd "M-C")       'my-capitalize-word)
   (define-key keymap (kbd "s-j")       'ace-jump-mode)
+  (define-key keymap (kbd "s-;")       'my-insert-kbd)
 
   ;; Miscellaneous (standard commands)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)

@@ -1099,6 +1099,25 @@ HOSTSPEC is a tramp host specification, e.g. \"/ssh:HOSTSPEC:/remote/path\"."
     (copy-file (concat data-directory "e/eterm-color") destdir)
     (copy-file (concat data-directory "e/eterm-color.ti") destdir)))
 
+(defun my-insert-kbd (key)
+  ;; Based on http://emacs.stackexchange.com/a/2208/454
+  "Ask for a key then insert its description using <kbd> markup.
+Will work in org-mode or in any mode that accepts plain html."
+  (interactive "kType key sequence: ")
+  (let* ((is-org-mode (derived-mode-p 'org-mode))
+         (output (if is-org-mode
+                     "@@html:<kbd>%s</kbd>@@"
+                   "<kbd>%s</kbd>")))
+    (if (not (equal key "\r")) ;; empty key
+        (insert
+         (format output
+                 (mapconcat (lambda (s)
+                              (replace-regexp-in-string "<" "&lt;" s))
+                            (split-string (help-key-description key nil))
+                            "</kbd><kbd>")))
+      (insert (format output ""))
+      (forward-char (if is-org-mode -8 -6)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)

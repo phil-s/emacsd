@@ -26,6 +26,17 @@
     '(progn
        (set-face-foreground 'magit-section-heading "LemonChiffon")))
 
+  ;; StackExchange (sx library)
+  ;; (plist-get (symbol-plist 'sx-question-mode-kbd-tag) 'face-defface-spec)
+  (eval-after-load "sx-question-print"
+    '(when (symbol-plist 'sx-question-mode-kbd-tag)
+       (set-face-attribute
+        'sx-question-mode-kbd-tag nil
+        :box nil
+        :height 1.0
+        :weight 'normal
+        :foreground "LightGoldenrod1"))) ;; or yellow2 ?
+
   ;; end of zenburn-theme config
   )
 
