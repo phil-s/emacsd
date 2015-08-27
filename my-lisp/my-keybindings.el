@@ -143,7 +143,7 @@
   (define-key keymap (kbd "C-c C-\\")  'transpose-frame)
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
-  (define-key keymap (kbd "<f7>")      'other-frame)
+  (define-key keymap (kbd "<f7>")      'my-other-frame)
   (define-key keymap (kbd "C-x 4 n n") 'my-narrow-to-region-indirect)
   (define-key keymap (kbd "C-x 4 n p") 'my-narrow-to-page-indirect)
   (define-key keymap (kbd "C-x 4 n d") 'my-narrow-to-defun-indirect)

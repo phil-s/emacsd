@@ -110,6 +110,13 @@ using the specified hippie-expand function."
   (other-window 1)
   (switch-to-buffer (other-buffer)))
 
+(defun my-other-frame (arg)
+  "If there is no other-frame, ring the bell."
+  (interactive "p")
+  (if (eq (next-frame (selected-frame)) (selected-frame))
+      (ding)
+    (other-frame arg)))
+
 (defun my-align-next-window ()
   "Move point in `next-window' to the same line as the current window."
   (interactive)
