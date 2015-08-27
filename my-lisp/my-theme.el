@@ -60,6 +60,10 @@
     (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New"))))))
    ))
 
+;; This magic means we fall back to Symbola for all missing unicode glyphs.
+;; For Debian: apt-get install ttf-ancient-fonts
+(set-fontset-font "fontset-default" nil (font-spec :size 20 :name "Symbola:"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-alt-theme ()
