@@ -1,3 +1,6 @@
+;; Consider switching variable set function for defcustom variables
+;; From: (setq VAR VALUE) to: (customize-set-variable 'VAR VALUE "COMMENT")
+
 ;; Set a preferred coding system
 ;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
 (prefer-coding-system 'utf-8)
