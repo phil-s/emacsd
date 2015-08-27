@@ -590,6 +590,9 @@
 ;; Project support
 (require 'my-projects)
 
+;; Log uptime to `my-emacs-uptime-log'.
+(add-hook 'kill-emacs-hook 'my-log-emacs-uptime)
+
 ;; Display the time taken to start Emacs.
 (let ((my-init-time (time-to-seconds (time-since my-init-load-start))))
   (add-hook 'after-init-hook

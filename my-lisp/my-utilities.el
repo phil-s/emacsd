@@ -1132,6 +1132,17 @@ or \"user@example.com\""
     (copy-file (concat data-directory "e/eterm-color") destdir)
     (copy-file (concat data-directory "e/eterm-color.ti") destdir)))
 
+(defvar my-emacs-uptime-log (locate-user-emacs-file "uptime.log")
+  "Log file for `my-log-emacs-uptime'.")
+
+(defun my-log-emacs-uptime ()
+  "Write emacs uptime to `my-emacs-uptime-log'. Use with `kill-emacs-hook'."
+  (with-temp-buffer
+    (insert (format-time-string "%Y-%m-%d %H:%M:%S" before-init-time) " to "
+            (format-time-string "%Y-%m-%d %H:%M:%S" (current-time)) " = "
+            (emacs-uptime) "\n")
+    (append-to-file nil nil my-emacs-uptime-log)))
+
 (defun my-insert-kbd (key)
   ;; Based on http://emacs.stackexchange.com/a/2208/454
   "Ask for a key then insert its description using <kbd> markup.
