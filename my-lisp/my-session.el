@@ -40,13 +40,15 @@
        (my-unimportant-notification
         "Desktop saved in %s" (abbreviate-file-name desktop-dirname))))
 
-;; Also save minibuffer/variable histories
+;; Also save minibuffer/variable histories.
 ;; n.b. savehist-mode defaults to saving the vars listed in
 ;; savehist-minibuffer-history-variables, which gets added to
 ;; as individual features are utilised.
 (setq savehist-additional-variables
       '(kill-ring
-        my-ssh-history
+        ;; You don't need to add minibuffer history variables to this
+        ;; list, all minibuffer histories will be saved automatically
+        ;; as long as `savehist-save-minibuffer-history' is non-nil.
         ))
 (savehist-mode 1)
 ;; n.b. Code elsewhere should use:
