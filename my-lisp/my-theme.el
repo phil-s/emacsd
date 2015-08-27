@@ -19,7 +19,15 @@
 
   ;; Changes to Zenburn defaults
   ;; hl-line-mode
-  (set-face-background hl-line-face "#333333"))
+  (set-face-background hl-line-face "#333333")
+
+  ;; Magit customisation.
+  (eval-after-load "magit"
+    '(progn
+       (set-face-foreground 'magit-section-heading "LemonChiffon")))
+
+  ;; end of zenburn-theme config
+  )
 
 ;; Don't set the default font in (custom-set-faces), because it makes
 ;; things super-funky during initialisation if that font doesn't exist

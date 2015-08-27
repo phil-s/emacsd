@@ -76,6 +76,25 @@ static char * data[] = {
 
 ;; Git
 
+;; No, I really don't want Emacs to complain that my summary line is
+;; long enough to be useful (no matter what the git book recommends).
+(eval-after-load "git-commit"
+  '(setq git-commit-finish-query-functions
+         (delq 'git-commit-check-style-conventions
+               git-commit-finish-query-functions)))
+
+;; Highlighting of too-long summary lines.
+;; The default 50 chars is tiny, but let's still highlight summary lines
+;; that exceed the standard maximum 72 chars for other log message lines
+;; (as the standard formatting will add 8 chars of padding).
+(setq git-commit-summary-max-length 72)
+
+;; Magit TAB key: toggle or cycle?
+(eval-after-load 'magit
+  '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
+
+;; pcompete
+
 ;; pcompete support from: http://www.masteringemacs.org/articles/2012/01/16/pcomplete-context-sensitive-completion-emacs/
 (defconst pcmpl-git-commands
   '("add" "bisect" "branch" "checkout" "clone"

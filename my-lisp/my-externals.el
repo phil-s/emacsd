@@ -107,6 +107,7 @@
 
      (:name git-modes
             :type git
+            :branch "master"
             :url "git://github.com/magit/git-modes.git")
 
      (:name gpicker
@@ -145,7 +146,12 @@
             :url "https://github.com/joddie/macrostep.git")
 
      (:name magit
-            :depends git-modes)
+            :type git
+            :url "git://github.com/magit/magit.git"
+            :branch "master"
+            :load-path ("lisp")
+            :build ("make")
+            :depends (async dash git-modes))
 
      (:name mo-git-blame)
 
