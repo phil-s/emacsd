@@ -10,7 +10,11 @@
   ;; Define external sources
   (setq
    el-get-sources
-   `((:name el-get
+   `((:name async
+            :type git
+            :url "git@github.com:jwiegley/emacs-async.git")
+
+     (:name el-get
             :type git
             :url "git://github.com/dimitri/el-get.git")
 

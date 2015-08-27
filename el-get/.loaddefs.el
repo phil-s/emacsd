@@ -81,6 +81,120 @@ Setup the defualt shortcuts.
 
 ;;;***
 
+;;;### (autoloads nil "async/async" "async/async.el" (21982 28769
+;;;;;;  105174 438000))
+;;; Generated autoloads from async/async.el
+
+(autoload 'async-start-process "async/async" "\
+Start the executable PROGRAM asynchronously.  See `async-start'.
+PROGRAM is passed PROGRAM-ARGS, calling FINISH-FUNC with the
+process object when done.  If FINISH-FUNC is nil, the future
+object will return the process object when the program is
+finished.  Set DEFAULT-DIRECTORY to change PROGRAM's current
+working directory.
+
+\(fn NAME PROGRAM FINISH-FUNC &rest PROGRAM-ARGS)" nil nil)
+
+(autoload 'async-start "async/async" "\
+Execute START-FUNC (often a lambda) in a subordinate Emacs process.
+When done, the return value is passed to FINISH-FUNC.  Example:
+
+    (async-start
+       ;; What to do in the child process
+       (lambda ()
+         (message \"This is a test\")
+         (sleep-for 3)
+         222)
+
+       ;; What to do when it finishes
+       (lambda (result)
+         (message \"Async process done, result should be 222: %s\"
+                  result)))
+
+If FINISH-FUNC is nil or missing, a future is returned that can
+be inspected using `async-get', blocking until the value is
+ready.  Example:
+
+    (let ((proc (async-start
+                   ;; What to do in the child process
+                   (lambda ()
+                     (message \"This is a test\")
+                     (sleep-for 3)
+                     222))))
+
+        (message \"I'm going to do some work here\") ;; ....
+
+        (message \"Waiting on async process, result should be 222: %s\"
+                 (async-get proc)))
+
+If you don't want to use a callback, and you don't care about any
+return value form the child process, pass the `ignore' symbol as
+the second argument (if you don't, and never call `async-get', it
+will leave *emacs* process buffers hanging around):
+
+    (async-start
+     (lambda ()
+       (delete-file \"a remote file on a slow link\" nil))
+     'ignore)
+
+Note: Even when FINISH-FUNC is present, a future is still
+returned except that it yields no value (since the value is
+passed to FINISH-FUNC).  Call `async-get' on such a future always
+returns nil.  It can still be useful, however, as an argument to
+`async-ready' or `async-wait'.
+
+\(fn START-FUNC &optional FINISH-FUNC)" nil t)
+
+;;;***
+
+;;;### (autoloads nil "async/async-bytecomp" "async/async-bytecomp.el"
+;;;;;;  (21982 28769 105174 438000))
+;;; Generated autoloads from async/async-bytecomp.el
+
+(autoload 'async-byte-recompile-directory "async/async-bytecomp" "\
+Compile all *.el files in DIRECTORY asynchronously.
+All *.elc files are systematically deleted before proceeding.
+
+\(fn DIRECTORY &optional QUIET)" nil nil)
+
+(defvar async-bytecomp-package-mode nil "\
+Non-nil if Async-Bytecomp-Package mode is enabled.
+See the command `async-bytecomp-package-mode' for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `async-bytecomp-package-mode'.")
+
+(custom-autoload 'async-bytecomp-package-mode "async/async-bytecomp" nil)
+
+(autoload 'async-bytecomp-package-mode "async/async-bytecomp" "\
+Byte compile asynchronously packages installed with package.el.
+Async compilation of packages can be controlled by
+`async-bytecomp-allowed-packages'.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "async/dired-async" "async/dired-async.el"
+;;;;;;  (21982 28769 105174 438000))
+;;; Generated autoloads from async/dired-async.el
+
+(defvar dired-async-mode nil "\
+Non-nil if Dired-Async mode is enabled.
+See the command `dired-async-mode' for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `dired-async-mode'.")
+
+(custom-autoload 'dired-async-mode "async/dired-async" nil)
+
+(autoload 'dired-async-mode "async/dired-async" "\
+Do dired actions asynchronously.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads nil "auto-compile/auto-compile" "auto-compile/auto-compile.el"
 ;;;;;;  (21128 51479 921843 213000))
 ;;; Generated autoloads from auto-compile/auto-compile.el
@@ -2001,7 +2115,8 @@ A major mode for displaying the directory tree in text mode.
 
 ;;;***
 
-;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el"
+;;;### (autoloads nil nil ("async/async-pkg.el" "async/async-test.el"
+;;;;;;  "async/smtpmail-async.el" "el-get/el-get-install.el" "el-get/el-get.el"
 ;;;;;;  "macrostep/macrostep-test.el" "sauron/sauron-dbus.el" "sauron/sauron-erc.el"
 ;;;;;;  "sauron/sauron-identica.el" "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
 ;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "smartrep/smartrep.el"
