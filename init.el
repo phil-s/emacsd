@@ -56,14 +56,21 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s automake autoconf libxpm-dev libjpeg-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libxaw7-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev ttf-wqy-microhei ttf-ancient-fonts libxft-dev libfreetype6-dev ncurses-term
+;; # Manual: sudo apt-get install -s automake autoconf libxpm-dev libjpeg-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libxaw7-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev ttf-ancient-fonts libxft-dev libfreetype6-dev ncurses-term
 
-;; # Fonts: libxft-dev libfreetype6-dev
-;; # My preferred font: sudo apt-get install ttf-wqy-microhei
-;; # Other unicode glyphs are in Symbola: sudo apt-get install ttf-ancient-fonts
-;; # eterm-color support: sudo apt-get install ncurses-term
-;; # Include libgtk2.0-dev iff using the GTK toolkit instead of lucid.
+;; Truetype font support packages: libxft-dev libfreetype6-dev
+;; My preferred font is a variant of Droid Sans Mono (droid-fonts package)
+;; which I have committed here in ~/.emacs.d/ for safe keeping.
+;; Installation:
+;; mkdir -p ~/.fonts/truetype
+;; xzcat ~/.emacs.d/DroidSansMonoDotted.ttf.xz >~/.fonts/truetype/DroidSansMonoDotted.ttf
+;; # or system-wide in: /usr/share/fonts/truetype/
+;; sudo fc-cache -f -v # refresh the system font cache
 ;;
+;; Other unicode glyphs are in Symbola: sudo apt-get install ttf-ancient-fonts
+;; eterm-color support: sudo apt-get install ncurses-term
+;; Include libgtk2.0-dev iff using the GTK toolkit instead of lucid.
+
 ;; From git repository working copy, or extracted tarball:
 ;; Assumes we're installing to ../usr/local relative to build dir.
 
