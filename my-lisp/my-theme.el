@@ -47,13 +47,10 @@
 ;; WARNING: Is this safe? See (custom-set-faces) call in init.el:
 ;; "Your init file should contain only one such instance.
 ;; If there is more than one, they won't work right."
-(when (equal emacs-major-version 23)
+(when (equal emacs-major-version 23) ; no longer default
   (cond
-   ;; GNU/Linux
-   ;; apt-cache search "WenQuanYi Micro"
-   ;; sudo apt-get install ttf-wqy-microhei
    ((eq system-type 'gnu/linux)
-    (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "WenQuanYi Micro Hei Mono"))))))
+    (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "Droid Sans Mono Dotted"))))))
 
    ;; Win32 NTEmacs
    ((eq system-type 'windows-nt)
