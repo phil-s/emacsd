@@ -367,19 +367,84 @@
 
 ;;;; * Elisp executable scripts
 
+;; Don't ever do this without good reason. But if you *really* need to...
+
+;; There is an excellent overview at:
+;; http://www.lunaryorn.com/2014/08/12/emacs-script-pitfalls.html
+
+;; "n.b. secure text input by reading directly from the TTY is
+;; currently impossible in any released version from Emacs:
+;; `read-passwd' reads from standard input in batch mode and exposes the
+;; password input on the terminal. A patch to hide input on batch mode
+;; is committed to Emacs trunk, but as of now, it will not be part of
+;; upcoming Emacs 24.4. Be careful what you read from standard input!"
+
 ;; --batch vs --script
 ;; M-: (info "(emacs) Initial Options") RET
 ;; M-: (info "(elisp) Batch Mode") RET
 
-;; Passing additional command-line arguments to Emacs:
-;; http://stackoverflow.com/questions/6238331/#6259330
+;; Processing command-line arguments (boiler-plate)
+;; http://stackoverflow.com/questions/6238331/#6259330 (and others)
 ;;
 ;; #!/bin/sh
-;; ":"; exec emacs --no-site-file --script "$0" "$@" # -*-emacs-lisp-*-
-;; (print (+ 2 2))
+;; ":"; exec emacs -Q --script "$0" -- "$@" # -*-emacs-lisp-*-
+;; (pop argv) ; Remove the "--" argument
+;; ;; (setq debug-on-error t) ; if a backtrace is wanted
+;; ;; (defun stdout (string args) (princ (format string args)))
+;; ;; (defun stderr (string args) (message string args)) ; n.b. auto newline.
+;; ;; [script body]
+;; (kill-emacs 0) ; Always exit explicitly. This returns the desired exit
+;;                ; status, and also avoids the need to (setq argv nil).
+
+;; Processing command-line arguments (example)
+;; Based on http://www.lunaryorn.com/2014/08/12/emacs-script-pitfalls.html
+;;
+;; #!/bin/sh
+;; ":"; exec emacs -Q --script "$0" -- "$@" # -*-emacs-lisp-*-
+;; (pop argv) ; Remove the "--" argument
+;; (setq version "1.0")
+;; (let ((greeting "Hello %s!")
+;;       options-done
+;;       names)
+;;   (while argv
+;;     (let ((option (pop argv)))
+;;       (cond
+;;        (options-done (push option names))
+;;        ;; Don't process options after "--"
+;;        ((string= option "--") (setq options-done t))
+;;        ((string= option "--greeting")
+;;         (setq greeting (pop argv)))
+;;        ;; --greeting=Foo
+;;        ((string-match "\\`--greeting=\\(\\(?:.\\|\n\\)*\\)\\'" option)
+;;         (setq greeting (match-string 1 option)))
+;;        ((string= option "--version")
+;;         (princ (format "Version %s\n" version))
+;;         (kill-emacs 0))
+;;        ((string-prefix-p "--" option)
+;;         (message "Unknown option: %s" option)
+;;         (kill-emacs 1))
+;;        (t (push option names)))
+;;
+;;       (unless (> (length greeting) 0)
+;;         (message "Missing argument for --greeting!")
+;;         (kill-emacs 1))))
+;;
+;;   (unless names
+;;     (message "Missing names!")
+;;     (kill-emacs 1))
+;;
+;;   (dolist (name (nreverse names))
+;;     (princ (format greeting name))
+;;     (terpri)) ; newline
+;;
+;;   (kill-emacs 0))
+
 
 ;; Processing with STDIN and STDOUT via --script:
 ;; http://stackoverflow.com/questions/2879746/#2906967
+;; For STDERR see also bug#17390: 24.4.50; Doc bug: Batch Mode
+;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=17390
+;; (currently `message' alone writes to stderr)
 ;;
 ;; #!/usr/local/bin/emacs --script
 ;; ;;-*- mode: emacs-lisp;-*-
