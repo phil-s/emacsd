@@ -114,14 +114,15 @@ Default behaviour can be turned off by setting the buffer local
 context-help to false"
   (interactive)
   (let ((rgr-symbol (symbol-at-point))) ; symbol-at-point http://www.emacswiki.org/cgi-bin/wiki/thingatpt%2B.el
-    (with-current-buffer (help-buffer)
-      (unless (local-variable-p 'context-help)
-        (set (make-local-variable 'context-help) t))
-      (if (and context-help (get-buffer-window (help-buffer))
-               rgr-symbol)
-          (if (fboundp  rgr-symbol)
-              (describe-function rgr-symbol)
-            (if (boundp  rgr-symbol) (describe-variable rgr-symbol)))))))
+    (save-selected-window
+      (with-current-buffer (help-buffer)
+        (unless (local-variable-p 'context-help)
+          (set (make-local-variable 'context-help) t))
+        (if (and context-help (get-buffer-window (help-buffer))
+                 rgr-symbol)
+            (if (fboundp  rgr-symbol)
+                (describe-function rgr-symbol)
+              (if (boundp  rgr-symbol) (describe-variable rgr-symbol))))))))
 
 (defadvice eldoc-print-current-symbol-info
   (around eldoc-show-c-tag activate)
