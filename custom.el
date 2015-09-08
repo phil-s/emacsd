@@ -17,6 +17,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "Droid Sans Mono Dotted"))))
+ '(diff-hl-change ((t (:background "#4f4f6f" :foreground "blue3"))))
+ '(diff-hl-delete ((t (:inherit diff-removed :background "#7f4f4f" :foreground "red3"))))
+ '(diff-hl-insert ((t (:inherit diff-added :background "#4f664f" :foreground "#004600"))))
  '(term-color-blue ((t (:background "blue2" :foreground "deep sky blue"))))
  '(term-color-cyan ((t (:background "cyan" :foreground "cyan3"))))
  '(term-color-green ((t (:background "green3" :foreground "green2"))))

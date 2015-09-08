@@ -62,6 +62,10 @@
      ;; (:name dictionary-el
      ;;        :type apt-get)
 
+     (:name diff-hl
+            :type git
+            :url "git@github.com:dgutov/diff-hl.git")
+
      (:name dired-details
             :type emacswiki)
 

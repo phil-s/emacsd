@@ -43,6 +43,10 @@ If `F.~REV~' already exists, use it instead of checking it out again."
                  'switch-to-buffer-other-window)))
     (funcall visit (vc-find-revision file revision))))
 
+;; diff-hl library
+(global-diff-hl-mode 1)
+(diff-hl-flydiff-mode 1)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; SVN (Subversion)

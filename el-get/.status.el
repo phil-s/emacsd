@@ -50,4 +50,5 @@
 :macrostep "installed"
 :async "installed"
 :dash "installed"
+:diff-hl "installed"
 )
