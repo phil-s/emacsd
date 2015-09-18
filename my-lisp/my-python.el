@@ -116,10 +116,10 @@
 ;;(autoload 'pep8 "python-pep8")
 
 ;;;; PSGML mode (required by DTML mode)
-(add-to-list 'load-path (file-name-as-directory (expand-file-name "~/.emacs.d/lisp/psgml-1.3.2")))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/psgml-1.3.2"))
 
 ;;;; DTML (Zope)
-(add-to-list 'load-path (file-name-as-directory (expand-file-name "~/.emacs.d/lisp/dtml-mode")))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/dtml-mode"))
 (autoload 'dtml-mode "dtml-mode" "" t)
 (add-to-list 'auto-mode-alist '("\\.dtml\\'" . dtml-mode))
 (setq sgml-local-catalogs `(,(expand-file-name "~/.emacs.d/lisp/dtml-mode/dtml.catalog")))
