@@ -378,7 +378,7 @@ See also: `my-copy-buffer-file-name'."
 (setq browse-url-browser-function 'browse-url-firefox)
 
 ;; Make URLs in comments/strings clickable
-(add-hook 'find-file-hooks 'goto-address-prog-mode)
+(add-hook 'find-file-hook 'goto-address-prog-mode)
 ;; But not email addresses. This is a hack to never match anything.
 ;; (submit patch to enable email addresses to be disabled separately?)
 (setq goto-address-mail-regexp "$^")
@@ -415,7 +415,7 @@ See also: `my-copy-buffer-file-name'."
     (buffer-disable-undo)
     (message "Buffer is set to read-only because it is large.  Undo also
 disabled.")))
-(add-hook 'find-file-hooks
+(add-hook 'find-file-hook
           'my-find-file-check-make-large-file-read-only-hook)
 
 ;; ;; Interactively Do Things

@@ -157,7 +157,7 @@
 ;; (defun require-ice-mode ()
 ;;   (if (string-match ".ice$" buffer-file-name)
 ;;       (progn (require 'ice "ice-mode") (ice-mode))))
-;; (add-hook 'find-file-hooks 'require-ice-mode)
+;; (add-hook 'find-file-hook 'require-ice-mode)
 
 
 ;; (provide 'my-other-programming)
