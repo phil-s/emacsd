@@ -2592,6 +2592,21 @@ Start sauron, but don't show the window.
 
 ;;;***
 
+;;;### (autoloads nil "scss-mode/scss-mode" "scss-mode/scss-mode.el"
+;;;;;;  (22011 32640 857840 0))
+;;; Generated autoloads from scss-mode/scss-mode.el
+
+(autoload 'scss-mode "scss-mode/scss-mode" "\
+Major mode for editing SCSS files, http://sass-lang.com/
+Special commands:
+\\{scss-mode-map}
+
+\(fn)" t nil)
+
+(add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
+
+;;;***
+
 ;;;### (autoloads (mouse-secondary-save-then-kill rotate-secondary-selection-yank-pointer
 ;;;;;;  yank-pop-secondary yank-pop-commands secondary-to-primary
 ;;;;;;  secondary-swap-region primary-to-secondary isearch-yank-secondary

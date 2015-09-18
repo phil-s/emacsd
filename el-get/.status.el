@@ -45,6 +45,7 @@
 :image-dimensions-minor-mode "installed"
 :noflet "installed"
 :ace-link "installed"
+:scss-mode "installed"
 :elisp-slime-nav "installed"
 :ztree-diff "installed"
 :macrostep "installed"
