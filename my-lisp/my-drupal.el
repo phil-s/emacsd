@@ -40,7 +40,7 @@
 ;; Drush
 
 (defvar drush-cmd "drush" "Name of (or path to) Drush executable.")
-(defvar drush-args '("-u 1")
+(defvar drush-args "-u 1"
   "Default arguments to pass to Drush for all commands.
 
 You may wish to specify a drush @alias, or hard-code something similar to
