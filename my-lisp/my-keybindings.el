@@ -8,8 +8,10 @@
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
-(global-set-key (kbd "C-y") 'jp/yank)
-(global-set-key (kbd "M-y") 'jp/yank-pop)
+(eval-after-load "my-utilities"
+  '(when (fboundp 'jp/yank)
+     (global-set-key (kbd "C-y") 'jp/yank)
+     (global-set-key (kbd "M-y") 'jp/yank-pop)))
 
 ;; Global bindings that I want to over-ride in some modes.
 (global-set-key (kbd "C-c o") 'ff-find-other-file)
@@ -161,13 +163,14 @@
 
   ;; WWW
   (define-key keymap (kbd "C-c w s")   'my-www-search)
-  (define-key keymap (kbd "C-c w w")   'my-render-url) ;; use 'eww in 24.4
+  (define-key keymap (kbd "C-c w w")   (if (fboundp 'eww) 'eww 'my-eww))
 
   ;; Terminals / Shells / REPLs
   (define-key keymap (kbd "C-c s s")   'my-shell)
   (define-key keymap (kbd "C-c s a")   'my-ansi-terminal)
   (define-key keymap (kbd "C-c s d")   'my-drush-console)
   (define-key keymap (kbd "C-c s q")   'my-sql-console)
+  (define-key keymap (kbd "C-c s h")   'my-ssh)
 
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c v")     'my-copy-buffer-file-name)
@@ -209,9 +212,9 @@
   (define-key keymap (kbd "C-x C-j")   'my-dired-jump)
   (define-key keymap (kbd "C-x 4 C-j") 'dired-jump-other-window)
   (define-key keymap (kbd "<f6>")      'rgrep)
-  (define-key keymap (kbd "C-x v <")   'vc-resolve-conflicts)
-  (define-key keymap (kbd "M-C")       'my-capitalize-word)
   (define-key keymap (kbd "s-\\")      'toggle-truncate-lines)
+  (when (fboundp 'cycle-spacing) ;; replace just-one-space in Emacs 24.4
+    (define-key keymap (kbd "M-SPC")   'cycle-spacing))
   )
 
 ;; Make emacs consistent with xkcd :)
@@ -228,6 +231,8 @@
 (defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
 (defalias 'rb   'revert-buffer)
 (defalias 'ws   'whitespace-mode)
+(defalias 'il   'lisp-interaction-mode)
+(defalias 'el   'emacs-lisp-mode)
 
 ;;;; * Emacs initialisation house-keeping.
 

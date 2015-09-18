@@ -201,7 +201,9 @@ context-help to false"
   (column-number-mode t)
   (if window-system (hl-line-mode t))
   (idle-highlight)
-  (setq indent-tabs-mode nil))
+  (setq indent-tabs-mode nil)
+  (local-set-key (kbd "<C-M-right>") 'nxml-forward-element)
+  (local-set-key (kbd "<C-M-left>") 'nxml-backward-element))
 (add-hook 'nxml-mode-hook 'my-xml-hook)
 
 (defun my-templates-nxml-mode-hook ()
@@ -292,6 +294,12 @@ context-help to false"
 (add-to-list 'auto-mode-alist '("\\.vcl\\'" . vcl-mode))
 
 ;; SQL
+
+;; Within SQLi buffer, open a sql-mode buffer (from which you can edit
+;; queries and send them to SQLi; see C-h f sql-mode RET).
+(eval-after-load "sql"
+  '(define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer))
+
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
