@@ -105,6 +105,9 @@
     ad-do-it))
 (ad-activate 'ffip-completing-read)
 
+(eval-when-compile
+  (declare-function ffip-project-root "find-file-in-project"))
+
 (defun my-find-file-in-project ()
   (interactive)
   (if (executable-find "gpicker")

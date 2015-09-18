@@ -52,6 +52,8 @@
 ;; (triggers the advice, but ew. just call a custom function.)
 
 ;; Smart Tabs (usually) does the Right Thing when I press the TAB key
+(eval-when-compile
+  (declare-function global-smart-tab-mode "smart-tab"))
 (when (require 'smart-tab nil 'noerror)
   ;; ;; Completion can be annoying. Go with indentation only.
   ;; (global-set-key (kbd "TAB") 'smart-tab-default)

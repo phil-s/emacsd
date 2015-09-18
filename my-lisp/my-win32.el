@@ -92,7 +92,8 @@
     ;; in the exec-path, but it's more efficient to do so)
     (setq cygwin-mount-cygwin-bin-directory cygwin-bin)
     (require 'cygwin-mount)
-    (declare-function 'cygwin-mount-activate "cygwin-mount")
+    (eval-when-compile
+      (declare-function cygwin-mount-activate "cygwin-mount"))
     (cygwin-mount-activate)
 
     ;; NT-emacs assumes a Windows shell. Change to bash.

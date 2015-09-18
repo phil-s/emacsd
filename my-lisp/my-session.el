@@ -1,3 +1,14 @@
+(eval-when-compile
+  (defvar desktop-dirname)
+  (defvar desktop-base-file-name)
+  (defvar desktop-base-lock-name)
+  (defvar desktop-path)
+  (defvar desktop-save)
+  (defvar desktop-files-not-to-save)
+  (defvar desktop-load-locked-desktop)
+  (defvar desktop-globals-to-save)
+  (defvar savehist-additional-variables))
+
 ;; Automatically save and restore sessions
 (setq desktop-dirname             "~/.emacs.d/desktop/"
       desktop-base-file-name      "emacs.desktop"

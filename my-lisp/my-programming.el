@@ -261,6 +261,8 @@ context-help to false"
 ;; Javascript
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.min\\.js\\'" . fundamental-mode))
+(eval-when-compile
+  (defvar js-mode-map))
 
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
