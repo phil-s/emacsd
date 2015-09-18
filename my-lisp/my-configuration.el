@@ -555,7 +555,6 @@ disabled.")))
 
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
-  (hide-trailing-whitespace)
   (erc-log-mode 1)
   (setq-local page-delimiter ;; e.g. [Fri Jan  5 2013]
               (rx (sequence
@@ -595,11 +594,6 @@ disabled.")))
                            (erc-format-message 'disconnected-noreconnect))
                           'face 'warning)))))
 (ad-activate 'erc-display-message)
-
-;; Git
-(add-hook 'magit-mode-hook 'my-magit-mode-hook)
-(defun my-magit-mode-hook ()
-  (hide-trailing-whitespace))
 
 ;; Term mode
 (eval-when-compile
@@ -642,7 +636,6 @@ disabled.")))
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
 (defun my-shell-mode-hook ()
-  (hide-trailing-whitespace)
   (ansi-color-for-comint-mode-on))
 
 ;; Don't intersperse stderr output with stdout
@@ -769,18 +762,13 @@ when the file path is too long to show on one line."
 ;;                 '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff"
 ;;                   "*.pdf" "*.doc"))))
 
-;; www / web / eww
-(add-hook 'eww-mode-hook 'my-eww-mode-hook)
-(defun my-eww-mode-hook ()
-  (hide-trailing-whitespace))
+;; ;; www / web / eww
+;; (add-hook 'eww-mode-hook 'my-eww-mode-hook)
+;; (defun my-eww-mode-hook ()
+;;   )
 
 ;; Show image dimensions in the mode line. See also frame-title-format.
 (eval-after-load 'image-mode '(require 'image-dimensions-minor-mode))
-
-;; ztree-diff
-(add-hook 'ztree-mode 'my-ztree-mode-hook)
-(defun my-ztree-mode-hook ()
-  (hide-trailing-whitespace))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -55,10 +55,10 @@
 (mapc (lambda (mode)
         (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
                   'hide-trailing-whitespace))
-      '(calendar eww help image-dired-display image-dired-thumbnail
-                 log-view magit magit-popup sauron sql-interactive
-                 sx-compose sx-inbox sx-question-list sx-question
-                 term))
+      '(calendar erc eww help image-dired-display image-dired-thumbnail
+                 log-view magit magit-popup python sauron shell
+                 sql-interactive sx-compose sx-inbox sx-question-list
+                 sx-question term ztree))
 
 ;(defun toggle-whitespace-mode ()
 ;  "Toggle whitespace-mode."

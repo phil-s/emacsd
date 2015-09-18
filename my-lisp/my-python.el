@@ -24,7 +24,6 @@
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
 (defun my-python-mode-hook ()
-  (hide-trailing-whitespace)
   (setq indent-tabs-mode nil)
 
   (local-set-key (kbd "C-x C-k i") "import ipdb; ipdb.set_trace()")
