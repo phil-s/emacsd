@@ -23,9 +23,9 @@
 (dir-locals-set-class-variables
  'emacs
  '((nil . ((buffer-read-only . t)
+           (my-inhibit-whitespace-mode . t)
            (show-trailing-whitespace . nil)
-           (tab-width . 8)
-           (eval . (whitespace-mode -1))))))
+           (tab-width . 8)))))
 
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs)
@@ -42,6 +42,7 @@
  'drupal
  '((nil . ((indent-tabs-mode . nil)
            (tab-width . 8)
+           (my-inhibit-whitespace-mode . t)
            (fill-column . 76)
            (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info"
                              "*.js" "*.css" ".htaccess" "*.engine" "*.txt"
@@ -71,6 +72,8 @@
    (makefile-gmake-mode . ((eval . (progn (conf-mode)
                                           (hack-local-variables)))))
    (dired-mode . ((dired-omit-mode . t)))
+   ("sites" . ((nil . ((my-inhibit-whitespace-mode . nil)))))
+   ("sites/all/modules/contrib" . ((nil . ((my-inhibit-whitespace-mode . t)))))
    ))
 
 ;; (defun my-dir-locals-php-hook ()

@@ -13,7 +13,11 @@
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
   (local-set-key (kbd "<S-return>") 'newline)
-  (whitespace-mode 1)
+  (add-hook 'hack-local-variables-hook
+            (lambda ()
+              (unless (bound-and-true-p my-inhibit-whitespace-mode)
+                (whitespace-mode 1)))
+            nil t)
   (fic-mode 1)
   (which-function-mode 1)
   ;;(imenu-add-menubar-index)
