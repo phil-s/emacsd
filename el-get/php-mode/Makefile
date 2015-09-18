@@ -1,9 +1,9 @@
-EMACS = emacs -Q -batch -L .
+EMACS ?= emacs
 ELS = php-mode.el php-mode-test.el
 ELCS = $(ELS:.el=.elc)
 
 %.elc: %.el
-	$(EMACS) -f batch-byte-compile $<
+	$(EMACS) -Q -batch -L . -f batch-byte-compile $<
 
 all: $(ELCS)
 
@@ -21,7 +21,9 @@ clean:
 #
 # for an example of using a script like this with the 'git bisect run'
 # command.
-test: $(ELCS)
-	$(EMACS) -l php-mode-test.el -f ert-run-tests-batch-and-exit
+test:
+	make clean
+	make all
+	$(EMACS) -Q -batch -L . -l php-mode-test.el -f ert-run-tests-batch-and-exit
 
 .PHONY: all clean test
