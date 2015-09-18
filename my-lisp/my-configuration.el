@@ -779,6 +779,16 @@ when the file path is too long to show on one line."
 
 ;; Show image dimensions in the mode line. See also frame-title-format.
 (eval-after-load 'image-mode '(require 'image-dimensions-minor-mode))
+
+;; Always open man pages in the same window.
+(add-to-list 'display-buffer-alist
+             (cons (lambda (buffer alist)
+                     (with-current-buffer buffer
+                       (eq major-mode 'Man-mode)))
+                   (cons 'display-buffer-reuse-major-mode-window
+                         '((inhibit-same-window . nil)
+                           (reusable-frames . visible)
+                           (inhibit-switch-frame . nil)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
