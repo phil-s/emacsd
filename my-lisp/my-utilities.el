@@ -1146,7 +1146,7 @@ or \"user@example.com\""
 
 (defun my-insert-kbd (key)
   ;; Based on http://emacs.stackexchange.com/a/2208/454
-  "Ask for a key then insert its description using <kbd> markup.
+  "Ask for a key, then insert its description using <kbd> markup.
 Will work in org-mode or in any mode that accepts plain html."
   (interactive "kType key sequence: ")
   (let* ((is-org-mode (derived-mode-p 'org-mode))

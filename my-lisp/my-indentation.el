@@ -2,6 +2,11 @@
 ;; Indentation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Notes:
+;; visual-line-mode
+;; adaptive-wrap-prefix-mode
+;; redshift-indent-mode
+
 ;; Generate a tab-stop-list using multiples of tab-width
 (defun generate-tab-stop-list ()
   "Generate a tab-stop-list based upon tab-width."
@@ -40,6 +45,7 @@
 (make-variable-buffer-local 'tab-stop-list)
 
 ;; TODO do I need to advise (setq)? (set-default)?
+;; No. Absolutely NOT a feasible approach. Give up on this idea.
 
 ;; Disallow tabs in elisp indentation (it mixes tabs and spaces)
 (add-hook 'emacs-lisp-mode-hook '(lambda () (set-variable 'indent-tabs-mode nil)))

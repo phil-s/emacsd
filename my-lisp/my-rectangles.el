@@ -1,6 +1,9 @@
 (require 'rect)
 
-(define-derived-mode my-edit-rectangle-mode fundamental-mode "Rectangle-Edit"
+(define-derived-mode my-edit-rectangle-mode nil "Rectangle-Edit"
+  ;; The rectangle buffer contents will likely be invalid for the
+  ;; major mode of the source buffer, so we derive from fundamental-mode
+  ;; to avoid problems.
   "Major mode for *edit rectangle* buffers.
 
 \\{my-edit-rectangle-mode-map}")

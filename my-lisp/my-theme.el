@@ -64,7 +64,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-alt-theme ()
-  "A really obviously different theme, for when I need it."
+  "A really obviously-different theme, for when I need it."
   (interactive)
   (disable-theme 'zenburn)
   ;;(load-theme 'light-blue t)

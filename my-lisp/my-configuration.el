@@ -446,6 +446,11 @@ disabled.")))
       '(("\\.pdf\\'" "evince")
         ("\\.ps\\'" "evince")))
 
+;; Recursive-deleting multiple directories in dired is just a bit
+;; painful with the default yes-or-no-p prompt every time.
+;; TODO: Investigate a single top-level yes-or-no-p confirmation
+;; for *all* recursive deletions.
+
 ;; Enable RET during an isearch in dired to immediately visit the file.
 ;; http://stackoverflow.com/questions/4471835/emacs-dired-mode-and-isearch
 (add-hook 'isearch-mode-end-hook 'my-isearch-mode-end-hook)

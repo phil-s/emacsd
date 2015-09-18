@@ -309,6 +309,8 @@
 
 ;;;; * Debugging, Tracing, and Profiling
 
+;; M-: (info "(elisp) Debugging") RET
+
 ;; Standard debugger:
 ;; M-x debug-on-entry FUNCTION
 ;; M-x cancel-debug-on-entry &optional FUNCTION
@@ -473,7 +475,7 @@
 ;;;; * Tramp
 
 ;; Configure tramp-default-proxies-alist
-;; or C-h i g (tramp) Ad-hoc multi-hops RET
+;; or M-: (info "(tramp) Ad-hoc multi-hops") RET
 
 ;; sudo on remote host:
 ;; C-x C-f /ssh:you@remotehost|sudo:remotehost:/path/to/file RET
