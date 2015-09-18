@@ -258,6 +258,13 @@ context-help to false"
   (pop-mark)
   (match-string 0))
 
+;; C (and derived) modes.
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+(defun my-c-mode-common-hook ()
+  "Common behaviours for C-based programming modes."
+  ;; Ensure that case clauses in switch statements are indented.
+  (c-set-offset 'case-label '+))
+
 ;; Javascript
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.min\\.js\\'" . fundamental-mode))
