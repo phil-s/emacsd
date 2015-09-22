@@ -39,7 +39,6 @@
         (mode . java-mode)
         (mode . idl-mode)
         (mode . lisp-mode)))))))
- '(org-agenda-files (quote ("~/todo.org")))
  '(safe-local-variable-values
    (quote
     ((eval when

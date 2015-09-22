@@ -670,6 +670,9 @@
 ;; Project support
 (require 'my-projects)
 
+;; Org-Mode
+(require 'my-org)
+
 ;; Start server (but don't restart).
 (require 'server)
 (unless (server-running-p)
