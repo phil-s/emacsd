@@ -39,14 +39,23 @@
 
 ;; Drush
 
+(defvar drush-cmd "drush" "Name of (or path to) Drush executable.")
+(defvar drush-args '("-u 1")
+  "Default arguments to pass to Drush for all commands.
+
+You may wish to specify a drush @alias, or hard-code something similar to
+the following:
+
+-l http://site.example.com -r /var/www/drupal/site -u 1")
+
 (defun drush-console ()
   "Runs the drush console in a `term' buffer.
 See http://drupal.org/project/phpsh"
   (interactive)
   (require 'term)
-  (let* ((drush-args "-u 1 console")
+  (let* ((drush-args (concat drush-args " console"))
          (switches (split-string-and-unquote drush-args))
-         (buf (apply 'make-term "drush console" "drush" nil switches)))
+         (buf (apply 'make-term "drush console" drush-cmd nil switches)))
     ;; Enable term mode for the process buffer.
     (set-buffer buf)
     (term-mode)
