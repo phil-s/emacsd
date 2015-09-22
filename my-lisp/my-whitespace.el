@@ -55,7 +55,8 @@
 (mapc (lambda (mode)
         (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
                   'hide-trailing-whitespace))
-      '(calendar eww help log-view magit magit-popup sauron sql-interactive
+      '(calendar eww help image-dired-display image-dired-thumbnail
+                 log-view magit magit-popup sauron sql-interactive
                  sx-compose sx-inbox sx-question-list sx-question
                  term))
 
