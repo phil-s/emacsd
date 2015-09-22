@@ -362,6 +362,14 @@ See also: `my-copy-buffer-file-name'."
              (lisp-interaction-mode
               ("iElisp" ,my-lexbind-indicator) :major))))
 
+;; Display the hostname in the mode-line
+;; I tend to run enough emacs instances to make this valuable.
+(defvar my-hostname
+  (shell-command-to-string "printf @%s \"$(hostname)\"")
+  "Local hostname")
+
+(add-to-list 'mode-line-misc-info 'my-hostname :append)
+
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 ;; But not email addresses. This is a hack to never match anything.
