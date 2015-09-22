@@ -202,7 +202,7 @@
   (define-key keymap (kbd "s-j")       'ace-jump-mode)
   (define-key keymap (kbd "s-;")       'my-insert-kbd)
 
-  ;; Miscellaneous (standard commands)
+  ;; Miscellaneous (standard commands and custom variants)
   (define-key keymap (kbd "C-x M-b")   'bury-buffer)
   (define-key keymap (kbd "M-L")       'goto-line)
   (define-key keymap (kbd "C-h C-f")   'find-function)
@@ -233,6 +233,10 @@
 (defalias 'ws   'whitespace-mode)
 (defalias 'il   'lisp-interaction-mode)
 (defalias 'el   'emacs-lisp-mode)
+(defalias 'cg   'customize-group)
+(defalias 'cv   'customize-variable)
+(defalias 'co   'customize-option)
+(defalias 'cf   'customize-face)
 
 ;;;; * Emacs initialisation house-keeping.
 
