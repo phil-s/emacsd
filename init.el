@@ -580,6 +580,14 @@
 
 (defvar my-init-load-start (current-time))
 
+;; Temporary performance measures, to reduce start-up time.
+;; Avoid garbage collection during start-up.
+(setq my-original-gc-cons-threshold gc-cons-threshold)
+(setq gc-cons-threshold 10000000) ;; 10M; default is 0.8M
+;; Disable non-local file handlers during start-up
+(setq my-original-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/packed"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
@@ -691,6 +699,16 @@
                         (time-to-seconds (time-since before-init-time))
                         ,my-init-time
                         (file-name-nondirectory user-init-file)))))
+
+;; Revert the temporary performance measures put in place at the start
+;; of this file.
+(add-hook
+ 'emacs-startup-hook
+ (lambda ()
+   (setq gc-cons-threshold my-original-gc-cons-threshold
+         file-name-handler-alist my-original-file-name-handler-alist)
+   (makunbound 'my-original-gc-cons-threshold)
+   (makunbound 'my-original-file-name-handler-alist)))
 
 ;;; Local Variables:
 ;;; page-delimiter: ";;;; "
