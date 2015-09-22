@@ -16,10 +16,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "Droid Sans Mono Dotted"))))
+ '(default ((t (:slant normal :weight normal :height 122 :width normal :foundry "unknown" :family "Droid Sans Mono Dotted"))))
  '(diff-hl-change ((t (:background "#4f4f6f" :foreground "blue3"))))
  '(diff-hl-delete ((t (:inherit diff-removed :background "#7f4f4f" :foreground "red3"))))
  '(diff-hl-insert ((t (:inherit diff-added :background "#4f664f" :foreground "#004600"))))
+ '(diff-refine-added ((t (:inherit diff-refine-change :background "#228822"))))
+ '(ediff-fine-diff-B ((t (:background "#007700"))))
+ '(magit-diff-context-highlight ((t (:background "grey10" :foreground "grey70"))))
  '(term-color-blue ((t (:background "blue2" :foreground "deep sky blue"))))
  '(term-color-cyan ((t (:background "cyan" :foreground "cyan3"))))
  '(term-color-green ((t (:background "green3" :foreground "green2"))))
@@ -29,6 +32,7 @@
  '(tks-time-face ((t (:foreground "#cc9933"))))
  '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
  '(whitespace-space ((((class color) (background dark)) (:foreground "grey30")))))
+
 ;; WARNING: my-theme.el over-rides (custom-set-faces) for the 'user
 ;; theme, to set the default font face. Custom faces set in the above
 ;; call will be over-ridden.
