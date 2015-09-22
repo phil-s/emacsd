@@ -374,6 +374,9 @@ See also: `my-copy-buffer-file-name'."
 
 (add-to-list 'mode-line-misc-info 'my-hostname :append)
 
+;; Use Firefox as the default web browser
+(setq browse-url-browser-function 'browse-url-firefox)
+
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hooks 'goto-address-prog-mode)
 ;; But not email addresses. This is a hack to never match anything.
