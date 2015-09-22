@@ -104,6 +104,10 @@
             :type git
             :url "git://github.com/technomancy/find-file-in-project.git")
 
+     (:name font-lock-studio
+            :type git
+            :url "git@github.com:Lindydancer/font-lock-studio.git")
+
      (:name geben
             :type http-tar
             :options ("zxf")

@@ -51,4 +51,5 @@
 :async "installed"
 :dash "installed"
 :diff-hl "installed"
+:font-lock-studio "installed"
 )

@@ -565,6 +565,26 @@ with prefix argument, all files matching what was typed will be loaded.
 
 ;;;***
 
+;;;### (autoloads nil "font-lock-studio/font-lock-studio" "font-lock-studio/font-lock-studio.el"
+;;;;;;  (22016 54676 363245 330000))
+;;; Generated autoloads from font-lock-studio/font-lock-studio.el
+
+(autoload 'font-lock-studio "font-lock-studio/font-lock-studio" "\
+Interactively debug the font-lock keywords of the current buffer.
+
+With \\[universal-argument] prefix, create a new, unique, interface buffer.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'font-lock-studio-region "font-lock-studio/font-lock-studio" "\
+Interactively debug the font-lock keywords in the region.
+
+With \\[universal-argument] prefix, create a new, unique, interface buffer.
+
+\(fn BEG END &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads (dbgp-proxy-unregister-exec dbgp-proxy-unregister
 ;;;;;;  dbgp-proxy-register-exec dbgp-proxy-register dbgp-exec dbgp-start)
 ;;;;;;  "geben/dbgp" "geben/dbgp.el" (20289 32888))
