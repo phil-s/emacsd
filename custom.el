@@ -122,7 +122,7 @@
  '(diff-hl-delete ((t (:inherit diff-removed :background "#7f4f4f" :foreground "red3"))))
  '(diff-hl-insert ((t (:inherit diff-added :background "#4f664f" :foreground "#004600"))))
  '(diff-refine-added ((t (:inherit diff-refine-change :background "#228822"))))
- '(ediff-fine-diff-B ((t (:background "#007700"))))
+ '(ediff-fine-diff-B ((t (:background "#22aa22" :foreground "gray16"))))
  '(magit-diff-context-highlight ((t (:background "grey10" :foreground "grey70"))))
  '(term-color-blue ((t (:background "blue2" :foreground "deep sky blue"))))
  '(term-color-cyan ((t (:background "cyan" :foreground "cyan3"))))
