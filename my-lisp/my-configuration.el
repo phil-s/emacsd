@@ -90,6 +90,9 @@ when `auto-save-mode' is invoked manually.")
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+;; Use day/month/year format in calendar
+(setq calendar-date-style 'european)
+
 ;; Delay fontification to improve scrolling performance in large buffers
 (setq jit-lock-defer-time 0.05)
 
