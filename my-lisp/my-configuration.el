@@ -43,8 +43,9 @@ when `auto-save-mode' is invoked manually.")
     ad-do-it))
 (ad-activate 'auto-save-mode)
 
-;; No splash screen
+;; No splash screen or start-up message.
 (setq inhibit-startup-screen t)
+(eval '(setq inhibit-startup-echo-area-message "phil"))
 
 ;; Enable disabled commands
 (put 'dired-find-alternate-file 'disabled nil)
