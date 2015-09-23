@@ -57,6 +57,9 @@
            (eval . (when (and buffer-file-name
                               (string-match "\\.make\\'" buffer-file-name))
                      (conf-mode)))
+           (eval . (grep-apply-setting ; Make M-x grep use git-grep:
+                    'grep-command
+                    "git --no-pager grep -H -n --no-color -I -e "))
            ))
    (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
                           (drupal-mode)
@@ -75,6 +78,9 @@
    ("sites" . ((nil . ((my-inhibit-whitespace-mode . nil)))))
    ("sites/all/modules/contrib" . ((nil . ((my-inhibit-whitespace-mode . t)))))
    ))
+
+;; We call `grep-apply-setting' for Drupal projects.
+(autoload 'grep-apply-setting "grep")
 
 ;; (defun my-dir-locals-php-hook ()
 ;;   (and (buffer-file-name)
