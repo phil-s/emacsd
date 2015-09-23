@@ -37,7 +37,53 @@
 (fset 'drupal-quick-and-dirty-debugging
       (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
 
-;; Drush
+
+;;; find-grep
+
+;; ;; Don't rgrep in sites/*/files
+
+;; ;; Gah. The (cons predicate . path) behaviour of
+;; grep-find-ignored-directories causes a no-value --path argument ;;
+;; to appear in the find, which seems to allow the would-be-ignored ;;
+;; path to be searched :( `report-emacs-bug' ?
+
+;; Workaround: Ignore all "files" if we think it's Drupal.
+(add-to-list 'grep-find-ignored-directories
+             (cons 'my-drupal-grep-find-ignore-files-dir-p "files"))
+(defun my-drupal-grep-find-ignore-files-dir-p (dir)
+  "Test whether to ignore directories matching \"files\"."
+  (locate-dominating-file dir "index.php"))
+;; Problematic code below...
+;; FIXME:
+
+;; ;; (a) Searching from the site root (outside of 'sites').
+;; (add-to-list 'grep-find-ignored-directories
+;;              (cons 'my-drupal-grep-find-ignore-sites-files-dir-p
+;;                    "sites/*/files"))
+;; (defun my-drupal-grep-find-ignore-sites-files-dir-p (dir)
+;;   "Test whether to ignore directories matching \"sites/*/files\"."
+;;   ;; Try to identify something which is reasonably unique to Drupal.
+;;   ;; xmlrpc.php was the best I could come up with for D7, but it won't
+;;   ;; match Drupal 8. Go with index.php, even though it's really
+;;   ;; generic, because Drupal is still the most likely use-case.
+;;   ;; TODO: We can implement a predicate function which does a more
+;;   ;; robust test than this. See C-h f `locate-dominating-file'.
+;;   (let ((root (locate-dominating-file dir "index.php")))
+;;     (and root
+;;          (file-equal-p root dir))))
+;; ;; (b) Searching within 'sites'. Ok to just match any "files" in this case.
+;; (add-to-list 'grep-find-ignored-directories
+;;              (cons 'my-drupal-grep-find-ignore-files-dir-p
+;;                    "files"))
+;; (defun my-drupal-grep-find-ignore-files-dir-p (dir)
+;;   "Test whether to ignore directories matching \"files\"."
+;;   (let ((root (locate-dominating-file dir "index.php")))
+;;     (and root
+;;          (string-prefix-p (concat root "sites/")
+;;                           dir))))
+
+
+;;; Drush
 
 (defvar drush-cmd "drush" "Name of (or path to) Drush executable.")
 (defvar drush-args "-u 1"
@@ -64,10 +110,8 @@ See http://drupal.org/project/phpsh"
     (setq show-trailing-whitespace nil)
     ;; Select the buffer.
     (switch-to-buffer buf)))
-
-;;
-;; TAGS
-;;
+
+;;; TAGS
 
 (defun my-insert-drupal-hook (tagname)
   "Clone the specified function as a new module hook implementation.
