@@ -474,22 +474,29 @@ disabled.")))
 (autoload 'dired-omit-mode "dired-x"
   "Toggle omission of uninteresting files in Dired (Dired-Omit mode).")
 
-(eval-after-load "dired"
-  ;; `dired-load-hook' is unreliable. (Report a it as a bug?)
-  ;; `dired-load-hook' does not get called when `dired' is autoloaded!
-  ;; (info "(dired-x) Installation") indicates that it should work.
-  '(progn
-     (require 'dired-x)
-     ;; Set dired-x global variables here.  For example:
-     ;; (setq dired-guess-shell-gnutar "gtar")
-     ;; (setq dired-x-hands-off-my-keys nil)
-     (require 'dired-details)
-     (dired-details-install)
-     ;; dired-details hides unwanted information by default.
-     ;; n.b. Recent versions of Emacs include `dired-hide-details-mode',
-     ;; so in time we could switch to that.
-     (define-key dired-mode-map (kbd "M-k") 'dired-kill-subdir)
-     (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle)))
+(defun my-dired-load-hook ()
+  "Would be used with `dired-load-hook', but that's broken for me.
+
+`dired-load-hook' is unreliable. (Report a it as a bug?)
+`dired-load-hook' does not get called when `dired' is autoloaded!?
+Info node \"(dired-x) Installation\" indicates that it should work.
+
+n.b. It works in a sandbox, so it seems that something in my config breaks it."
+  (require 'dired-x)
+  ;; Set dired-x global variables here.  For example:
+  ;; (setq dired-guess-shell-gnutar "gtar")
+  ;; (setq dired-x-hands-off-my-keys nil)
+
+  ;; dired-details hides unwanted information by default.
+  ;; n.b. Recent versions of Emacs include `dired-hide-details-mode',
+  ;; so in time we could switch to that.
+  (require 'dired-details)
+  (dired-details-install)
+
+  (define-key dired-mode-map (kbd "M-k") 'dired-kill-subdir)
+  (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle))
+
+(eval-after-load "dired" '(my-dired-load-hook))
 
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 (defun my-dired-mode-hook ()
