@@ -49,6 +49,32 @@
       ;; Configure imenu
       ;; (php-imenu-setup)
 
+      ;; Locate local documentation.
+      (let ((expected "/usr/local/share/php/php-chunked-xhtml"))
+        (if (file-directory-p expected)
+            (setq php-manual-path expected)
+          (setq expected (expand-file-name "~/php/php-chunked-xhtml"))
+          (if (file-directory-p expected)
+              (setq php-manual-path expected)
+            (message "PHP manual not found. Attempting download.")
+            ;; Download and untar
+            (let ((download-directory (file-name-directory expected))
+                  (url "http://nz2.php.net/get/php_manual_en.tar.gz/from/this/mirror")
+                  (file "php_manual_en.tar.gz"))
+              (make-directory download-directory t)
+              (shell-command
+               (format
+                "cd %s && wget -q %s -O %s && tar -xf %s && rm %s"
+                (shell-quote-argument download-directory)
+                (shell-quote-argument url)
+                (shell-quote-argument file)
+                (shell-quote-argument file)
+                (shell-quote-argument file))))
+            ;; Check the result
+            (if (file-directory-p expected)
+                (setq php-manual-path expected)
+              (message "Failed to download PHP manual.")))))
+
       ;; Find documentation online
       (local-set-key (kbd "<f1>") 'php-search-documentation))))
 
