@@ -40,7 +40,7 @@
 ;; export `$EDITOR' making sure the executed command uses the current
 ;; Emacs instance as "the editor".  With a prefix argument these
 ;; commands prompt for an alternative environment variable such as
-;; `$GIT_EDITOR'.  To always use these variants add this to you init
+;; `$GIT_EDITOR'.  To always use these variants add this to your init
 ;; file:
 ;;
 ;;   (define-key (current-global-map)
@@ -126,7 +126,7 @@ please see https://github.com/magit/magit/wiki/Emacsclient."))
           (lambda (v) (cl-mapcar (lambda (e) (concat v e)) exec-suffixes))
           (nconc (cl-mapcon (lambda (v)
                               (setq v (mapconcat #'identity (reverse v) "."))
-                              (list v (concat "-" v)))
+                              (list v (concat "-" v) (concat ".emacs" v)))
                             (reverse version-lst))
                  (list "")))
          (lambda (exec)
@@ -292,6 +292,9 @@ not a good idea to change such entries.")
                  (ignore-errors
                    (server-send-string client "-error Canceled by user"))
                  (delete-process client))
+             ;; Fallback for when emacs was used as $EDITOR instead
+             ;; of emacsclient or the sleeping editor.  See #2258.
+             (ignore-errors (delete-file buffer-file-name))
              (kill-buffer)))
           (t
            (save-buffer)
@@ -404,6 +407,9 @@ ENVVAR is provided then bind that environment variable instead.
   "Honor `with-editor-server-window-alist' (which see)."
   (let ((server-window (with-current-buffer
                            (or next-buffer (current-buffer))
+                         (when with-editor-mode
+                           (setq with-editor-previous-winconf
+                                 (current-window-configuration)))
                          (with-editor-server-window))))
     ad-do-it))
 
@@ -597,7 +603,7 @@ else like the former."
 (defun with-editor-shell-command-read-args (prompt &optional async)
   (let ((command (read-shell-command
                   prompt nil nil
-                  (--when-let (or (buffer-file-name)
+                  (--when-let (or buffer-file-name
                                   (and (eq major-mode 'dired-mode)
                                        (dired-get-filename nil t)))
                     (file-relative-name it)))))

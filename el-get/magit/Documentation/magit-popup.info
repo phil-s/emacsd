@@ -253,6 +253,9 @@ File: magit-popup.info,  Node: Customizing existing popups,  Next: Other options
 It is possible to define additional infix arguments and suffix commands
 to an existing popup using the following functions.
 
+   You can find some examples which use the below commands at
+`https://github.com/magit/magit/wiki/Additional-proposed-infix-arguments-and-suffix-commands'.
+
  -- Function: magit-define-popup-switch popup key desc switch &optional
           enable at prepend
      In POPUP, define KEY as SWITCH.
@@ -624,10 +627,10 @@ Node: Top992
 Node: Introduction2161
 Node: Usage4708
 Node: Customizing existing popups9260
-Node: Other options13307
-Node: Defining prefix and suffix commands14962
-Node: Defining prefix commands17074
-Node: Defining suffix commands22894
+Node: Other options13465
+Node: Defining prefix and suffix commands15120
+Node: Defining prefix commands17232
+Node: Defining suffix commands23052
 
 End Tag Table
 

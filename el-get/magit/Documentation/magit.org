@@ -416,8 +416,8 @@ non-Magit buffers.  So you should bind this globally too:
   (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 #+END_SRC
 
-You might also want to enable ~global-magit-file-buffer-mode~ (see
-[[*File-buffer mode]]).
+You might also want to enable ~global-magit-file-mode~ (see [[*Minor mode
+for buffers visiting files]]).
 
 * Interface concepts
 ** Modes and Buffers
@@ -1806,14 +1806,6 @@ without having to using one of the diff popups.
 
 *** Diff options
 
-- User Option: magit-diff-show-diffstat
-
-  Whether to show diffstat in diff buffers.
-
-- User Option: magit-diff-show-xref-buttons
-
-  Whether to show buffer history buttons in diff buffers.
-
 - User Option: magit-diff-auto-show
 
   Whether to automatically show the relevant diff or commit.
@@ -1883,21 +1875,25 @@ without having to using one of the diff popups.
 
 *** Revision buffer
 
-- User Option: magit-revision-show-diffstat
-
-  Whether to show diffstat in revision buffers.
-
-- User Option: magit-revision-show-notes
-
-  Whether to show notes in revision buffers.
-
-- User Option: magit-revision-show-xref-buttons
-
-  Whether to show buffer history buttons in revision buffers.
-
 - User Option: magit-revision-insert-related-refs
 
   Whether to show related refs in revision buffers.
+
+- User Option: magit-revision-show-gravatar
+
+  Whether to show gravatar images in revision buffers.
+
+  If non-nil, then the value has to be a cons-cell which specifies
+  where the gravatar images for the author and/or the committer are
+  inserted inside the text that was previously inserted according
+  to ~magit-revision-header-format~.
+
+  Both cells are regular expressions.  The car specifies where to
+  insert the author gravatar image.  The top halve of the image is
+  inserted right after the matched text, the bottom halve on the
+  next line at the same offset.  The cdr specifies where to insert
+  the committer image, accordingly.  Either the car or the cdr may
+  be nil.
 
 ** Ediffing
 
@@ -2008,7 +2004,7 @@ without having to using one of the diff popups.
 
   Whether to show commit counts in Magit-Refs mode buffers.
 
-  - =all= Show counts for branches and tags.
+  - ~all~ Show counts for branches and tags.
   - ~branch~ Show counts for branches only.
   - ~nil~ Never show counts.
 
@@ -2198,8 +2194,8 @@ Also see [[info:gitman#git-blame]].
 
 - Key: M-x magit-blame-popup, magit-blame-popup
 
-  This prefix command shows the following suffix commands along with
-  the appropriate infix arguments in a popup buffer.
+  This prefix command shows the above suffix command along with the
+  appropriate infix arguments in a popup buffer.
 
 - Key: RET, magit-show-commit
 
@@ -2266,7 +2262,7 @@ Also see [[info:gitman#git-blame]].
 - User Option: magit-blame-show-headings
 
   Whether to initially show blame block headings.  The headings can
-  also be toggled locally using command =magit-blame-toggle-headings=.
+  also be toggled locally using command ~magit-blame-toggle-headings~.
 
 - User Option: magit-blame-goto-chunk-hook
 
@@ -2736,6 +2732,32 @@ Also see [[info:gitman#git-branch]] and [[info:gitman#git-checkout]].
   This command creates a new branch like ~magit-branch~, but then also
   checks it out.
 
+- Key: b s, magit-branch-spinoff
+
+  This command creates and checks out a new branch starting at and
+  tracking the current branch.  That branch in turn is reset to the
+  last commit it shares with its upstream.  If the current branch has
+  no upstream or no unpushed commits, then the new branch is created
+  anyway and the previously current branch is not touched.
+
+  This is useful to create a feature branch after work has already
+  began on the old branch (likely but not necessarily "master").
+
+- Key: b x, magit-branch-reset
+
+  This command resets a branch, defaulting to the branch at point, to
+  the tip of another branch or any other commit.
+
+  When resetting to another branch, then that branch is also set as
+  the upstream of the branch being reset.
+
+  When the branch being reset is the current branch, then a hard reset
+  is performed.  If there are any uncommitted changes, then the user
+  has to confirming the reset because those changes would be lost.
+
+  This is useful when you have started work on a feature branch but
+  realize it's all crap and want to start over.
+
 - Key: b d, magit-branch-delete
 
   Delete one or multiple branches.  If the region marks multiple
@@ -2848,6 +2870,22 @@ following commands.
   Start a non-interactive rebase sequence with commits from START to
   ~HEAD~ onto NEWBASE.  START has to be selected from a list of recent
   commits.
+
+Note that the popup also features the infix argument ~--interactive~.
+This can be used to turn one of the above non-interactive rebase
+variants into an interactive rebase.
+
+For example if you want to clean up a feature branch and at the same
+time rebase it onto ~master~, then you could use ~r-ir~.  But we recommend
+that you instead do that in two steps.  First use ~rs~ to cleanup the
+feature branch, and then in a second step ~rl~ to rebase it onto ~master~.
+That way if things turn out to be more complicated than you thought
+and/or you make a mistake and have to start over, then you only have
+to redo half the work.
+
+Explicitly enabling ~--interactive~ won't have an effect on the
+following commands as they always use that argument anyway, even if it
+is not enabled in the popup.
 
 - Key: r e, magit-rebase-interactive
 
@@ -3234,6 +3272,13 @@ Also see [[info:gitman#git-reset]].
 
   Reset the ~HEAD~, index, and working tree to some commit read from the
   user and defaulting to the commit at point.
+
+- Key: M-x magit-checkout-file, magit-checkout-file
+
+  Update file in the working tree and index to the contents from a
+  revision.
+
+  Both the revision and file are read from the user.
 
 ** Stashing
 
@@ -3812,25 +3857,73 @@ are being committed.
   "<namespace>wtree/<branchref>".  When snapshots are created while
   the ~HEAD~ is detached then "HEAD" is used in place of ~<branchref>~.
 
-** File-buffer mode
+** Minor mode for buffers visiting files
 
-The ~magit-file-buffer-mode~ enables certain Magit features in
-file-visiting buffers belonging to a Git repository.  It should be
-enabled globally using ~global-magit-file-buffer-mode~.  Currently this
-mode only establishes a few key bindings, but this might be extended
-in the future.
+The ~magit-file-mode~ enables certain Magit features in file-visiting
+buffers belonging to a Git repository.  It should be enabled globally
+using ~global-magit-file-mode~.  Currently this mode only establishes a
+few key bindings, but this might be extended in the future.
 
-- User Option: global-magit-file-buffer-mode
+- User Option: global-magit-file-mode
 
   Whether to establish certain Magit key bindings in all file-visiting
-  buffers belonging to a Git repository.  This establishes the bindings
-  suggested in [[*Getting started]] (but only for file-visiting buffers),
-  and additionally binds ~C-c M-g~ to ~magit-file-buffer-popup~.
+  buffers belonging to a Git repository.  This establishes the
+  bindings suggested in [[*Getting started]] (but only for file-visiting
+  buffers), and additionally binds ~C-c M-g~ to ~magit-file-popup~.
 
-- Command: magit-file-buffer-popup
+- Key: C-c M-g, magit-file-popup
 
   This prefix command shows a popup buffer featuring suffix commands
   that operate on the file being visited in the current buffer.
+
+- Key: C-c M-g s, magit-stage-file
+
+  Stage all changes to the file being visited in the current buffer.
+
+- Key: C-c M-g u, magit-unstage-file
+
+  Unstage all changes to the file being visited in the current buffer.
+
+- Key: C-c M-g l, magit-log-buffer-file
+
+  This command shows the log for the file of blob that the current
+  buffer visits.  Renames are followed when a prefix argument is used
+  or when ~--follow~ is part of ~magit-log-arguments~.
+
+- Key: C-c M-g b, magit-blame-popup
+
+  This prefix command shows the ~magit-blame~ suffix command along with
+  the appropriate infix arguments in a popup buffer.  See [[*Initiating
+  a commit]].
+
+- Key: C-c M-g p, magit-blob-previous
+
+  Visit the previous blob which modified the current file.
+
+- Key: C-c M-g c, magit-commit-popup
+
+  This prefix command shows suffix commands along with the appropriate
+  infix arguments in a popup buffer.  See [[*Initiating a commit]].
+
+** Minor mode for buffers visiting blobs
+
+The ~magit-blob-mode~ enables certain Magit features in blob-visiting
+buffers.  Such buffers can be created using ~magit-find-file~ and some
+of the commands mentioned below, which also take care of turning on
+this minor mode.  Currently this mode only establishes a few key
+bindings, but this might be e
+
+- Key: p, magit-blob-previous
+
+  Visit the previous blob which modified the current file.
+
+- Key: n, magit-blob-next
+
+  Visit the next blob which modified the current file.
+
+- Key: q, magit-kill-this-buffer
+
+  Kill the current buffer.
 
 * Customizing
 

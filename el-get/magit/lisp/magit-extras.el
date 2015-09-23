@@ -67,9 +67,9 @@ blame to center around the line point is on."
      (list revision filename
            (and (equal filename
                        (ignore-errors
-                         (magit-file-relative-name (buffer-file-name))))
+                         (magit-file-relative-name buffer-file-name)))
                 (line-number-at-pos)))))
-  (let ((default-directory (magit-toplevel)))
+  (magit-with-toplevel
     (apply #'call-process magit-git-executable nil 0 nil "gui" "blame"
            `(,@(and linenum (list (format "--line=%d" linenum)))
              ,commit

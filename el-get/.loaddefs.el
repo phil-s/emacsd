@@ -699,7 +699,7 @@ A major mode for editing .gitconfig files.
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitignore-mode" "git-modes/gitignore-mode.el"
-;;;;;;  (21982 36614 78925 222000))
+;;;;;;  (21982 36932 728320 173000))
 ;;; Generated autoloads from git-modes/gitignore-mode.el
 
 (autoload 'gitignore-mode "git-modes/gitignore-mode" "\
@@ -1179,7 +1179,7 @@ The query function that disable deletion of buffers we protect.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-commit" "magit/lisp/git-commit.el"
-;;;;;;  (21982 32429 187605 266000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/git-commit.el
 
 (defvar global-git-commit-mode t "\
@@ -1203,7 +1203,7 @@ provide such a commit message.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-rebase" "magit/lisp/git-rebase.el"
-;;;;;;  (21982 32429 187605 266000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/git-rebase.el
 
 (autoload 'git-rebase-mode "magit/lisp/git-rebase" "\
@@ -1222,8 +1222,8 @@ running 'man git-rebase' at the command line) for details.
 
 ;;;***
 
-;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (21982
-;;;;;;  32429 199605 474000))
+;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (22018
+;;;;;;  483 31988 595000))
 ;;; Generated autoloads from magit/lisp/magit.el
 
 (autoload 'magit-status "magit/lisp/magit" "\
@@ -1281,6 +1281,11 @@ is no file at point then instead visit `default-directory'.
 
 \(fn &optional OTHER-WINDOW)" t nil)
 
+(autoload 'magit-checkout-file "magit/lisp/magit" "\
+Checkout FILE from REV.
+
+\(fn REV FILE)" t nil)
+
 (autoload 'magit-init "magit/lisp/magit" "\
 Initialize a Git repository, then show its status.
 
@@ -1311,6 +1316,35 @@ Create and checkout BRANCH at branch or revision START-POINT.
 \(git checkout [ARGS] -b BRANCH START-POINT).
 
 \(fn BRANCH START-POINT &optional ARGS)" t nil)
+
+(autoload 'magit-branch-spinoff "magit/lisp/magit" "\
+Create new branch from the unpushed commits.
+
+Create and checkout a new branch starting at and tracking the
+current branch.  That branch in turn is reset to the last commit
+it shares with its upstream.  If the current branch has no
+upstream or no unpushed commits, then the new branch is created
+anyway and the previously current branch is not touched.
+
+This is useful to create a feature branch after work has already
+began on the old branch (likely but not necessarily \"master\").
+
+\(fn BRANCH &rest ARGS)" t nil)
+
+(autoload 'magit-branch-reset "magit/lisp/magit" "\
+Reset a branch to the tip of another branch or any other commit.
+
+When resetting to another branch, then also set that branch as
+the upstream of the branch being reset.
+
+When the branch being reset is the current branch, then do a
+hard reset.  If there are any uncommitted changes, then the user
+has to confirming the reset because those changes would be lost.
+
+This is useful when you have started work on a feature branch but
+realize it's all crap and want to start over.
+
+\(fn BRANCH TO &optional ARGS)" t nil)
 
 (autoload 'magit-branch-delete "magit/lisp/magit" "\
 Delete one or multiple branches.
@@ -1486,24 +1520,24 @@ Unregister the submodule at PATH.
 
 \(fn PATH)" t nil)
 
-(defvar global-magit-file-buffer-mode nil "\
-Non-nil if Global-Magit-File-Buffer mode is enabled.
-See the command `global-magit-file-buffer-mode' for a description of this minor mode.
+(defvar global-magit-file-mode nil "\
+Non-nil if Global-Magit-File mode is enabled.
+See the command `global-magit-file-mode' for a description of this minor mode.
 Setting this variable directly does not take effect;
 either customize it (see the info node `Easy Customization')
-or call the function `global-magit-file-buffer-mode'.")
+or call the function `global-magit-file-mode'.")
 
-(custom-autoload 'global-magit-file-buffer-mode "magit/lisp/magit" nil)
+(custom-autoload 'global-magit-file-mode "magit/lisp/magit" nil)
 
-(autoload 'global-magit-file-buffer-mode "magit/lisp/magit" "\
-Toggle Magit-File-Buffer mode in all buffers.
-With prefix ARG, enable Global-Magit-File-Buffer mode if ARG is positive;
+(autoload 'global-magit-file-mode "magit/lisp/magit" "\
+Toggle Magit-File mode in all buffers.
+With prefix ARG, enable Global-Magit-File mode if ARG is positive;
 otherwise, disable it.  If called from Lisp, enable the mode if
 ARG is omitted or nil.
 
-Magit-File-Buffer mode is enabled in all buffers where
-`magit-file-buffer-mode-turn-on' would do it.
-See `magit-file-buffer-mode' for more information on Magit-File-Buffer mode.
+Magit-File mode is enabled in all buffers where
+`magit-file-mode-turn-on' would do it.
+See `magit-file-mode' for more information on Magit-File mode.
 
 \(fn &optional ARG)" t nil)
  (autoload 'magit-dispatch-popup "magit" nil t)
@@ -1538,7 +1572,7 @@ Run the command in the top-level directory of the current repository.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-apply" "magit/lisp/magit-apply.el"
-;;;;;;  (21982 32429 187605 266000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-apply.el
 
 (autoload 'magit-stage-file "magit/lisp/magit-apply" "\
@@ -1575,7 +1609,7 @@ Remove all changes from the staging area.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-bisect" "magit/lisp/magit-bisect.el"
-;;;;;;  (21982 32429 187605 266000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-bisect.el
  (autoload 'magit-bisect-popup "magit-bisect" nil t)
 
@@ -1623,7 +1657,7 @@ Bisect automatically by running commands after each step.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-blame" "magit/lisp/magit-blame.el"
-;;;;;;  (21982 32429 187605 266000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-blame.el
  (autoload 'magit-blame-popup "magit-blame" nil t)
 
@@ -1648,7 +1682,7 @@ only arguments available from `magit-blame-popup' should be used.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-commit" "magit/lisp/magit-commit.el"
-;;;;;;  (21982 32429 187605 266000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-commit.el
 
 (autoload 'magit-commit "magit/lisp/magit-commit" "\
@@ -1692,54 +1726,45 @@ and ignore the option.
 
 (autoload 'magit-commit-fixup "magit/lisp/magit-commit" "\
 Create a fixup commit.
-With a prefix argument the target commit has to be confirmed.
+
+With a prefix argument the target COMMIT has to be confirmed.
 Otherwise the commit at point may be used without confirmation
 depending on the value of option `magit-commit-squash-confirm'.
 
-\(git commit --no-edit --fixup=COMMIT [ARGS])
-
-\(fn &optional COMMIT ARGS CONFIRM)" t nil)
+\(fn &optional COMMIT)" t nil)
 
 (autoload 'magit-commit-squash "magit/lisp/magit-commit" "\
 Create a squash commit, without editing the squash message.
-With a prefix argument the target commit has to be confirmed.
+
+With a prefix argument the target COMMIT has to be confirmed.
 Otherwise the commit at point may be used without confirmation
 depending on the value of option `magit-commit-squash-confirm'.
 
-\(git commit --no-edit --squash=COMMIT [ARGS])
-
-\(fn &optional COMMIT ARGS CONFIRM)" t nil)
+\(fn &optional COMMIT)" t nil)
 
 (autoload 'magit-commit-augment "magit/lisp/magit-commit" "\
 Create a squash commit, editing the squash message.
-With a prefix argument the target commit has to be confirmed.
+
+With a prefix argument the target COMMIT has to be confirmed.
 Otherwise the commit at point may be used without confirmation
 depending on the value of option `magit-commit-squash-confirm'.
 
-\(git commit --squash=COMMIT [ARGS])
-
-\(fn &optional COMMIT ARGS CONFIRM)" t nil)
+\(fn &optional COMMIT)" t nil)
 
 (autoload 'magit-commit-instant-fixup "magit/lisp/magit-commit" "\
-Create a fixup commit and instantly rebase.
+Create a fixup commit targeting COMMIT and instantly rebase.
 
-\(git commit --no-edit --fixup=COMMIT ARGS;
- git rebase -i COMMIT^ --autosquash --autostash)
-
-\(fn &optional COMMIT ARGS)" t nil)
+\(fn &optional COMMIT)" t nil)
 
 (autoload 'magit-commit-instant-squash "magit/lisp/magit-commit" "\
-Create a squash commit and instantly rebase.
+Create a squash commit targeting COMMIT and instantly rebase.
 
-\(git commit --no-edit --squash=COMMIT ARGS;
- git rebase -i COMMIT^ --autosquash --autostash)
-
-\(fn &optional COMMIT ARGS)" t nil)
+\(fn &optional COMMIT)" t nil)
 
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-diff" "magit/lisp/magit-diff.el"
-;;;;;;  (21982 32429 191605 335000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-diff.el
 
 (autoload 'magit-diff-dwim "magit/lisp/magit-diff" "\
@@ -1815,7 +1840,7 @@ for a commit.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-ediff" "magit/lisp/magit-ediff.el"
-;;;;;;  (21982 32429 191605 335000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-ediff.el
  (autoload 'magit-ediff-popup "magit-ediff" nil t)
 
@@ -1896,7 +1921,7 @@ Show changes introduced by COMMIT using Ediff.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-extras" "magit/lisp/magit-extras.el"
-;;;;;;  (21982 32429 191605 335000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-extras.el
 
 (autoload 'magit-run-git-gui "magit/lisp/magit-extras" "\
@@ -1967,7 +1992,7 @@ on a position in a file-visiting buffer.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-log" "magit/lisp/magit-log.el"
-;;;;;;  (21982 32429 191605 335000))
+;;;;;;  (22018 483 27988 526000))
 ;;; Generated autoloads from magit/lisp/magit-log.el
 
 (autoload 'magit-log-current "magit/lisp/magit-log" "\
@@ -2007,7 +2032,7 @@ Show log for all references and `HEAD'.
 \(fn &optional ARGS FILES)" t nil)
 
 (autoload 'magit-log-buffer-file "magit/lisp/magit-log" "\
-Show log for the file visited in the current buffer.
+Show log for the blob or file visited in the current buffer.
 With a prefix argument or when `--follow' is part of
 `magit-log-arguments', then follow renames.
 
@@ -2036,7 +2061,7 @@ Show commits in a branch that are not merged in the upstream branch.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-remote" "magit/lisp/magit-remote.el"
-;;;;;;  (21982 32429 195605 405000))
+;;;;;;  (22018 483 31988 595000))
 ;;; Generated autoloads from magit/lisp/magit-remote.el
 
 (autoload 'magit-clone "magit/lisp/magit-remote" "\
@@ -2100,11 +2125,17 @@ Fetch from another repository and merge a fetched branch.
 Push the current branch to its upstream branch.
 If the upstream isn't set, then read the remote branch.
 
+If `magit-push-always-verify' is not nil, however, always read
+the remote branch.
+
 \(fn BRANCH REMOTE &optional REMOTE-BRANCH ARGS)" t nil)
 
 (autoload 'magit-push "magit/lisp/magit-remote" "\
 Push a branch to its upstream branch.
 If the upstream isn't set, then read the remote branch.
+
+If `magit-push-always-verify' is not nil, however, always read
+the remote branch.
 
 \(fn BRANCH REMOTE &optional REMOTE-BRANCH ARGS)" t nil)
 
@@ -2167,7 +2198,7 @@ is asked to pull.  START has to be reachable from that commit.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-sequence" "magit/lisp/magit-sequence.el"
-;;;;;;  (21982 32429 195605 405000))
+;;;;;;  (22018 483 31988 595000))
 ;;; Generated autoloads from magit/lisp/magit-sequence.el
 
 (autoload 'magit-sequencer-continue "magit/lisp/magit-sequence" "\
@@ -2252,32 +2283,29 @@ This discards all changes made since the sequence started.
 Start a non-interactive rebase sequence.
 All commits not in UPSTREAM are rebased.
 
-\(git rebase UPSTREAM[^] [ARGS])
-
 \(fn UPSTREAM &optional ARGS)" t nil)
 
 (autoload 'magit-rebase-subset "magit/lisp/magit-sequence" "\
 Start a non-interactive rebase sequence.
-Commits from START to `HEAD' onto NEWBASE.  START has to be
-selected from a list of recent commits.
-
-\(git rebase --onto NEWBASE START[^] [ARGS])
+Rebase commits from START to `HEAD' onto NEWBASE.
+START has to be selected from a list of recent commits.
 
 \(fn NEWBASE START &optional ARGS)" t nil)
 
 (autoload 'magit-rebase-interactive "magit/lisp/magit-sequence" "\
 Start an interactive rebase sequence.
 
-\(git rebase -i COMMIT[^] [ARGS])
-
 \(fn COMMIT &optional ARGS)" t nil)
+
+(autoload 'magit-rebase-unpushed "magit/lisp/magit-sequence" "\
+Start an interactive rebase sequence of all unpushed commits.
+
+\(fn &optional ARGS)" t nil)
 
 (autoload 'magit-rebase-autosquash "magit/lisp/magit-sequence" "\
 Combine squash and fixup commits with their intended targets.
 
-\(git rebase -i COMMIT[^] --autosquash [ARGS])
-
-\(fn COMMIT &optional ARGS)" t nil)
+\(fn &optional ARGS)" t nil)
 
 (autoload 'magit-rebase-edit-commit "magit/lisp/magit-sequence" "\
 Edit a single older commit using rebase.
@@ -2312,7 +2340,7 @@ Abort the current rebase operation, restoring the original branch.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-stash" "magit/lisp/magit-stash.el"
-;;;;;;  (21982 32429 195605 405000))
+;;;;;;  (22018 483 31988 595000))
 ;;; Generated autoloads from magit/lisp/magit-stash.el
  (autoload 'magit-stash-popup "magit-stash" nil t)
 
@@ -2404,7 +2432,7 @@ Show all diffs of a stash in a buffer.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-wip" "magit/lisp/magit-wip.el"
-;;;;;;  (21982 32429 195605 405000))
+;;;;;;  (22018 483 31988 595000))
 ;;; Generated autoloads from magit/lisp/magit-wip.el
 
 (defvar magit-wip-after-save-mode nil "\
