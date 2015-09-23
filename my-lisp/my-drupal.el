@@ -48,8 +48,9 @@
 ;; path to be searched :( `report-emacs-bug' ?
 
 ;; Workaround: Ignore all "files" if we think it's Drupal.
-(add-to-list 'grep-find-ignored-directories
-             (cons 'my-drupal-grep-find-ignore-files-dir-p "files"))
+(eval-after-load "grep"
+  '(add-to-list 'grep-find-ignored-directories
+                (cons 'my-drupal-grep-find-ignore-files-dir-p "files")))
 (defun my-drupal-grep-find-ignore-files-dir-p (dir)
   "Test whether to ignore directories matching \"files\"."
   (locate-dominating-file dir "index.php"))
@@ -184,12 +185,16 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 
 
 ;; Update TAGS file automatically.
-(require 'grep) ;; use grep-find-ignored-directories
+(require 'grep) ;; Use non-cons members of `grep-find-ignored-directories'.
 (defcustom drupal-tags-autoupdate-prune
   (concat
    "^.*/\\("
-   (mapconcat 'shell-quote-argument grep-find-ignored-directories "\\|")
-  "\\)$")
+   (mapconcat 'shell-quote-argument
+              (delq nil (mapcar
+                         #'(lambda (dir) (and (stringp dir) dir))
+                         grep-find-ignored-directories))
+              "\\|")
+   "\\)$")
   "Regexp of directories to omit from TAGS. Case sensitive"
   :group 'drupal)
 
