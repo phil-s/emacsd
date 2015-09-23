@@ -75,7 +75,9 @@
                 (setq php-manual-path expected)
               (message "Failed to download PHP manual.")))))
 
-      ;; Find documentation online
+      ;; Find documentation (locally or online).
+      (when (fboundp 'eww-browse-url)
+        (setq php-search-documentation-browser-function 'eww-browse-url))
       (local-set-key (kbd "<f1>") 'php-search-documentation))))
 
 (defun php-imenu-setup ()
