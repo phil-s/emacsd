@@ -43,8 +43,7 @@
 
 ;;;; * Help and documentation bindings
 
-;; Custom 'apropos' key bindings
-(global-set-key (kbd "C-h C-a") 'my-apropos-prefix)
+;; Custom 'apropos' key bindings. Prefix binding is: C-h C-a
 (define-prefix-command 'my-apropos-prefix nil "Apropos (a,d,f,i,l,o,v,C-v)")
 (define-key my-apropos-prefix (kbd "a")   'apropos)
 (define-key my-apropos-prefix (kbd "C-a") 'apropos)
@@ -237,6 +236,7 @@
 (defalias 'cv   'customize-variable)
 (defalias 'co   'customize-option)
 (defalias 'cf   'customize-face)
+(defalias 'sx   'sx-tab-all-questions)
 
 ;;;; * Emacs initialisation house-keeping.
 
