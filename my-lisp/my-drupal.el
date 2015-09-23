@@ -220,7 +220,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 ;;    " find . \\( -type d -regex \"" drupal-tags-autoupdate-prune "\" -prune \\)"
 ;;    " -o -type f \\( -regex \"" drupal-tags-autoupdate-ignore "\""
 ;;    " -o -iregex \"" drupal-tags-autoupdate-pattern "\" -print \\)"
-;;    " | etags --language=php --output=TAGS.new -"
+;;    " | ctags -e --language-force=php -f TAGS.new -L -"
 ;;    " && ! cmp --silent TAGS TAGS.new"
 ;;    " && mv -f TAGS.new TAGS;"
 ;;    " rm -f TAGS.new;"))
@@ -233,7 +233,7 @@ Do not replace the original file unless there are differences."
     "cd \"%s\";";dir
     " find . \\( -type d -regex \"%s\" -prune \\)";prune
     " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
-    " | etags --language=php --output=TAGS.new -"
+    " | ctags -e --language-force=php -f TAGS.new -L -"
     " && ! cmp --silent TAGS TAGS.new"
     " && mv -f TAGS.new TAGS;"
     " rm -f TAGS.new;")
@@ -241,6 +241,8 @@ Do not replace the original file unless there are differences."
    drupal-tags-autoupdate-prune
    drupal-tags-autoupdate-ignore
    drupal-tags-autoupdate-pattern))
+;; Should shell-quote-argument be used here?
+;; (`drupal-tags-autoupdate-prune' may complicate that.)
 
 (defun my-directory-tree-last-modified (dir)
   "Return a timestamp for the most recent modification under the specified dir."
