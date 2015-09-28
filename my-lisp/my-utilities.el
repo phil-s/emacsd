@@ -742,6 +742,44 @@ of the available lines."
 ;; see defun ediff-setup (ediff-utils.el)
 ;; see defun ediff-files-internal (ediff.el)
 
+
+;; By default, `ediff' is an alias for `ediff-files' in `ediff.el'.
+(defalias 'ediff 'my-ediff-dwim)
+(defun my-ediff-dwim ()
+  "Do what I mean, when invoking `ediff'.
+
+If a region is active when this command is called, call `ediff-regions-wordwise'.
+
+Else if the current frame has 2 windows,
+- Do `ediff-files' if the buffers are associated to files and the buffers
+  have not been modified.
+- Do `ediff-buffers' for the two buffers, otherwise.
+
+Otherwise call `ediff-buffers' interactively."
+  ;; Adapted from: http://kaushalmodi.github.io/2015/03/09/do-ediff-as-i-mean/
+  (interactive)
+  (if (region-active-p)
+      (call-interactively 'ediff-regions-wordwise)
+    (if (= 2 (safe-length (window-list)))
+        (let* ((bufa (get-buffer (buffer-name)))
+               (filea (buffer-file-name bufa))
+               (bufb (save-excursion
+                       (other-window 1)
+                       (get-buffer (buffer-name))))
+               (fileb (buffer-file-name bufb)))
+          (if (or
+               ;; if either of the buffers is not associated to a file
+               (null filea) (null fileb)
+               ;; if either of the buffers is modified
+               (buffer-modified-p bufa) (buffer-modified-p bufb))
+              (progn
+                (message "Running (ediff-buffers \"%s\" \"%s\") .." bufa bufb)
+                (ediff-buffers bufa bufb))
+            (progn
+              (message "Running (ediff-files \"%s\" \"%s\") .." filea fileb)
+              (ediff-files filea fileb))))
+      (call-interactively 'ediff-buffers))))
+
 
 ;; (defadvice kill-buffer (around my-kill-buffer-check activate)
 ;;   "Prompt when a buffer is about to be killed."
