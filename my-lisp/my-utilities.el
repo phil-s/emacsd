@@ -1004,8 +1004,9 @@ or before point."
 (defalias 'my-shell 'my-terminal)
 
 (defun my-sql-console (retain-window-layout)
+  "Switch to an interactive SQLi buffer (creating it if necessary)."
   (interactive "P")
-  (let ((sql-buf
+  (let ((sqlibuf
          (catch 'found
            (mapc (lambda (buf)
                    (with-current-buffer buf
@@ -1013,8 +1014,8 @@ or before point."
                        (throw 'found buf))))
                  (buffer-list))
            nil)))
-    (if sql-buf
-        (pop-to-buffer sql-buf '((display-buffer-reuse-window
+    (if sqlibuf
+        (pop-to-buffer sqlibuf '((display-buffer-reuse-window
                                   display-buffer-same-window)
                                  . ((reusable-frames . visible))))
       (let ((current-prefix-arg '(4)))
@@ -1022,25 +1023,28 @@ or before point."
   (unless retain-window-layout
     (delete-other-windows)))
 
-(defun my-sql-command-buffer ()
+(defvar my-sql-query-buffer)
+
+(defun my-sql-query-buffer ()
+  "Open a `sql-mode' buffer which interacts with the current SQLi buffer."
   (interactive)
-  (let ((sql-buf (current-buffer)))
-    (if (null (sql-buffer-live-p sql-buf))
-        (error "Buffer %s is not a working SQLi buffer" sql-buf)
+  (let ((sqlibuf (current-buffer)))
+    (if (null (sql-buffer-live-p sqlibuf))
+        (error "Buffer %s is not a working SQLi buffer" sqlibuf)
       (let ((product sql-product)
-            (cmd-buf
-             (or (and (boundp 'my-sql-command-buffer)
-                      (buffer-live-p (get-buffer my-sql-command-buffer))
-                      (get-buffer my-sql-command-buffer))
+            (querybuf
+             (or (and (boundp 'my-sql-query-buffer)
+                      (buffer-live-p (get-buffer my-sql-query-buffer))
+                      (get-buffer my-sql-query-buffer))
                  (generate-new-buffer
-                  (format "*SQL ctl: %s*" (buffer-name sql-buf))))))
-        (setq-local my-sql-command-buffer cmd-buf)
-        (my-pop-to-buffer cmd-buf)
+                  (format "*SQL ctl: %s*" (buffer-name sqlibuf))))))
+        (setq-local my-sql-query-buffer querybuf)
+        (my-pop-to-buffer querybuf)
         (unless (eq major-mode 'sql-mode)
           (sql-mode)
           (setq sql-product product)
           (sql-highlight-product)
-          (setq sql-buffer sql-buf)
+          (setq sql-buffer sqlibuf)
           (run-hooks 'sql-set-sqli-hook))))))
 
 (defun my-drush-console (retain-window-layout)
