@@ -10,6 +10,7 @@
 ;(global-set-key (kbd "C-x M-w") 'toggle-whitespace-mode)
 
 ;; (global-whitespace-mode t)
+;; (setq whitespace-global-modes '(not org-mode))
 ;; (setq whitespace-space-regexp "\\(  +\\)")
 ;; (setq whitespace-style (quote (tabs spaces trailing lines space-before-tab newline indentation empty space-after-tab tab-mark newline-mark)))
 
