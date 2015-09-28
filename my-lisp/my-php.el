@@ -79,6 +79,9 @@
       (setq php-search-documentation-browser-function 'eww-browse-url))
     (local-set-key (kbd "<f1>") 'php-search-documentation)))
 
+(eval-when-compile
+  (declare-function php-imenu-create-index "php-imenu"))
+
 (defun php-imenu-setup ()
   (setq imenu-create-index-function (function php-imenu-create-index))
   ;; uncomment if you prefer speedbar:
