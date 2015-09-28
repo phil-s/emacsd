@@ -34,6 +34,7 @@
   (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
   (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
 
+;; Ew.
 (fset 'drupal-quick-and-dirty-debugging
       (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([C-home 19 102 117 110 99 116 105 111 110 32 100 114 117 112 97 108 95 115 101 116 95 109 101 115 115 97 103 101 5 return tab 105 102 32 40 36 116 121 112 101 32 61 61 32 39 101 114 114 111 114 39 41 32 123 return tab 100 115 109 40 100 101 98 117 103 95 98 97 99 107 116 114 97 99 101 40 41 44 32 84 82 85 69 41 59 return tab 125 tab] 0 "%d")) arg)))
 
@@ -114,9 +115,8 @@ See http://drupal.org/project/phpsh"
     (setq show-trailing-whitespace nil)
     ;; Select the buffer.
     (switch-to-buffer buf)))
-
-;;; TAGS
 
+
 (defun my-insert-drupal-hook (tagname)
   "Clone the specified function as a new module hook implementation.
 
@@ -186,6 +186,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
    (javascript-mode . ((js-indent-level . 2)))
    ))
 
+
+;;; TAGS
 
 ;; Update TAGS file automatically.
 (require 'grep) ;; Use non-cons members of `grep-find-ignored-directories'.
