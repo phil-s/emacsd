@@ -130,12 +130,6 @@
   (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
   (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
 
-  ;; Replicate windmove bindings, so that they can't get clobbered
-  (define-key keymap (kbd "<S-up>")    'windmove-up)
-  (define-key keymap (kbd "<S-down>")  'windmove-down)
-  (define-key keymap (kbd "<S-left>")  'windmove-left)
-  (define-key keymap (kbd "<S-right>") 'windmove-right)
-
   ;; Miscellaneous frame/window/buffer manipulation
   (define-key keymap (kbd "M-o")       'expand-other-window)
   (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
