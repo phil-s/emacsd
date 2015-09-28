@@ -40,14 +40,15 @@
 
 ;;; find-grep
 
-;; ;; Don't rgrep in sites/*/files
+;; Don't rgrep in sites/*/files
 
-;; ;; Gah. The (cons predicate . path) behaviour of
-;; grep-find-ignored-directories causes a no-value --path argument ;;
-;; to appear in the find, which seems to allow the would-be-ignored ;;
-;; path to be searched :( `report-emacs-bug' ?
+;; Gah. The (cons predicate . path) behaviour of grep-find-ignored-directories
+;; causes a no-value --path argument to appear in the find, which seems to allow
+;; the would-be-ignored path to be searched :( Reported as bug #21548.
 
 ;; Workaround: Ignore all "files" if we think it's Drupal.
+;; n.b. This STILL triggers the problem if we're NOT in Drupal, but that's
+;; less likely to be a problem, and when we ARE in Drupal we gain the benefit.
 (eval-after-load "grep"
   '(add-to-list 'grep-find-ignored-directories
                 (cons 'my-drupal-grep-find-ignore-files-dir-p "files")))
@@ -67,8 +68,10 @@
 ;;   ;; xmlrpc.php was the best I could come up with for D7, but it won't
 ;;   ;; match Drupal 8. Go with index.php, even though it's really
 ;;   ;; generic, because Drupal is still the most likely use-case.
+;;   ;;
 ;;   ;; TODO: We can implement a predicate function which does a more
-;;   ;; robust test than this. See C-h f `locate-dominating-file'.
+;;   ;; robust test than this. See C-h f `locate-dominating-file' for
+;;   ;; details of that functionality.
 ;;   (let ((root (locate-dominating-file dir "index.php")))
 ;;     (and root
 ;;          (file-equal-p root dir))))
