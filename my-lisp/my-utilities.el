@@ -329,6 +329,18 @@ command was `winner-undo' or `winner-redo'."
   (if (bolp)
       (back-to-indentation)
     (beginning-of-line)))
+
+(defun my-indent-rigidly (beginning end &optional arg)
+  "Indent current line or active region ARG columns, using `indent-rigidly'.
+
+If no argument is supplied, indent by `tab-width' columns."
+  (interactive "r\nP")
+  (unless (region-active-p)
+    (setq beginning (line-beginning-position)
+          end (line-end-position)))
+  (indent-rigidly beginning end (if arg
+                                    (prefix-numeric-value arg)
+                                  tab-width)))
 
 (defun my-capitalize-word (&optional arg)
   "Used to invoke capitalize-word despite subword-mode remappings."
