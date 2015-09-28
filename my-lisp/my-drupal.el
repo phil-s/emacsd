@@ -233,24 +233,30 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 ;;    " && mv -f TAGS.new TAGS;"
 ;;    " rm -f TAGS.new;"))
 
+(defvar drupal-tags-autoupdate-command
+  `(,(concat
+      "cd \"%s\";";dir
+      " find . \\( -type d -regex \"%s\" -prune \\)";prune
+      " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
+      " | ctags -e --language-force=php -f TAGS.new -L -"
+      " && ! cmp --silent TAGS TAGS.new"
+      " && mv -f TAGS.new TAGS;"
+      " rm -f TAGS.new;")
+    dir
+    drupal-tags-autoupdate-prune
+    drupal-tags-autoupdate-ignore
+    drupal-tags-autoupdate-pattern)
+  "A shell command to update TAGS.
+Do not replace the original file unless there are differences.
+
+Composed of a list of arguments to be passed to `format'.
+See function `drupal-tags-autoupdate-command' for details.")
+
 (defun drupal-tags-autoupdate-command (dir)
-  "Regenerate TAGS.
-Do not replace the original file unless there are differences."
-  (format
-   (concat
-    "cd \"%s\";";dir
-    " find . \\( -type d -regex \"%s\" -prune \\)";prune
-    " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
-    " | ctags -e --language-force=php -f TAGS.new -L -"
-    " && ! cmp --silent TAGS TAGS.new"
-    " && mv -f TAGS.new TAGS;"
-    " rm -f TAGS.new;")
-   dir
-   drupal-tags-autoupdate-prune
-   drupal-tags-autoupdate-ignore
-   drupal-tags-autoupdate-pattern))
-;; Should shell-quote-argument be used here?
-;; (`drupal-tags-autoupdate-prune' may complicate that.)
+  "Regenerate TAGS."
+  (if (consp drupal-tags-autoupdate-command)
+      (apply 'format (mapcar 'eval drupal-tags-autoupdate-command))
+    drupal-tags-autoupdate-command))
 
 (defun my-directory-tree-last-modified (dir)
   "Return a timestamp for the most recent modification under the specified dir."
