@@ -219,14 +219,14 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 
 (defvar drupal-tags-autoupdate-command
   `(,(concat
-      "cd \"%s\";";dir
+      "cd %s;";dir
       " find . \\( -type d -regex \"%s\" -prune \\)";prune
       " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
       " | ctags -e --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
       " && mv -f TAGS.new TAGS;"
       " rm -f TAGS.new;")
-    dir
+    (shell-quote-argument dir)
     drupal-tags-autoupdate-prune
     drupal-tags-autoupdate-ignore
     drupal-tags-autoupdate-pattern)
@@ -242,16 +242,30 @@ See function `drupal-tags-autoupdate-command' for details.")
       (apply 'format (mapcar 'eval drupal-tags-autoupdate-command))
     drupal-tags-autoupdate-command))
 
+(defvar my-directory-tree-last-modified-command
+  ;; TODO: This solves a more general problem than required, and is overkill.
+  ;; All I actually need to know is if any file was modified more recently
+  ;; than TAGS. There are find options for mtime comparisons (-newer), and we
+  ;; can bail out (via head -1, I guess) as soon as we've found one such file.
+  `(,(concat
+      " max=0; find %s \\( -type d -regex \"%s\" -prune \\)" ;prune
+      " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print0 \\)" ;ignore,pattern
+      " | xargs -0 stat --format=%%Y"
+      " | while read -r ts; do test $ts -gt $max && max=$ts && echo $max; done"
+      " | tail -1")
+    (shell-quote-argument dir)
+    drupal-tags-autoupdate-prune
+    drupal-tags-autoupdate-ignore
+    drupal-tags-autoupdate-pattern)
+  "A shell command to determine a timestamp for the most recent modification.")
+
 (defun my-directory-tree-last-modified (dir)
   "Return a timestamp for the most recent modification under the specified dir."
   (string-to-number
    (shell-command-to-string
-    (format
-     (concat
-      "max=0; find \"%s\" -print0 | xargs -0 stat --format=%%Y"
-      " | while read -r ts; do test $ts -gt $max && max=$ts && echo $max; done"
-      " | tail -1")
-     (shell-quote-argument dir)))))
+    (if (consp my-directory-tree-last-modified-command)
+        (apply 'format (mapcar 'eval my-directory-tree-last-modified-command))
+      my-directory-tree-last-modified-command))))
 
 (defun my-buffer-file-last-modified (file-name)
   "Return a timestamp for the most recent modification to the specified file.
@@ -262,6 +276,36 @@ We assume that a buffer is visiting the most recent version of this time."
        (format-time-string
         "%s" (with-current-buffer (get-file-buffer file-name)
                (visited-file-modtime)))))))
+
+(defvar drupal-tags-autoupdate-tree-modified-command
+  ;; TODO: This uses `tags-file-name'. What about `tags-table-list'??
+  ;; (Should I use `locate-dominating-file' instead?)
+  `(,(concat
+      " find %s \\( -type d -regex \"%s\" -prune \\)" ;dir,prune
+      " -o -type f \\( -regex \"%s\"" ;ignore
+      "                -o -newer %s -iregex \"%s\" -print \\)" ;mtime,pattern
+      " | head -1")
+    (shell-quote-argument dir)
+    drupal-tags-autoupdate-prune
+    drupal-tags-autoupdate-ignore
+    (shell-quote-argument tags-file-name)
+    drupal-tags-autoupdate-pattern)
+  "A shell command to determine whether any files have been modified
+since the TAGS file was generated.
+
+All the exclusions applied to `drupal-tags-autoupdate-command' are
+also applied to this search, such that modifications to those (excluded)
+files are not relevant.")
+
+(defun drupal-tags-autoupdate-tree-modified (dir)
+  "Non-nil if DIR has been modified since the TAGS file was modified."
+  (not (string=
+        "" (shell-command-to-string
+            (if (consp drupal-tags-autoupdate-tree-modified-command)
+                (apply 'format
+                       (mapcar
+                        'eval drupal-tags-autoupdate-tree-modified-command))
+              drupal-tags-autoupdate-tree-modified-command)))))
 
 ;; variables for the timer object
 (defvar drupal-tags-autoupdate-timer nil)
@@ -281,11 +325,8 @@ We assume that a buffer is visiting the most recent version of this time."
 (defun drupal-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
   (when drupal-tags-autoupdate-enabled
-    (let ((dir (file-name-directory tags-file-name))
-          (tags-modified (my-buffer-file-last-modified tags-file-name)))
-      (when (and tags-modified
-                 (> (my-directory-tree-last-modified dir)
-                    tags-modified))
+    (let ((dir (file-name-directory tags-file-name)))
+      (when (drupal-tags-autoupdate-tree-modified dir)
         (save-window-excursion
           (let ((message-truncate-lines t))
             (async-shell-command (drupal-tags-autoupdate-command dir)
