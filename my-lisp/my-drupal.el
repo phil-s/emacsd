@@ -175,6 +175,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 (defcustom drupal-tags-autoupdate-prune
   (concat
    "^.*/\\("
+   "sites/[^/]+/files\\|"
    (mapconcat 'shell-quote-argument
               (delq nil (mapcar
                          #'(lambda (dir) (and (stringp dir) dir))
