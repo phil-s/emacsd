@@ -1,6 +1,37 @@
 ;; See my-externals for php-mode source.
 (load "php-mode") ;load the real php-mode
 
+;; Find documentation (locally or online).
+(define-key php-mode-map (kbd "<f1>") 'php-search-documentation)
+(when (fboundp 'eww-browse-url)
+  (setq php-search-documentation-browser-function 'eww-browse-url))
+
+;; Locate local documentation.
+(let ((expected "/usr/local/share/php/php-chunked-xhtml"))
+  (if (file-directory-p expected)
+      (setq php-manual-path expected)
+    (setq expected (expand-file-name "~/php/php-chunked-xhtml"))
+    (if (file-directory-p expected)
+        (setq php-manual-path expected)
+      (message "PHP manual not found. Attempting download.")
+      ;; Download and untar
+      (let ((download-directory (file-name-directory expected))
+            (url "http://nz2.php.net/get/php_manual_en.tar.gz/from/this/mirror")
+            (file "php_manual_en.tar.gz"))
+        (make-directory download-directory t)
+        (shell-command
+         (format
+          "cd %s && wget -q %s -O %s && tar -xf %s && rm %s"
+          (shell-quote-argument download-directory)
+          (shell-quote-argument url)
+          (shell-quote-argument file)
+          (shell-quote-argument file)
+          (shell-quote-argument file))))
+      ;; Check the result
+      (if (file-directory-p expected)
+          (setq php-manual-path expected)
+        (message "Failed to download PHP manual.")))))
+
 ;; Custom php-mode configuration
 (add-hook 'php-mode-hook 'my-php-mode-hook t)
 
@@ -19,66 +50,48 @@
 
 (defun my-php-mode-hook ()
   "My php-mode customisations."
-  ;; (message (concat "Major Mode: " (symbol-name major-mode)))
-  ;; (message (concat "Mode: " (if (boundp 'mode) (symbol-name mode) "unknown")))
-
+  ;; Edit PHP templates in `web-mode'.
   (if (and (buffer-file-name)
            (string-match "\\.tpl\\.php\\'" (buffer-file-name)))
       (web-mode)
+    ;; Otherwise use PHP mode.
+    ;; Note that my directory-local settings (in my-project.el) for
+    ;; Drupal projects forces files loaded in `php-mode' (i.e. PHP
+    ;; files without a Drupal- specific extension such as .module) to
+    ;; run `drupal-mode', which results in `php-mode-hook' running
+    ;; again. TODO: Figure out how to avoid that.
+    ;; n.b. The sequence is:
+    ;; Major Mode: php-mode ;; Mode: unknown
+    ;; Major Mode: drupal-mode ;; Mode: unknown
+    ;; for:
+    ;; (message (concat "Major Mode: " (symbol-name major-mode)))
+    ;; (message (concat "Mode: " (if (boundp 'mode) (symbol-name mode) "unknown")))
+    (my-php-mode-hook-1)))
 
-    (when (eq major-mode 'php-mode)
-      (c-set-style "my-php-style")
+(defun my-php-mode-hook-1 ()
+  "My php-mode customisations."
+  (c-set-style "my-php-style")
 
-      ;; The electric flag (toggled by `c-toggle-electric-state').
-      ;; If t, electric actions (like automatic reindentation, and (if
-      ;; c-auto-newline is also set) auto newlining) will happen when an
-      ;; electric key like `{' is pressed (or an electric keyword like
-      ;; `else').
-      (setq c-electric-flag nil)
-      ;; electric behaviours appear to be bad/unwanted in php-mode
+  ;; The electric flag (toggled by `c-toggle-electric-state').
+  ;; If t, electric actions (like automatic reindentation, and (if
+  ;; c-auto-newline is also set) auto newlining) will happen when an
+  ;; electric key like `{' is pressed (or an electric keyword like
+  ;; `else').
+  (setq c-electric-flag nil)
+  ;; electric behaviours appear to be bad/unwanted in php-mode
 
-      ;; Per-line comments preferred over block comments.
-      (setq-local comment-style 'indent)
-      (setq-local comment-start "//")
-      (setq-local comment-padding " ")
-      (setq-local comment-end "")
+  ;; Per-line comments preferred over block comments.
+  (setq-local comment-style 'indent)
+  (setq-local comment-start "//")
+  (setq-local comment-padding " ")
+  (setq-local comment-end "")
 
-      ;; This is bugging out recently. Not sure why. Thought it
-      ;; was a conflict with (my-coding-config), but not certain
-      ;; any longer. Commenting out for now.
-      ;; Configure imenu
-      ;; (php-imenu-setup)
-
-      ;; Locate local documentation.
-      (let ((expected "/usr/local/share/php/php-chunked-xhtml"))
-        (if (file-directory-p expected)
-            (setq php-manual-path expected)
-          (setq expected (expand-file-name "~/php/php-chunked-xhtml"))
-          (if (file-directory-p expected)
-              (setq php-manual-path expected)
-            (message "PHP manual not found. Attempting download.")
-            ;; Download and untar
-            (let ((download-directory (file-name-directory expected))
-                  (url "http://nz2.php.net/get/php_manual_en.tar.gz/from/this/mirror")
-                  (file "php_manual_en.tar.gz"))
-              (make-directory download-directory t)
-              (shell-command
-               (format
-                "cd %s && wget -q %s -O %s && tar -xf %s && rm %s"
-                (shell-quote-argument download-directory)
-                (shell-quote-argument url)
-                (shell-quote-argument file)
-                (shell-quote-argument file)
-                (shell-quote-argument file))))
-            ;; Check the result
-            (if (file-directory-p expected)
-                (setq php-manual-path expected)
-              (message "Failed to download PHP manual.")))))
-
-    ;; Find documentation (locally or online).
-    (when (fboundp 'eww-browse-url)
-      (setq php-search-documentation-browser-function 'eww-browse-url))
-    (local-set-key (kbd "<f1>") 'php-search-documentation)))
+  ;; This is bugging out recently. Not sure why. Thought it
+  ;; was a conflict with (my-coding-config), but not certain
+  ;; any longer. Commenting out for now.
+  ;; Configure imenu
+  ;; (php-imenu-setup)
+  )
 
 (eval-when-compile
   (declare-function php-imenu-create-index "php-imenu"))
