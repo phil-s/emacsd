@@ -137,6 +137,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
   (let ((module (file-name-sans-extension
                  (file-name-nondirectory (buffer-file-name)))))
     (find-tag (format "^function %s(" tagname) nil t)
+    (forward-line) ; else (c-mark-function) now marks the wrong function.
+                   ; M-x report-emacs-bug
     (let ((tmp-buffer (generate-new-buffer "*temp*")))
       (c-mark-function)
       (copy-to-buffer tmp-buffer (point) (mark))
