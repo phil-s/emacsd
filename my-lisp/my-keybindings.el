@@ -48,11 +48,11 @@
 (define-key my-apropos-prefix (kbd "a")   'apropos)
 (define-key my-apropos-prefix (kbd "C-a") 'apropos)
 (define-key my-apropos-prefix (kbd "d")   'apropos-documentation)
-(define-key my-apropos-prefix (kbd "c")   'apropos-command)
+(define-key my-apropos-prefix (kbd "c")   'my-apropos-command)
 (define-key my-apropos-prefix (kbd "f")   'apropos-command)
 (define-key my-apropos-prefix (kbd "i")   'info-apropos)
 (define-key my-apropos-prefix (kbd "l")   'apropos-library)
-(define-key my-apropos-prefix (kbd "o")   'apropos-user-option)
+(define-key my-apropos-prefix (kbd "o")   'my-apropos-user-option)
 (define-key my-apropos-prefix (kbd "v")   'apropos-variable)
 (define-key my-apropos-prefix (kbd "C-v") 'apropos-value)
 

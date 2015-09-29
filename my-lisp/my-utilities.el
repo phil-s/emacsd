@@ -1270,7 +1270,31 @@ that frame."
       (prog1 (window--display-buffer buffer window 'reuse alist)
         (unless (cdr (assq 'inhibit-switch-frame alist))
           (window--maybe-raise-frame (window-frame window)))))))
+
+;; I bind `apropos-do-all' non-nil by default, so these commands act
+;; as replacements for `apropos-command' and `apropos-user-option' and
+;; ensure that only commands and user options are displayed.
 
+(defun my-apropos-command (pattern)
+  "Show commands (interactively callable functions) that match PATTERN.
+PATTERN can be a word, a list of words (separated by spaces),
+or a regexp (using some regexp special characters).  If it is a word,
+search for matches for that word as a substring.  If it is a list of words,
+search for matches for any two (or more) of those words."
+  (interactive (list (apropos-read-pattern "command")))
+  (let ((apropos-do-all nil))
+    (apropos-command pattern)))
+
+(defun my-apropos-user-option (pattern)
+  "Show user options that match PATTERN.
+PATTERN can be a word, a list of words (separated by spaces),
+or a regexp (using some regexp special characters).  If it is a word,
+search for matches for that word as a substring.  If it is a list of words,
+search for matches for any two (or more) of those words."
+  (interactive (list (apropos-read-pattern "user option")))
+  (let ((apropos-do-all nil))
+    (apropos-user-option pattern)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
