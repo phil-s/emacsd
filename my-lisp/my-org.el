@@ -1,10 +1,14 @@
 ;; I don't really know what I'm doing yet.
 
-:;; Tutorials etc
+;;; Tutorials etc
+
 ;; http://pragmaticemacs.com/category/org/
 ;; http://orgmode.org/worg/org-tutorials/org4beginners.html
 ;; http://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
 ;; http://www.star.bris.ac.uk/bjm/emacs.html
+
+
+;;; General configuration
 
 ;; ;; Set maximum indentation for description lists.
 ;; (setq org-list-description-max-indent 5)
@@ -17,6 +21,61 @@
 
 ;; Prevent the demoting of a heading also shifting text within its sections.
 (setq org-adapt-indentation nil)
+
+
+;;; Babel
+
+;; Syntax highlighting for source code blocks.
+(setq org-src-fontify-natively t)
+
+;; org-babel supported languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ (mapcar (lambda (lang) (cons lang t))
+         '(
+           ;; asymptote
+           awk
+           ;; C
+           ;; calc
+           ;; clojure
+           css
+           ;; ditaa
+           ;; dot
+           emacs-lisp
+           ;; fortran
+           ;; gnuplot
+           ;; haskell
+           ;; io
+           ;; java
+           js
+           latex
+           ;; ledger
+           ;; lilypond
+           lisp
+           makefile
+           ;; matlab
+           ;; maxima
+           ;; mscgen
+           ;; ocaml
+           ;; octave
+           org
+           ;; perl
+           ;; picolisp
+           ;; plantuml
+           python
+           ;; R
+           ;; ruby
+           sass
+           ;; scala
+           ;; scheme
+           sh
+           ;; shen
+           sql
+           ;; sqlite
+           )))
+
+
+;;; Compatibility
 
 ;; Make windmove work in org-mode.
 (add-hook 'org-shiftup-final-hook 'windmove-up)
