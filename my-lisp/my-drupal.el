@@ -1,3 +1,5 @@
+;; See my-project.el for directory local variables for Drupal projects.
+
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
@@ -163,29 +165,6 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
     (backward-sexp)
     (forward-line)
     (back-to-indentation)))
-
-
-;; Directory local variables
-;; Assign with:
-;; (dir-locals-set-directory-class "/dir/path" 'drupal)
-
-(dir-locals-set-class-variables
- 'drupal
- '((nil . ((indent-tabs-mode . nil)
-           (tab-width . 8)
-           (fill-column . 76)
-           (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info" "*.js"
-                             "*.css" ".htaccess" "*.engine" "*.txt" "*.profile"
-                             "*.xml" "*.test" "*.theme" "*.ini" "*.make"))
-           ))
-   (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
-                          (drupal-mode) (hack-local-variables))) ;; Oooh.
-                (c-basic-offset . 2)))
-   (css-mode . ((css-indent-offset . 2)))
-   (js-mode . ((js-indent-level . 2)))
-   (javascript-mode . ((js-indent-level . 2)))
-   ))
-
 
 ;;; TAGS
 
