@@ -1295,6 +1295,31 @@ search for matches for any two (or more) of those words."
   (let ((apropos-do-all nil))
     (apropos-user-option pattern)))
 
+;; Testing the modification timestamp for a file or directory
+;; (directory tree version finds the latest mtime for any child)
+
+(defun my-buffer-file-last-modified (file-name)
+  "Return a timestamp for the most recent modification to the specified file.
+We assume that a buffer is visiting the most recent version of this time."
+  (let ((buffer (get-file-buffer file-name)))
+    (when buffer
+      (string-to-number
+       (format-time-string
+        "%s" (with-current-buffer (get-file-buffer file-name)
+               (visited-file-modtime)))))))
+
+(defun my-directory-tree-last-modified (dir)
+  "Return a timestamp for the most recent modification under the specified dir."
+  (string-to-number
+   (shell-command-to-string
+    (format
+     (concat
+      " max=0; find %s -print0"; dir
+      " | xargs -0 stat --format=%%Y"
+      " | while read -r ts; do test $ts -gt $max && max=$ts && echo $max; done"
+      " | tail -1")
+     (shell-quote-argument dir)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)

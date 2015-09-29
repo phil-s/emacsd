@@ -206,22 +206,23 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
   (message "drupal-tags-autoupdate is now %s."
            (if drupal-tags-autoupdate-enabled "enabled" "disabled")))
 
-;; (defun drupal-tags-autoupdate-command ()
-;;   (concat
-;;    "cd " (file-name-directory tags-file-name) ";"
-;;    " find . \\( -type d -regex \"" drupal-tags-autoupdate-prune "\" -prune \\)"
-;;    " -o -type f \\( -regex \"" drupal-tags-autoupdate-ignore "\""
-;;    " -o -iregex \"" drupal-tags-autoupdate-pattern "\" -print \\)"
-;;    " | ctags -e --language-force=php -f TAGS.new -L -"
-;;    " && ! cmp --silent TAGS TAGS.new"
-;;    " && mv -f TAGS.new TAGS;"
-;;    " rm -f TAGS.new;"))
-
 (defvar drupal-tags-autoupdate-command
+  ;; # We can almost do this directly with an Exuberant Ctags command,
+  ;; # but the exclusion options are not as comprehensive. A basic
+  ;; # approach looks like this:
+  ;; exclude="--exclude=.git --exclude=.debian --exclude=.branches"
+  ;; exclude="${exclude} --exclude='sites/*/files'" #n.b. '*' can include '/' :/
+  ;; drupalmap="php:+.module.install.inc.engine"
+  ;; drupalspec="--langmap=${drupalmap} --php-kinds=-v --languages=php"
+  ;; ctags -e -R -f TAGS.new ${drupalspec} ${exclude} ${args} \
+  ;;   && ! cmp --silent TAGS TAGS.new \
+  ;;   && mv -f TAGS.new TAGS
+  ;; rm -f TAGS.new
   `(,(concat
-      "cd %s;";dir
-      " find . \\( -type d -regex \"%s\" -prune \\)";prune
-      " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print \\)";ignore,pattern
+      "cd %s;"                                       ;dir
+      " find . \\( -type d -regex \"%s\" -prune \\)" ;prune
+      " -o -type f \\( -regex \"%s\" "               ;ignore
+      "                -o -iregex \"%s\" -print \\)" ;pattern
       " | ctags -e --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
       " && mv -f TAGS.new TAGS;"
@@ -241,41 +242,6 @@ See function `drupal-tags-autoupdate-command' for details.")
   (if (consp drupal-tags-autoupdate-command)
       (apply 'format (mapcar 'eval drupal-tags-autoupdate-command))
     drupal-tags-autoupdate-command))
-
-(defvar my-directory-tree-last-modified-command
-  ;; TODO: This solves a more general problem than required, and is overkill.
-  ;; All I actually need to know is if any file was modified more recently
-  ;; than TAGS. There are find options for mtime comparisons (-newer), and we
-  ;; can bail out (via head -1, I guess) as soon as we've found one such file.
-  `(,(concat
-      " max=0; find %s \\( -type d -regex \"%s\" -prune \\)" ;prune
-      " -o -type f \\( -regex \"%s\" -o -iregex \"%s\" -print0 \\)" ;ignore,pattern
-      " | xargs -0 stat --format=%%Y"
-      " | while read -r ts; do test $ts -gt $max && max=$ts && echo $max; done"
-      " | tail -1")
-    (shell-quote-argument dir)
-    drupal-tags-autoupdate-prune
-    drupal-tags-autoupdate-ignore
-    drupal-tags-autoupdate-pattern)
-  "A shell command to determine a timestamp for the most recent modification.")
-
-(defun my-directory-tree-last-modified (dir)
-  "Return a timestamp for the most recent modification under the specified dir."
-  (string-to-number
-   (shell-command-to-string
-    (if (consp my-directory-tree-last-modified-command)
-        (apply 'format (mapcar 'eval my-directory-tree-last-modified-command))
-      my-directory-tree-last-modified-command))))
-
-(defun my-buffer-file-last-modified (file-name)
-  "Return a timestamp for the most recent modification to the specified file.
-We assume that a buffer is visiting the most recent version of this time."
-  (let ((buffer (get-file-buffer file-name)))
-    (when buffer
-      (string-to-number
-       (format-time-string
-        "%s" (with-current-buffer (get-file-buffer file-name)
-               (visited-file-modtime)))))))
 
 (defvar drupal-tags-autoupdate-tree-modified-command
   ;; TODO: This uses `tags-file-name'. What about `tags-table-list'??
