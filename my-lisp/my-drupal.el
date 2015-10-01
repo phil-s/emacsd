@@ -225,8 +225,9 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
       "                -o -iregex \"%s\" -print \\)" ;pattern
       " | ctags -e --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
-      " && mv -f TAGS.new TAGS;"
-      " rm -f TAGS.new;")
+      " && mv -f TAGS.new TAGS"
+      " ; rm -f TAGS.new"
+      " ; touch TAGS")
     (shell-quote-argument dir)
     drupal-tags-autoupdate-prune
     drupal-tags-autoupdate-ignore
