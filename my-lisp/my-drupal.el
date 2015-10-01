@@ -17,7 +17,7 @@
   ;; PHP configuration for Drupal
   ;; n.b. php-mode is derived from c-mode
 
-  (setq tab-width                2
+  (setq tab-width                8 ; these should stand out!
         c-basic-offset           2
         indent-tabs-mode         nil
         fill-column              78
@@ -27,10 +27,11 @@
         paragraph-separate       "$"
         )
 
+  ;; See `c-offsets-alist' for details of offset definitions.
   (c-set-offset 'case-label '+)
-  (c-set-offset 'arglist-close 0)
   (c-set-offset 'arglist-intro '+) ; for FAPI arrays and DBTNG
-  (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields and values
+  (c-set-offset 'arglist-cont-nonempty 'c-lineup-math) ; for DBTNG fields/values
+  (c-set-offset 'arglist-close 'c-lineup-close-paren)
 
   ;; Key bindings
   (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
