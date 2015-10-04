@@ -629,9 +629,13 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
      (define-key term-raw-map (kbd "<escape> x") 'execute-extended-command)
      ;; Fix forward/backward word when (term-in-char-mode).
      (define-key term-raw-map (kbd "<C-left>")
-       (lambda () (interactive) (term-send-raw-string "b")))
+       (lambda () (interactive) (term-send-raw-string "\eb")))
+     (define-key term-raw-map (kbd "<M-left>")
+       (lambda () (interactive) (term-send-raw-string "\eb")))
      (define-key term-raw-map (kbd "<C-right>")
-       (lambda () (interactive) (term-send-raw-string "f")))
+       (lambda () (interactive) (term-send-raw-string "\ef")))
+     (define-key term-raw-map (kbd "<M-right>")
+       (lambda () (interactive) (term-send-raw-string "\ef")))
      ;; Disable killing and yanking in char mode (term-raw-map).
      (mapc
       (lambda (func)
