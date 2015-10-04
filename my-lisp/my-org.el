@@ -73,7 +73,49 @@
            sql
            ;; sqlite
            )))
+
+;; Wrap region in an org template (e.g. latex, src etc)
+;; http://pragmaticemacs.com/emacs/wrap-text-in-an-org-mode-block/
+;; FIXME: This should clearly use `org-structure-template-alist'.
+(defun my-org-structure-template ()
+  "Make an org structure template at point, or around the marked region."
+  (interactive)
+  (let* ((choices '(("s" . "SRC")
+                    ("e" . "EXAMPLE")
+                    ("q" . "QUOTE")
+                    ("v" . "VERSE")
+                    ("c" . "CENTER")
+                    ("l" . "LaTeX")
+                    ("h" . "HTML")
+                    ("a" . "ASCII")))
+         (key
+          (key-description
+           (vector
+            (read-key
+             (concat (propertize "Template type: " 'face 'minibuffer-prompt)
+                     (mapconcat (lambda (choice)
+                                  (concat (propertize (car choice) 'face
+                                                      'font-lock-type-face)
+                                          ": "
+                                          (cdr choice)))
+                                choices
+                                ", ")))))))
+    (let ((result (assoc key choices)))
+      (when result
+        (let ((choice (cdr result)))
+          (cond
+           ((region-active-p)
+            (let ((start (region-beginning))
+                  (end (region-end)))
+              (goto-char end)
+              (insert "#+END_" choice "\n")
+              (goto-char start)
+              (insert "#+BEGIN_" choice "\n")))
+           (t
+            (insert "#+BEGIN_" choice "\n")
+            (save-excursion (insert "#+END_" choice)))))))))
 
+(define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
 
 ;;; Compatibility
 
