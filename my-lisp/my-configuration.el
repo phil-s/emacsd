@@ -423,6 +423,20 @@ disabled.")))
 ;; (ido-mode t)
 ;; (setq ido-enable-flex-matching t) ;; enable fuzzy matching
 
+(when (fboundp 'with-isearch-suspended)
+  (define-key isearch-mode-map (kbd "<C-backspace>") #'my-isearch-delete)
+  (defun my-isearch-delete ()
+    "Delete the failed portion of the search string.
+
+If the current search is successful, then only delete the last char."
+    (interactive)
+    (with-isearch-suspended
+     (setq isearch-new-string
+           (substring isearch-string 0 (or (isearch-fail-pos)
+                                           (1- (length isearch-string))))
+           isearch-new-message
+           (mapconcat 'isearch-text-char-description isearch-new-string "")))))
+
 ;;; Dired
 
 ;; Don't allow dragging and dropping files into dired
