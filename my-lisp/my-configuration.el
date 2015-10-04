@@ -526,8 +526,9 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 (defadvice hack-dir-local-variables (around my-remote-dir-local-variables)
   "Allow dir-locals.el with remote files, by temporarily redefining
 `file-remote-p' to return nil unconditionally."
-  (require 'cl)
-  (flet ((file-remote-p (&rest) nil))
+  (require 'cl-lib)
+  (cl-letf (((symbol-function 'file-remote-p)
+             (lambda (&rest _) nil)))
     ad-do-it))
 (ad-activate 'hack-dir-local-variables)
 
