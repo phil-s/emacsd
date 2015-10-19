@@ -28,6 +28,9 @@
 ;; Syntax highlighting for source code blocks.
 (setq org-src-fontify-natively t)
 
+;; Preserve source code indentation upon export
+(setq org-src-preserve-indentation t)
+
 ;; org-babel supported languages
 (org-babel-do-load-languages
  'org-babel-load-languages
