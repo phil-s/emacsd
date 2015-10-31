@@ -51,33 +51,6 @@
 (add-hook 'emacs-lisp-mode-hook '(lambda () (set-variable 'indent-tabs-mode nil)))
 ;; (triggers the advice, but ew. just call a custom function.)
 
-;; Smart Tabs (usually) does the Right Thing when I press the TAB key
-(eval-when-compile
-  (declare-function global-smart-tab-mode "smart-tab"))
-(when (require 'smart-tab nil 'noerror)
-  ;; ;; Completion can be annoying. Go with indentation only.
-  ;; (global-set-key (kbd "TAB") 'smart-tab-default)
-  ;; (global-set-key (kbd "<tab>") 'smart-tab-default)
-  ;; ;; This being the case, do I even want smart-tab??
-  ;; ;; n.b. without smart-tab, TAB will currently be bound to yas/expand)
-  (global-smart-tab-mode 1))
-
-(defvar my-global-smart-tab-major-mode-exceptions
-  '(org-mode term-mode shell-mode eshell-mode erc-mode Custom-mode eww-mode
-             markdown-mode)
-  "List of major modes for which `smart-tab-mode' should not be enabled.")
-
-;; Smart Tabs occasionally does the Wrong Thing,
-;; so disable smart-tab-mode for certain major modes
-(defadvice smart-tab-mode-on
-  (around disable-smart-tab-for-modes)
-  "Disable `smart-tab-mode' in the specified major modes,
-to counter-act `global-smart-tab-mode'."
-  (unless (memq major-mode
-                my-global-smart-tab-major-mode-exceptions)
-    ad-do-it))
-(ad-activate 'smart-tab-mode-on)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-indentation)

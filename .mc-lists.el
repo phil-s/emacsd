@@ -6,7 +6,6 @@
                                cua-delete-region
                                forward-sexp
                                backward-sexp
-                               smart-tab
                                my-forward-word-or-buffer-or-windows
                                cua-paste-pop
                                cua-paste
