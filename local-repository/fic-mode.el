@@ -110,6 +110,8 @@
     (if fic-mode
 	(font-lock-add-keywords nil kwlist 'append)
       (font-lock-remove-keywords nil kwlist))
-    (font-lock-fontify-buffer)))
+    ;; The following is a huge initial performance hit for large files
+    ;; (font-lock-fontify-buffer)
+    ))
 
 (provide 'fic-mode)

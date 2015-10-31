@@ -93,8 +93,14 @@ when `auto-save-mode' is invoked manually.")
 ;; Use day/month/year format in calendar
 (setq calendar-date-style 'european)
 
-;; Delay fontification to improve scrolling performance in large buffers
-(setq jit-lock-defer-time 0.05)
+;; Use stealth fontification.
+;; n.b. This approach requires much more time for fontification to be
+;; completed, and performance can be a little sluggish in the interim,
+;; but this is a better solution to the annoying 'flash' of jit
+;; fontification than incurring the unreasonable delay which comes
+;; with invoking font-lock-fontify-buffer up-front.
+(setq jit-lock-stealth-time 0.25
+      jit-lock-chunk-size 2048)
 
 ;; Highlight current line
 (global-hl-line-mode 1)
