@@ -20,12 +20,25 @@
            (indent-tabs-mode . nil)))))
 
 ;; Emacs
+;; Copied and modified from git-repository/.dir-locals.el
 (dir-locals-set-class-variables
  'emacs
- '((nil . ((buffer-read-only . t)
+ '((nil . ((tab-width . 8)
+           (sentence-end-double-space . t)
+           (fill-column . 70)
+           (buffer-read-only . t)
            (my-inhibit-whitespace-mode . t)
-           (show-trailing-whitespace . nil)
-           (tab-width . 8)))))
+           (show-trailing-whitespace . nil)))
+   (c-mode . ((c-file-style . "GNU")))
+   (objc-mode . ((c-file-style . "GNU")))
+   (log-edit-mode . ((log-edit-font-lock-gnu-style . t)
+                     (log-edit-setup-add-author . t)))
+   (change-log-mode . ((add-log-time-zone-rule . t)
+                       (fill-column . 74)
+                       (bug-reference-url-format . "http://debbugs.gnu.org/%s")
+                       (mode . bug-reference)))
+   (diff-mode . ((mode . whitespace)))
+   (emacs-lisp-mode . ((indent-tabs-mode . nil)))))
 
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs)
