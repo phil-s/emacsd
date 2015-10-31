@@ -212,6 +212,10 @@
      (:name second-sel
             :type emacswiki)
 
+     (:name smart-tabs-mode
+            :type git
+            :url "git@github.com:jcsalomon/smarttabs.git")
+
      (:name transpose-frame
             :type emacswiki
             :features transpose-frame)
