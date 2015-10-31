@@ -50,6 +50,9 @@
   "Git and other external processes used by Magit."
   :group 'magit)
 
+(defvar magit-git-environment nil
+  "Prepended to `process-environment' while running git.")
+
 (defcustom magit-git-executable
   ;; Git might be installed in a different location on a remote, so
   ;; it is better not to use the full path to the executable, except
@@ -58,14 +61,28 @@
   ;; than using "bin/git.exe" directly.
   (or (and (eq system-type 'windows-nt)
            (--when-let (executable-find "git.exe")
-             (let ((alt (directory-file-name (file-name-directory it))))
-               (if (and (equal (file-name-nondirectory alt) "cmd")
-                        (setq alt (expand-file-name
-                                   (convert-standard-filename "bin/git.exe")
-                                   (file-name-directory alt)))
-                        (file-executable-p alt))
-                   alt
-                 it))))
+             (or (with-temp-buffer
+                   (when (save-excursion
+                           (= (call-process
+                              it nil '(t t) nil "-c"
+                              "alias.exe=!which git | cygpath -wf -" "exe") 0))
+                     (prog1 (delete-and-extract-region 1 (line-end-position))
+                       (save-excursion
+                         (insert "PATH=")
+                         (call-process
+                          it nil '(t t) nil "-c"
+                          "alias.path=!cygpath -wp \"$PATH\"" "path"))
+                       (setq magit-git-environment
+                             (list (buffer-substring-no-properties
+                                    (point) (line-end-position)))))))
+                 (let ((alt (directory-file-name (file-name-directory it))))
+                   (if (and (equal (file-name-nondirectory alt) "cmd")
+                            (setq alt (expand-file-name
+                                       (convert-standard-filename "bin/git.exe")
+                                       (file-name-directory alt)))
+                            (file-executable-p alt))
+                       alt
+                     it)))))
       "git")
   "The Git executable used by Magit."
   :group 'magit-process
@@ -94,19 +111,22 @@ purpose."
   'magit-git-global-arguments "2.1.0")
 
 (defcustom magit-git-debug nil
-  "Whether to enable additional reporting of Git errors.
+  "Whether to enable additional reporting of git errors.
 
-Magit basically calls Git for one of these two reasons: for
+Magit basically calls git for one of these two reasons: for
 side-effects or to do something with its standard output.
 
-When Git is run for side-effects then its output, including error
+When git is run for side-effects then its output, including error
 messages, go into the process buffer which is shown when using \
 \\<magit-status-mode-map>\\[magit-process].
 
-When Git's output is consumed in some way, then it would be too
+When git's output is consumed in some way, then it would be too
 expensive to also insert it into this buffer, but when this
-option is non-nil and Git returns with a non-zero exit status,
-then at least its standard error is inserted into this buffer."
+option is non-nil and git returns with a non-zero exit status,
+then at least its standard error is inserted into this buffer.
+
+This is only intended for debugging purposes.  Do not enable this
+permanently, that would negatively affect performance"
   :group 'magit
   :group 'magit-process
   :type 'boolean)
@@ -125,7 +145,7 @@ then at least its standard error is inserted into this buffer."
     ("^\\(skip\\):"              magit-bisect-skip nil)
     ("^\\(good\\):"              magit-bisect-good nil)
     ("\\(.+\\)"                  magit-refname nil))
-  "How different refs should be formatted for display.
+  "How refs are formatted for display.
 
 Each entry controls how a certain type of ref is displayed, and
 has the form (REGEXP FACE FORMATTER).  REGEXP is a regular
@@ -216,7 +236,7 @@ add a section in the respective process buffer."
                                         magit-process-error-message-re nil t)
                                        (match-string 1))))
                       (let ((magit-git-debug nil))
-                        (with-current-buffer (magit-process-buffer nil t)
+                        (with-current-buffer (magit-process-buffer t)
                           (magit-process-insert-section default-directory
                                                         magit-git-executable
                                                         args exit log))))
@@ -283,10 +303,9 @@ call function WASHER with no argument."
 (defmacro magit--with-safe-default-directory (file &rest body)
   (declare (indent 1) (debug (form body)))
   `(catch 'unsafe-default-dir
-     (let ((default-directory
-             (file-name-as-directory (--if-let ,file
-                                         (expand-file-name it)
-                                       default-directory)))
+     (let ((default-directory (file-name-as-directory
+                               (expand-file-name
+                                (or ,file default-directory))))
            previous)
        (while (not (file-accessible-directory-p default-directory))
          (setq default-directory
@@ -330,6 +349,7 @@ returning the truename."
   (magit--with-safe-default-directory directory
     (-if-let (topdir (magit-rev-parse-safe "--show-toplevel"))
         (let (updir)
+          (setq topdir (magit-expand-git-file-name topdir))
           (if (and
                ;; Always honor these settings.
                (not find-file-visit-truename)
@@ -343,13 +363,17 @@ returning the truename."
                ;; both is the case, then we are at the toplevel of
                ;; the same working tree, but also avoided needlessly
                ;; following any symlinks.
-               (let ((default-directory
-                       (setq updir (file-name-as-directory
-                                    (expand-file-name
-                                     (magit-rev-parse-safe "--show-cdup"))))))
-                 (and (string-equal (magit-rev-parse-safe "--show-cdup") "")
-                      (string-equal (magit-rev-parse-safe "--show-toplevel")
-                                    topdir))))
+               (progn
+                 (setq updir (file-name-as-directory
+                              (magit-rev-parse-safe "--show-cdup")))
+                 (setq updir (if (file-name-absolute-p updir)
+                                 (concat (file-remote-p default-directory) updir)
+                               (expand-file-name updir)))
+                 (let ((default-directory updir))
+                   (and (string-equal (magit-rev-parse-safe "--show-cdup") "")
+                        (--when-let (magit-rev-parse-safe "--show-toplevel")
+                          (string-equal (magit-expand-git-file-name it)
+                                        topdir))))))
               updir
             (concat (file-remote-p default-directory)
                     (file-name-as-directory topdir))))
@@ -357,12 +381,22 @@ returning the truename."
         (setq gitdir (file-name-as-directory
                       (if (file-name-absolute-p gitdir)
                           ;; We might have followed a symlink.
-                          (concat (file-remote-p default-directory) gitdir)
+                          (concat (file-remote-p default-directory)
+                                  (magit-expand-git-file-name gitdir))
                         (expand-file-name gitdir))))
         (if (magit-bare-repo-p)
             gitdir
-          ;; Step outside the control directory to enter the working tree.
-          (file-name-directory (directory-file-name gitdir)))))))
+          (let* ((link (expand-file-name "gitdir" gitdir))
+                 (wtree (and (file-exists-p link)
+                             (magit-file-line link))))
+            (if (and wtree
+                     ;; Ignore .git/gitdir files that result from a
+                     ;; Git bug.  See #2364.
+                     (not (equal wtree ".git")))
+                ;; Return the linked working tree.
+                (file-name-directory wtree)
+              ;; Step outside the control directory to enter the working tree.
+              (file-name-directory (directory-file-name gitdir)))))))))
 
 (defmacro magit-with-toplevel (&rest body)
   (declare (indent defun) (debug (body)))
@@ -431,8 +465,8 @@ tracked file."
 (defun magit-tracked-files ()
   (magit-list-files "--cached"))
 
-(defun magit-untracked-files (&optional all)
-  (magit-list-files "--other" (unless all "--exclude-standard")))
+(defun magit-untracked-files (&optional all files)
+  (magit-list-files "--other" (unless all "--exclude-standard") "--" files))
 
 (defun magit-modified-files (&optional nomodules)
   (magit-git-items "diff-files" "-z" "--name-only"
@@ -489,13 +523,35 @@ range.  Otherwise, it can be any revision or range accepted by
         (setq pos (point)))
       status)))
 
+(defcustom magit-cygwin-mount-points
+  (when (eq system-type 'windows-nt)
+    (cl-sort (--map (if (string-match "^\\(.*\\) on \\(.*\\) type" it)
+                        (cons (file-name-as-directory (match-string 2 it))
+                              (file-name-as-directory (match-string 1 it)))
+                      (lwarn '(magit) :error
+                             "Failed to parse Cygwin mount: %S" it))
+                    (ignore-errors (process-lines "mount")))
+             #'> :key (-lambda ((cyg . win)) (length cyg))))
+  "Alist of (CYGWIN . WIN32) directory names.
+Sorted from longest to shortest CYGWIN name."
+  :package-version '(magit . "2.3.0")
+  :group 'magit-process
+  :type '(alist :key-type string :value-type directory))
+
 (defun magit-expand-git-file-name (filename)
   (unless (file-name-absolute-p filename)
     (setq filename (expand-file-name filename)))
-  (if (and (eq system-type 'windows-nt) ; together with cygwin git, see #1318
-           (string-match "^/\\(cygdrive/\\)?\\([a-z]\\)/\\(.*\\)" filename))
-      (concat (match-string 2 filename) ":/"
-              (match-string 3 filename))
+  (-if-let ((cyg . win)
+            (cl-assoc filename magit-cygwin-mount-points
+                      :test (lambda (f cyg) (string-prefix-p cyg f))))
+      (concat win (substring filename (length cyg)))
+    filename))
+
+(defun magit-convert-git-filename (filename)
+  (-if-let ((cyg . win)
+            (cl-rassoc filename magit-cygwin-mount-points
+                       :test (lambda (f win) (string-prefix-p win f))))
+      (concat cyg (substring filename (length win)))
     filename))
 
 (defun magit-decode-git-path (path)

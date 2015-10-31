@@ -1179,7 +1179,7 @@ The query function that disable deletion of buffers we protect.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-commit" "magit/lisp/git-commit.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 12037 927102 936000))
 ;;; Generated autoloads from magit/lisp/git-commit.el
 
 (defvar global-git-commit-mode t "\
@@ -1203,7 +1203,7 @@ provide such a commit message.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-rebase" "magit/lisp/git-rebase.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/git-rebase.el
 
 (autoload 'git-rebase-mode "magit/lisp/git-rebase" "\
@@ -1222,8 +1222,8 @@ running 'man git-rebase' at the command line) for details.
 
 ;;;***
 
-;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (22018
-;;;;;;  483 31988 595000))
+;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (22068
+;;;;;;  12037 931102 841000))
 ;;; Generated autoloads from magit/lisp/magit.el
 
 (autoload 'magit-status "magit/lisp/magit" "\
@@ -1238,7 +1238,7 @@ then offer to initialize it as a new repository.
 (autoload 'magit-status-internal "magit/lisp/magit" "\
 
 
-\(fn DIRECTORY &optional SWITCH-FUNCTION)" nil nil)
+\(fn DIRECTORY)" nil nil)
  (autoload 'magit-show-refs-popup "magit" nil t)
 
 (autoload 'magit-show-refs-head "magit/lisp/magit" "\
@@ -1569,10 +1569,17 @@ Run the command in the top-level directory of the current repository.
 
 \(fn)" t nil)
 
+(autoload 'magit-version "magit/lisp/magit" "\
+Return the version of Magit currently in use.
+When called interactive also show the used versions of Magit,
+Git, and Emacs in the echo area.
+
+\(fn)" t nil)
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-apply" "magit/lisp/magit-apply.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-apply.el
 
 (autoload 'magit-stage-file "magit/lisp/magit-apply" "\
@@ -1609,7 +1616,7 @@ Remove all changes from the staging area.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-bisect" "magit/lisp/magit-bisect.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-bisect.el
  (autoload 'magit-bisect-popup "magit-bisect" nil t)
 
@@ -1652,12 +1659,16 @@ to test.  This command lets Git choose a different one.
 (autoload 'magit-bisect-run "magit/lisp/magit-bisect" "\
 Bisect automatically by running commands after each step.
 
-\(fn CMDLINE)" t nil)
+Unlike `git bisect run' this can be used before bisecting has
+begun.  In that case it behaves like `git bisect start; git
+bisect run'.
+
+\(fn CMDLINE &optional BAD GOOD)" t nil)
 
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-blame" "magit/lisp/magit-blame.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-blame.el
  (autoload 'magit-blame-popup "magit-blame" nil t)
 
@@ -1682,7 +1693,7 @@ only arguments available from `magit-blame-popup' should be used.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-commit" "magit/lisp/magit-commit.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-commit.el
 
 (autoload 'magit-commit "magit/lisp/magit-commit" "\
@@ -1702,20 +1713,21 @@ Amend the last commit.
 
 (autoload 'magit-commit-extend "magit/lisp/magit-commit" "\
 Amend the last commit, without editing the message.
-With a prefix argument do change the committer date, otherwise
-don't.  The option `magit-commit-extend-override-date' can be
-used to inverse the meaning of the prefix argument.
 
-\(git commit --amend --no-edit)
+With a prefix argument keep the committer date, otherwise change
+it.  The option `magit-commit-extend-override-date' can be used
+to inverse the meaning of the prefix argument.  
+\(git commit
+--amend --no-edit)
 
 \(fn &optional ARGS OVERRIDE-DATE)" t nil)
 
 (autoload 'magit-commit-reword "magit/lisp/magit-commit" "\
 Reword the last commit, ignoring staged changes.
 
-With a prefix argument do change the committer date, otherwise
-don't.  The option `magit-commit-rewrite-override-date' can be
-used to inverse the meaning of the prefix argument.
+With a prefix argument keep the committer date, otherwise change
+it.  The option `magit-commit-reword-override-date' can be used
+to inverse the meaning of the prefix argument.
 
 Non-interactively respect the optional OVERRIDE-DATE argument
 and ignore the option.
@@ -1731,7 +1743,7 @@ With a prefix argument the target COMMIT has to be confirmed.
 Otherwise the commit at point may be used without confirmation
 depending on the value of option `magit-commit-squash-confirm'.
 
-\(fn &optional COMMIT)" t nil)
+\(fn &optional COMMIT ARGS)" t nil)
 
 (autoload 'magit-commit-squash "magit/lisp/magit-commit" "\
 Create a squash commit, without editing the squash message.
@@ -1740,7 +1752,7 @@ With a prefix argument the target COMMIT has to be confirmed.
 Otherwise the commit at point may be used without confirmation
 depending on the value of option `magit-commit-squash-confirm'.
 
-\(fn &optional COMMIT)" t nil)
+\(fn &optional COMMIT ARGS)" t nil)
 
 (autoload 'magit-commit-augment "magit/lisp/magit-commit" "\
 Create a squash commit, editing the squash message.
@@ -1749,22 +1761,22 @@ With a prefix argument the target COMMIT has to be confirmed.
 Otherwise the commit at point may be used without confirmation
 depending on the value of option `magit-commit-squash-confirm'.
 
-\(fn &optional COMMIT)" t nil)
+\(fn &optional COMMIT ARGS)" t nil)
 
 (autoload 'magit-commit-instant-fixup "magit/lisp/magit-commit" "\
 Create a fixup commit targeting COMMIT and instantly rebase.
 
-\(fn &optional COMMIT)" t nil)
+\(fn &optional COMMIT ARGS)" t nil)
 
 (autoload 'magit-commit-instant-squash "magit/lisp/magit-commit" "\
 Create a squash commit targeting COMMIT and instantly rebase.
 
-\(fn &optional COMMIT)" t nil)
+\(fn &optional COMMIT ARGS)" t nil)
 
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-diff" "magit/lisp/magit-diff.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-diff.el
 
 (autoload 'magit-diff-dwim "magit/lisp/magit-diff" "\
@@ -1775,18 +1787,18 @@ Show changes for the thing at point.
 (autoload 'magit-diff "magit/lisp/magit-diff" "\
 Show differences between two commits.
 
-RANGE should be a range (A..B or A...B) but can also be a single
-commit.  If one side of the range is omitted, then it defaults
-to HEAD.  If just a commit is given, then changes in the working
-tree relative to that commit are shown.
+REV-OR-RANGE should be a RANGE or a single revision.  If it is a
+revision, then show changes in the working tree relative to that
+revision.  If it is a range, but one side is omitted, then show
+changes relative to `HEAD'.
 
 If the region is active, use the revisions on the first and last
-line of the region.  With a prefix argument, instead of diffing
-the revisions, choose a revision to view changes along, starting
-at the common ancestor of both revisions (i.e., use a \"...\"
-range).
+line of the region as the two sides of the range.  With a prefix
+argument, instead of diffing the revisions, choose a revision to
+view changes along, starting at the common ancestor of both
+revisions (i.e., use a \"...\" range).
 
-\(fn RANGE &optional ARGS FILES)" t nil)
+\(fn REV-OR-RANGE &optional ARGS FILES)" t nil)
 
 (autoload 'magit-diff-working-tree "magit/lisp/magit-diff" "\
 Show changes between the current working tree and the `HEAD' commit.
@@ -1831,16 +1843,16 @@ Show changes between any two files on disk.
 \(fn A B)" t nil)
 
 (autoload 'magit-show-commit "magit/lisp/magit-diff" "\
-Show the commit at point.
-If there is no commit at point or with a prefix argument prompt
-for a commit.
+Show the revision at point.
+If there is no revision at point or with a prefix argument prompt
+for a revision.
 
-\(fn COMMIT &optional NOSELECT MODULE ARGS FILES)" t nil)
+\(fn REV &optional ARGS FILES MODULE)" t nil)
 
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-ediff" "magit/lisp/magit-ediff.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-ediff.el
  (autoload 'magit-ediff-popup "magit-ediff" nil t)
 
@@ -1921,7 +1933,7 @@ Show changes introduced by COMMIT using Ediff.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-extras" "magit/lisp/magit-extras.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-extras.el
 
 (autoload 'magit-run-git-gui "magit/lisp/magit-extras" "\
@@ -1992,7 +2004,7 @@ on a position in a file-visiting buffer.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-log" "magit/lisp/magit-log.el"
-;;;;;;  (22018 483 27988 526000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-log.el
 
 (autoload 'magit-log-current "magit/lisp/magit-log" "\
@@ -2036,7 +2048,7 @@ Show log for the blob or file visited in the current buffer.
 With a prefix argument or when `--follow' is part of
 `magit-log-arguments', then follow renames.
 
-\(fn &optional FOLLOW)" t nil)
+\(fn &optional FOLLOW BEG END)" t nil)
 
 (autoload 'magit-reflog-current "magit/lisp/magit-log" "\
 Display the reflog of the current branch.
@@ -2061,7 +2073,7 @@ Show commits in a branch that are not merged in the upstream branch.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-remote" "magit/lisp/magit-remote.el"
-;;;;;;  (22018 483 31988 595000))
+;;;;;;  (22068 12037 927102 936000))
 ;;; Generated autoloads from magit/lisp/magit-remote.el
 
 (autoload 'magit-clone "magit/lisp/magit-remote" "\
@@ -2198,7 +2210,7 @@ is asked to pull.  START has to be reachable from that commit.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-sequence" "magit/lisp/magit-sequence.el"
-;;;;;;  (22018 483 31988 595000))
+;;;;;;  (22068 11789 629029 396000))
 ;;; Generated autoloads from magit/lisp/magit-sequence.el
 
 (autoload 'magit-sequencer-continue "magit/lisp/magit-sequence" "\
@@ -2340,7 +2352,7 @@ Abort the current rebase operation, restoring the original branch.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-stash" "magit/lisp/magit-stash.el"
-;;;;;;  (22018 483 31988 595000))
+;;;;;;  (22068 11789 637029 205000))
 ;;; Generated autoloads from magit/lisp/magit-stash.el
  (autoload 'magit-stash-popup "magit-stash" nil t)
 
@@ -2419,6 +2431,11 @@ Create and checkout a new BRANCH from STASH.
 
 \(fn STASH BRANCH)" t nil)
 
+(autoload 'magit-stash-format-patch "magit/lisp/magit-stash" "\
+Create a patch from STASH
+
+\(fn STASH)" t nil)
+
 (autoload 'magit-stash-list "magit/lisp/magit-stash" "\
 List all stashes in a buffer.
 
@@ -2427,12 +2444,12 @@ List all stashes in a buffer.
 (autoload 'magit-stash-show "magit/lisp/magit-stash" "\
 Show all diffs of a stash in a buffer.
 
-\(fn STASH &optional NOSELECT ARGS FILES)" t nil)
+\(fn STASH &optional ARGS FILES)" t nil)
 
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-wip" "magit/lisp/magit-wip.el"
-;;;;;;  (22018 483 31988 595000))
+;;;;;;  (22068 11789 637029 205000))
 ;;; Generated autoloads from magit/lisp/magit-wip.el
 
 (defvar magit-wip-after-save-mode nil "\
@@ -3102,18 +3119,10 @@ A major mode for displaying the directory tree in text mode.
 
 ;;;### (autoloads nil nil ("async/async-pkg.el" "async/async-test.el"
 ;;;;;;  "async/smtpmail-async.el" "dash/dash-functional.el" "dash/dash.el"
-;;;;;;  "el-get/el-get-install.el" "el-get/el-get.el"
-;;;;;;  "macrostep/macrostep-test.el" "magit/lisp/magit-autoloads.el"
-;;;;;;  "magit/lisp/magit-core.el" "magit/lisp/magit-git.el" "magit/lisp/magit-mode.el"
-;;;;;;  "magit/lisp/magit-popup.el" "magit/lisp/magit-process.el"
-;;;;;;  "magit/lisp/magit-section.el" "magit/lisp/magit-utils.el"
-;;;;;;  "magit/lisp/magit-version.el" "magit/lisp/with-editor.el"
-;;;;;;  "sauron/sauron-dbus.el" "sauron/sauron-erc.el"
-;;;;;;  "sauron/sauron-identica.el" "sauron/sauron-jabber.el" "sauron/sauron-notifications.el"
-;;;;;;  "sauron/sauron-org.el" "sauron/sauron-twittering.el" "smartrep/smartrep.el"
-;;;;;;  "smartrep/test-smartrep.el" "wgrep/wgrep-test.el" "ztree-diff/ztree-diff-model.el"
-;;;;;;  "ztree-diff/ztree-pkg.el" "ztree-diff/ztree-util.el") (21423
-;;;;;;  24092 835278 967000))
+;;;;;;  "magit/lisp/magit-autoloads.el" "magit/lisp/magit-core.el"
+;;;;;;  "magit/lisp/magit-git.el" "magit/lisp/magit-mode.el" "magit/lisp/magit-process.el"
+;;;;;;  "magit/lisp/magit-section.el" "magit/lisp/magit-utils.el")
+;;;;;;  (22068 12267 369996 731000))
 
 ;;;***
 

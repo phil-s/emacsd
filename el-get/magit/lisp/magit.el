@@ -7,6 +7,8 @@
 
 ;; Author: Marius Vollmer <marius.vollmer@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;;	Kyle Meyer        <kyle@kyleam.com>
+;;	Noam Postavsky    <npostavs@users.sourceforge.net>
 ;; Former-Maintainers:
 ;;	Nicolas Dudebout  <nicolas.dudebout@gatech.edu>
 ;;	Peter J. Weisberg <pj@irregularexpressions.net>
@@ -14,7 +16,7 @@
 ;;	Rémi Vanicat      <vanicat@debian.org>
 ;;	Yann Hodique      <yann.hodique@gmail.com>
 
-;; Package-Requires: ((emacs "24.4") (async "20150812") (dash "2.11.0") (with-editor "20150903") (git-commit "20150903") (magit-popup "20150903"))
+;; Package-Requires: ((emacs "24.4") (async "1.5") (dash "2.12.1") (with-editor "2.3.0") (git-commit "2.3.0") (magit-popup "2.3.0"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -65,6 +67,9 @@
 (declare-function eshell-parse-arguments 'eshell)
 (eval-when-compile (require 'message))
 (declare-function message-goto-body 'message)
+
+(defconst magit--minimal-git "1.9.4")
+(defconst magit--minimal-emacs "24.4")
 
 ;;; Options
 ;;;; Status Mode
@@ -124,25 +129,6 @@ at all."
   :group 'magit-status
   :type 'hook)
 
-(defcustom magit-status-buffer-switch-function 'pop-to-buffer
-  "Function used by `magit-status' to switch to a status buffer.
-
-The function is given one argument, the status buffer."
-  :group 'magit-status
-  :type '(radio (function-item switch-to-buffer)
-                (function-item pop-to-buffer)
-                (function :tag "Other")))
-
-(defcustom magit-status-buffer-name-format "*magit: %a*"
-  "Name format for buffers used to display a repository's status.
-
-The following `format'-like specs are supported:
-%a the absolute filename of the repository toplevel.
-%b the basename of the repository toplevel."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-status
-  :type 'string)
-
 (defcustom magit-status-expand-stashes t
   "Whether the list of stashes is expanded initially."
   :package-version '(magit . "2.3.0")
@@ -171,16 +157,6 @@ The following `format'-like specs are supported:
   :group 'magit-refs
   :type 'hook)
 
-(defcustom magit-refs-buffer-name-format "*magit-refs: %a*"
-  "Name format for buffers used to display and manage refs.
-
-The following `format'-like specs are supported:
-%a the absolute filename of the repository toplevel.
-%b the basename of the repository toplevel."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-refs
-  :type 'string)
-
 (defcustom magit-refs-show-commit-count nil
   "Whether to show commit counts in Magit-Refs mode buffers.
 
@@ -188,7 +164,7 @@ all    Show counts for branches and tags.
 branch Show counts for branches only.
 nil    Never show counts."
   :package-version '(magit . "2.1.0")
-  :group 'magit
+  :group 'magit-refs
   :safe (lambda (val) (memq val '(all branch nil)))
   :type '(choice (const all    :tag "For branches and tags")
                  (const branch :tag "For branches only")
@@ -414,14 +390,10 @@ then offer to initialize it as a new repository."
 (put 'magit-status 'interactive-only 'magit-status-internal)
 
 ;;;###autoload
-(defun magit-status-internal (directory &optional switch-function)
-  (let ((magit-mode-setup--topdir (file-name-as-directory
-                                   (expand-file-name directory))))
-    (magit-mode-setup magit-status-buffer-name-format
-                      (or switch-function
-                          magit-status-buffer-switch-function)
-                      #'magit-status-mode
-                      #'magit-status-refresh-buffer)))
+(defun magit-status-internal (directory)
+  (magit-tramp-asserts directory)
+  (let ((default-directory directory))
+    (magit-mode-setup #'magit-status-mode)))
 
 (defun ido-enter-magit-status ()
   "Drop into `magit-status' from file switching.
@@ -578,8 +550,8 @@ remote in alphabetic order."
 
 (defvar magit-untracked-section-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "k"  'magit-discard)
-    (define-key map "s"  'magit-stage)
+    (define-key map [remap magit-delete-thing] 'magit-discard)
+    (define-key map "s" 'magit-stage)
     map)
   "Keymap for the `untracked' section.")
 
@@ -618,6 +590,18 @@ Do so depending on the value of `status.showUntrackedFiles'."
           (setq files (magit-insert-un/tracked-files-1 files dir))))))
   files)
 
+(defun magit-status-maybe-update-revision-buffer (&optional _)
+  "When moving in the status buffer, update the revision buffer.
+If there is no revision buffer in the same frame, then do nothing."
+  (when (derived-mode-p 'magit-status-mode)
+    (magit-log-maybe-update-revision-buffer-1)))
+
+(defun magit-status-maybe-update-blob-buffer (&optional _)
+  "When moving in the status buffer, update the blob buffer.
+If there is no blob buffer in the same frame, then do nothing."
+  (when (derived-mode-p 'magit-status-mode)
+    (magit-log-maybe-update-blob-buffer-1)))
+
 ;;;; Refs Mode
 
 (defvar magit-refs-mode-map
@@ -644,7 +628,7 @@ Type \\[magit-cherry-pick-popup] to apply the commit at point.
 Type \\[magit-reset] to reset HEAD to the commit at point.
 
 \\{magit-refs-mode-map}"
-  :group 'magit-modes
+  :group 'magit-refs
   (hack-dir-local-variables-non-file-buffer))
 
 ;;;###autoload (autoload 'magit-show-refs-popup "magit" nil t)
@@ -689,9 +673,7 @@ it is detached."
 Refs are compared with a branch read form the user."
   (interactive (list (magit-read-other-branch "Compare with")
                      (magit-show-refs-arguments)))
-  (magit-mode-setup magit-refs-buffer-name-format nil
-                    #'magit-refs-mode
-                    #'magit-refs-refresh-buffer ref args))
+  (magit-mode-setup #'magit-refs-mode ref args))
 
 (defun magit-branch-manager ()
   "The Branch Manager is dead, long live the Branch Manager.
@@ -739,16 +721,16 @@ The old binding `b v' will be removed soon."
 
 (defvar magit-branch-section-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\r" 'magit-visit-ref)
-    (define-key map "k"  'magit-branch-delete)
-    (define-key map "R"  'magit-branch-rename)
+    (define-key map [remap magit-visit-thing]  'magit-visit-ref)
+    (define-key map [remap magit-delete-thing] 'magit-branch-delete)
+    (define-key map "R" 'magit-branch-rename)
     map)
   "Keymap for `branch' sections.")
 
 (defvar magit-remote-section-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "k"  'magit-remote-remove)
-    (define-key map "R"  'magit-remote-rename)
+    (define-key map [remap magit-delete-thing] 'magit-remote-remove)
+    (define-key map "R" 'magit-remote-rename)
     map)
   "Keymap for `remote' sections.")
 
@@ -900,8 +882,8 @@ reference, but it is not checked out."
 
 (defvar magit-tag-section-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\r" 'magit-visit-ref)
-    (define-key map "k"  'magit-tag-delete)
+    (define-key map [remap magit-visit-thing]  'magit-visit-ref)
+    (define-key map [remap magit-delete-thing] 'magit-tag-delete)
     map)
   "Keymap for `tag' sections.")
 
@@ -1015,22 +997,25 @@ existing one."
 (defun magit-find-file-noselect (rev file)
   "Read FILE from REV into a buffer and return the buffer.
 FILE must be relative to the top directory of the repository."
-  (or (magit-get-revision-buffer rev file)
-      (with-current-buffer (magit-get-revision-buffer-create rev file)
-        (let ((inhibit-read-only t))
-          (erase-buffer)
-          (magit-git-insert "cat-file" "-p" (concat rev ":" file)))
-        (setq magit-buffer-revision  (magit-rev-format "%H" rev)
-              magit-buffer-refname   rev
-              magit-buffer-file-name (expand-file-name file (magit-toplevel)))
-        (let ((buffer-file-name magit-buffer-file-name))
-          (normal-mode t))
-        (setq buffer-read-only t)
-        (set-buffer-modified-p nil)
-        (goto-char (point-min))
-        (magit-blob-mode 1)
-        (run-hooks 'magit-find-file-hook)
-        (current-buffer))))
+  (let ((topdir (magit-toplevel)))
+    (when (file-name-absolute-p file)
+      (setq file (file-relative-name file topdir)))
+    (or (magit-get-revision-buffer rev file)
+        (with-current-buffer (magit-get-revision-buffer-create rev file)
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (magit-git-insert "cat-file" "-p" (concat rev ":" file)))
+          (setq magit-buffer-revision  (magit-rev-format "%H" rev)
+                magit-buffer-refname   rev
+                magit-buffer-file-name (expand-file-name file topdir))
+          (let ((buffer-file-name magit-buffer-file-name))
+            (normal-mode t))
+          (setq buffer-read-only t)
+          (set-buffer-modified-p nil)
+          (goto-char (point-min))
+          (magit-blob-mode 1)
+          (run-hooks 'magit-find-file-hook)
+          (current-buffer)))))
 
 (defvar magit-find-index-hook nil)
 
@@ -1087,7 +1072,7 @@ is done using `magit-find-index-noselect'."
           (when magit-wip-after-apply-mode
             (magit-wip-commit-after-apply (list file) " after un-/stage")))
       (message "Abort")))
-  (--when-let (magit-mode-get-buffer nil 'magit-status-mode)
+  (--when-let (magit-mode-get-buffer 'magit-status-mode)
     (with-current-buffer it (magit-refresh)))
   t)
 
@@ -1139,7 +1124,8 @@ Non-interactively DIRECTORY is (re-)initialized unconditionally."
      (list directory)))
   (make-directory directory t)
   ;; `git init' does not understand the meaning of "~"!
-  (magit-call-git "init" (expand-file-name directory))
+  (magit-call-git "init" (magit-convert-git-filename
+                          (expand-file-name directory)))
   (magit-status-internal directory))
 
 ;;;; Branch
@@ -1225,6 +1211,8 @@ This is useful to create a feature branch after work has already
 began on the old branch (likely but not necessarily \"master\")."
   (interactive (list (magit-read-string "Spin off branch")
                      (magit-branch-arguments)))
+  (when (magit-branch-p branch)
+    (user-error "Branch %s already exists" branch))
   (-if-let (current (magit-get-current-branch))
       (let (tracked base)
         (magit-call-git "checkout" args "-b" branch current)
@@ -1463,17 +1451,21 @@ inspect the merge and change the commit message.
 (defun magit-merge-preview (rev)
   "Preview result of merging REV into the current branch."
   (interactive (list (magit-read-other-branch-or-commit "Preview merge")))
-  (magit-mode-setup magit-diff-buffer-name-format
-                    magit-diff-switch-buffer-function
-                    #'magit-diff-mode
-                    #'magit-merge-refresh-preview-buffer rev))
+  (magit-mode-setup #'magit-merge-preview-mode rev))
 
-(defun magit-merge-refresh-preview-buffer (rev)
-  (magit-insert-section (diffbuf)
-    (let* ((branch (magit-get-current-branch))
-           (head (or branch (magit-rev-verify "HEAD"))))
-      (magit-insert-heading (format "Preview merge of %s into %s"
-                                    rev (or branch "HEAD")))
+(define-derived-mode magit-merge-preview-mode magit-diff-mode "Magit Merge"
+  "Mode for previewing a merge."
+  :group 'magit-diff
+  (hack-dir-local-variables-non-file-buffer))
+
+(defun magit-merge-preview-refresh-buffer (rev)
+  (let* ((branch (magit-get-current-branch))
+         (head (or branch (magit-rev-verify "HEAD"))))
+    (setq header-line-format
+          (propertize (format "Preview merge of %s into %s"
+                              rev (or branch "HEAD"))
+                      'face 'magit-header-line))
+    (magit-insert-section (diffbuf)
       (magit-git-wash #'magit-diff-wash-diffs
         "merge-tree" (magit-git-string "merge-base" head rev) head rev))))
 
@@ -1552,7 +1544,7 @@ Keep the head and working tree as-is, so if COMMIT refers to the
 head this effectivley unstages all changes.
 \n(git reset COMMIT)"
   (interactive (list (magit-read-branch-or-commit "Reset index to")))
-  (magit-reset-internal nil commit))
+  (magit-reset-internal nil commit "."))
 
 ;;;###autoload
 (defun magit-reset (commit &optional hard)
@@ -1587,7 +1579,7 @@ With a prefix argument also reset the working tree.
   (interactive (list (magit-read-branch-or-commit "Hard reset to")))
   (magit-reset-internal "--hard" commit))
 
-(defun magit-reset-internal (arg commit)
+(defun magit-reset-internal (arg commit &optional path)
   (when (and (not (member arg '("--hard" nil)))
              (equal (magit-rev-parse commit)
                     (magit-rev-parse "HEAD~")))
@@ -1599,7 +1591,7 @@ With a prefix argument also reset the working tree.
       (git-commit-save-message)))
   (let ((cmd (if (and (equal commit "HEAD") (not arg)) "unstage" "reset")))
     (magit-wip-commit-before-change nil (concat " before " cmd))
-    (magit-run-git "reset" arg commit "--")
+    (magit-run-git "reset" arg commit "--" path)
     (when (equal cmd "unstage")
       (magit-wip-commit-after-apply nil " after unstage"))))
 
@@ -1624,7 +1616,10 @@ If FILE isn't tracked in Git fallback to using `rename-file'."
           (with-current-buffer oldbuf
             (let ((buffer-read-only buffer-read-only))
               (set-visited-file-name newname))
-            (vc-find-file-hook))))
+            (if (fboundp 'vc-refresh-state)
+                (vc-refresh-state)
+              (with-no-warnings
+                (vc-find-file-hook))))))
     (rename-file file newname current-prefix-arg)
     (magit-refresh)))
 
@@ -1818,7 +1813,7 @@ Also see `magit-notes-merge'."
   "Remove notes about unreachable commits."
   (interactive (list (and (member "--dry-run" (magit-notes-arguments)) t)))
   (when dry-run
-    (magit-process))
+    (magit-process-buffer))
   (magit-run-git-with-editor "notes" "prune" (and dry-run "--dry-run")))
 
 (defun magit-notes-set-ref (ref &optional global)
@@ -2015,7 +2010,7 @@ Currently this only adds the following key bindings.
 (define-globalized-minor-mode global-magit-file-mode
   magit-file-mode magit-file-mode-turn-on
   :package-version '(magit . "2.2.0")
-  :group 'magit)
+  :group 'magit-modes)
 
 (define-obsolete-function-alias 'global-magit-file-buffer-mode
   'global-magit-file-mode "2.3.0")
@@ -2175,9 +2170,12 @@ repository, otherwise in `default-directory'."
     (setq args (mapcar 'eval (eshell-parse-arguments (point-min)
                                                      (point-max))))
     (setq default-directory directory)
-    (magit-run-git-async args))
-  (magit-mode-display-buffer (magit-process-buffer directory t)
-                             'magit-process-mode 'pop-to-buffer))
+    (let ((magit-git-global-arguments
+           ;; A human will want globbing by default.
+           (remove "--literal-pathspecs"
+                   magit-git-global-arguments)))
+     (magit-run-git-async args)))
+  (magit-process-buffer))
 
 ;;;###autoload
 (defun magit-git-command-topdir (args directory)
@@ -2200,8 +2198,7 @@ repository, otherwise in `default-directory'."
                                                      (point-max))))
     (setq default-directory directory)
     (apply #'magit-start-process (car args) nil (cdr args)))
-  (magit-mode-display-buffer (magit-process-buffer directory t)
-                             'magit-process-mode 'pop-to-buffer))
+  (magit-process-buffer))
 
 ;;;###autoload
 (defun magit-shell-command-topdir (args directory)
@@ -2281,54 +2278,214 @@ With prefix argument simply read a directory name using
      dict)
     result))
 
-;;;; Various
+;;;; Revision Stack
 
-(defun magit-copy-as-kill ()
-  "Save the value of the current section to the kill ring.
-For commits save the full hash.  For branches do so only when
-a prefix argument is used, otherwise save the branch name.
-When the region is active, then behave like `kill-ring-save'."
+(defvar magit-revision-stack nil)
+
+(defcustom magit-pop-revision-stack-format
+  '("[%N: %h] " "%N: %H\n   %s\n" "\\[\\([0-9]+\\)[]:]")
+  "Control how `magit-pop-revision-stack' inserts a revision.
+
+The command `magit-pop-revision-stack' inserts a representation
+of the revision last pushed to the `magit-revision-stack' into
+the current buffer.  It inserts text at point and/or near the end
+of the buffer, and removes the consumed revision from the stack.
+
+The entries on the stack have the format (HASH TOPLEVEL) and this
+option has the format (POINT-FORMAT EOB-FORMAT INDEX-REGEXP), all
+of which may be nil or a string (though either one of EOB-FORMAT
+or POINT-FORMAT should be a string, and if INDEX-REGEXP is
+non-nil, then the two formats should be too).
+
+First INDEX-REGEXP is used to find the previously inserted entry,
+by searching backward from point.  The first submatch must match
+the index number.  That number is incremented by one, and becomes
+the index number of the entry to be inserted.  If you don't want
+to number the inserted revisions, then use nil for INDEX-REGEXP.
+
+If INDEX-REGEXP is non-nil then both POINT-FORMAT and EOB-FORMAT
+should contain \"%N\", which is replaced with the number that was
+determined in the previous step.
+
+Both formats, if non-nil and after removing %N, are then expanded
+using `git show --format=FORMAT ...' inside TOPLEVEL.
+
+The expansion of POINT-FORMAT is inserted at point, and the
+expansion of EOB-FORMAT is inserted at the end of the buffer (if
+the buffer ends with a comment, then it is inserted right before
+that)."
+  :package-version '(magit . "2.3.0")
+  :group 'magit-status
+  :type '(list (choice (string :tag "Insert at point format")
+                       (cons (string :tag "Insert at point format")
+                             (repeat (string :tag "Argument to git show")))
+                       (const :tag "Don't insert at point" nil))
+               (choice (string :tag "Insert at eob format")
+                       (cons (string :tag "Insert at eob format")
+                             (repeat (string :tag "Argument to git show")))
+                       (const :tag "Don't insert at eob" nil))
+               (choice (regexp :tag "Find index regexp")
+                       (const :tag "Don't number entries" nil))))
+
+(defun magit-pop-revision-stack (rev toplevel)
+  "Insert a representation of a revision into the current buffer.
+
+Pop a revision from the `magit-revision-stack' and insert it into
+the current buffer according to `magit-pop-revision-stack-format'.
+Revisions can be put on the stack using `magit-copy-section-value'
+and `magit-copy-buffer-revision'.
+
+If the stack is empty or with a prefix argument instead read a
+revision in the minibuffer.  By using the minibuffer history this
+allows selecting an item which was popped earlier or to insert an
+arbitrary reference or revision without first pushing it onto the
+stack.
+
+When reading the revision from the minibuffer, then it might not
+be possible to guess the correct repository.  When this command
+is called inside a repository (e.g. while composing a commit
+message), then that repository is used.  Otherwise (e.g. while
+composing an email) then the repository recorded for the top
+element of the stack is used (even though we insert another
+revision).  If not called inside a repository and with an empty
+stack, or with two prefix arguments, then read the repository in
+the minibuffer too."
+  (interactive
+   (if (or current-prefix-arg (not magit-revision-stack))
+       (let ((default-directory
+               (or (and (not (= (prefix-numeric-value current-prefix-arg) 16))
+                        (or (magit-toplevel)
+                            (cadr (car magit-revision-stack))))
+                   (magit-read-repository))))
+         (list (magit-read-branch-or-commit "Insert revision")
+               default-directory))
+     (push (caar magit-revision-stack) magit-revision-history)
+     (pop magit-revision-stack)))
+  (if rev
+      (cl-destructuring-bind (pnt-format eob-format idx-format)
+          magit-pop-revision-stack-format
+        (let ((default-directory toplevel)
+              (idx (and idx-format
+                        (save-excursion
+                          (if (re-search-backward idx-format nil t)
+                              (number-to-string
+                               (1+ (string-to-number (match-string 1))))
+                            "1"))))
+              pnt-args eob-args)
+          (when (listp pnt-format)
+            (setq pnt-args (cdr pnt-format)
+                  pnt-format (car pnt-format)))
+          (when (listp eob-format)
+            (setq eob-args (cdr eob-format)
+                  eob-format (car eob-format)))
+          (when pnt-format
+            (when idx-format
+              (setq pnt-format
+                    (replace-regexp-in-string "%N" idx pnt-format t t)))
+            (magit-rev-insert-format pnt-format rev pnt-args)
+            (backward-delete-char 1))
+          (when eob-format
+            (when idx-format
+              (setq eob-format
+                    (replace-regexp-in-string "%N" idx eob-format t t)))
+            (save-excursion
+              (goto-char (point-max))
+              (skip-syntax-backward ">s-")
+              (beginning-of-line)
+              (if (and comment-start (looking-at comment-start))
+                  (while (looking-at comment-start)
+                    (forward-line -1))
+                (forward-line)
+                (unless (= (current-column) 0)
+                  (insert ?\n)))
+              (insert ?\n)
+              (magit-rev-insert-format eob-format rev eob-args)
+              (backward-delete-char 1)))))
+    (user-error "Revision stack is empty")))
+
+(define-key git-commit-mode-map
+  (kbd "C-c C-w") 'magit-pop-revision-stack)
+
+(defun magit-copy-section-value ()
+  "Save the value of the current section for later use.
+
+Save the section value to the `kill-ring', and, provided that
+the current section is a commit, branch, or tag section, push
+the (referenced) revision to the `magit-revision-stack' for use
+with `magit-pop-revision-stack'.
+
+When the current section is a branch or a tag, and a prefix
+argument is used, then save the revision at its tip to the
+`kill-ring' instead of the reference name.
+
+When the region is active, then save that to the `kill-ring',
+like `kill-ring-save' would, instead of behaving as described
+above."
   (interactive)
   (if (region-active-p)
       (copy-region-as-kill (mark) (point) 'region)
     (-when-let* ((section (magit-current-section))
                  (value (magit-section-value section)))
       (magit-section-case
-        (branch (when current-prefix-arg
-                  (setq value (magit-rev-parse value))))
-        (commit (setq value (magit-rev-parse value)))
-        (module-commit (let ((default-directory
-                               (file-name-as-directory
-                                (expand-file-name
-                                 (magit-section-parent-value section)
-                                 (magit-toplevel)))))
-                         (setq value (magit-rev-parse value)))))
-      (kill-new (message "%s" value)))))
+        ((branch commit module-commit tag)
+         (let ((default-directory default-directory) ref)
+           (magit-section-case
+             ((branch tag)
+              (setq ref value))
+             (module-commit
+              (setq default-directory
+                    (file-name-as-directory
+                     (expand-file-name (magit-section-parent-value section)
+                                       (magit-toplevel))))))
+           (setq value (magit-rev-parse value))
+           (push (list value default-directory) magit-revision-stack)
+           (kill-new (message "%s" (or (and current-prefix-arg ref)
+                                       value)))))
+        (t (kill-new (message "%s" value)))))))
 
-(defun magit-copy-buffer-thing-as-kill ()
-  "Save the thing displayed in the current buffer to the kill ring.
-When the region is active, then behave like `kill-ring-save'."
+(defun magit-copy-buffer-revision ()
+  "Save the revision of the current buffer for later use.
+
+Save the revision shown in the current buffer to the `kill-ring'
+and push it to the `magit-revision-stack'.
+
+This command is mainly intended for use in `magit-revision-mode'
+buffers, the only buffers where it is always unambiguous exactly
+which revision should be saved.
+
+Most other Magit buffers usually show more than one revision, in
+some way or another, so this command has to select one of them,
+and that choice might not always be the one you think would have
+been the best pick.
+
+In such buffers it is often more useful to save the value of
+the current section instead, using `magit-copy-section-value'.
+
+When the region is active, then save that to the `kill-ring',
+like `kill-ring-save' would, instead of behaving as described
+above."
   (interactive)
   (if (region-active-p)
       (copy-region-as-kill (mark) (point) 'region)
-    (--when-let (cond ((derived-mode-p 'magit-revision-mode)
-                       (magit-rev-parse (car magit-refresh-args)))
-                      ((derived-mode-p 'magit-diff-mode
-                                       'magit-cherry-mode
-                                       'magit-reflog-mode
-                                       'magit-refs-mode
-                                       'magit-stash-mode)
-                       (car magit-refresh-args))
-                      ((derived-mode-p 'magit-log-mode)
-                       (if magit-log-select-pick-function
-                           (car magit-refresh-args)
-                         (cadr magit-refresh-args)))
-                      ((derived-mode-p 'magit-status-mode)
-                       (or (magit-get-current-branch) "HEAD"))
-                      ((derived-mode-p 'magit-stashes-mode)
-                       "refs/stash")
-                      (t (magit-copy-as-kill)))
-      (kill-new (message "%s" it)))))
+    (-when-let (rev (cond ((memq major-mode '(magit-cherry-mode
+                                              magit-log-select-mode
+                                              magit-reflog-mode
+                                              magit-refs-mode
+                                              magit-revision-mode
+                                              magit-stash-mode
+                                              magit-stashes-mode))
+                           (car magit-refresh-args))
+                          ((memq major-mode '(magit-diff-mode
+                                              magit-log-mode))
+                           (let ((r (caar magit-refresh-args)))
+                             (if (string-match "\\.\\.\\.?\\(.+\\)" r)
+                                 (match-string 1 r)
+                               r)))
+                          ((eq major-mode 'magit-status-mode) "HEAD")))
+      (when (magit-rev-verify-commit rev)
+        (setq rev (magit-rev-parse rev))
+        (push (list rev default-directory) magit-revision-stack)
+        (kill-new (message "%s" rev))))))
 
 ;;; magit.el ends soon
 
@@ -2355,6 +2512,7 @@ When the region is active, then behave like `kill-ring-save'."
   "The version of Magit that you're using.
 Use the function by the same name instead of this variable.")
 
+;;;###autoload
 (defun magit-version ()
   "Return the version of Magit currently in use.
 When called interactive also show the used versions of Magit,
@@ -2405,8 +2563,8 @@ Git, and Emacs in the echo area."
     (if (stringp magit-version)
         (when (called-interactively-p 'any)
           (message "Magit %s, Git %s, Emacs %s"
-                   magit-version
-                   (ignore-errors (substring (magit-git-string "version") 12))
+                   (or magit-version "(unknown)")
+                   (or (magit-git-version) "(unknown)")
                    emacs-version))
       (setq debug (reverse debug))
       (setq magit-version 'error)
@@ -2415,16 +2573,21 @@ Git, and Emacs in the echo area."
       (message "Cannot determine Magit's version %S" debug))
     magit-version))
 
+(defun magit-git-version (&optional numeric)
+  (--when-let (let (magit-git-global-arguments)
+                (ignore-errors (substring (magit-git-string "version") 12)))
+    (if numeric
+        (and (string-match "^\\([0-9]+\\.[0-9]+\\.[0-9]+\\)" it)
+             (match-string 1 it))
+      it)))
+
 (defun magit-startup-asserts ()
-  (let* ((magit-git-global-arguments nil)
-         (version (ignore-errors (substring (magit-git-string "version") 12))))
-    (when version
-      (when (string-match "^\\([0-9]+\\.[0-9]+\\.[0-9]+\\)" version)
-        (setq version (match-string 1 version)))
-      (when (and (not (equal (getenv "TRAVIS") "true"))
-                 (version< version "1.9.4"))
-        (display-warning 'magit (format "\
-Magit requires Git >= 1.9.4, you are using %s.
+  (let ((version (magit-git-version t)))
+    (when (and version
+               (version< version magit--minimal-git)
+               (not (equal (getenv "TRAVIS") "true")))
+      (display-warning 'magit (format "\
+Magit requires Git >= %s, you are using %s.
 
 If this comes as a surprise to you, because you do actually have
 a newer version installed, then that probably means that the
@@ -2437,10 +2600,10 @@ For X11 something like ~/.xinitrc should work.
 
 If you use Tramp to work inside remote Git repositories, then you
 have to make sure a suitable Git is used on the remote machines
-too.\n" version) :error))))
-  (when (version< emacs-version "24.4")
+too.\n" magit--minimal-git version) :error)))
+  (when (version< emacs-version magit--minimal-emacs)
     (display-warning 'magit (format "\
-Magit requires Emacs >= 24.4, you are using %s.
+Magit requires Emacs >= %s, you are using %s.
 
 If this comes as a surprise to you, because you do actually have
 a newer version installed, then that probably means that the
@@ -2449,7 +2612,9 @@ always start Emacs from a shell, then that can be fixed in the
 shell's init file.  If you start Emacs by clicking on an icon,
 or using some sort of application launcher, then you probably
 have to adjust the environment as seen by graphical interface.
-For X11 something like ~/.xinitrc should work.\n" emacs-version) :error))
+For X11 something like ~/.xinitrc should work.\n"
+                                    magit--minimal-emacs emacs-version)
+                     :error))
   (--each '((magit-log-edit  . git-commit)
             (git-commit-mode . git-commit)
             (git-rebase-mode . git-rebase))
@@ -2461,6 +2626,41 @@ which was used in earlier releases.  Please remove it, so that
 Magit can use the successor `%s' without the obsolete
 library getting in the way.  Then restart Emacs.\n"
                                       (car it)  (car it) (cdr it)) :error))))
+
+(defvar magit--remotes-using-recent-git nil)
+
+(defun magit-tramp-asserts (directory)
+  (-when-let (remote (file-remote-p directory))
+    (unless (member remote magit--remotes-using-recent-git)
+      (-if-let (version (let ((default-directory directory))
+                          (magit-git-version t)))
+          (if (version<= magit--minimal-git version)
+              (push version magit--remotes-using-recent-git)
+            (display-warning 'magit (format "\
+Magit requires Git >= %s, but on %s the version is %s.
+
+If multiple Git versions are installed on the host then the
+problem might be that TRAMP uses the wrong executable.
+
+First check the value of `magit-git-executable'.  Its value is
+used when running git locally as well as when running it on a
+remote host.  The default value is \"git\", except on Windows
+where an absolute path is used for performance reasons.
+
+If the value already is just \"git\" but TRAMP never-the-less
+doesn't use the correct executable, then consult the info node
+`(tramp)Remote programs'.\n" magit--minimal-git remote version) :error))
+        (display-warning 'magit (format "\
+Magit cannot find Git on %s.
+
+First check the value of `magit-git-executable'.  Its value is
+used when running git locally as well as when running it on a
+remote host.  The default value is \"git\", except on Windows
+where an absolute path is used for performance reasons.
+
+If the value already is just \"git\" but TRAMP never-the-less
+doesn't find the executable, then consult the info node
+`(tramp)Remote programs'.\n" remote) :error)))))
 
 (provide 'magit)
 

@@ -37,9 +37,21 @@
   :group 'magit-extensions)
 
 (defcustom magit-blame-heading-format "%-20a %C %s"
-  "Format used for blame headings."
+  "Format string used for blame headings.
+
+The following placeholders are recognized:
+
+  %H    hash
+  %s    summary
+  %a    author
+  %A    author time
+  %c    committer
+  %C    committer time
+
+The author and committer time formats can be specified with
+`magit-blame-time-format'."
   :group 'magit-blame
-  :type 'regexp)
+  :type 'string)
 
 (defcustom magit-blame-time-format "%F %H:%M"
   "Format for time strings in blame headings."
@@ -68,13 +80,13 @@ and then turned on again when turning off the latter."
   :type '(choice (const :tag "No lighter" "") string))
 
 (unless (find-lisp-object-file-name 'magit-blame-goto-chunk-hook 'defvar)
-  (add-hook 'magit-blame-goto-chunk-hook 'magit-blame-update-other-window))
-(defcustom magit-blame-goto-chunk-hook '(magit-blame-update-other-window)
+  (add-hook 'magit-blame-goto-chunk-hook 'magit-blame-maybe-update-revision-buffer))
+(defcustom magit-blame-goto-chunk-hook '(magit-blame-maybe-update-revision-buffer)
   "Hook run by `magit-blame-next-chunk' and `magit-blame-previous-chunk'."
   :package-version '(magit . "2.1.0")
   :group 'magit-blame
   :type 'hook
-  :options '(magit-blame-update-other-window))
+  :options '(magit-blame-maybe-update-revision-buffer))
 
 (defface magit-blame-heading
   '((((class color) (background light))
@@ -222,7 +234,10 @@ only arguments available from `magit-blame-popup' should be used.
     (if revision
         (magit-find-file revision file)
       (let ((default-directory default-directory))
-        (find-file file)))
+        (--if-let (find-buffer-visiting file)
+            (progn (switch-to-buffer it)
+                   (save-buffer))
+          (find-file file))))
     ;; ^ Make sure this doesn't affect the value used below.  b640c6f
     (widen)
     (when line
@@ -479,17 +494,20 @@ then also kill the buffer."
   (--first (overlay-get it 'magit-blame)
            (overlays-at (or pos (point)))))
 
-(defun magit-blame-update-other-window ()
-  (unless magit-update-other-window-timer
-    (setq magit-update-other-window-timer
-          (run-with-idle-timer
-           magit-diff-auto-show-delay nil
-           (lambda ()
-             (--when-let (and (magit-diff-auto-show-p 'blame-follow)
-                              (magit-mode-get-buffer nil 'magit-revision-mode)
-                              (magit-blame-chunk-get :hash))
-               (apply #'magit-show-commit it t nil (magit-diff-arguments)))
-             (setq magit-update-other-window-timer nil))))))
+(defun magit-blame-maybe-update-revision-buffer ()
+  (unless magit--update-revision-buffer
+    (setq magit--update-revision-buffer nil)
+    (-when-let* ((commit (magit-blame-chunk-get :hash))
+                 (buffer (magit-mode-get-buffer 'magit-revision-mode nil t)))
+      (setq magit--update-revision-buffer (list commit buffer))
+      (run-with-idle-timer
+       magit-update-other-window-delay nil
+       (lambda ()
+         (cl-destructuring-bind (rev buf) magit--update-revision-buffer
+           (setq magit--update-revision-buffer nil)
+           (when (buffer-live-p buf)
+             (let ((magit-display-buffer-noselect t))
+               (apply #'magit-show-commit rev (magit-diff-arguments))))))))))
 
 ;;; magit-blame.el ends soon
 (provide 'magit-blame)
