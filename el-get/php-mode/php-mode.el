@@ -11,7 +11,7 @@
 (defconst php-mode-version-number "1.17.0"
   "PHP Mode version number.")
 
-(defconst php-mode-modified "2015-06-23"
+(defconst php-mode-modified "2015-10-02"
   "PHP Mode build date.")
 
 ;;; License
@@ -517,7 +517,8 @@ PHP does not have an \"enum\"-like keyword."
         "null"))
 
 (c-lang-defconst c-lambda-kwds
-  php '("function"))
+  php '("function"
+        "use"))
 
 (c-lang-defconst c-other-kwds
   "Keywords not accounted for by any other `*-kwds' language constant."
@@ -550,6 +551,7 @@ PHP does not have an \"enum\"-like keyword."
     "var"
     "xor"
     "yield"
+    "yield from"
 
     ;; Below keywords are technically not reserved keywords, but
     ;; threated no differently by php-mode from actual reserved
@@ -558,6 +560,7 @@ PHP does not have an \"enum\"-like keyword."
     ;;; declare directives:
     "encoding"
     "ticks"
+    "strict_types"
 
     ;;; self for static references:
     "self"
@@ -604,6 +607,7 @@ but only if the setting is enabled"
                        (class-open . -)
                        (comment-intro . 0)
                        (inlambda . 0)
+                       (lambda-intro-cont . +)
                        (inline-open . 0)
                        (label . +)
                        (statement-cont . (first php-lineup-cascaded-calls php-lineup-string-cont +))
@@ -1301,7 +1305,8 @@ With a prefix argument, prompt (with completion) for a word to search for."
       t)))
 
 (defsubst php-search-web-documentation (word)
-  (php-browse-documentation-url (concat php-search-url word)))
+  (php-browse-documentation-url (concat php-search-url
+                                        (replace-regexp-in-string "_" "-" (downcase word)))))
 
 ;; Define function documentation function
 (defun php-search-documentation (word)
@@ -1401,6 +1406,9 @@ a completion list."
      (,(concat (regexp-opt (c-lang-const c-class-decl-kwds php))
                " \\(\\sw+\\)")
       1 font-lock-type-face)
+
+     ;; Highlight return types in functions and methods.
+     ("function.+:\\s-?\\(\\sw+\\)" 1 font-lock-type-face)
 
      ;; While c-opt-cpp-* highlights the <?php opening tags, it is not
      ;; possible to make it highlight short open tags and closing tags
