@@ -311,12 +311,54 @@ context-help to false"
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
-  (abbrev-mode 1)
+  (abbrev-mode 1) ;; See sql-mode-abbrev-table definition (below)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars in database names in prompt.
     ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
-    (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\)*=[#>] ")))
+    (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\)*=[#>] ")
+    ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
+    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(][#>] ")
+    ;; Deal with inline prompts in query output
+    ;; Appending so `sql-interactive-remove-continuation-prompt' runs first.
+    (add-hook 'comint-preoutput-filter-functions
+              'my-sql-comint-preoutput-filter :append :local)))
+
+(defadvice sql-send-string (before my-prefix-newline-to-sql-string)
+  "Trivial solution to single-line queries tripping up my custom output filter.
+See `my-sql-comint-preoutput-filter'."
+  (ad-set-arg 0 (concat "\n" (ad-get-arg 0))))
+(ad-activate 'sql-send-string)
+
+(defun my-sql-comint-preoutput-filter (output)
+  "Deal with inline prompts in SQL query output.
+Used with `comint-preoutput-filter-functions'.
+
+n.b. This runs after `sql-interactive-remove-continuation-prompt'."
+  ;; Store the buffer-local prompt values before changing buffers
+  (let ((main-prompt sql-prompt-regexp)
+        ;;(cont-prompt sql-prompt-cont-regexp)
+        (only-main-prompt
+         (rx-to-string `(sequence bos (regexp ,sql-prompt-regexp) eos)))
+        (any-prompt
+         (rx-to-string `(or (regexp ,sql-prompt-regexp)
+                            (regexp ,sql-prompt-cont-regexp))))
+        (prefix-newline nil))
+    (with-temp-buffer
+      (insert output)
+      (goto-char (point-min))
+      (unless (looking-at only-main-prompt)
+        (when (looking-at main-prompt)
+          (setq prefix-newline t))
+        (while (looking-at any-prompt)
+          (replace-match ""))
+        ;; Maybe prefix the output with a newline
+        (when prefix-newline
+          (goto-char (point-min))
+          (unless (looking-at "\n")
+            (insert "\n"))))
+      ;; Return the modified output
+      (buffer-substring-no-properties (point-min) (point-max)))))
 
 (add-hook 'sql-login-hook 'my-sql-login-hook)
 (defun my-sql-login-hook ()
