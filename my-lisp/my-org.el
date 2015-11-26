@@ -122,11 +122,16 @@
 
 ;;; Compatibility
 
-;; Make windmove work in org-mode.
-(add-hook 'org-shiftup-final-hook 'windmove-up)
-(add-hook 'org-shiftdown-final-hook 'windmove-down)
-(add-hook 'org-shiftleft-final-hook 'windmove-left)
-(add-hook 'org-shiftright-final-hook 'windmove-right)
+;; Org conflicts with the default windmove bindings, and I'm much too
+;; used to those, so I'm changing the bindings for Org instead:
+(setq org-replace-disputed-keys t
+      org-disputed-keys '(([(shift up)] . [(super shift up)])
+                          ([(shift down)] . [(super shift down)])
+                          ([(shift left)] . [(super shift left)])
+                          ([(shift right)] . [(super shift right)])))
+;; n.b. Org also conflicts with shift-selection, but I don't use that:
+;; ([(control shift right)] . [(meta shift +)])
+;; ([(control shift left)] . [(meta shift -)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
