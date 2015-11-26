@@ -303,6 +303,12 @@ context-help to false"
 
 ;; SQL
 
+(eval-when-compile
+  (defvar sql-interactive-mode-map)
+  (defvar sql-product)
+  (defvar sql-prompt-regexp)
+  (defvar sql-prompt-cont-regexp))
+
 ;; Within SQLi buffer, open a sql-mode buffer (from which you can edit
 ;; queries and send them to SQLi; see C-h f sql-mode RET).
 (eval-after-load "sql"
@@ -318,47 +324,50 @@ context-help to false"
     ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
     (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\)*=[#>] ")
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
-    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(][#>] ")
-    ;; Deal with inline prompts in query output
-    ;; Appending so `sql-interactive-remove-continuation-prompt' runs first.
-    (add-hook 'comint-preoutput-filter-functions
-              'my-sql-comint-preoutput-filter :append :local)))
+    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(][#>] "))
 
-(defadvice sql-send-string (before my-prefix-newline-to-sql-string)
-  "Trivial solution to single-line queries tripping up my custom output filter.
-See `my-sql-comint-preoutput-filter'."
-  (ad-set-arg 0 (concat "\n" (ad-get-arg 0))))
-(ad-activate 'sql-send-string)
+  ;; Deal with inline prompts in query output.
+  ;; Runs after `sql-interactive-remove-continuation-prompt'.
+  (add-hook 'comint-preoutput-filter-functions
+            'my-sql-comint-preoutput-filter :append :local))
 
+;;(message (concat "'" output "'"))
 (defun my-sql-comint-preoutput-filter (output)
-  "Deal with inline prompts in SQL query output.
-Used with `comint-preoutput-filter-functions'.
+  "Filter prompts out of SQL query output.
 
-n.b. This runs after `sql-interactive-remove-continuation-prompt'."
-  ;; Store the buffer-local prompt values before changing buffers
-  (let ((main-prompt sql-prompt-regexp)
-        ;;(cont-prompt sql-prompt-cont-regexp)
-        (only-main-prompt
-         (rx-to-string `(sequence bos (regexp ,sql-prompt-regexp) eos)))
-        (any-prompt
-         (rx-to-string `(or (regexp ,sql-prompt-regexp)
-                            (regexp ,sql-prompt-cont-regexp))))
-        (prefix-newline nil))
-    (with-temp-buffer
-      (insert output)
-      (goto-char (point-min))
-      (unless (looking-at only-main-prompt)
+Runs after `sql-interactive-remove-continuation-prompt' in
+`comint-preoutput-filter-functions'."
+  ;; If the entire output is simply the main prompt, return that.
+  ;; (i.e. When simply typing RET at the sqli prompt.)
+  (if (string-match (concat "\\`\\(" sql-prompt-regexp "\\)\\'") output)
+      output
+    ;; Otherwise filter all leading prompts from the output.
+    ;; Store the buffer-local prompt patterns before changing buffers.
+    (let ((main-prompt sql-prompt-regexp)
+          (any-prompt comint-prompt-regexp) ;; see `sql-interactive-mode'
+          (prefix-newline nil))
+      (with-temp-buffer
+        (insert output)
+        (goto-char (point-min))
         (when (looking-at main-prompt)
           (setq prefix-newline t))
         (while (looking-at any-prompt)
           (replace-match ""))
-        ;; Maybe prefix the output with a newline
+        ;; Prepend a newline to the output, if necessary.
         (when prefix-newline
           (goto-char (point-min))
           (unless (looking-at "\n")
-            (insert "\n"))))
-      ;; Return the modified output
-      (buffer-substring-no-properties (point-min) (point-max)))))
+            (insert "\n")))
+        ;; Return the filtered output.
+        (buffer-substring-no-properties (point-min) (point-max))))))
+
+(defadvice sql-send-string (before my-prefix-newline-to-sql-string)
+  "Force all `sql-send-*' commands to include an initial newline.
+
+This is a trivial solution to single-line queries tripping up my
+custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
+  (ad-set-arg 0 (concat "\n" (ad-get-arg 0))))
+(ad-activate 'sql-send-string)
 
 (add-hook 'sql-login-hook 'my-sql-login-hook)
 (defun my-sql-login-hook ()
@@ -379,9 +388,6 @@ n.b. This runs after `sql-interactive-remove-continuation-prompt'."
 (define-abbrev-table 'sql-mode-abbrev-table
   (mapcar (lambda (v) (list v (upcase v) nil 1))
           '("absolute" "action" "add" "after" "all" "allocate" "alter" "and" "any" "are" "array" "as" "asc" "asensitive" "assertion" "asymmetric" "at" "atomic" "authorization" "avg" "before" "begin" "between" "bigint" "binary" "bit" "bitlength" "blob" "boolean" "both" "breadth" "by" "call" "called" "cascade" "cascaded" "case" "cast" "catalog" "char" "char_length" "character" "character_length" "check" "clob" "close" "coalesce" "collate" "collation" "column" "commit" "condition" "connect" "connection" "constraint" "constraints" "constructor" "contains" "continue" "convert" "corresponding" "count" "create" "cross" "cube" "current" "current_date" "current_default_transform_group" "current_path" "current_role" "current_time" "current_timestamp" "current_transform_group_for_type" "current_user" "cursor" "cycle" "data" "date" "day" "deallocate" "dec" "decimal" "declare" "default" "deferrable" "deferred" "delete" "depth" "deref" "desc" "describe" "descriptor" "deterministic" "diagnostics" "disconnect" "distinct" "do" "domain" "double" "drop" "dynamic" "each" "element" "else" "elseif" "end" "equals" "escape" "except" "exception" "exec" "execute" "exists" "exit" "external" "extract" "false" "fetch" "filter" "first" "float" "for" "foreign" "found" "free" "from" "full" "function" "general" "get" "global" "go" "goto" "grant" "group" "grouping" "handler" "having" "hold" "hour" "identity" "if" "immediate" "in" "indicator" "initially" "inner" "inout" "input" "insensitive" "insert" "int" "integer" "intersect" "interval" "into" "is" "isolation" "iterate" "join" "key" "language" "large" "last" "lateral" "leading" "leave" "left" "level" "like" "local" "localtime" "localtimestamp" "locator" "loop" "lower" "map" "match" "map" "max" "member" "merge" "method" "min" "minute" "modifies" "module" "month" "multiset" "names" "national" "natural" "nchar" "nclob" "new" "next" "no" "none" "not" "null" "nullif" "numeric" "object" "octet_length" "of" "old" "on" "only" "open" "option" "or" "order" "ordinality" "out" "outer" "output" "over" "overlaps" "pad" "parameter" "partial" "partition" "path" "position" "precision" "prepare" "preserve" "primary" "prior" "privileges" "procedure" "public" "range" "read" "reads" "real" "recursive" "ref" "references" "referencing" "relative" "release" "repeat" "resignal" "restrict" "result" "return" "returns" "revoke" "right" "role" "rollback" "rollup" "routine" "row" "rows" "savepoint" "schema" "scope" "scroll" "search" "second" "section" "select" "sensitive" "session" "session_user" "set" "sets" "signal" "similar" "size" "smallint" "some" "space" "specific" "specifictype" "sql" "sqlcode" "sqlerror" "sqlexception" "sqlstate" "sqlwarning" "start" "state" "static" "submultiset" "substring" "sum" "symmetric" "system" "system_user" "table" "tablesample" "temporary" "then" "time" "timestamp" "timezone_hour" "timezone_minute" "to" "trailing" "transaction" "translate" "translation" "treat" "trigger" "trim" "true" "under" "undo" "union" "unique" "unknown" "unnest" "until" "update" "upper" "usage" "user" "using" "value" "values" "varchar" "varying" "view" "when" "whenever" "where" "while" "window" "with" "within" "without" "work" "write" "year" "zone")))
-
-;; Python / Plone / Zope
-(require 'my-python)
 
 ;; Prevent really long lines in minified files from bringing performance to
 ;; a stand-still.
@@ -411,6 +417,9 @@ if they are not strictly necessary."
           (setq ad-return-value 'fundamental-mode))))))
 
 (ad-activate 'hack-local-variables)
+
+;; Python / Plone / Zope
+(require 'my-python nil :noerror)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
