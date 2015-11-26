@@ -28,13 +28,10 @@
             (file "php_manual_en.tar.gz"))
         (make-directory download-directory t)
         (shell-command
-         (format
-          "cd %s && wget -q %s -O %s && tar -xf %s && rm %s"
-          (shell-quote-argument download-directory)
-          (shell-quote-argument url)
-          (shell-quote-argument file)
-          (shell-quote-argument file)
-          (shell-quote-argument file))))
+         (apply 'format
+                "cd %s && wget -q %s -O %s && tar -xf %s && rm %s"
+                (mapcar 'shell-quote-argument
+                        (list download-directory url file file file)))))
       ;; Check the result
       (if (file-directory-p expected)
           (setq php-manual-path expected)
