@@ -1214,6 +1214,15 @@ or \"user@example.com\""
     (copy-file (concat data-directory "e/eterm-color") destdir)
     (copy-file (concat data-directory "e/eterm-color.ti") destdir)))
 
+(defun my-terminal-cursor-color (color)
+  "Sets the terminal cursor colour by sending the appropriate escape sequence."
+  (interactive
+   (list (read-color "Color (white): " nil :allow-empty)))
+  (when (string= color "")
+    (setq color "white"))
+  (send-string-to-terminal
+   (concat "\033]12;" color "\007")))
+
 (defvar my-emacs-uptime-log (locate-user-emacs-file "uptime.log")
   "Log file for `my-log-emacs-uptime'.")
 
