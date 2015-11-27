@@ -10,6 +10,12 @@
 
 ;;; General configuration
 
+;; Avoid autoloading org.
+(eval-after-load "org"
+  '(progn
+     (my-org-babel-do-load-languages)
+     (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)))
+
 ;; ;; Set maximum indentation for description lists.
 ;; (setq org-list-description-max-indent 5)
 
@@ -32,50 +38,51 @@
 (setq org-src-preserve-indentation t)
 
 ;; org-babel supported languages
-(org-babel-do-load-languages
- 'org-babel-load-languages
- (mapcar (lambda (lang) (cons lang t))
-         '(
-           ;; asymptote
-           awk
-           ;; C
-           ;; calc
-           ;; clojure
-           css
-           ;; ditaa
-           ;; dot
-           emacs-lisp
-           ;; fortran
-           ;; gnuplot
-           ;; haskell
-           ;; io
-           ;; java
-           js
-           latex
-           ;; ledger
-           ;; lilypond
-           lisp
-           makefile
-           ;; matlab
-           ;; maxima
-           ;; mscgen
-           ;; ocaml
-           ;; octave
-           org
-           ;; perl
-           ;; picolisp
-           ;; plantuml
-           python
-           ;; R
-           ;; ruby
-           sass
-           ;; scala
-           ;; scheme
-           sh
-           ;; shen
-           sql
-           ;; sqlite
-           )))
+(defun my-org-babel-do-load-languages ()
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (mapcar (lambda (lang) (cons lang t))
+           '(
+             ;; asymptote
+             awk
+             ;; C
+             ;; calc
+             ;; clojure
+             css
+             ;; ditaa
+             ;; dot
+             emacs-lisp
+             ;; fortran
+             ;; gnuplot
+             ;; haskell
+             ;; io
+             ;; java
+             js
+             latex
+             ;; ledger
+             ;; lilypond
+             lisp
+             makefile
+             ;; matlab
+             ;; maxima
+             ;; mscgen
+             ;; ocaml
+             ;; octave
+             org
+             ;; perl
+             ;; picolisp
+             ;; plantuml
+             python
+             ;; R
+             ;; ruby
+             sass
+             ;; scala
+             ;; scheme
+             sh
+             ;; shen
+             sql
+             ;; sqlite
+             ))))
 
 ;; Wrap region in an org template (e.g. latex, src etc)
 ;; http://pragmaticemacs.com/emacs/wrap-text-in-an-org-mode-block/
@@ -117,18 +124,18 @@
            (t
             (insert "#+BEGIN_" choice "\n")
             (save-excursion (insert "#+END_" choice)))))))))
-
-(define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
 
 ;;; Compatibility
 
 ;; Org conflicts with the default windmove bindings, and I'm much too
 ;; used to those, so I'm changing the bindings for Org instead:
-(setq org-replace-disputed-keys t
-      org-disputed-keys '(([(shift up)] . [(super shift up)])
-                          ([(shift down)] . [(super shift down)])
-                          ([(shift left)] . [(super shift left)])
-                          ([(shift right)] . [(super shift right)])))
+(custom-set-variables
+ '(org-replace-disputed-keys t)
+ '(org-disputed-keys '(([(shift up)] . [(super shift up)])
+                       ([(shift down)] . [(super shift down)])
+                       ([(shift left)] . [(super shift left)])
+                       ([(shift right)] . [(super shift right)]))))
+
 ;; n.b. Org also conflicts with shift-selection, but I don't use that:
 ;; ([(control shift right)] . [(meta shift +)])
 ;; ([(control shift left)] . [(meta shift -)])
