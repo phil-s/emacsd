@@ -1,3 +1,22 @@
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar find-grep-options)
+  (defvar sql-buffer)
+  (defvar sql-product)
+  (defvar tags-loop-operate)
+  (defvar tags-loop-scan)
+  (defvar term-ansi-buffer-name)
+  (defvar term-prompt-regexp)
+  (defvar url-http-end-of-headers)
+  (declare-function he-substitute-string "hippie-exp")
+  (declare-function ibuffer-quit "ibuffer")
+  (declare-function shr-render-buffer "shr")
+  (declare-function sql-buffer-live-p "sql")
+  (declare-function sql-highlight-product "sql")
+  (declare-function term-in-char-mode "term")
+  (declare-function tramp-get-completion-function "tramp")
+  )
+
 ;; (defun my-ido-filename ()
 ;;   "Return the filename selected with ido."
 ;;   (interactive)

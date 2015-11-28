@@ -1,5 +1,9 @@
 ;; I don't really know what I'm doing yet.
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar org-mode-map))
+
 ;;; Tutorials etc
 
 ;; http://pragmaticemacs.com/category/org/

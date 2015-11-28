@@ -1,5 +1,11 @@
 ;; See my-project.el for directory local variables for Drupal projects.
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar drupal-tags-autoupdate-timer)
+  (defvar c-basic-offset)
+  (declare-function c-mark-function "cc-cmds"))
+
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"

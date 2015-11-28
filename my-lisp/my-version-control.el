@@ -51,6 +51,11 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
 ;; SVN (Subversion)
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar svn-status-custom-hide-function)
+  (declare-function svn-status-line-info->filename-nondirectory "psvn"))
+
 ;; (setq vc-svn-global-switches
 ;;       '("--username" "phils" "--password" "password"))
 

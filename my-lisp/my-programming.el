@@ -1,3 +1,23 @@
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar context-help)
+  (defvar cperl-indent-level)
+  (defvar eldoc-argument-case)
+  (defvar imenu--index-alist)
+  (defvar imenu--rescan-item)
+  (defvar name-and-pos)
+  (defvar selected-symbol)
+  (defvar symbol-names)
+  (defvar web-mode-autocompletes)
+  (defvar web-mode-tag-auto-close-style)
+  (defvar whitespace-style)
+  (declare-function hl-sexp-mode "hl-sexp")
+  (declare-function idle-highlight "idle-highlight")
+  (declare-function imenu--cleanup "imenu")
+  (declare-function imenu--make-index-alist "imenu")
+  (declare-function imenu--subalist-p "imenu")
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming language support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

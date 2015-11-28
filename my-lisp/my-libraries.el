@@ -66,6 +66,11 @@ unhides lines again"
 ;; Icicle mode is a global minor mode.  It binds keys in the minibuffer."
 ;;   t)
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar geben-mode-map)
+  (defvar geben-version)
+  (declare-function geben-dbgp-decode-value "geben"))
 
 (eval-after-load 'geben
   '(progn

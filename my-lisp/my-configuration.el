@@ -602,6 +602,8 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
                    " " (optional " ") (repeat 1 2 digit)
                    " " (= 4 digit) "]"))))
 
+(eval-when-compile
+  (defvar which-func-non-auto-modes))
 (eval-after-load "which-func"
   '(add-to-list 'which-func-non-auto-modes 'erc-mode))
 
