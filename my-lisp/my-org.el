@@ -6,15 +6,15 @@
 ;; http://orgmode.org/worg/org-tutorials/org4beginners.html
 ;; http://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
 ;; http://www.star.bris.ac.uk/bjm/emacs.html
+
 
-
-;;; General configuration
-
-;; Avoid autoloading org.
+;;; Deferred configuration
 (eval-after-load "org"
   '(progn
      (my-org-babel-do-load-languages)
      (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)))
+
+;;; General configuration
 
 ;; ;; Set maximum indentation for description lists.
 ;; (setq org-list-description-max-indent 5)
@@ -27,6 +27,9 @@
 
 ;; Prevent the demoting of a heading also shifting text within its sections.
 (setq org-adapt-indentation nil)
+
+;; Use a real ellipsis character.
+(setq org-ellipsis "…")
 
 
 ;;; Babel
@@ -83,6 +86,7 @@
              sql
              ;; sqlite
              ))))
+
 
 ;; Wrap region in an org template (e.g. latex, src etc)
 ;; http://pragmaticemacs.com/emacs/wrap-text-in-an-org-mode-block/
@@ -124,6 +128,7 @@
            (t
             (insert "#+BEGIN_" choice "\n")
             (save-excursion (insert "#+END_" choice)))))))))
+
 
 ;;; Compatibility
 
