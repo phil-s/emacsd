@@ -231,7 +231,22 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
   ;; rm -f TAGS.new
   `(,(concat
       "cd %s;"                                       ;dir
-      " find . \\( -type d -regex \"%s\" -prune \\)" ;prune
+      ;; Gah. Ctags (5.8) is buggy:
+      ;; If we use 'find .' or 'find ./' we get broken paths:
+      ;; $ find . -name "*.php" | ctags -e -f TAGS -L -
+      ;; $ grep sites/.*/settings.php TAGS
+      ;; sites/defauls/settings.php,418
+      ;;             ^
+      ;; But it's happy with 'find *"
+      ;; $ find * -name "*.php" | ctags -e -f TAGS -L -
+      ;; $ grep settings.php TAGS
+      ;; sites/default/settings.php,418
+      ;;             ^
+      ;; We don't expect to index any dot files in a Drupal site's
+      ;; root directory so in practice it's ok to use 'find *'. This
+      ;; is an annoying bug, though.  n.b. Using an absolute path is
+      ;; also safe, but makes the TAGS non-portable.
+      " find * \\( -type d -regex \"%s\" -prune \\)" ;prune
       " -o -type f \\( -regex \"%s\" "               ;ignore
       "                -o -iregex \"%s\" -print \\)" ;pattern
       " | ctags -e --language-force=php -f TAGS.new -L -"
