@@ -2,9 +2,13 @@
 
 ;; Silence compiler warnings
 (eval-when-compile
-  (defvar drupal-tags-autoupdate-timer)
   (defvar c-basic-offset)
-  (declare-function c-mark-function "cc-cmds"))
+  (defvar drupal-tags-autoupdate-timer)
+  (defvar grep-find-ignored-directories)
+  (declare-function c-mark-function "cc-cmds")
+  (declare-function term-char-mode "term")
+  (declare-function term-mode "term")
+  )
 
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"

@@ -48,6 +48,9 @@ Use `set-region-read-only' to set this property."
     (set-buffer-modified-p modified)))
 
 (eval-when-compile
+  (defvar he-num)
+  (defvar he-search-string)
+  (defvar he-tried-table)
   (declare-function he-substitute-string "hippie-exp"))
 
 (defun my-hippie-expand-completions (&optional hippie-expand-function)
@@ -969,7 +972,8 @@ point. This function returns a list (string) for use in `interactive'."
   :group 'www)
 
 (defalias 'my-render-url 'my-eww)
-(defvar url-http-end-of-headers)
+(eval-when-compile
+  (defvar url-http-end-of-headers))
 (defun my-eww (url)
   "Render URL as HTML."
   (declare (obsolete eww "24.4"))

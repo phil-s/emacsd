@@ -4,6 +4,17 @@
 ;;(when (eq system-type 'windows-nt)
 ;;  (require 'my-win32))
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar cygwin-mount-cygwin-bin-directory)
+  (defvar ediff-diff-program)
+  (defvar ediff-diff3-program)
+  (defvar ediff-patch-program)
+  (defvar explicit-shell-file-name)
+  (defvar ls-lisp-use-insert-directory-program)
+  (defvar no-word-coding-systems)
+  (defvar w32-symlinks-handle-shortcuts)
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Win32 basics

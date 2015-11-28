@@ -115,6 +115,12 @@ static char * data[] = {
 
 ;; Git
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar git-commit-finish-query-functions)
+  (defvar git-commit-finish-query-functions)
+  (defvar magit-mode-map))
+
 ;; No, I really don't want Emacs to complain that my summary line is
 ;; long enough to be useful (no matter what the git book recommends).
 (eval-after-load "git-commit"
@@ -133,6 +139,13 @@ static char * data[] = {
   '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
 
 ;; pcompete
+
+;; Silence compiler warnings
+(eval-when-compile
+  (declare-function pcomplete-here* "pcomplete")
+  (declare-function pcomplete-match "pcomplete")
+  (declare-function pcomplete-here, "pcomplete")
+  (declare-function pcomplete-entries "pcomplete"))
 
 ;; pcompete support from: http://www.masteringemacs.org/articles/2012/01/16/pcomplete-context-sensitive-completion-emacs/
 (defconst pcmpl-git-commands
