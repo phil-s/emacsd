@@ -66,6 +66,14 @@
 ;; (eval-after-load "savehist"
 ;;   '(add-to-list 'savehist-additional-variables 'some-var))
 
+;; Remove text properties from kill-ring before it is saved to the
+;; history file, as these bloat the file dramatically.
+;; See http://emacs.stackexchange.com/a/4191 for why this doesn't
+;; use `savehist-save-hook'.
+(add-hook 'kill-emacs-hook 'my-unpropertize-kill-ring)
+(defun my-unpropertize-kill-ring ()
+  (setq kill-ring (mapcar 'substring-no-properties kill-ring)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-session)
