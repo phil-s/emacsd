@@ -1080,6 +1080,20 @@ or before point."
   (unless retain-window-layout
     (delete-other-windows)))
 
+(defvar my-terminal-run-history nil)
+(defun my-terminal-run (command &optional name)
+  "Runs COMMAND in a `term' buffer."
+  (interactive
+   (list (read-from-minibuffer "$ " nil nil nil 'my-terminal-run-history)))
+  (let* ((name (or name command))
+         (switches (split-string-and-unquote command))
+         (command (pop switches))
+         (termbuf (apply 'make-term name command nil switches)))
+    (set-buffer termbuf)
+    (term-mode)
+    (term-char-mode)
+    (switch-to-buffer termbuf)))
+
 (defun my-pop-to-buffer (buf &optional maximise)
   "Switch to buffer BUF, and optionally maximise the window in its frame.
 Re-use an existing window containing BUF (in a visible frame) by preference,

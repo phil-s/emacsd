@@ -164,6 +164,7 @@
   (define-key keymap (kbd "C-c s d")   'my-drush-console)
   (define-key keymap (kbd "C-c s q")   'my-sql-console)
   (define-key keymap (kbd "C-c s h")   'my-ssh)
+  (define-key keymap (kbd "C-c s !")   'my-terminal-run)
 
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "C-c v")     'my-copy-buffer-file-name)
