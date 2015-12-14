@@ -55,6 +55,9 @@
 ;; Highlighted keywords in strings and comments.
 (setq fic-highlighted-words '("TODO" "DEBUG" "FIXME" "BUG" "KLUDGE"))
 
+;; Don't leave empty lines uncommented when commenting a region
+(setq comment-empty-lines 'eol)
+
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
   "Refresh imenu and jump to a place in the buffer using Ido."
