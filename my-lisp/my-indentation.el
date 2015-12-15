@@ -51,9 +51,11 @@
 (add-hook 'emacs-lisp-mode-hook '(lambda () (set-variable 'indent-tabs-mode nil)))
 ;; (triggers the advice, but ew. just call a custom function.)
 
-;; Enable smart-tabs support.
-(smart-tabs-insinuate
- 'c 'c++ 'java 'javascript 'cperl 'python 'ruby 'nxml)
+;; Disabling -- this is badly messing up indentation in php-mode.
+;;
+;; ;; Enable smart-tabs support.
+;; (smart-tabs-insinuate
+;;  'c 'c++ 'java 'javascript 'cperl 'python 'ruby 'nxml)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
