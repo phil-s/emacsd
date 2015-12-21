@@ -249,7 +249,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
       " find * \\( -type d -regex \"%s\" -prune \\)" ;prune
       " -o -type f \\( -regex \"%s\" "               ;ignore
       "                -o -iregex \"%s\" -print \\)" ;pattern
-      " | ctags -e --language-force=php -f TAGS.new -L -"
+      " | ctags -e --php-kinds=-v --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
       " && mv -f TAGS.new TAGS"
       " ; rm -f TAGS.new"
