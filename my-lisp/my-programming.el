@@ -415,19 +415,23 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
 ;; Prevent really long lines in minified files from bringing performance to
 ;; a stand-still. Refer also to details in http://stackoverflow.com/a/19295380
 
-(defvar my-over-long-line-threshold 500
-  "Number of columns after which the mode for a file will not be set
-automatically, unless it is specified as a local variable.
+(defvar my-over-long-line-threshold 250
+  "Number of columns after which the normal mode for a file will not be
+used, unless it is specified as a local variable.
 
-This is tested against the first non-blank line of the file.")
+`my-over-long-line-mode' will be used instead in these circumstances.
+
+See `my-over-long-line-detected' for details.")
 
 (defvar my-over-long-line-max-lines 5
-  "Number of post-comment lines to test for excessive length.")
+  "Number of non-blank, non-comment lines to test for excessive length.
 
-(defun my-detect-over-long-lines ()
-  "Following any initial comments, the next N lines of the buffer will be
-tested for excessive line length (above `my-over-long-line-threshold'),
-where N is `my-over-long-line-max-lines'.
+See `my-over-long-line-detected' for details.")
+
+(defun my-over-long-line-detected ()
+  "Following any initial comments and blank lines, the next N lines of the
+buffer will be tested for excessive length (where \"excessive\" means above
+`my-over-long-line-threshold', and N is `my-over-long-line-max-lines').
 
 Returns non-nil if any such excessive-length line is detected."
   (let ((count 0))
@@ -450,12 +454,11 @@ and may consequently cause unacceptable performance issues.
 
 This is commonly on account of 'minified' code (i.e. code has been compacted
 into the smallest file size possible, which often entails removing newlines
-should they not be strictly necessary.
+should they not be strictly necessary).
 
 When such files are detected, we call this mode instead of the mode which
 would normally have been chosen. This may happen after the initial MODE-ONLY
-call to `hack-local-variables', or by `my-change-to-over-long-line-mode-maybe'
-after `set-auto-mode' has been called.
+call to `hack-local-variables', or after `set-auto-mode' has been called.
 
 By default this mode is essentially equivalent to `fundamental-mode', and
 exists mainly to provide information to the user as to why the expected mode
@@ -478,7 +481,7 @@ which point we can also process comments.
 we will honour that, and not attempt to change modes."
   (when (ad-get-arg 0) ; MODE-ONLY argument to `hack-local-variables'
     (unless ad-return-value ; No local var mode was found
-      (when (my-detect-over-long-lines)
+      (when (my-over-long-line-detected)
         (setq ad-return-value 'my-over-long-line-mode)))))
 (ad-activate 'hack-local-variables)
 
@@ -488,7 +491,7 @@ we will honour that, and not attempt to change modes."
 This advice acts after `set-auto-mode' has made its decision, and can
 therefore skip any leading comments before looking for long lines."
   (unless (derived-mode-p 'my-over-long-line-mode)
-    (when (my-detect-over-long-lines)
+    (when (my-over-long-line-detected)
       (my-over-long-line-mode))))
 (ad-activate 'set-auto-mode)
 
