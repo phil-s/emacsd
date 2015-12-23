@@ -343,11 +343,11 @@ context-help to false"
   (abbrev-mode 1) ;; See sql-mode-abbrev-table definition (below)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
-    ;; Allow symbol chars in database names in prompt.
+    ;; Allow symbol chars and hyphens in database names in prompt.
     ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
-    (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\)*=[#>] ")
+    (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*=[#>] ")
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
-    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(][#>] "))
+    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(][#>] "))
 
   ;; Deal with inline prompts in query output.
   ;; Runs after `sql-interactive-remove-continuation-prompt'.
