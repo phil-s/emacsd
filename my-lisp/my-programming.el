@@ -344,6 +344,26 @@ context-help to false"
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
+    ;; TODO: Try to make this *strictly* accurate, in accordance with:
+    ;; http://www.postgresql.org/docs/current/interactive/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+    ;; (and then submit the fix upstream).
+    ;;
+    ;; SQL identifiers and key words must begin with a letter (a-z, but also
+    ;; letters with diacritical marks and non-Latin letters) or an underscore
+    ;; (_). Subsequent characters in an identifier or key word can be letters,
+    ;; underscores, digits (0-9), or dollar signs ($). Note that dollar signs
+    ;; are not allowed in identifiers according to the letter of the SQL
+    ;; standard, so their use might render applications less portable. The SQL
+    ;; standard will not define a key word that contains digits or starts or
+    ;; ends with an underscore, so identifiers of this form are safe against
+    ;; possible conflict with future extensions of the standard.
+    ;;
+    ;; The system uses no more than NAMEDATALEN-1 bytes of an identifier; longer
+    ;; names can be written in commands, but they will be truncated. By default,
+    ;; NAMEDATALEN is 64 so the maximum identifier length is 63 bytes. If this
+    ;; limit is problematic, it can be raised by changing the NAMEDATALEN
+    ;; constant in src/include/pg_config_manual.h.
+
     ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
     (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*=[#>] ")
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
