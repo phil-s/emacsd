@@ -150,6 +150,16 @@ static char * data[] = {
 (eval-after-load 'magit
   '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
 
+;; I keep unintentionally checking out branches from the ref screen.
+(defadvice magit-visit-ref (around my-protect-accidental-checkout)
+  "Protect against expensive accidental checkout of a reference."
+  (if (eq major-mode 'magit-refs-mode)
+      (if (y-or-n-p "Checkout reference? ")
+          ad-do-it
+        (message "Aborted."))
+    ad-do-it))
+(ad-activate 'magit-visit-ref)
+
 ;; pcompete
 
 ;; Silence compiler warnings
@@ -159,7 +169,7 @@ static char * data[] = {
   (declare-function pcomplete-here, "pcomplete")
   (declare-function pcomplete-entries "pcomplete"))
 
-;; pcompete support from: http://www.masteringemacs.org/articles/2012/01/16/pcomplete-context-sensitive-completion-emacs/
+;; pcomplete support from: http://www.masteringemacs.org/articles/2012/01/16/pcomplete-context-sensitive-completion-emacs/
 (defconst pcmpl-git-commands
   '("add" "bisect" "branch" "checkout" "clone"
     "commit" "diff" "fetch" "grep"
