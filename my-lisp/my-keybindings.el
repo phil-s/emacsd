@@ -21,6 +21,11 @@
 (global-set-key [remap backward-up-list] 'backward-up-sexp)
 (global-set-key [remap narrow-to-defun] 'my-narrow-to-defun)
 
+;; Make emacs consistent with xkcd :)
+;; (Too many inferred prefixes to put this in the minor mode
+;; key map, as the map is displayed in the mode's docstring.)
+(global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
+
 ;;;; * Other key maps, etc
 
 ;; Use 'e' to enter wgrep mode (like editable occur buffers).
@@ -61,17 +66,17 @@
 
 ;;;; my-keys-minor-mode
 
-;;
 ;; Global minor mode: `my-keys-minor-mode'
 ;;
 ;; These bindings take precedence over major mode keymaps (as well as
-;; other minor mode maps in general -- see the advice to `load' below.)
+;; other minor mode maps in general -- see `my-keys-have-priority'.)
 ;;
 ;; Note that reserved bindings (C-c <letter> and F5-F9) should be set
 ;; in the global keymap if over-riding them on a per-mode basis may
 ;; be desirable.
 
-(defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
+(defvar my-keys-minor-mode-map (make-sparse-keymap)
+  "`my-keys-minor-mode' keymap.")
 (let ((keymap my-keys-minor-mode-map))
   ;; Apropos
   (define-key keymap (kbd "C-h a")     'apropos-command)
@@ -209,12 +214,55 @@
   (define-key keymap (kbd "s-\\")      'toggle-truncate-lines)
   (when (fboundp 'cycle-spacing) ;; replace just-one-space in Emacs 24.4
     (define-key keymap (kbd "M-SPC")   'cycle-spacing))
-  )
+  ) ; end of key definitions
 
-;; Make emacs consistent with xkcd :)
-;; (Too many inferred prefixes to put this in the minor mode
-;; key map, as the map is displayed in the mode's docstring.)
-(global-set-key (kbd "C-x M-c M-b u t t e r f l y") 'butterfly)
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key bindings take precedence over other modes.
+
+We also have precedence over minor mode keymaps which appear later in the
+`minor-mode-map-alist' variable (see `my-keys-have-priority'); however
+`minor-mode-overriding-map-alist' and `emulation-mode-map-alists' keymaps
+will still over-ride us.
+
+TODO: Switch to using `emulation-mode-map-alists' ?
+
+\\{my-keys-minor-mode-map}"
+  :init-value t
+  :global     t
+  :keymap     my-keys-minor-mode-map)
+
+;; An alternative would be to use `emulation-mode-map-alists' (which has
+;; a higher priority than `minor-mode-map-alist').
+;;
+;; This variable holds a list of keymap alists to use for emulations
+;; modes. It is intended for modes or packages using multiple
+;; minor-mode keymaps. Each element is a keymap alist which has the
+;; same format and meaning as minor-mode-map-alist, or a symbol with
+;; a variable binding which is such an alist. The 'active' keymaps
+;; in each alist are used before `minor-mode-map-alist' and
+;; `minor-mode-overriding-map-alist'.
+
+(defun my-keys-have-priority (&optional _file)
+  "Give my keybindings priority over other minor modes.
+
+As keymaps can be generated at compile time, we need to check this
+every time we `load' a library.
+
+Called via `after-load-functions', as well as `after-init-hook'."
+  (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
+    (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
+      (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
+      (add-to-list 'minor-mode-map-alist mykeys))))
+
+(add-hook 'after-load-functions 'my-keys-have-priority)
+(add-hook 'after-init-hook      'my-keys-have-priority)
+
+;; Disable my custom keys in the minibuffer
+(defun my-keys-minor-mode-minibuffer-setup-hook ()
+  (set (make-local-variable 'my-keys-minor-mode) 0)
+  (my-keys-minor-mode 0))
+
+(add-hook 'minibuffer-setup-hook 'my-keys-minor-mode-minibuffer-setup-hook)
 
 ;;;; Custom aliases
 
@@ -233,64 +281,7 @@
 (defalias 'cf   'customize-face)
 (defalias 'sx   'sx-tab-all-questions)
 
-;;;; * Emacs initialisation house-keeping.
-
-(defun my-keybindings-after-init-hook ()
-  "Define and enable our minor mode after the init file has been loaded.
-We want this to be our final initialisation step, to ensure that
-my-keys-minor-mode is first in `minor-mode-map-alist', and therefore
-takes precedence over other minor mode keymaps.
-
-We also advise `load', to try to retain this priority subsequent
-to the loading of other minor modes.
-
-An alternative would be to use `emulation-mode-map-alists', which has
-a higher priority than minor-mode-map-alist:
-
-This variable holds a list of keymap alists to use for emulations
-modes. It is intended for modes or packages using multiple
-minor-mode keymaps. Each element is a keymap alist which has the
-same format and meaning as minor-mode-map-alist, or a symbol with
-a variable binding which is such an alist. The 'active' keymaps
-in each alist are used before minor-mode-map-alist and
-minor-mode-overriding-map-alist."
-
-  (define-minor-mode my-keys-minor-mode
-    "A minor mode so that my custom key bindings take precedence over major modes.
-
-We also have precedence over minor mode keymaps which appear later in the
-`minor-mode-map-alist' variable, however `emulation-mode-map-alists' keymaps
-will over-ride us.
-
-TODO: Switch to using emulation-mode-map-alists
-
-\\{my-keys-minor-mode-map}"
-    :init-value t
-    :global     t
-    :keymap     my-keys-minor-mode-map)
-
-;; Disable my custom keys in the minibuffer
-  (defun my-keys-minor-mode-minibuffer-setup-hook ()
-    (set (make-local-variable 'my-keys-minor-mode) 0)
-    (my-keys-minor-mode 0))
-  (add-hook 'minibuffer-setup-hook 'my-keys-minor-mode-minibuffer-setup-hook)
-
-  (defadvice load (after give-my-keybindings-priority)
-    "Try to ensure that my keybindings always have priority."
-    (unless (eq (car (car minor-mode-map-alist)) 'my-keys-minor-mode)
-      (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
-        (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
-        (add-to-list 'minor-mode-map-alist mykeys))))
-  (ad-activate 'load))
-
-(add-hook 'after-init-hook 'my-keybindings-after-init-hook)
-
-;; ;; Disable this keymap in term-mode
-;; (add-hook 'term-mode-hook 'my-term-mode-keys-hook)
-;; (defun my-term-mode-keys-hook ()
-;;   (make-local-variable 'minor-mode-map-alist)
-;;   (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist))
-
+;;;; * Miscellaneous / Helpers
 
 ;; (defun my-keys-pass-through (arg)
 ;;   "Allow a key sequence to pass through to its next binding."

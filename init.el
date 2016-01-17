@@ -160,6 +160,16 @@
 ;;       (make-local-variable 'minor-mode-overriding-map-alist)
 ;;       (push `(<minor-mode> . ,newmap) minor-mode-overriding-map-alist))))
 
+;; Dynamic bindings. A function returns the command to call. If the function
+;; returns nil, Emacs treats it as if no binding exists in that keymap.
+;; http://paste.lisp.org/display/304865
+;; http://endlessparentheses.com/define-context-aware-keys-in-emacs.html
+;; e.g.:
+;; (define-key <map> <key>
+;;   `(menu-item "" <my-cmd> :filter ,(lambda (cmd) (if <my-predicate> cmd))))
+;;
+;; TODO: Use to replace the likes of `my-backward-word-or-buffer-or-windows' !
+
 ;; In Windows you can add this to to your .emacs to enable hyper and super:
 ;; (setq w32-apps-modifier 'hyper)
 ;; (setq w32-lwindow-modifier 'super)
