@@ -1,8 +1,14 @@
 ;; I don't really know what I'm doing yet.
 
-;; Silence compiler warnings
+;;; Silence compiler warnings
 (eval-when-compile
-  (defvar org-mode-map))
+  (defvar org-adapt-indentation)
+  (defvar org-agenda-files)
+  (defvar org-default-notes-file)
+  (defvar org-ellipsis)
+  (defvar org-mode-map)
+  (defvar org-src-fontify-natively)
+  (defvar org-src-preserve-indentation))
 
 ;;; Tutorials etc
 
