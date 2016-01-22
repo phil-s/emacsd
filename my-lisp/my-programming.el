@@ -16,6 +16,7 @@
   (declare-function imenu--cleanup "imenu")
   (declare-function imenu--make-index-alist "imenu")
   (declare-function imenu--subalist-p "imenu")
+  (declare-function so-long-enable "so-long")
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,7 +60,8 @@
 (setq comment-empty-lines 'eol)
 
 ;; Don't let minified files bring Emacs to its knees.
-(require 'over-long-line-mode)
+(when (require 'so-long nil :noerror)
+  (so-long-enable))
 
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
