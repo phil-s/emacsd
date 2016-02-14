@@ -1,4 +1,13 @@
 ;; General VCS
+
+;; Silence compiler warnings
+(eval-when-compile
+  (declare-function diff-hl-flydiff-mode "diff-hl-flydiff")
+  (declare-function global-diff-hl-mode "diff-hl")
+  (declare-function vc-find-revision "vc")
+  (declare-function vc-read-revision "vc")
+  )
+
 (defadvice log-view-diff (around my-advice-log-view-diff)
   "Don't switch from the log window to the diff window."
   (let ((log-view-buffer (current-buffer)))
@@ -53,6 +62,7 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar svn-log-edit-show-diff-for-commit)
   (defvar svn-status-custom-hide-function)
   (declare-function svn-status-line-info->filename-nondirectory "psvn"))
 
@@ -65,6 +75,7 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 ;; PSVN customisations
 (eval-after-load 'psvn
   '(progn
+     (require 'cl-lib)
      (setq svn-status-custom-hide-function 'svn-status-hide-pyc-files)
      (defun svn-status-hide-pyc-files (info)
        "Hide all pyc files in the `svn-status-buffer-name' buffer."
@@ -74,7 +85,7 @@ If `F.~REV~' already exists, use it instead of checking it out again."
 
      (defsubst svn-status-interprete-state-mode-color (stat)
        "Interpret vc-svn-state symbol to mode line color"
-       (case stat
+       (cl-case stat
          ('edited "tomato"      )
          ('up-to-date "#c0e0c0" )
          ;; what is missing here??
@@ -119,6 +130,7 @@ static char * data[] = {
 (eval-when-compile
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-finish-query-functions)
+  (defvar git-commit-summary-max-length)
   (defvar magit-mode-map))
 
 ;; No, I really don't want Emacs to complain that my summary line is

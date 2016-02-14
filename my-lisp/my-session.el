@@ -1,13 +1,16 @@
+;; Silence compiler warnings
 (eval-when-compile
-  (defvar desktop-dirname)
   (defvar desktop-base-file-name)
   (defvar desktop-base-lock-name)
+  (defvar desktop-dirname)
+  (defvar desktop-files-not-to-save)
+  (defvar desktop-globals-to-save)
+  (defvar desktop-load-locked-desktop)
   (defvar desktop-path)
   (defvar desktop-save)
-  (defvar desktop-files-not-to-save)
-  (defvar desktop-load-locked-desktop)
-  (defvar desktop-globals-to-save)
-  (defvar savehist-additional-variables))
+  (defvar savehist-additional-variables)
+  (declare-function my-unimportant-notification "my-utilities")
+  )
 
 ;; Automatically save and restore sessions
 (setq desktop-dirname             "~/.emacs.d/desktop/"

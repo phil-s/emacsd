@@ -1,3 +1,9 @@
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar sgml-local-catalogs)
+  (defvar dtml-auto-insert-mode-declaration)
+  )
+
 ;;;; python-mode-1.0
 ;;(setq load-path (append load-path (list "c:/emacs/emacs-23.1/site-lisp/python-mode-1.0")))
 ;;(autoload 'python-mode "python-mode" "Python Mode." t)

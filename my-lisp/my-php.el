@@ -7,7 +7,9 @@
   (defvar php-search-documentation-browser-function)
   (defvar php-manual-path)
   (defvar php-template-compatibility)
-  (defvar c-electric-flag))
+  (defvar c-electric-flag)
+  (declare-function web-mode "web-mode")
+  )
 
 ;; Find documentation (locally or online).
 (define-key php-mode-map (kbd "<f1>") 'php-search-documentation)

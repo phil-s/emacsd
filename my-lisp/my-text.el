@@ -2,6 +2,14 @@
 ;; Text modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar deft-auto-save-interval)
+  (defvar deft-directory)
+  (defvar deft-extension)
+  (defvar deft-text-mode)
+  )
+
 ;; CSV mode
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
 (autoload 'csv-mode "csv-mode"

@@ -13,6 +13,7 @@
   (defvar explicit-shell-file-name)
   (defvar ls-lisp-use-insert-directory-program)
   (defvar no-word-coding-systems)
+  (defvar tramp-default-method)
   (defvar w32-symlinks-handle-shortcuts)
   )
 

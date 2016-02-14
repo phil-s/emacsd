@@ -1,3 +1,9 @@
+;;;; * Silence compiler warnings
+
+(eval-when-compile
+  (defvar my-apropos-prefix)
+  )
+
 ;;;; * Global bindings
 
 ;; C-z is a very useful prefix, and we almost never need `suspend-frame'.

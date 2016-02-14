@@ -1,3 +1,8 @@
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar el-get-sources)
+  )
+
 (defun my-local-repository-url-for (library)
   "Provide a URL for a library in the local-repository directory."
   (concat "file://" (expand-file-name user-emacs-directory)

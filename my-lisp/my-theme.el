@@ -2,6 +2,12 @@
 ;; Colour theme and faces
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar hl-line-face)
+  (defvar mumamo-background-colors)
+  )
+
 ;; Disable mumamo chunk background colours
 (setq mumamo-background-colors nil)
 

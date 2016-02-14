@@ -38,7 +38,7 @@ the changes, or \\[kill-buffer] RET to cancel."))))
 (defun my-edit-rectangle-submit ()
   "Confirm changes to the rectangle, writing them back to the original buffer."
   (interactive)
-  (destructuring-bind
+  (cl-destructuring-bind
       (start end width height source-buffer coords-point coords-mark)
       my-edit-rectangle-data
     (let ((edit-rectangle-buffer (current-buffer)))
@@ -64,13 +64,13 @@ the changes, or \\[kill-buffer] RET to cancel."))))
         ;; started with. We cannot use the original character
         ;; positions, as inserting the rectangle may have introduced
         ;; additional characters in the form of trailing whitespace.
-        (forward-line (- (first coords-mark) (line-number-at-pos)))
-        (move-to-column (second coords-mark) t)
+        (forward-line (- (car coords-mark) (line-number-at-pos)))
+        (move-to-column (cadr coords-mark) t)
         (pop-mark) ;; the value pushed by insert-rectangle
         (pop-mark) ;; the original value
         (push-mark) ;; replacement for the original value
-        (forward-line (- (first coords-point) (line-number-at-pos)))
-        (move-to-column (second coords-point) t)))))
+        (forward-line (- (car coords-point) (line-number-at-pos)))
+        (move-to-column (cadr coords-point) t)))))
 
 
 (defun my-copy-rectangle (start end &optional fill)

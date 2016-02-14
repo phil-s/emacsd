@@ -2,6 +2,14 @@
 ;; Whitespace
 ;;
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar whitespace-display-mappings)
+  (defvar whitespace-style)
+  (defvar ws-trim-global-modes)
+  (declare-function global-ws-trim-mode "ws-trim")
+  )
+
 (defalias 'dw 'delete-trailing-whitespace)
 
 ;; Highlight trailing whitespace by default

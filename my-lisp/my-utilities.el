@@ -1,5 +1,6 @@
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar dired-mode-map)
   (defvar find-grep-options)
   (defvar sql-buffer)
   (defvar sql-product)
@@ -8,6 +9,11 @@
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
+  (declare-function dired-add-file "dired-aux")
+  (declare-function dired-create-directory "dired-aux")
+  (declare-function dired-current-directory "dired")
+  (declare-function dired-get-marked-files "dired")
+  (declare-function dired-move-to-filename "dired")
   (declare-function he-substitute-string "hippie-exp")
   (declare-function ibuffer-quit "ibuffer")
   (declare-function shr-render-buffer "shr")
@@ -15,6 +21,8 @@
   (declare-function sql-highlight-product "sql")
   (declare-function term-in-char-mode "term")
   (declare-function tramp-get-completion-function "tramp")
+  (declare-function winner-redo "winner")
+  (declare-function winner-undo "winner")
   )
 
 ;; (defun my-ido-filename ()
