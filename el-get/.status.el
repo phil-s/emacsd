@@ -55,4 +55,5 @@
 :font-lock-studio "installed"
 :smart-tabs-mode "installed"
 :ibuffer-vc "installed"
+:with-editor "installed"
 )

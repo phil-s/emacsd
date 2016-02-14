@@ -246,6 +246,10 @@
             :type git
             :url "https://github.com/mhayashi1120/Emacs-wgrep.git")
 
+     (:name with-editor
+            :type git
+            :url "https://github.com/magit/with-editor.git")
+
      (:name ws-trim
             :type ftp
             :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
