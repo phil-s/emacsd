@@ -4,7 +4,6 @@
 
 ;; Author: Magnar Sveen <magnars@gmail.com>
 ;; Version: 2.12.1
-;; Package-Version: 2.12.1
 ;; Keywords: lists
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -221,7 +220,9 @@ See also: `-reduce-r-from', `-reduce'"
 (defun -filter (pred list)
   "Return a new list of the items in LIST for which PRED returns a non-nil value.
 
-Alias: `-select'"
+Alias: `-select'
+
+See also: `-keep'"
   (--filter (funcall pred it) list))
 
 (defalias '-select '-filter)
