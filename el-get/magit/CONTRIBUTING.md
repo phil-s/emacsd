@@ -1,3 +1,15 @@
+<p align="center">
+  <img src="http://magit.vc/img/L.png" align="left">
+  <img src="http://magit.vc/img/R.png" align="right">
+  <b>
+    When something doesn't work as expected, then please first consult the
+    <a href="http://magit.vc/manual/magit/FAQ.html">FAQ</a> and ask a
+	search engine.   If that doesn't solve your problem, then please ask for help on
+    <a href="http://emacs.stackexchange.com/questions/tagged/magit"> Emacs.Stackexchange</a>.
+  </b>
+</p>
+***
+
 Getting help
 ============
 
@@ -23,7 +35,7 @@ Code contributions
 ==================
 
 If you have some code which you would like to be merged, then open a
-[pull requests][pulls].  Please create atomic commits with descriptive
+[pull request][pulls].  Please create atomic commits with descriptive
 commit messages.
 
 Donations

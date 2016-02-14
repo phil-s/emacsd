@@ -1,6 +1,6 @@
-;;; magit-utils.el --- various utilities
+;;; magit-utils.el --- various utilities  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2015  The Magit Project Contributors
+;; Copyright (C) 2010-2016  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -49,11 +49,17 @@
 ;;; Options
 
 (defcustom magit-completing-read-function 'magit-builtin-completing-read
-  "Function to be called when requesting input from the user."
+  "Function to be called when requesting input from the user.
+
+For Helm users, the simplest way to get Helm completion is to
+turn on `helm-mode' and leave this option set to the default
+value.  However, if you prefer to not use `helm-mode' but still
+want Magit to use Helm for completion, you can set this option to
+`helm--completing-read-default'."
   :group 'magit
   :type '(radio (function-item magit-builtin-completing-read)
                 (function-item magit-ido-completing-read)
-                (function-item helm-completing-read-with-cands-in-buffer)
+                (function-item helm--completing-read-default)
                 (function :tag "Other")))
 
 (defcustom magit-no-confirm nil
@@ -158,7 +164,7 @@ Global settings:
                       (const safe-with-wip))))
 
 (defcustom magit-ellipsis ?…
-  "Character used to abreviate text."
+  "Character used to abbreviate text."
   :package-version '(magit . "2.1.0")
   :group 'magit-modes
   :type 'character)
@@ -360,7 +366,7 @@ This is similar to `read-string', but
 ;;; Text Utilities
 
 (defmacro magit-bind-match-strings (varlist string &rest body)
-  "Bind varibles to submatches accoring to VARLIST then evaluate BODY.
+  "Bind variables to submatches according to VARLIST then evaluate BODY.
 Bind the symbols in VARLIST to submatches of the current match
 data, starting with 1 and incrementing by 1 for each symbol.  If
 the last match was against a string then that has to be provided

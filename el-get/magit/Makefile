@@ -6,7 +6,7 @@ include default.mk
 	test test-interactive magit \
 	clean clean-lisp clean-docs clean-archives \
 	genstats bump-version melpa-post-release \
-	dist magit-$(VERSION).tar.gz elpa $(ELPA_ARCHIVES)
+	dist magit-$(VERSION).tar.gz
 
 all: lisp docs
 
@@ -46,10 +46,8 @@ help:
 	$(info make genstats         - regenerate statistics)
 	$(info make authors          - regenerate AUTHORS.md)
 	$(info make dist             - create tarballs)
-	$(info make elpa             - create elpa tarballs)
-	$(info make VERSION=... bump-version)
-	$(info make VERSION=... melpa-post-release)
-	$(info -                     - fixup version strings)
+	$(info make VERSION=N.M bump-versions - bump versions for release)
+	$(info make bump-snapshots   - bump versions after release)
 	@printf "\n"
 
 lisp:
@@ -87,7 +85,7 @@ test-interactive:
 	(ert t))"
 
 magit: clean-lisp
-	@$(EMACSBIN) -Q $(LOAD_PATH) --eval "(progn\
+	@$(EMACSBIN) -Q $(LOAD_PATH) --debug-init --eval "(progn\
 	(require 'magit)\
 	(global-set-key \"\\C-xg\" 'magit-status)\
 	(tool-bar-mode 0)\
@@ -139,116 +137,28 @@ magit-$(VERSION).tar.gz: lisp info
 	@$(TAR) cz --mtime=./magit-$(VERSION) -f magit-$(VERSION).tar.gz magit-$(VERSION)
 	@$(RMDIR) magit-$(VERSION)
 
-marmalade: elpa
-	@printf "Uploading with-editor-$(VERSION)\n"
-	@marmalade-upload with-editor-$(VERSION).tar
-	@printf "Uploading git-commit-$(VERSION)\n"
-	@marmalade-upload git-commit-$(VERSION).el
-	@printf "Uploading magit-popup-$(VERSION)\n"
-	@marmalade-upload magit-popup-$(VERSION).tar
-	@printf "Uploading magit-$(VERSION)\n"
-	@marmalade-upload magit-$(VERSION).tar
-
-ELPA_ARCHIVES  = with-editor-$(VERSION).tar
-ELPA_ARCHIVES += git-commit-$(VERSION).el
-ELPA_ARCHIVES += magit-popup-$(VERSION).tar
-ELPA_ARCHIVES += magit-$(VERSION).tar
-
-elpa: $(ELPA_ARCHIVES)
-
-define with_editor_pkg
-(define-package "with-editor" "$(VERSION)"
-  "Use the Emacsclient as $$EDITOR"
-  '((emacs "$(EMACS_VERSION)")
-    (async "$(ASYNC_VERSION)")
-    (dash "$(DASH_VERSION)")))
-endef
-# '
-export with_editor_pkg
-with-editor-$(VERSION).tar: info
-	@printf "Packing $@\n"
-	@$(MKDIR) with-editor-$(VERSION)
-	@printf "$$with_editor_pkg\n" > with-editor-$(VERSION)/with-editor-pkg.el
-	@$(CP) lisp/with-editor.el with-editor-$(VERSION)
-	@$(CP) Documentation/with-editor.info Documentation/dir with-editor-$(VERSION)
-	@$(TAR) c --mtime=./with-editor-$(VERSION) \
-	  -f with-editor-$(VERSION).tar with-editor-$(VERSION)
-	@$(RMDIR) with-editor-$(VERSION)
-
-git-commit-$(VERSION).el:
-	@printf "Packing $@\n"
-	@$(CP) lisp/git-commit.el git-commit-$(VERSION).el
-	@$(SED) -i git-commit-$(VERSION).el \
-	  -e "s/^;; Keywords:/;; Package-Version: $(VERSION)\n;; Keywords:/"
-
-define magit_popup_pkg
-(define-package "magit-popup" "$(VERSION)"
-  "Define prefix-infix-suffix command combos"
-  '((emacs "$(EMACS_VERSION)")
-    (async "$(ASYNC_VERSION)")
-    (dash "$(DASH_VERSION)")))
-endef
-# '
-export magit_popup_pkg
-magit-popup-$(VERSION).tar: info
-	@printf "Packing $@\n"
-	@$(MKDIR) magit-popup-$(VERSION)
-	@printf "$$magit_popup_pkg\n" > magit-popup-$(VERSION)/magit-popup-pkg.el
-	@$(CP) lisp/magit-popup.el magit-popup-$(VERSION)
-	@$(CP) Documentation/magit-popup.info Documentation/dir magit-popup-$(VERSION)
-	@$(TAR) c --mtime=./magit-popup-$(VERSION) \
-	  -f magit-popup-$(VERSION).tar magit-popup-$(VERSION)
-	@$(RMDIR) magit-popup-$(VERSION)
-
-ELPA_ROOT_FILES = COPYING
-ELPA_LISP_FILES = $(addprefix lisp/,$(ELMS) magit-version.el)
-ELPA_DOCS_FILES = $(addprefix Documentation/,AUTHORS.md dir magit.info)
-
-define magit_pkg
-(define-package "magit" "$(VERSION)"
-  "A Git porcelain inside Emacs"
-  '((emacs "$(EMACS_VERSION)")
-    (async "$(ASYNC_VERSION)")
-    (dash "$(DASH_VERSION)")
-    (with-editor "$(VERSION)")
-    (git-commit "$(VERSION)")
-    (magit-popup "$(VERSION)")))
-endef
-# '
-export magit_pkg
-magit-$(VERSION).tar: lisp info
-	@printf "Packing $@\n"
-	@$(MKDIR) magit-$(VERSION)
-	@printf "$$magit_pkg\n" > magit-$(VERSION)/magit-pkg.el
-	@$(CP) $(ELPA_ROOT_FILES) magit-$(VERSION)
-	@$(CP) $(ELPA_LISP_FILES) magit-$(VERSION)
-	@$(CP) $(ELPA_DOCS_FILES) magit-$(VERSION)
-	@$(TAR) c --mtime=./magit-$(VERSION) -f magit-$(VERSION).tar magit-$(VERSION)
-	@$(RMDIR) magit-$(VERSION)
-
 define set_package_requires
 (require 'dash)
-(dolist (lib (list "with-editor" "git-commit" "magit-popup" "magit"))
+(dolist (lib (list "git-commit" "magit-popup" "magit"))
   (with-current-buffer (find-file-noselect (format "lisp/%s.el" lib))
     (goto-char (point-min))
     (re-search-forward "^;; Package-Requires: ")
     (let ((s (read (buffer-substring (point) (line-end-position)))))
       (--when-let (assq 'async       s) (setcdr it (list async-version)))
       (--when-let (assq 'dash        s) (setcdr it (list dash-version)))
-      (--when-let (assq 'with-editor s) (setcdr it (list "$(VERSION)")))
-      (--when-let (assq 'git-commit  s) (setcdr it (list "$(VERSION)")))
-      (--when-let (assq 'magit-popup s) (setcdr it (list "$(VERSION)")))
+      (--when-let (assq 'with-editor s) (setcdr it (list with-editor-version)))
+      (--when-let (assq 'git-commit  s) (setcdr it (list git-commit-version)))
+      (--when-let (assq 'magit-popup s) (setcdr it (list magit-popup-version)))
       (delete-region (point) (line-end-position))
       (insert (format "%S" s))
       (save-buffer))))
 endef
-# '
 export set_package_requires
 
 define set_manual_version
 (let ((version (split-string "$(VERSION)" "\\.")))
   (setq version (concat (car version) "." (cadr version)))
-  (dolist (file (list "with-editor" "magit-popup" "magit"))
+  (dolist (file (list "magit-popup" "magit"))
     (with-current-buffer (find-file-noselect (format "Documentation/%s.org" file))
       (goto-char (point-min))
       (re-search-forward "^#\\+SUBTITLE: for version ")
@@ -256,18 +166,25 @@ define set_manual_version
       (insert version)
       (save-buffer))))
 endef
-#'
 export set_manual_version
 
-bump-version:
+bump-versions: bump-versions-1 texi
+bump-versions-1:
 	@$(BATCH) --eval "(progn\
         (setq async-version \"$(ASYNC_VERSION)\")\
         (setq dash-version \"$(DASH_VERSION)\")\
+        (setq with-editor-version \"$(WITH_EDITOR_VERSION)\")\
+        (setq git-commit-version \"$(GIT_COMMIT_VERSION)\")\
+        (setq magit-popup-version \"$(MAGIT_POPUP_VERSION)\")\
         $$set_package_requires\
         $$set_manual_version)"
 
-melpa-post-release:
+bump-snapshots:
 	@$(BATCH) --eval "(progn\
         (setq async-version \"$(ASYNC_MELPA_SNAPSHOT)\")\
         (setq dash-version \"$(DASH_MELPA_SNAPSHOT)\")\
+        (setq with-editor-version \"$(WITH_EDITOR_MELPA_SNAPSHOT)\")\
+        (setq git-commit-version \"$(GIT_COMMIT_MELPA_SNAPSHOT)\")\
+        (setq magit-popup-version \"$(MAGIT_POPUP_MELPA_SNAPSHOT)\")\
         $$set_package_requires)"
+	git commit -a -m "reset Package-Requires for Melpa"

@@ -18,18 +18,18 @@ RMDIR ?= rm -rf
 TAR   ?= tar
 SED   ?= sed
 
-PACKAGES = with-editor git-commit magit-popup magit
+PACKAGES = git-commit magit-popup magit
 PACKAGE_VERSIONS = $(addsuffix -$(VERSION),$(PACKAGES))
 
 INFOPAGES = $(addsuffix .info,$(filter-out git-commit,$(PACKAGES)))
 TEXIPAGES = $(addsuffix .texi,$(filter-out git-commit,$(PACKAGES)))
 
-ELS  = with-editor.el
-ELS += git-commit.el
+ELS  = git-commit.el
 ELS += magit-popup.el
 ELS += magit-utils.el
 ELS += magit-section.el
 ELS += magit-git.el
+ELS += magit-autorevert.el
 ELS += magit-mode.el
 ELS += magit-process.el
 ELS += magit-core.el
@@ -44,6 +44,7 @@ ELS += magit-remote.el
 ELS += magit-bisect.el
 ELS += magit-stash.el
 ELS += magit-blame.el
+ELS += magit-submodule.el
 ELS += magit-ediff.el
 ELS += magit-extras.el
 ELS += git-rebase.el
@@ -51,12 +52,19 @@ ELCS = $(ELS:.el=.elc)
 ELMS = magit.el $(filter-out $(addsuffix .el,$(PACKAGES)),$(ELS))
 ELGS = magit-autoloads.el magit-version.el
 
-# minimal requirements
 EMACS_VERSION = 24.4
-ASYNC_VERSION = 1.5
-DASH_VERSION = 2.12.1
-ASYNC_MELPA_SNAPSHOT = 20150909.2257
-DASH_MELPA_SNAPSHOT = 20151021.113
+
+ASYNC_VERSION       = 1.5
+DASH_VERSION        = 2.12.1
+WITH_EDITOR_VERSION = 2.5.0
+GIT_COMMIT_VERSION  = 2.4.1
+MAGIT_POPUP_VERSION = 2.4.1
+
+ASYNC_MELPA_SNAPSHOT       = 20150909.2257
+DASH_MELPA_SNAPSHOT        = 20151021.113
+WITH_EDITOR_MELPA_SNAPSHOT = 20160128.1201
+GIT_COMMIT_MELPA_SNAPSHOT  = 20160119.1409
+MAGIT_POPUP_MELPA_SNAPSHOT = 20160119.1409
 
 EMACSBIN ?= emacs
 
@@ -71,12 +79,26 @@ ifeq "$(DASH_DIR)" ""
   DASH_DIR = $(TOP)../dash
 endif
 
-CYGPATH := $(shell cygpath --version 2>/dev/null)
+WITH_EDITOR_DIR ?= $(shell \
+  find -L $(ELPA_DIR) -maxdepth 1 -regex '.*/with-editor-[.0-9]*' 2> /dev/null | \
+  sort | tail -n 1)
+ifeq "$(WITH_EDITOR_DIR)" ""
+  WITH_EDITOR_DIR = $(TOP)../with-editor
+endif
+
+SYSTYPE := $(shell $(EMACSBIN) -Q --batch --eval "(princ system-type)")
+ifeq ($(SYSTYPE), windows-nt)
+  CYGPATH := $(shell cygpath --version 2>/dev/null)
+endif
+
+LOAD_PATH = -L $(TOP)/lisp
 
 ifdef CYGPATH
-  LOAD_PATH ?= -L $(TOP)/lisp -L $(shell cygpath --mixed $(DASH_DIR))
+  LOAD_PATH += -L $(shell cygpath --mixed $(DASH_DIR))
+  LOAD_PATH += -L $(shell cygpath --mixed $(WITH_EDITOR_DIR))
 else
-  LOAD_PATH ?= -L $(TOP)/lisp -L $(DASH_DIR)
+  LOAD_PATH += -L $(DASH_DIR)
+  LOAD_PATH += -L $(WITH_EDITOR_DIR)
 endif
 
 endif # ifndef LOAD_PATH

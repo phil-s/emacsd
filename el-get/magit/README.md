@@ -1,4 +1,18 @@
 <a href="#readme"></a>
+
+<p align="center">
+  <img src="http://magit.vc/img/L.png" align="left">
+  <img src="http://magit.vc/img/R.png" align="right">
+  <b>
+    When something doesn't work as expected, then please first consult the
+    <a href="http://magit.vc/manual/magit/FAQ.html">FAQ</a> and ask a
+	search engine.   If that doesn't solve your problem, then please ask for help on the
+    <a href="http://emacs.stackexchange.com/questions/tagged/magit">Emacs Stackexchange site</a>
+	or the <a href="https://gitter.im/magit/magit">Gitter chat</a>.
+  </b>
+</p>
+***
+
 <p align="center"><img src="http://magit.vc/img/magit.png"/></p>
 <h1 align="center">It's Magit!</h1>
 <h2 align="center">A Git Porcelain inside Emacs</h2>
@@ -33,41 +47,29 @@
     Please consider supporting development by making a
     <a href="http://magit.vc/donations.html">donation</a>.
   </b>
+  </br></br>
+  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TGDUK5VGB78XA">
+    <img alt="Donate" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">
+  </a>
+  </br>
+  <a class="small" href="http://magit.vc/donations.html">(other donation methods)</a>
 </p>
-***
-
-<p align="center">
-  <img src="http://magit.vc/img/r.png" align="top">
-  User who haven't read the
-  <a href="http://magit.vc/manual/magit/FAQ.html"><b>FAQ</b></a>
-  are frequently surprised that:
-  <img src="http://magit.vc/img/l.png" align="top">
-</p>
-
-- Magit v2.1 and later (aka > 20150701) requires at least
-  Emacs v24.4 and Git v1.9.4.
-- Branching and pushing in v2.1 no longer behaves like it did in v1.
-  This has caused many complains, so branching and pushing will change
-  again in v2.4.
-- The branch manager has moved to <kbd>y</kbd>.
-
 ***
 
 Support
 =======
 
-**When something doesn't work as expected then please first see the
-[FAQ][faq].** Then also try the list of [open issues][issues] and use
+When something doesn't work as expected then please first see the
+[FAQ][faq].  Then also try the list of [open issues][issues] and use
 the search box at the top of that page to find older related issues.
 You should also consult the [manual][manual] and ask a general-purpose
 search engine.
 
-If everything else fails then ask for help on the
-**[Emacs Stackexchange site][forum]**, the
-[mailing list][list], or the
-[Gitter chat][chat].
+If that doesn't answer your question, then ask for help on the
+**[Emacs Stackexchange site][forum]**, the [mailing list][list], or
+the [Gitter chat][chat].
 
-**Please do NOT use the Github issue tracker for support requests.**
+**Please do NOT use the GitHub issue tracker for support requests.**
 **We only use it for feature requests and bug reports.**
 
 Contributing
@@ -75,7 +77,7 @@ Contributing
 
 To report bugs and suggest new feature use the
 [issue tracker][issues].  If you have some code which you would like
-to be merged, then open a [pull requests][pulls]. Please also see
+to be merged, then open a [pull request][pulls]. Please also see
 [CONTRIBUTING.md][contrib].
 
 Acknowledgments
