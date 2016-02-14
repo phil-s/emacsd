@@ -1,6 +1,6 @@
-;;; async-test --- async.el-related tests
+;;; async-test.el --- async.el-related tests
 
-;; Copyright (C) 2012~2014 John Wiegley
+;; Copyright (C) 2012-2016 Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <jwiegley@gmail.com>
 ;; Created: 10 Jul 2012
@@ -30,7 +30,7 @@
 ;;; Code:
 
 (require 'async)
-(require 'async-file)
+
 
 (eval-when-compile
   (require 'cl))

@@ -81,8 +81,8 @@ Setup the defualt shortcuts.
 
 ;;;***
 
-;;;### (autoloads nil "async/async" "async/async.el" (22068 12267
-;;;;;;  141614 497000))
+;;;### (autoloads nil "async/async" "async/async.el" (22208 60724
+;;;;;;  532691 608000))
 ;;; Generated autoloads from async/async.el
 
 (autoload 'async-start-process "async/async" "\
@@ -143,12 +143,12 @@ passed to FINISH-FUNC).  Call `async-get' on such a future always
 returns nil.  It can still be useful, however, as an argument to
 `async-ready' or `async-wait'.
 
-\(fn START-FUNC &optional FINISH-FUNC)" nil t)
+\(fn START-FUNC &optional FINISH-FUNC)" nil nil)
 
 ;;;***
 
 ;;;### (autoloads nil "async/async-bytecomp" "async/async-bytecomp.el"
-;;;;;;  (22068 12267 141614 497000))
+;;;;;;  (22208 60724 532691 608000))
 ;;; Generated autoloads from async/async-bytecomp.el
 
 (autoload 'async-byte-recompile-directory "async/async-bytecomp" "\
@@ -176,7 +176,7 @@ Async compilation of packages can be controlled by
 ;;;***
 
 ;;;### (autoloads nil "async/dired-async" "async/dired-async.el"
-;;;;;;  (22068 12267 141614 497000))
+;;;;;;  (22208 60724 532691 608000))
 ;;; Generated autoloads from async/dired-async.el
 
 (defvar dired-async-mode nil "\
