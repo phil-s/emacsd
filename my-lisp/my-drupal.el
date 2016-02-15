@@ -17,20 +17,8 @@
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
-
-  ;; Configure local TAGS
-  (let ((tag-dir (locate-dominating-file default-directory "TAGS")))
-    (when tag-dir
-      (let ((tag-dir (file-name-as-directory
-                      (or (file-symlink-p (directory-file-name tag-dir))
-                          tag-dir))))
-        (visit-tags-table tag-dir t)
-        (unless (timerp drupal-tags-autoupdate-timer)
-          (drupal-tags-autoupdate-start)))))
-
   ;; PHP configuration for Drupal
   ;; n.b. php-mode is derived from c-mode
-
   (setq tab-width                8 ; these should stand out!
         c-basic-offset           2
         indent-tabs-mode         nil
@@ -192,6 +180,18 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 
 ;;; TAGS
 
+;; Uses Exuberant Ctags syntax:
+;; sudo apt-get install -y exuberant-ctags
+;; (ensure "ctags --version" does not report the GNU version)
+;;
+;; Even better: https://ctags.io => https://github.com/universal-ctags/ctags
+;; Ctags (5.8) is now old and unmaintained. The above appears to be the way
+;; forwards, and includes a complete rewrite of the PHP functionality, so I
+;; should be checking this out...
+
+;; Ensure Emacs doesn't prompt us when the TAGS file has changed.
+(setq tags-revert-without-query t)
+
 ;; Update TAGS file automatically.
 (require 'grep) ;; Use non-cons members of `grep-find-ignored-directories'.
 (defcustom drupal-tags-autoupdate-prune
@@ -311,11 +311,9 @@ files are not relevant.")
                         'eval drupal-tags-autoupdate-tree-modified-command))
               drupal-tags-autoupdate-tree-modified-command)))))
 
-;; variables for the timer object
 (defvar drupal-tags-autoupdate-timer nil)
 (defvar drupal-tags-autoupdate-interval 300 "Interval, in seconds.")
 
-;; shell process sentinel
 (defun drupal-tags-sentinel (process signal)
   "Process signals from the TAGS update shell process."
   (when (memq (process-status process) '(exit signal))
@@ -325,7 +323,6 @@ files are not relevant.")
       (when (eq 0 (buffer-size buf))
         (kill-buffer buf)))))
 
-;; callback function
 (defun drupal-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
   (when (and drupal-tags-autoupdate-enabled
@@ -344,7 +341,6 @@ files are not relevant.")
         (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
           (setq tags-completion-table nil))))))
 
-;; start functions
 (defun drupal-tags-autoupdate-start ()
   "Start (or re-start) the TAGS file autoupdate mechanism.
 The update interval is set according to `drupal-tags-autoupdate-interval'."
@@ -355,14 +351,6 @@ The update interval is set according to `drupal-tags-autoupdate-interval'."
         (run-with-timer
          1 drupal-tags-autoupdate-interval #'drupal-tags-autoupdate-callback)))
 
-;; (defun drupal-tags-autoupdate-run-once ()
-;;   (interactive)
-;;   (when (timerp drupal-tags-autoupdate-timer)
-;;     (cancel-timer drupal-tags-autoupdate-timer))
-;;   (setq drupal-tags-autoupdate-timer
-;;         (run-with-idle-timer 1 nil #'drupal-tags-autoupdate-callback)))
-
-;; stop function
 (defun drupal-tags-autoupdate-stop ()
   "Stop the TAGS file autoupdate mechanism."
   (interactive)
@@ -370,8 +358,18 @@ The update interval is set according to `drupal-tags-autoupdate-interval'."
     (cancel-timer drupal-tags-autoupdate-timer))
   (setq drupal-tags-autoupdate-timer nil))
 
-(setq tags-revert-without-query t)
-;;(drupal-tags-autoupdate-start)
+(defun drupal-tags-autoupdate-init ()
+  "Initiate TAGS file management."
+  (let ((tag-dir (locate-dominating-file default-directory "TAGS")))
+    (when tag-dir
+      (let ((tag-dir (file-name-as-directory
+                      (or (file-symlink-p (directory-file-name tag-dir))
+                          tag-dir))))
+        (visit-tags-table tag-dir t)
+        (unless (timerp drupal-tags-autoupdate-timer)
+          (drupal-tags-autoupdate-start))))))
+
+(add-hook 'drupal-mode-hook 'drupal-tags-autoupdate-init)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
