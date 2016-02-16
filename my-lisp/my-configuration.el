@@ -100,9 +100,6 @@ when `auto-save-mode' is invoked manually.")
 (put 'set-goal-column           'disabled nil)
 (put 'upcase-region             'disabled nil)
 
-;; Visible bell is much less annoying these days!
-(setq visible-bell t)
-
 ;; Stop the cursor blinking
 ;; Cursor stretches to the current glyph's width
 (blink-cursor-mode -1)
@@ -334,44 +331,61 @@ See also: `my-copy-buffer-file-name'."
 ;; Full-screen by default.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(defun my-terminal-visible-bell ()
+;; The visible bell is usually fine, but still horrid in certain terminals.
+;; We can make a nicer version.
+(defun my-visible-bell ()
   "A friendlier visual bell effect."
   (invert-face 'mode-line)
-  (run-with-timer 0.1 nil 'invert-face 'mode-line))
+  (run-with-timer 0.1 nil #'invert-face 'mode-line))
 
-(defun my-visible-bell-activate ()
-  "Use `my-terminal-visible-bell' as the `ring-bell-function'."
-  (interactive)
-  (setq visible-bell nil
-        ring-bell-function 'my-terminal-visible-bell))
+(define-minor-mode my-visible-bell-mode
+  "Use `my-visible-bell' as the `ring-bell-function'."
+  :global t
+  (let ((this 'my-visible-bell-mode))
+    (if my-visible-bell-mode
+        (progn
+          (put this 'visible-bell-backup visible-bell)
+          (put this 'ring-bell-function-backup ring-bell-function)
+          (setq visible-bell nil
+                ring-bell-function #'my-visible-bell))
+      ;; Restore the original values when disabling.
+      (setq visible-bell (get this 'visible-bell-backup)
+            ring-bell-function (get this 'ring-bell-function-backup)))))
 
-(defun my-configure-visible-bell ()
-  "Use a nicer visual bell in terminals."
-  ;; (if window-system
-  ;;     (setq visible-bell t
-  ;;           ring-bell-function nil)
-  ;;   (my-visible-bell-activate))
+(setq visible-bell t)
+(my-visible-bell-mode 1)
 
-  ;; standard visible-bell is awful under xmonad, so just use:
-  (my-visible-bell-activate)
-  )
-
-;; (defun my-configure-visible-bell ()
-;;   "Use a nicer visual bell in terminals."
-;;   (if window-system
-;;       (setq visible-bell t
-;;             ring-bell-function nil)
-;;     (setq visible-bell nil
-;;           ring-bell-function 'my-terminal-visible-bell)))
-
-(add-hook 'focus-in-hook 'my-configure-visible-bell)
+;; I no longer like the default visible bell in GUI Emacs, so the following
+;; no longer applies. However, it's useful to retain the details in case I
+;; ever want to switch back...
+;;
+;; ;; In GUI Emacs I prefer the default visible-bell, so I'd ideally like to
+;; ;; switch automatically depending on the currently-focused frame.
+;; ;; Unfortunately these variables aren't terminal-local, which makes it more
+;; ;; awkward. My current approach is to use `focus-in-hook', which doesn't
+;; ;; catch all situations, but certainly accounts for many (and if you don't
+;; ;; switch between GUI and terminal frames, it should be fine in any case).
+;; (defun my-configure-visible-bell (&optional frame)
+;;   "Use the nicest visual bell for the given FRAME type."
+;;   (with-selected-frame (or frame (selected-frame))
+;;     (if window-system
+;;         (setq visible-bell t
+;;               ring-bell-function nil)
+;;       (setq visible-bell nil
+;;             ring-bell-function #'my-visible-bell))))
+;;
+;; ;; Run now, for non-daemon Emacs...
+;; (my-configure-visible-bell)
+;; ;; ...and later, for new frames / emacsclient
+;; (add-hook 'after-make-frame-functions 'my-configure-visible-bell)
+;; ;; ...and whenever a frame gains input focus.
+;; (add-hook 'focus-in-hook 'my-configure-visible-bell)
 
 ;; Per-frame/terminal configuration.
 (defun my-frame-config (frame)
   "Custom behaviours for new frames."
   (with-selected-frame frame
     ;; do things
-    (my-configure-visible-bell)
     (unless window-system
       (set-terminal-coding-system 'utf-8))
     ))
