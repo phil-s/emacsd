@@ -52,6 +52,33 @@ If `F.~REV~' already exists, use it instead of checking it out again."
                  'switch-to-buffer-other-window)))
     (funcall visit (vc-find-revision file revision))))
 
+(defun my-vc-print-revision-log (working-revision &optional limit)
+  ;; Derived from `vc-print-log'.
+  "List the change log at WORKING-REVISION of the current fileset in a window.
+
+If LIMIT is non-nil, it should be a number specifying the maximum
+number of revisions to show; the default is `vc-log-show-limit'.
+
+When called interactively with a prefix argument, prompts for LIMIT also."
+  (interactive
+   (let ((rev (read-from-minibuffer
+               "Working revision (default: last revision): " nil nil nil nil))
+         (lim (when current-prefix-arg
+                (string-to-number (read-from-minibuffer
+                                   "Limit display (unlimited: 0): "
+                                   (format "%s" vc-log-show-limit)
+                                   nil nil nil)))))
+     (when (string= rev "") (setq rev nil))
+     (when (and lim (<= lim 0)) (setq lim nil))
+     (list rev lim)))
+  (let* ((vc-fileset (vc-deduce-fileset t)) ;FIXME: Why t? --Stef
+         (backend (car vc-fileset))
+         (files (cadr vc-fileset))
+         ;; (working-revision (or working-revision
+         ;;                       (vc-working-revision (car files))))
+         )
+    (vc-print-log-internal backend files working-revision t limit)))
+
 ;; diff-hl library
 (global-diff-hl-mode 1)
 (diff-hl-flydiff-mode 1)

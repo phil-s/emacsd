@@ -160,6 +160,7 @@
   (define-key keymap (kbd "C-z C-=")   'ediff-current-file)
   (define-key keymap (kbd "C-x v C-=") 'vc-ediff)
   (define-key keymap (kbd "C-x v C-f") 'my-vc-visit-file-revision)
+  (define-key keymap (kbd "C-x v C-l") 'my-vc-print-revision-log)
   (define-key keymap (kbd "C-x v <")   'vc-resolve-conflicts)
 
   ;; Completions
