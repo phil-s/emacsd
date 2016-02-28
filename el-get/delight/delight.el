@@ -1,10 +1,19 @@
-;;; delight.el - A dimmer switch for your lighter text.
+;;; delight.el --- A dimmer switch for your lighter text.
 ;;
 ;; Author: Phil S.
 ;; URL: http://www.emacswiki.org/emacs/DelightedModes
-;; Version: 1.03
+;; Keywords: convenience
+;; Created: 25 Jun 2013
+;; Version: 1.04
 
-;; Commentary:
+;; This file is not part of GNU Emacs.
+
+;; This file is free software: you can redistribute it and/or modify it under
+;; the terms of the GNU General Public License as published by the Free Software
+;; Foundation, either version 3 of the License, or (at your option) any later
+;; version. See <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
 ;;
 ;; Enables you to customise the mode names displayed in the mode line.
 ;;
@@ -52,10 +61,13 @@
 
 ;;; Changelog:
 ;;
-;; 1.03 - Added support for `mode-line-mode-menu'.
-;; 1.02 - Bug fix for missing 'cl requirement for destructuring-bind macro.
-;; 1.01 - Added support for using the keyword :major as the FILE argument
-;;        for major modes, to avoid also processing them as minor modes.
+;; 1.04 (2016-02-28) Respect `inhibit-mode-name-delight' when already set.
+;; 1.03 (2014-05-30) Added support for `mode-line-mode-menu'.
+;; 1.02 (2014-05-04) Bug fix for missing 'cl requirement for
+;;       destructuring-bind macro.
+;; 1.01 (2014-05-04) Allow the keyword :major as the FILE argument for
+;;       major modes, to avoid also processing them as minor modes.
+;; 1.00 (2013-06-25) Initial release.
 
 ;;; Code:
 
@@ -154,10 +166,15 @@ When `mode-name' is displayed in other contexts (such as in the
                         ,mode-name ;; glum
                         ,(cadr major-delight)))))) ;; delighted
 
+(defvar inhibit-mode-name-delight)
+
 (defadvice format-mode-line (around delighted-modes-are-glum activate)
   "Delighted modes should exhibit their original `mode-name' when
 `format-mode-line' is called. See `delight-major-mode'."
-  (let ((inhibit-mode-name-delight t))
+  (let ((inhibit-mode-name-delight (if (boundp 'inhibit-mode-name-delight)
+                                       inhibit-mode-name-delight
+                                     t)))
     ad-do-it))
 
 (provide 'delight)
+;;; delight.el ends here
