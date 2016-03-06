@@ -287,8 +287,8 @@ multiple files is toggled as follows:
 
 ;;;***
 
-;;;### (autoloads nil "delight/delight" "delight/delight.el" (21384
-;;;;;;  30628 654909 885000))
+;;;### (autoloads nil "delight/delight" "delight/delight.el" (22235
+;;;;;;  29381 565124 656000))
 ;;; Generated autoloads from delight/delight.el
 
 (autoload 'delight "delight/delight" "\
@@ -309,8 +309,9 @@ mode-line construct. For details see the `mode-line-format' variable, and
 Info node `(elisp) Mode Line Format'.
 
 The FILE argument is passed through to `eval-after-load'. If FILE is nil then
-the mode symbol is passed as the required feature. Both of these cases are
-relevant to minor modes only.
+the mode symbol is passed as the required feature. If FILE is t then it is
+assumed that the mode is already loaded. (Note that you can also use 'emacs
+for this purpose). These FILE options are relevant to minor modes only.
 
 For major modes you should specify the keyword :major as the value of FILE,
 to prevent the mode being treated as a minor mode.
