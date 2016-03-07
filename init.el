@@ -56,8 +56,8 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s automake autoconf libxpm-dev libjpeg-dev libtiff4-dev libgif-dev libpng12-0-dev librsvg2-dev libxml2-dev libxaw7-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev ttf-ancient-fonts libxft-dev libfreetype6-dev ncurses-term
-
+;; # Manual: sudo apt-get install -s automake autoconf libxpm-dev libjpeg-dev libtiff-dev libgif-dev libpng-dev librsvg2-dev libxml2-dev libxaw7-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev ttf-ancient-fonts libxft-dev libfreetype6-dev ncurses-term
+;; # PDF-tools: sudo apt-get install -s libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
 ;; Truetype font support packages: libxft-dev libfreetype6-dev
 ;; My preferred font is a variant of Droid Sans Mono (droid-fonts package)
 ;; which I have committed here in ~/.emacs.d/ for safe keeping.
@@ -120,7 +120,8 @@
 ;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
 
-;; Conditional over-ride with fall-back:
+;; Conditional definition/over-ride with fall-back:
+;; http://endlessparentheses.com/define-context-aware-keys-in-emacs.html
 ;; http://stackoverflow.com/questions/16090517/elisp-conditionally-change-keybinding
 ;; http://stackoverflow.com/questions/2494096/emacs-key-binding-fallback
 
@@ -335,6 +336,10 @@
 ;; Spinning:
 ;; setq debug-on-quit t
 ;; When the problem occurs, hit C-g for a backtrace.
+
+;; "If your instance hangs and won't respond to C-g, you can issue
+;; 'pkill -SIGUSR2 emacs' to force it to stop whatever it's doing."
+;; (n.b. this didn't work the one time I tried it).
 
 ;; Edebug -- a source-level debugger for Emacs Lisp
 ;; M-x edebug-defun (C-u C-M-x) Cancel with eval-defun (C-M-x)
