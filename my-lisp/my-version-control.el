@@ -2,9 +2,12 @@
 
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar vc-log-show-limit)
   (declare-function diff-hl-flydiff-mode "diff-hl-flydiff")
   (declare-function global-diff-hl-mode "diff-hl")
+  (declare-function vc-deduce-fileset "vc")
   (declare-function vc-find-revision "vc")
+  (declare-function vc-print-log-internal "vc")
   (declare-function vc-read-revision "vc")
   )
 

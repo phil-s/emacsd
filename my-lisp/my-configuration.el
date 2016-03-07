@@ -26,6 +26,7 @@
   (defvar eshell-directory-name)
   (defvar ffap-url-regexp)
   (defvar goto-address-mail-regexp)
+  (defvar grep-find-ignored-files)
   (defvar ibuffer-formats)
   (defvar linum-format)
   (defvar require-trailing-newline)
