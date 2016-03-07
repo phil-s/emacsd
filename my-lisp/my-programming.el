@@ -305,6 +305,17 @@ context-help to false"
 (eval-when-compile
   (defvar js-mode-map))
 
+(add-hook 'js-mode-hook 'my-js-mode-hook)
+(defun my-js-mode-hook ()
+  ;; https://alexschroeder.ch/wiki/2016-03-06_Javascript_Comments
+  ;; (setq-local comment-auto-fill-only-comments t)
+  ;; (auto-fill-mode 1)
+  ;; (setq-local comment-multi-line t)
+  ;;
+  ;; Fix M-j behaviour in block comments in js-mode
+  (setq-local comment-multi-line t)
+  (local-set-key [remap indent-new-comment-line] 'c-indent-new-comment-line))
+
 ;; PHP (see my-php.el)
 (autoload 'php-mode "my-php" "PHP Mode." t)
 (add-to-list 'auto-mode-alist '("\\.\\(php\\|inc\\)\\'" . php-mode))
