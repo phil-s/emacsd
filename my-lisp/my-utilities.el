@@ -19,7 +19,6 @@
   (declare-function shr-render-buffer "shr")
   (declare-function sql-buffer-live-p "sql")
   (declare-function sql-highlight-product "sql")
-  (declare-function term-in-char-mode "term")
   (declare-function tramp-get-completion-function "tramp")
   (declare-function winner-redo "winner")
   (declare-function winner-undo "winner")
@@ -238,9 +237,7 @@ any numeric prefix argument is passed to `occur' as nlines."
                     (add-to-list 'visible-buffers (window-buffer window))))
     (multi-occur visible-buffers regexp)))
 
-(declare-function term-send-raw-string "term" (chars))
-(declare-function term-mode "term" ())
-(declare-function term-char-mode "term" ())
+(eval-when-compile (require 'term)) ;; `term-in-char-mode' is a macro.
 
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call `next-buffer' if the last command was
