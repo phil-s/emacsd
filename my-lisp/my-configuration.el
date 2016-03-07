@@ -201,6 +201,11 @@ when `auto-save-mode' is invoked manually.")
 ;; ;; first word of a sentence, or before the last word of a paragraph.
 ;; (add-to-list 'fill-nobreak-predicate 'fill-single-word-nobreak-p)
 
+;; Do smart things when creating new files.
+;; See `auto-insert-alist'.
+(add-hook 'find-file-hook 'auto-insert)
+;; (setq auto-insert-query nil)
+
 ;; ibuffer config.
 (eval-when-compile
   (defvar ibuffer-filtering-qualifiers)
