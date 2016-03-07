@@ -47,7 +47,8 @@
                 (whitespace-mode 1)))
             nil t)
   (fic-mode 1)
-  (which-function-mode 1)
+  ;;(which-function-mode 1) ; Global minor mode, and `which-func-non-auto-modes'
+                            ; is checked only upon find-file (hook).
   ;;(imenu-add-menubar-index)
   )
 
