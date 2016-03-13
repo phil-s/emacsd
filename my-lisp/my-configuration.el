@@ -196,6 +196,10 @@ when `auto-save-mode' is invoked manually.")
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
 
+;; Avoid garbage collection in the minibuffer, for improved responsiveness.
+(add-hook 'minibuffer-setup-hook #'my-gc-cons-threshold-set-large)
+(add-hook 'minibuffer-exit-hook #'my-gc-cons-threshold-set-normal)
+
 ;; This behaviour was regularly annoying.
 ;; Should probably remove, but just commenting for now.
 ;; ;; Smarter line breaks when filling: Don't break a line after the

@@ -597,10 +597,15 @@
 
 ;; Temporary performance measures, to reduce start-up time.
 ;; Avoid garbage collection during start-up.
-(setq my-original-gc-cons-threshold gc-cons-threshold)
-(setq gc-cons-threshold 10000000) ;; 10M; default is 0.8M
+(defvar my-gc-cons-threshold-normal gc-cons-threshold)
+(defvar my-gc-cons-threshold-large 10000000) ;; 10M; default is 0.8M
+(defun my-gc-cons-threshold-set-large ()
+  (setq gc-cons-threshold my-gc-cons-threshold-large))
+(defun my-gc-cons-threshold-set-normal ()
+  (setq gc-cons-threshold my-gc-cons-threshold-normal))
+(my-gc-cons-threshold-set-large)
 ;; Disable non-local file handlers during start-up
-(setq my-original-file-name-handler-alist file-name-handler-alist)
+(defvar my-original-file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
@@ -720,9 +725,8 @@
 (add-hook
  'emacs-startup-hook
  (lambda ()
-   (setq gc-cons-threshold my-original-gc-cons-threshold
-         file-name-handler-alist my-original-file-name-handler-alist)
-   (makunbound 'my-original-gc-cons-threshold)
+   (my-gc-cons-threshold-set-normal)
+   (setq file-name-handler-alist my-original-file-name-handler-alist)
    (makunbound 'my-original-file-name-handler-alist)))
 
 ;;; Local Variables:
