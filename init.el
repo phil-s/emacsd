@@ -56,8 +56,10 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s automake autoconf libxpm-dev libjpeg-dev libtiff-dev libgif-dev libpng-dev librsvg2-dev libxml2-dev libxaw7-dev libncurses-dev libmagickcore-dev libmagickwand-dev libgnutls-dev libdbus-1-dev ttf-ancient-fonts libxft-dev libfreetype6-dev ncurses-term
-;; # PDF-tools: sudo apt-get install -s libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
+;; # Manual: sudo apt-get install -s autoconf automake g++ gcc libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev make ncurses-term ttf-ancient-fonts
+
+;; # PDF-tools packages: libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
+
 ;; Truetype font support packages: libxft-dev libfreetype6-dev
 ;; My preferred font is a variant of Droid Sans Mono (droid-fonts package)
 ;; which I have committed here in ~/.emacs.d/ for safe keeping.
@@ -702,6 +704,8 @@
 
 ;; Org-Mode
 (require 'my-org)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Start server (but don't restart).
 (require 'server)
