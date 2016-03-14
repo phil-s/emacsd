@@ -1020,7 +1020,8 @@ or before point."
   (interactive "P")
   (require 'term)
   (unless (and term-ansi-buffer-name
-               (buffer-name (get-buffer term-ansi-buffer-name)))
+               (buffer-name (get-buffer term-ansi-buffer-name))
+               (get-buffer-process (get-buffer term-ansi-buffer-name)))
     (call-interactively 'ansi-term))
   (pop-to-buffer term-ansi-buffer-name '((display-buffer-reuse-window
                                           display-buffer-same-window)
@@ -1038,8 +1039,9 @@ or before point."
          (catch 'found
            (mapc (lambda (buf)
                    (with-current-buffer buf
-                     (when (eq major-mode 'sql-interactive-mode)
-                       (throw 'found buf))))
+                     (and (eq major-mode 'sql-interactive-mode)
+                          (get-buffer-process buf)
+                          (throw 'found buf))))
                  (buffer-list))
            nil)))
     (if sqlibuf
@@ -1077,7 +1079,7 @@ or before point."
 
 (defun my-drush-console (retain-window-layout)
   (interactive "P")
-  (unless (get-buffer "*drush console*")
+  (unless (get-buffer-process (get-buffer "*drush console*"))
     (call-interactively 'drush-console))
   (pop-to-buffer "*drush console*" '((display-buffer-reuse-window
                                       display-buffer-same-window)
