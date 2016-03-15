@@ -48,8 +48,15 @@
   (c-set-offset 'arglist-close 'c-lineup-close-paren)
 
   ;; Key bindings
+  (local-set-key (kbd "C-c C-c") 'my-drupal-php-code-sniffer)
   (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
   (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
+
+(defun my-drupal-php-code-sniffer ()
+  "Run phpcs (with Drupal standards) for the current buffer."
+  (interactive)
+  (compile (format "phpcs --report=emacs --standard=Drupal %s"
+                   (buffer-file-name))))
 
 ;; Ew.
 (fset 'drupal-quick-and-dirty-debugging

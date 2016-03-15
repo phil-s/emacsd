@@ -82,6 +82,7 @@
    (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
                           (drupal-mode)
                           (hack-local-variables))) ;; Oooh.
+                (flymake-phpcs-standard . "Drupal")
                 (c-basic-offset . 2)))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
