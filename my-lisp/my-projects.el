@@ -91,6 +91,7 @@
    (javascript-generic-mode . ((eval . (progn
                                          (js-mode)
                                          (hack-local-variables))))) ;; Oooh.
+   (web-mode . ((web-mode-code-indent-offset . 2)))
    (makefile-gmake-mode . ((eval . (progn (conf-mode)
                                           (hack-local-variables)))))
    (dired-mode . ((dired-omit-mode . t)))
