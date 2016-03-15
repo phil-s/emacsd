@@ -328,7 +328,9 @@ files are not relevant.")
 ;; callback function
 (defun drupal-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
-  (when drupal-tags-autoupdate-enabled
+  (when (and drupal-tags-autoupdate-enabled
+             (eq major-mode 'drupal-mode)
+             (bound-and-true-p tags-file-name))
     (let ((dir (file-name-directory tags-file-name)))
       (when (drupal-tags-autoupdate-tree-modified dir)
         (save-window-excursion
