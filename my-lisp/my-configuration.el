@@ -461,6 +461,9 @@ See also: `my-copy-buffer-file-name'."
 ;; (submit patch to enable email addresses to be disabled separately?)
 (setq goto-address-mail-regexp "$^")
 
+;; Enable visiting URLs with C-x C-f
+(url-handler-mode 1)
+
 ;; Use system trash (for emacs 23)
 (setq delete-by-moving-to-trash t)
 
