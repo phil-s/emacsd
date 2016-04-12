@@ -44,6 +44,7 @@
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function my-isearch-delete "my-configuration")
   (declare-function notify "notify")
+  (declare-function which-key-mode "which-key")
   )
 
 ;; Set a preferred coding system
@@ -190,6 +191,9 @@ when `auto-save-mode' is invoked manually.")
 
 ;; Do not overwrite the region by typing
 (setq delete-active-region nil)
+
+;; Enable the which-key library.
+(which-key-mode 1)
 
 ;; Recursive minibuffers lets us do neat things such as interactively
 ;; building command arguments using other commands.
@@ -433,6 +437,7 @@ See also: `my-copy-buffer-file-name'."
              (magit-auto-revert-mode " MRvt" magit)
              (rainbow-mode)
              (smart-tab-mode " \\t" smart-tab)
+             (which-key-mode nil which-key)
              (ws-trim-mode nil ws-trim)
              ;; Major modes
              (emacs-lisp-mode ("Elisp" ,my-lexbind-indicator) :major)

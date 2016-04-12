@@ -251,6 +251,10 @@
             :type git
             :url "https://github.com/mhayashi1120/Emacs-wgrep.git")
 
+     (:name which-key
+            :type git
+            :url "https://github.com/justbur/emacs-which-key")
+
      (:name with-editor
             :type git
             :url "https://github.com/magit/with-editor.git")
