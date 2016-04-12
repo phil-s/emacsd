@@ -424,21 +424,20 @@ See also: `my-copy-buffer-file-name'."
          help-echo (lambda (window object pos)
                      (format "Switch to %s binding"
                              (if lexical-binding "dynamic" "lexical"))))))
-  ;; Override specified mode names in the mode line.
-  (delight `((abbrev-mode " Abv" abbrev)
-             (smart-tab-mode " \\t" smart-tab)
+  (delight `(;; Override specified mode names in the mode line.
+             (abbrev-mode " Abv" abbrev)
+             (auto-revert-mode " Rvt" autorevert)
              (eldoc-mode nil eldoc)
              (elisp-slime-nav-mode " ." elisp-slime-nav)
-             (ws-trim-mode nil ws-trim)
-             (rainbow-mode)
              (lexbind-mode)
-             (auto-revert-mode " Rvt" autorevert)
              (magit-auto-revert-mode " MRvt" magit)
-             (dired-mode "Dired" :major)
-             (emacs-lisp-mode
-              ("Elisp" ,my-lexbind-indicator) :major)
-             (lisp-interaction-mode
-              ("iElisp" ,my-lexbind-indicator) :major))))
+             (rainbow-mode)
+             (smart-tab-mode " \\t" smart-tab)
+             (ws-trim-mode nil ws-trim)
+             ;; Major modes
+             (emacs-lisp-mode ("Elisp" ,my-lexbind-indicator) :major)
+             (lisp-interaction-mode ("iElisp" ,my-lexbind-indicator) :major)
+             )))
 
 ;; Display the hostname in the mode-line
 ;; I tend to run enough emacs instances to make this valuable.
