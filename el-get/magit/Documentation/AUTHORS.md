@@ -5,7 +5,7 @@ The following people have contributed to Magit, including the
 libraries `git-commit.el`, `magit-popup.el`, and `with-editor.el`
 which are distributed as separate Elpa packages.
 
-For statistics see http://magit.vc/stats/authors.html.
+For statistics see https://magit.vc/stats/authors.html.
 
 Names below are sorted alphabetically.
 
@@ -77,10 +77,12 @@ Contributors
 - Craig Andera <candera@wangdera.com>
 - Dale Hagglund <dale.hagglund@gmail.com>
 - Damien Cassou <damien@cassou.me>
+- Dan Erikson <derikson3@gmail.com>
 - Daniel Brockman <daniel@gointeractive.se>
 - Daniel Farina <drfarina@acm.org>
 - Daniel Hackney <dan@haxney.org>
 - Dan LaManna <dan.lamanna@gmail.com>
+- Dato Simó <dato@net.com.org.es>
 - David Abrahams <dave@boostpro.com>
 - David Hull <david.hull@openx.com>
 - David L. Rager <ragerdl@gmail.com>
@@ -95,6 +97,7 @@ Contributors
 - Felix Geller <fgeller@gmail.com>
 - Feng Li <fengli@blackmagicdesign.com>
 - Florian Ragwitz <rafl@debian.org>
+- Fritz Grabo <fritz.grabo@gmail.com>
 - Geoff Shannon <geoffpshannon@gmail.com>
 - George Kadianakis <desnacked@gmail.com>
 - Graham Clark <grclark@gmail.com>
@@ -132,7 +135,7 @@ Contributors
 - Lingchao Xin <douglarek@users.noreply.github.com>
 - Lluís Vilanova <vilanova@ac.upc.edu>
 - Loic Dachary <loic@dachary.org>
-- Luís Borges de Oliveira <lbo@siscog.pt>
+- Luís Oliveira <luismbo@gmail.com>
 - Luke Amdor <luke.amdor@gmail.com>
 - Manuel Vázquez Acosta <mva.led@gmail.com>
 - Marcel Wolf <mwolf@ml1.net>
@@ -197,6 +200,7 @@ Contributors
 - Ron Parker <rparker@a123systems.com>
 - Roy Crihfield <rscrihf@gmail.com>
 - Rüdiger Sonderfeld <ruediger@c-plusplus.net>
+- Russell Black <black.russell@gmail.com>
 - Ryan C. Thompson <rct@thompsonclan.org>
 - Samuel Bronson <naesten@gmail.com>
 - Sanjoy Das <sanjoy@playingwithpointers.com>

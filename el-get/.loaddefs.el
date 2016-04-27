@@ -911,9 +911,118 @@ buffer and expand the next macro form found, if any.
 
 ;;;***
 
-;;;### (autoloads (mc/edit-beginnings-of-lines mc/edit-ends-of-lines
-;;;;;;  mc/edit-lines) "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (20802 24771 412829 899000))
+;;;### (autoloads nil "magit/lisp/magit-autorevert" "magit/lisp/magit-autorevert.el"
+;;;;;;  (22304 6177 829444 933000))
+;;; Generated autoloads from magit/lisp/magit-autorevert.el
+
+(defvar magit-revert-buffers t)
+
+(defvar magit-auto-revert-mode (and magit-revert-buffers (not global-auto-revert-mode) (not noninteractive)) "\
+Non-nil if Magit-Auto-Revert mode is enabled.
+See the command `magit-auto-revert-mode' for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `magit-auto-revert-mode'.")
+
+(custom-autoload 'magit-auto-revert-mode "magit/lisp/magit-autorevert" nil)
+
+(autoload 'magit-auto-revert-mode "magit/lisp/magit-autorevert" "\
+Toggle Auto-Revert mode in all buffers.
+With prefix ARG, enable Magit-Auto-Revert mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Auto-Revert mode is enabled in all buffers where
+`magit-turn-on-auto-revert-mode-if-desired' would do it.
+See `auto-revert-mode' for more information on Auto-Revert mode.
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-submodule" "magit/lisp/magit-submodule.el"
+;;;;;;  (22304 6177 837448 934000))
+;;; Generated autoloads from magit/lisp/magit-submodule.el
+ (autoload 'magit-submodule-popup "magit-submodule" nil t)
+
+(autoload 'magit-submodule-add "magit/lisp/magit-submodule" "\
+Add the repository at URL as a submodule.
+
+Optional PATH is the path to the submodule relative to the root
+of the superproject.  If it is nil, then the path is determined
+based on the URL.
+
+Optional NAME is the name of the submodule.  If it is nil, then
+PATH also becomes the name.
+
+\(fn URL &optional PATH NAME)" t nil)
+
+(autoload 'magit-submodule-setup "magit/lisp/magit-submodule" "\
+Clone and register missing submodules and checkout appropriate commits.
+
+\(fn)" t nil)
+
+(autoload 'magit-submodule-init "magit/lisp/magit-submodule" "\
+Register submodules listed in \".gitmodules\" into \".git/config\".
+
+\(fn)" t nil)
+
+(autoload 'magit-submodule-update "magit/lisp/magit-submodule" "\
+Clone missing submodules and checkout appropriate commits.
+With a prefix argument also register submodules in \".git/config\".
+
+\(fn &optional INIT)" t nil)
+
+(autoload 'magit-submodule-sync "magit/lisp/magit-submodule" "\
+Update each submodule's remote URL according to \".gitmodules\".
+
+\(fn)" t nil)
+
+(autoload 'magit-submodule-fetch "magit/lisp/magit-submodule" "\
+Fetch all submodules.
+With a prefix argument fetch all remotes.
+
+\(fn &optional ALL)" t nil)
+
+(autoload 'magit-submodule-deinit "magit/lisp/magit-submodule" "\
+Unregister the submodule at PATH.
+
+\(fn PATH)" t nil)
+
+(autoload 'magit-insert-submodules "magit/lisp/magit-submodule" "\
+Insert sections for all modules.
+For each section insert the path and the output of `git describe --tags'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-insert-modules-unpulled-from-upstream "magit/lisp/magit-submodule" "\
+Insert sections for modules that haven't been pulled from the upstream.
+These sections can be expanded to show the respective commits.
+
+\(fn)" nil nil)
+
+(autoload 'magit-insert-modules-unpulled-from-pushremote "magit/lisp/magit-submodule" "\
+Insert sections for modules that haven't been pulled from the push-remote.
+These sections can be expanded to show the respective commits.
+
+\(fn)" nil nil)
+
+(autoload 'magit-insert-modules-unpushed-to-upstream "magit/lisp/magit-submodule" "\
+Insert sections for modules that haven't been pushed to the upstream.
+These sections can be expanded to show the respective commits.
+
+\(fn)" nil nil)
+
+(autoload 'magit-insert-modules-unpushed-to-pushremote "magit/lisp/magit-submodule" "\
+Insert sections for modules that haven't been pushed to the push-remote.
+These sections can be expanded to show the respective commits.
+
+\(fn)" nil nil)
+
+;;;***
+
+;;;### (autoloads nil "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
+;;;;;;  (22168 21846 811932 629000))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
@@ -1200,7 +1309,7 @@ The query function that disable deletion of buffers we protect.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-commit" "magit/lisp/git-commit.el"
-;;;;;;  (22208 58964 699047 545000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/git-commit.el
 
 (defvar global-git-commit-mode t "\
@@ -1224,7 +1333,7 @@ provide such a commit message.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-rebase" "magit/lisp/git-rebase.el"
-;;;;;;  (22208 58860 390159 718000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/git-rebase.el
 
 (autoload 'git-rebase-mode "magit/lisp/git-rebase" "\
@@ -1243,8 +1352,8 @@ running 'man git-rebase' at the command line) for details.
 
 ;;;***
 
-;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (22208
-;;;;;;  58964 707047 613000))
+;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (22304
+;;;;;;  6177 837448 934000))
 ;;; Generated autoloads from magit/lisp/magit.el
 
 (autoload 'magit-status "magit/lisp/magit" "\
@@ -1536,7 +1645,7 @@ Merge commit REV into the current branch; and edit message.
 Perform the merge and prepare a commit message but let the user
 edit it.
 
-\(git merge --edit [ARGS] rev)
+\(git merge --edit --no-ff [ARGS] rev)
 
 \(fn REV &optional ARGS)" t nil)
 
@@ -1545,7 +1654,7 @@ Merge commit REV into the current branch; pretending it failed.
 Pretend the merge failed to give the user the opportunity to
 inspect the merge and change the commit message.
 
-\(git merge --no-commit [ARGS] rev)
+\(git merge --no-commit --no-ff [ARGS] rev)
 
 \(fn REV &optional ARGS)" t nil)
 
@@ -1560,13 +1669,14 @@ Abort the current merge operation.
 \(git merge --abort)
 
 \(fn)" t nil)
+ (autoload 'magit-reset-popup "magit" nil t)
 
 (autoload 'magit-reset-index "magit/lisp/magit" "\
 Reset the index to COMMIT.
 Keep the head and working tree as-is, so if COMMIT refers to the
 head this effectively unstages all changes.
 
-\(git reset COMMIT)
+\(git reset COMMIT .)
 
 \(fn COMMIT)" t nil)
 
@@ -1618,6 +1728,7 @@ defaulting to the tag at point.
 
 \(fn TAGS)" t nil)
  (autoload 'magit-notes-popup "magit" nil t)
+ (autoload 'magit-file-popup "magit" nil t)
 
 (defvar global-magit-file-mode nil "\
 Non-nil if Global-Magit-File mode is enabled.
@@ -1678,7 +1789,7 @@ Git, and Emacs in the echo area.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-apply" "magit/lisp/magit-apply.el"
-;;;;;;  (22208 58860 390159 718000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-apply.el
 
 (autoload 'magit-stage-file "magit/lisp/magit-apply" "\
@@ -1715,7 +1826,7 @@ Remove all changes from the staging area.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-bisect" "magit/lisp/magit-bisect.el"
-;;;;;;  (22208 58860 390159 718000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-bisect.el
  (autoload 'magit-bisect-popup "magit-bisect" nil t)
 
@@ -1767,7 +1878,7 @@ bisect run'.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-blame" "magit/lisp/magit-blame.el"
-;;;;;;  (22208 58964 699047 545000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-blame.el
  (autoload 'magit-blame-popup "magit-blame" nil t)
 
@@ -1792,7 +1903,7 @@ only arguments available from `magit-blame-popup' should be used.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-commit" "magit/lisp/magit-commit.el"
-;;;;;;  (22208 58860 390159 718000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-commit.el
 
 (autoload 'magit-commit "magit/lisp/magit-commit" "\
@@ -1875,7 +1986,7 @@ Create a squash commit targeting COMMIT and instantly rebase.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-diff" "magit/lisp/magit-diff.el"
-;;;;;;  (22208 58964 703047 579000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-diff.el
 
 (autoload 'magit-diff-dwim "magit/lisp/magit-diff" "\
@@ -1886,7 +1997,7 @@ Show changes for the thing at point.
 (autoload 'magit-diff "magit/lisp/magit-diff" "\
 Show differences between two commits.
 
-REV-OR-RANGE should be a RANGE or a single revision.  If it is a
+REV-OR-RANGE should be a range or a single revision.  If it is a
 revision, then show changes in the working tree relative to that
 revision.  If it is a range, but one side is omitted, then show
 changes relative to `HEAD'.
@@ -1941,7 +2052,7 @@ for a revision.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-ediff" "magit/lisp/magit-ediff.el"
-;;;;;;  (22208 58860 394159 752000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-ediff.el
  (autoload 'magit-ediff-popup "magit-ediff" nil t)
 
@@ -2019,10 +2130,18 @@ Show changes introduced by COMMIT using Ediff.
 
 \(fn COMMIT)" t nil)
 
+(autoload 'magit-ediff-show-stash "magit/lisp/magit-ediff" "\
+Show changes introduced by STASH using Ediff.
+`magit-ediff-show-stash-with-index' controls whether a
+three-buffer Ediff is used in order to distinguish changes in the
+stash that were staged.
+
+\(fn STASH)" t nil)
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-extras" "magit/lisp/magit-extras.el"
-;;;;;;  (22208 58860 394159 752000))
+;;;;;;  (22304 6177 829444 933000))
 ;;; Generated autoloads from magit/lisp/magit-extras.el
 
 (autoload 'magit-run-git-gui "magit/lisp/magit-extras" "\
@@ -2093,7 +2212,7 @@ on a position in a file-visiting buffer.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-log" "magit/lisp/magit-log.el"
-;;;;;;  (22208 58964 703047 579000))
+;;;;;;  (22304 6177 837448 934000))
 ;;; Generated autoloads from magit/lisp/magit-log.el
 
 (autoload 'magit-log-current "magit/lisp/magit-log" "\
@@ -2162,7 +2281,7 @@ Show commits in a branch that are not merged in the upstream branch.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-remote" "magit/lisp/magit-remote.el"
-;;;;;;  (22208 58964 703047 579000))
+;;;;;;  (22304 6177 837448 934000))
 ;;; Generated autoloads from magit/lisp/magit-remote.el
 
 (autoload 'magit-clone "magit/lisp/magit-remote" "\
@@ -2222,6 +2341,16 @@ Fetch from the upstream repository of the current branch.
 Fetch from another repository.
 
 \(fn REMOTE ARGS)" t nil)
+
+(autoload 'magit-fetch-branch "magit/lisp/magit-remote" "\
+Fetch a BRANCH from a REMOTE.
+
+\(fn REMOTE BRANCH ARGS)" t nil)
+
+(autoload 'magit-fetch-refspec "magit/lisp/magit-remote" "\
+Fetch a REFSPEC from a REMOTE.
+
+\(fn REMOTE REFSPEC ARGS)" t nil)
 
 (autoload 'magit-fetch-all "magit/lisp/magit-remote" "\
 Fetch from all remotes.
@@ -2289,6 +2418,15 @@ Push an arbitrary branch or commit somewhere.
 Both the source and the target are read in the minibuffer.
 
 \(fn SOURCE TARGET ARGS)" t nil)
+
+(autoload 'magit-push-refspecs "magit/lisp/magit-remote" "\
+Push one or multiple REFSPECS to a REMOTE.
+Both the REMOTE and the REFSPECS are read in the minibuffer.  To
+use multiple REFSPECS, separate them with commas.  Completion is
+only available for the part before the colon, or when no colon
+is used.
+
+\(fn REMOTE REFSPECS ARGS)" t nil)
 
 (autoload 'magit-push-matching "magit/lisp/magit-remote" "\
 Push all matching branches to another repository.
@@ -2376,7 +2514,7 @@ is asked to pull.  START has to be reachable from that commit.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-sequence" "magit/lisp/magit-sequence.el"
-;;;;;;  (22208 58874 262277 372000))
+;;;;;;  (22304 6177 837448 934000))
 ;;; Generated autoloads from magit/lisp/magit-sequence.el
 
 (autoload 'magit-sequencer-continue "magit/lisp/magit-sequence" "\
@@ -2525,7 +2663,7 @@ Abort the current rebase operation, restoring the original branch.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-stash" "magit/lisp/magit-stash.el"
-;;;;;;  (22208 58860 394159 752000))
+;;;;;;  (22304 6177 837448 934000))
 ;;; Generated autoloads from magit/lisp/magit-stash.el
  (autoload 'magit-stash-popup "magit-stash" nil t)
 
@@ -2547,7 +2685,7 @@ Applying the resulting stash has the inverse effect.
 \(fn MESSAGE)" t nil)
 
 (autoload 'magit-stash-worktree "magit/lisp/magit-stash" "\
-Create a stash of the working tree only.
+Create a stash of unstaged changes in the working tree.
 Untracked files are included according to popup arguments.
 One prefix argument is equivalent to `--include-untracked'
 while two prefix arguments are equivalent to `--all'.
@@ -2577,7 +2715,7 @@ Unstaged and untracked changes are not stashed.
 \(fn)" t nil)
 
 (autoload 'magit-snapshot-worktree "magit/lisp/magit-stash" "\
-Create a snapshot of the working tree only.
+Create a snapshot of unstaged changes in the working tree.
 Untracked files are included according to popup arguments.
 One prefix argument is equivalent to `--include-untracked'
 while two prefix arguments are equivalent to `--all'.
@@ -2625,7 +2763,7 @@ Show all diffs of a stash in a buffer.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-wip" "magit/lisp/magit-wip.el"
-;;;;;;  (22208 58860 394159 752000))
+;;;;;;  (22304 6177 837448 934000))
 ;;; Generated autoloads from magit/lisp/magit-wip.el
 
 (defvar magit-wip-after-save-mode nil "\
