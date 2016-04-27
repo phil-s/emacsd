@@ -165,9 +165,11 @@
      (:name magit
             :type git
             :url "git://github.com/magit/magit.git"
-            :branch "master"
+            :branch "master" ;; bleeding edge
+            ;; :branch "2.6.2" ;; install a specific release
             :load-path ("lisp")
-            :build ("make")
+            :build ("make") ;; builds documentation.
+            ;; :build ("make lisp") ;; just the code; fewer dependencies.
             :depends (async dash git-modes))
 
      (:name mo-git-blame)
