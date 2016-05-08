@@ -161,17 +161,26 @@ Advises `eldoc-print-current-symbol-info'."
 
 (defun my-contextual-help (&optional force)
   "Describe function, variable, or face at point, if *Help* buffer is visible."
-  (when (or force (get-buffer-window (help-buffer)))
-    (let ((sym (eldoc-current-symbol)))
-      ;; We ignore keyword symbols, as their help is redundant.
-      ;; If something else changes the help buffer contents, ensure we
-      ;; don't immediately revert back to the current symbol's help.
-      (and (not (keywordp sym))
-           (not (eq sym my-contextual-help-last-symbol))
-           (setq my-contextual-help-last-symbol sym)
-           sym
-           (save-selected-window
-             (help-xref-interned sym))))))
+  (let ((help-visible-p (get-buffer-window (help-buffer))))
+    (when (or help-visible-p force)
+      (let ((sym (eldoc-current-symbol)))
+        ;; We ignore keyword symbols, as their help is redundant.
+        ;; If something else changes the help buffer contents, ensure we
+        ;; don't immediately revert back to the current symbol's help.
+        (and (not (keywordp sym))
+             (or (not (eq sym my-contextual-help-last-symbol))
+                 (and force (not help-visible-p)))
+             (setq my-contextual-help-last-symbol sym)
+             sym
+             (save-selected-window
+               (help-xref-interned sym)))))))
+
+(defun my-contextual-help-toggle ()
+  "Intelligently enable or disable `my-contextual-help-mode'."
+  (interactive)
+  (if (get-buffer-window (help-buffer))
+      (my-contextual-help-mode 'toggle)
+    (my-contextual-help-mode 1)))
 
 (my-contextual-help-mode 1)
 
