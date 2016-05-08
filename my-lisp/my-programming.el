@@ -134,43 +134,46 @@
               'face 'font-lock-variable-name-face))
 (setq eldoc-argument-case 'frob-eldoc-argument-list)
 
-(defun rgr/toggle-context-help ()
-  "Turn on or off the context help.
-Note that if ON and you hide the help buffer then you need to
-manually reshow it. A double toggle will make it reappear"
-  (interactive)
-  (with-current-buffer (help-buffer)
-    (unless (local-variable-p 'context-help)
-      (set (make-local-variable 'context-help) t))
-    (when (setq context-help (not context-help))
-      (unless (get-buffer-window (help-buffer))
-        (display-buffer (help-buffer))))
-    (message "Context help %s" (if context-help "ON" "OFF"))))
+(define-minor-mode my-contextual-help-mode
+  "Show help for the elisp symbol at point in the current *Help* buffer.
 
-(defun rgr/context-help ()
-  "Display function or variable at point in *Help* buffer if visible.
-Default behaviour can be turned off by setting the buffer local
-context-help to false"
-  (interactive)
-  (let ((rgr-symbol (symbol-at-point))) ; symbol-at-point http://www.emacswiki.org/cgi-bin/wiki/thingatpt%2B.el
-    (save-selected-window
-      (with-current-buffer (help-buffer)
-        (unless (local-variable-p 'context-help)
-          (set (make-local-variable 'context-help) t))
-        (if (and context-help (get-buffer-window (help-buffer))
-                 rgr-symbol)
-            (if (fboundp  rgr-symbol)
-                (describe-function rgr-symbol)
-              (if (boundp  rgr-symbol) (describe-variable rgr-symbol))))))))
+Advises `eldoc-print-current-symbol-info'."
+  :lighter " C-h"
+  :global t
+  (require 'help-mode) ;; for `help-xref-interned'
+  (message "Contextual help is %s" (if my-contextual-help-mode "on" "off"))
+  (and my-contextual-help-mode
+       (eldoc-mode 1)
+       (eldoc-current-symbol)
+       (my-contextual-help :force)))
 
-(defadvice eldoc-print-current-symbol-info
-  (around eldoc-show-c-tag activate)
-  (if (memq major-mode
-            '(emacs-lisp-mode
-              lisp-interaction-mode
-              apropos-mode))
-      (rgr/context-help))
-  ad-do-it)
+(defadvice eldoc-print-current-symbol-info (before my-contextual-help activate)
+  "Triggers contextual elisp *Help*. Enabled by `my-contextual-help-mode'."
+  (and my-contextual-help-mode
+       (derived-mode-p 'emacs-lisp-mode)
+       (my-contextual-help)))
+
+(defvar-local my-contextual-help-last-symbol nil
+  ;; Using a buffer-local variable for this means that we can't
+  ;; trigger changes to the help buffer simply by switching windows,
+  ;; which seems generally preferable to the alternative.
+  "The last symbol processed by `my-contextual-help' in this buffer.")
+
+(defun my-contextual-help (&optional force)
+  "Describe function, variable, or face at point, if *Help* buffer is visible."
+  (when (or force (get-buffer-window (help-buffer)))
+    (let ((sym (eldoc-current-symbol)))
+      ;; We ignore keyword symbols, as their help is redundant.
+      ;; If something else changes the help buffer contents, ensure we
+      ;; don't immediately revert back to the current symbol's help.
+      (and (not (keywordp sym))
+           (not (eq sym my-contextual-help-last-symbol))
+           (setq my-contextual-help-last-symbol sym)
+           sym
+           (save-selected-window
+             (help-xref-interned sym))))))
+
+(my-contextual-help-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compilation

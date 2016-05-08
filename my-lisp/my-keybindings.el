@@ -105,7 +105,7 @@
   (define-key keymap (kbd "M-s C-S-l") 'loccur-previous-match) ; loccur of the previously-found word
 
   ;; Context-sensitive *Help* buffer
-  (define-key keymap (kbd "C-c h")     'rgr/toggle-context-help)
+  (define-key keymap (kbd "C-c h")     'my-contextual-help-mode)
 
   ;; ELisp debugger
   (define-key keymap (kbd "C-c d")     'debug-on-entry)
