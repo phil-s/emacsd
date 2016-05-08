@@ -435,6 +435,7 @@ See also: `my-copy-buffer-file-name'."
              (elisp-slime-nav-mode " ." elisp-slime-nav)
              (lexbind-mode)
              (magit-auto-revert-mode " MRvt" magit)
+             (my-contextual-help-mode nil my-programming)
              (rainbow-mode)
              (smart-tab-mode " \\t" smart-tab)
              (which-key-mode nil which-key)
