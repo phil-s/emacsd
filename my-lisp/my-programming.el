@@ -375,13 +375,13 @@ Advises `eldoc-print-current-symbol-info'."
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
-  (add-hook 'post-self-insert-hook 'my-sql-keyword-upcase nil :local)
+  (add-hook 'post-command-hook 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil))
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
-  (add-hook 'post-self-insert-hook 'my-sql-keyword-upcase nil :local)
+  (add-hook 'post-command-hook 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
@@ -469,43 +469,60 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
+(defvar-local my-sql-keyword-upcase-pos 0
+  "The previous position of point.")
+
+;; This should probably be an `after-change-functions' callback:
+;; Three arguments are passed to each function: the positions of the
+;; beginning and end of the range of changed text, and the length in
+;; chars of the pre-change text replaced by that range.  (For an
+;; insertion, the pre-change length is zero; for a deletion, that
+;; length is the number of chars deleted, and the post-change
+;; beginning and end are at the same place.)
+
 (defun my-sql-keyword-upcase ()
   "Automatically upcase SQL keywords and builtin function names.
 
-Triggered by `post-self-insert-hook', and utilising the product-specific
+Triggered by `post-command-hook', and utilising the product-specific
 font-lock keywords specified in `sql-product-alist'."
-  ;; If the last self-inserted character was whitespace or a parenthesis...
-  (and (if (characterp last-input-event)
-           (memq (char-syntax last-input-event) '(32 40 41)) ;;[ ()]
-         (memq last-input-event '(newline return tab)))
-       ;; ...and the preceding character was of word syntax...
-       (> (point) (point-min))
-       (eq (char-syntax (char-before (1- (point)))) ?w)
-       ;; ...and we're not typing a comment or a string...
-       (let ((syn (syntax-ppss)))
-         (not (or (nth 8 syn) ; comment
-                  (nth 3 syn)))) ; string
-       ;; ...then test whether the preceding word:
-       ;; (1) is itself preceded by (only) whitespace or (
-       ;; (2a) matches the regexp for a keyword
-       ;; (2b) matches the regexp for a builtin, followed by (
-       (save-excursion
-         (catch 'keyword
-           (forward-word -1)
-           (unless (bolp)
-             (forward-char -1))
-           (dolist (keywords (sql-get-product-feature
-                              sql-product :font-lock))
-             (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
-                            (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
-                                                (car keywords))))
-                       (and (eq (cdr keywords) 'font-lock-builtin-face)
-                            (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
-                                                (car keywords) "("))))
-               (throw 'keyword t)))))
-       (progn
-         (undo-boundary)
-         (upcase-region (match-beginning 0) (match-end 0)))))
+  (with-demoted-errors "my-sql-keyword-upcase error: %S"
+    ;; We track point between commands, as a cheap way of detecting inserts.
+    ;; TODO: Using `after-change-functions' would make more sense.
+    (and (> (point) my-sql-keyword-upcase-pos)
+         ;; If the last character was whitespace, parenthesis, or a semicolon...
+         (memq (char-before) '(9 10 13 32 40 41 59)) ; [\t\n\r ();]
+         ;; ...and the preceding character was of word syntax...
+         (> (point) (point-min))
+         (eq (char-syntax (char-before (1- (point)))) ?w)
+         ;; ...and we're not typing a string or a comment...
+         (let ((syn (syntax-ppss)))
+           (not (or (nth 3 syn) ; string
+                    (nth 4 syn)))) ; comment
+         ;; ...then test whether the preceding word:
+         ;; (1) is itself preceded by (only) whitespace or (
+         ;; (2a) matches the regexp for a keyword
+         ;; (2b) matches the regexp for a builtin, followed by (
+         (save-excursion
+           (catch 'keyword
+             (let ((inhibit-field-text-motion t)) ;; for comint
+               (forward-word -1)
+               (unless (bolp)
+                 (forward-char -1)))
+             (dolist (keywords (sql-get-product-feature
+                                sql-product :font-lock))
+               (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
+                              (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
+                                                  (car keywords))))
+                         (and (eq (cdr keywords) 'font-lock-builtin-face)
+                              (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
+                                                  (car keywords) "("))))
+                 (throw 'keyword t)))))
+         (progn
+           (undo-boundary)
+           (upcase-region (match-beginning 0) (match-end 0)))))
+  ;; Store point.
+  (setq my-sql-keyword-upcase-pos (point)))
+
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
