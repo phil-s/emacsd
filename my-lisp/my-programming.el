@@ -372,10 +372,18 @@ Advises `eldoc-print-current-symbol-info'."
 (eval-after-load "sql"
   '(define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer))
 
+(add-hook 'sql-mode-hook 'my-sql-mode-hook)
+(defun my-sql-mode-hook ()
+  "Custom SQL mode behaviours. See `sql-mode-hook'."
+  (abbrev-mode 1) ;; See `sql-mode-abbrev-table' (below)
+  (setq-local abbrev-expand-function #'my-sql-keywords-abbrev-expansion)
+  (setq show-trailing-whitespace nil))
+
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
-  (abbrev-mode 1) ;; See sql-mode-abbrev-table definition (below)
+  (abbrev-mode 1) ;; See `sql-mode-abbrev-table' (below)
+  (setq-local abbrev-expand-function #'my-sql-keywords-abbrev-expansion)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
@@ -463,9 +471,33 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
+(defvar my-sql-keywords
+  (eval-when-compile
+    (mapcar #'symbol-name
+            '(absolute action add after all allocate alter and any are array as asc asensitive assertion asymmetric at atomic authorization avg before begin between bigint binary bit bitlength blob boolean both breadth by call called cascade cascaded case cast catalog char char_length character character_length check clob close coalesce collate collation column commit condition connect connection constraint constraints constructor contains continue convert corresponding count create cross cube current current_date current_default_transform_group current_path current_role current_time current_timestamp current_transform_group_for_type current_user cursor cycle data date day deallocate dec decimal declare default deferrable deferred delete depth deref desc describe descriptor deterministic diagnostics disconnect distinct do domain double drop dynamic each element else elseif end equals escape except exception exec execute exists exit external extract false fetch filter first float for foreign found free from full function general get global go goto grant group grouping handler having hold hour identity if immediate in indicator initially inner inout input insensitive insert int integer intersect interval into is isolation iterate join key language large last lateral leading leave left level like local localtime localtimestamp locator loop lower map map match max member merge method min minute modifies module month multiset names national natural nchar nclob new next no none not null nullif numeric object octet_length of old on only open option or order ordinality out outer output over overlaps pad parameter partial partition path position precision prepare preserve primary prior privileges procedure public range read reads real recursive ref references referencing relative release repeat resignal restrict result return returns revoke right role rollback rollup routine row rows savepoint schema scope scroll search second section select sensitive session session_user set sets signal similar size smallint some space specific specifictype sql sqlcode sqlerror sqlexception sqlstate sqlwarning start state static submultiset substring sum symmetric system system_user table tablesample temporary then time timestamp timezone_hour timezone_minute to trailing transaction translate translation treat trigger trim true under undo union unique unknown unnest until update upper usage user using value values varchar varying view when whenever where while window with within without work write year zone)))
+  "SQL keywords to automatically make upper-case.")
+
+;; `sql-mode-abbrev-table' is used by `sql-mode' and `sql-interactive-mode'.
 (define-abbrev-table 'sql-mode-abbrev-table
-  (mapcar (lambda (v) (list v (upcase v) nil 1))
-          '("absolute" "action" "add" "after" "all" "allocate" "alter" "and" "any" "are" "array" "as" "asc" "asensitive" "assertion" "asymmetric" "at" "atomic" "authorization" "avg" "before" "begin" "between" "bigint" "binary" "bit" "bitlength" "blob" "boolean" "both" "breadth" "by" "call" "called" "cascade" "cascaded" "case" "cast" "catalog" "char" "char_length" "character" "character_length" "check" "clob" "close" "coalesce" "collate" "collation" "column" "commit" "condition" "connect" "connection" "constraint" "constraints" "constructor" "contains" "continue" "convert" "corresponding" "count" "create" "cross" "cube" "current" "current_date" "current_default_transform_group" "current_path" "current_role" "current_time" "current_timestamp" "current_transform_group_for_type" "current_user" "cursor" "cycle" "data" "date" "day" "deallocate" "dec" "decimal" "declare" "default" "deferrable" "deferred" "delete" "depth" "deref" "desc" "describe" "descriptor" "deterministic" "diagnostics" "disconnect" "distinct" "do" "domain" "double" "drop" "dynamic" "each" "element" "else" "elseif" "end" "equals" "escape" "except" "exception" "exec" "execute" "exists" "exit" "external" "extract" "false" "fetch" "filter" "first" "float" "for" "foreign" "found" "free" "from" "full" "function" "general" "get" "global" "go" "goto" "grant" "group" "grouping" "handler" "having" "hold" "hour" "identity" "if" "immediate" "in" "indicator" "initially" "inner" "inout" "input" "insensitive" "insert" "int" "integer" "intersect" "interval" "into" "is" "isolation" "iterate" "join" "key" "language" "large" "last" "lateral" "leading" "leave" "left" "level" "like" "local" "localtime" "localtimestamp" "locator" "loop" "lower" "map" "match" "map" "max" "member" "merge" "method" "min" "minute" "modifies" "module" "month" "multiset" "names" "national" "natural" "nchar" "nclob" "new" "next" "no" "none" "not" "null" "nullif" "numeric" "object" "octet_length" "of" "old" "on" "only" "open" "option" "or" "order" "ordinality" "out" "outer" "output" "over" "overlaps" "pad" "parameter" "partial" "partition" "path" "position" "precision" "prepare" "preserve" "primary" "prior" "privileges" "procedure" "public" "range" "read" "reads" "real" "recursive" "ref" "references" "referencing" "relative" "release" "repeat" "resignal" "restrict" "result" "return" "returns" "revoke" "right" "role" "rollback" "rollup" "routine" "row" "rows" "savepoint" "schema" "scope" "scroll" "search" "second" "section" "select" "sensitive" "session" "session_user" "set" "sets" "signal" "similar" "size" "smallint" "some" "space" "specific" "specifictype" "sql" "sqlcode" "sqlerror" "sqlexception" "sqlstate" "sqlwarning" "start" "state" "static" "submultiset" "substring" "sum" "symmetric" "system" "system_user" "table" "tablesample" "temporary" "then" "time" "timestamp" "timezone_hour" "timezone_minute" "to" "trailing" "transaction" "translate" "translation" "treat" "trigger" "trim" "true" "under" "undo" "union" "unique" "unknown" "unnest" "until" "update" "upper" "usage" "user" "using" "value" "values" "varchar" "varying" "view" "when" "whenever" "where" "while" "window" "with" "within" "without" "work" "write" "year" "zone")))
+  (mapcar (lambda (x) (list x (upcase x))) my-sql-keywords))
+
+(defun my-sql-keywords-abbrev-expansion ()
+  "Used as `abbrev-expand-function' in `sql-mode' and `sql-interactive-mode'.
+
+We expand SQL abbrevs only if they are surrounded by whitespace or parens."
+  ;; Only consider expanding this abbrev if expansion was triggered by
+  ;; a whitespace character, or a closing paren ')'.
+  (and (if (characterp last-input-event)
+           (memq (char-syntax last-input-event) '(32 41))
+         (memq last-input-event '(newline return tab)))
+       (let ((abbrev (symbol-name (car (abbrev--before-point)))))
+         ;; Only expand if the abbrev is preceded by whitespace or '('
+         ;; Strictly speaking we should (regexp-quote abbrev) here,
+         ;; but in practice that's never going to be an issue, so we
+         ;; can save some CPU by not doing that.
+         (when (looking-back
+                (concat "\\(?:^\\|[[:space:](]\\)" abbrev))
+           (funcall #'abbrev--default-expand)))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
