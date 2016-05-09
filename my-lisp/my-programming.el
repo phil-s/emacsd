@@ -375,11 +375,13 @@ Advises `eldoc-print-current-symbol-info'."
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
+  (add-hook 'post-self-insert-hook 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil))
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
+  (add-hook 'post-self-insert-hook 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
@@ -466,6 +468,44 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       ;; But actually :L is much easier to type, and a mnemonic for "long"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
+
+(defun my-sql-keyword-upcase ()
+  "Automatically upcase SQL keywords and builtin function names.
+
+Triggered by `post-self-insert-hook', and utilising the product-specific
+font-lock keywords specified in `sql-product-alist'."
+  ;; If the last self-inserted character was whitespace or a parenthesis...
+  (and (if (characterp last-input-event)
+           (memq (char-syntax last-input-event) '(32 40 41)) ;;[ ()]
+         (memq last-input-event '(newline return tab)))
+       ;; ...and the preceding character was of word syntax...
+       (> (point) (point-min))
+       (eq (char-syntax (char-before (1- (point)))) ?w)
+       ;; ...and we're not typing a comment or a string...
+       (let ((syn (syntax-ppss)))
+         (not (or (nth 8 syn) ; comment
+                  (nth 3 syn)))) ; string
+       ;; ...then test whether the preceding word:
+       ;; (1) is itself preceded by (only) whitespace or (
+       ;; (2a) matches the regexp for a keyword
+       ;; (2b) matches the regexp for a builtin, followed by (
+       (save-excursion
+         (catch 'keyword
+           (forward-word -1)
+           (unless (bolp)
+             (forward-char -1))
+           (dolist (keywords (sql-get-product-feature
+                              sql-product :font-lock))
+             (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
+                            (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
+                                                (car keywords))))
+                       (and (eq (cdr keywords) 'font-lock-builtin-face)
+                            (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
+                                                (car keywords) "("))))
+               (throw 'keyword t)))))
+       (progn
+         (undo-boundary)
+         (upcase-region (match-beginning 0) (match-end 0)))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
