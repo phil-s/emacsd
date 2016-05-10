@@ -388,6 +388,7 @@ Advises `eldoc-print-current-symbol-info'."
     ;; TODO: Try to make this *strictly* accurate, in accordance with:
     ;; http://www.postgresql.org/docs/current/interactive/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
     ;; (and then submit the fix upstream).
+    ;; (hmm... hyphens are not actually mentioned in that documentation :/ )
     ;;
     ;; SQL identifiers and key words must begin with a letter (a-z, but also
     ;; letters with diacritical marks and non-Latin letters) or an underscore
@@ -504,12 +505,9 @@ keywords specified in `sql-product-alist'."
              (let ((syn (syntax-ppss)))
                (not (or (nth 3 syn) ; string
                         (nth 4 syn)))) ; comment
-             ;; ...then test whether the preceding word:
-             ;; (1) is itself preceded by (only) whitespace or (
-             ;; (2a) matches the regexp for a keyword
-             ;; (2b) matches the regexp for a builtin, followed by (
+             ;; ...and the preceding word matches a SQL keyword...
              (my-sql-upcase--keyword-matched)
-             ;; If so, we flag the matched region for upcasing.
+             ;; ...then we flag the matched region for upcasing.
              (push (cons (match-beginning 0) (match-end 0))
                    upcase-regions)))))
       ;; upcase matched regions (if any)
@@ -536,7 +534,7 @@ Tests whether the preceding word:
       (let* ((prefix "\\(?:^\\|[[:space:](]\\)") ; precedes a keyword
              ;; Build regexp for statement starters.
              ;; FIXME: Generate once only, as a buffer-local var?
-             (statements
+             (statements ;; n.b. each of these is already a regexp
               (delq nil (list (sql-get-product-feature sql-product :statement)
                               sql-ansi-statement-starters)))
              (statements-regexp
@@ -545,6 +543,8 @@ Tests whether the preceding word:
         (if (looking-at (concat prefix statements-regexp))
             (throw 'matched t)
           ;; Otherwise process the product's font-lock keywords.
+          ;; TODO: I'm not sure that `font-lock-builtin-face' can be assumed
+          ;; to just be functions. (SET is not seen as a keyword, for instance.)
           (dolist (keywords (sql-get-product-feature sql-product :font-lock))
             (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
                            (looking-at (concat prefix (car keywords))))
