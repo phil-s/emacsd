@@ -375,13 +375,13 @@ Advises `eldoc-print-current-symbol-info'."
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
-  (add-hook 'after-change-functions 'my-sql-keyword-upcase nil :local)
-  (setq show-trailing-whitespace nil))
+  (setq show-trailing-whitespace nil)
+  ;; Automatically upcase SQL keywords. Also in `my-sql-login-hook'.
+  (add-hook 'after-change-functions 'my-sql-keywords-upcase nil :local))
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
-  (add-hook 'after-change-functions 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
@@ -467,52 +467,60 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
        proc "\\set G '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")
       ;; But actually :L is much easier to type, and a mnemonic for "long"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
-       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
+       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")))
+  ;; Automatically upcase SQL keywords. Also in `my-sql-mode-hook'.
+  (add-hook 'after-change-functions 'my-sql-keywords-upcase nil :local))
 
-(defun my-sql-keyword-upcase (beginning end length)
+(defun my-sql-keywords-upcase (beginning end old-len)
   "Automatically upcase SQL keywords and builtin function names.
 
-Triggered by `after-change-functions', and utilising the product-specific
-font-lock keywords specified in `sql-product-alist'."
-  ;; Three arguments are passed: the positions of the BEGINNING and
-  ;; END of the range of changed text, and the LENGTH in chars of the
-  ;; pre-change text replaced by that range.  (For an insertion, the
-  ;; pre-change LENGTH is zero; for a deletion, that LENGTH is the
-  ;; number of chars deleted, and the post-change BEGINNING and END
-  ;; are at the same place.)
-  (with-demoted-errors "my-sql-keyword-upcase error: %S"
-    (and (eq length 0) ;; this means the text change was an insertion.
-         ;; If char before point is whitespace, parenthesis, or a semicolon...
-         (memq (char-before) '(9 10 13 32 40 41 59)) ; [\t\n\r ();]
-         ;; ...and the preceding character is of word syntax...
-         (> (point) (point-min))
-         (eq (char-syntax (char-before (1- (point)))) ?w)
-         ;; ...and we're not typing a string or a comment...
-         (let ((syn (syntax-ppss)))
-           (not (or (nth 3 syn) ; string
-                    (nth 4 syn)))) ; comment
-         ;; ...then test whether the preceding word:
-         ;; (1) is itself preceded by (only) whitespace or (
-         ;; (2a) matches the regexp for a keyword
-         ;; (2b) matches the regexp for a builtin, followed by (
-         (save-excursion
-           (catch 'keyword
-             (let ((inhibit-field-text-motion t)) ;; for comint
-               (forward-word -1)
-               (unless (bolp)
-                 (forward-char -1)))
-             (dolist (keywords (sql-get-product-feature
-                                sql-product :font-lock))
-               (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
-                              (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
-                                                  (car keywords))))
-                         (and (eq (cdr keywords) 'font-lock-builtin-face)
-                              (looking-at (concat "\\(?:^\\|[[:space:](]\\)"
-                                                  (car keywords) "("))))
-                 (throw 'keyword t)))))
-         (progn
-           (undo-boundary)
-           (upcase-region (match-beginning 0) (match-end 0))))))
+Triggered by `after-change-functions' (see which regarding the
+function arguments), and utilising the product-specific font-lock
+keywords specified in `sql-product-alist'."
+  (when (eq old-len 0) ; the text change was an insertion.
+    (let (changes-made)
+      (save-excursion
+        ;; Any errors must be handled, otherwise we will be removed
+        ;; automatically from `after-change-functions'.
+        (with-demoted-errors "my-sql-keywords-upcase error: %S"
+          ;; Process all keywords affected by the inserted text.
+          (goto-char beginning)
+          (while (and (< (point) end)
+                      (re-search-forward "[\t\n\r ();]" end :noerror))
+            (and
+             ;; ...if the preceding character is of word syntax...
+             (eq (char-syntax (char-before (1- (point)))) ?w)
+             ;; ...and we're not inside a string or a comment...
+             (let ((syn (syntax-ppss)))
+               (not (or (nth 3 syn) ; string
+                        (nth 4 syn)))) ; comment
+             ;; ...then test whether the preceding word:
+             ;; (1) is itself preceded by (only) whitespace or (
+             ;; (2a) matches the regexp for a keyword
+             ;; (2b) matches the regexp for a builtin, followed by (
+             (save-excursion
+               (catch 'keyword
+                 (let ((inhibit-field-text-motion t)) ;; for comint
+                   (forward-word -1)
+                   (unless (bolp)
+                     (forward-char -1)))
+                 (dolist (keywords (sql-get-product-feature
+                                    sql-product :font-lock))
+                   (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
+                                  (looking-at
+                                   (concat "\\(?:^\\|[[:space:](]\\)"
+                                           (car keywords))))
+                             (and (eq (cdr keywords) 'font-lock-builtin-face)
+                                  (looking-at
+                                   (concat "\\(?:^\\|[[:space:](]\\)"
+                                           (car keywords) "("))))
+                     (throw 'keyword t)))))
+             ;; If so, we upcase the matched region.
+             (progn
+               (unless changes-made
+                 (undo-boundary))
+               (upcase-region (match-beginning 0) (match-end 0))
+               (setq changes-made t)))))))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
