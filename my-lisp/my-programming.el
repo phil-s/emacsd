@@ -375,13 +375,13 @@ Advises `eldoc-print-current-symbol-info'."
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
-  (add-hook 'post-command-hook 'my-sql-keyword-upcase nil :local)
+  (add-hook 'after-change-functions 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil))
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
-  (add-hook 'post-command-hook 'my-sql-keyword-upcase nil :local)
+  (add-hook 'after-change-functions 'my-sql-keyword-upcase nil :local)
   (setq show-trailing-whitespace nil)
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
@@ -469,29 +469,22 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
-(defvar-local my-sql-keyword-upcase-pos 0
-  "The previous position of point.")
-
-;; This should probably be an `after-change-functions' callback:
-;; Three arguments are passed to each function: the positions of the
-;; beginning and end of the range of changed text, and the length in
-;; chars of the pre-change text replaced by that range.  (For an
-;; insertion, the pre-change length is zero; for a deletion, that
-;; length is the number of chars deleted, and the post-change
-;; beginning and end are at the same place.)
-
-(defun my-sql-keyword-upcase ()
+(defun my-sql-keyword-upcase (beginning end length)
   "Automatically upcase SQL keywords and builtin function names.
 
-Triggered by `post-command-hook', and utilising the product-specific
+Triggered by `after-change-functions', and utilising the product-specific
 font-lock keywords specified in `sql-product-alist'."
+  ;; Three arguments are passed: the positions of the BEGINNING and
+  ;; END of the range of changed text, and the LENGTH in chars of the
+  ;; pre-change text replaced by that range.  (For an insertion, the
+  ;; pre-change LENGTH is zero; for a deletion, that LENGTH is the
+  ;; number of chars deleted, and the post-change BEGINNING and END
+  ;; are at the same place.)
   (with-demoted-errors "my-sql-keyword-upcase error: %S"
-    ;; We track point between commands, as a cheap way of detecting inserts.
-    ;; TODO: Using `after-change-functions' would make more sense.
-    (and (> (point) my-sql-keyword-upcase-pos)
-         ;; If the last character was whitespace, parenthesis, or a semicolon...
+    (and (eq length 0) ;; this means the text change was an insertion.
+         ;; If char before point is whitespace, parenthesis, or a semicolon...
          (memq (char-before) '(9 10 13 32 40 41 59)) ; [\t\n\r ();]
-         ;; ...and the preceding character was of word syntax...
+         ;; ...and the preceding character is of word syntax...
          (> (point) (point-min))
          (eq (char-syntax (char-before (1- (point)))) ?w)
          ;; ...and we're not typing a string or a comment...
@@ -519,10 +512,7 @@ font-lock keywords specified in `sql-product-alist'."
                  (throw 'keyword t)))))
          (progn
            (undo-boundary)
-           (upcase-region (match-beginning 0) (match-end 0)))))
-  ;; Store point.
-  (setq my-sql-keyword-upcase-pos (point)))
-
+           (upcase-region (match-beginning 0) (match-end 0))))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
