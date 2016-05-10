@@ -481,6 +481,11 @@ Intended to be enabled via `sql-mode-hook' and/or `sql-login-hook'."
       (add-hook 'after-change-functions 'my-sql-upcase-keywords nil :local)
     (remove-hook 'after-change-functions 'my-sql-upcase-keywords :local)))
 
+;; FIXME: comint process output should not be subject to our
+;; `after-change-functions' processing. We only want to modify text
+;; entered by the user. Find out how to inhibit our function during
+;; comint output.
+
 (defvar my-sql-upcase-mixed-case nil
   "If nil, `my-sql-upcase-keywords' looks only for lower-case keywords,
 and mixed-case keywords are ignored.
