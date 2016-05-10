@@ -376,8 +376,8 @@ Advises `eldoc-print-current-symbol-info'."
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
   (setq show-trailing-whitespace nil)
-  ;; Automatically upcase SQL keywords. Also in `my-sql-login-hook'.
-  (add-hook 'after-change-functions 'my-sql-keywords-upcase nil :local))
+  ;; Automatically upcase SQL keywords.
+  (my-sql-upcase-mode 1))
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
@@ -468,10 +468,10 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       ;; But actually :L is much easier to type, and a mnemonic for "long"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")))
-  ;; Automatically upcase SQL keywords. Also in `my-sql-mode-hook'.
-  (add-hook 'after-change-functions 'my-sql-keywords-upcase nil :local))
+  ;; Automatically upcase SQL keywords.
+  (my-sql-upcase-mode 1))
 
-(defun my-sql-keywords-upcase (beginning end old-len)
+(defun my-sql-upcase-keywords (beginning end old-len)
   "Automatically upcase SQL keywords and builtin function names.
 
 Triggered by `after-change-functions' (see which regarding the
@@ -482,7 +482,7 @@ keywords specified in `sql-product-alist'."
       (save-excursion
         ;; Any errors must be handled, otherwise we will be removed
         ;; automatically from `after-change-functions'.
-        (with-demoted-errors "my-sql-keywords-upcase error: %S"
+        (with-demoted-errors "my-sql-upcase-keywords error: %S"
           ;; Process all keywords affected by the inserted text.
           (goto-char beginning)
           (while (and (< (point) end)
@@ -521,6 +521,15 @@ keywords specified in `sql-product-alist'."
                  (undo-boundary))
                (upcase-region (match-beginning 0) (match-end 0))
                (setq changes-made t)))))))))
+
+(define-minor-mode my-sql-upcase-mode
+  "Automatically upcase SQL keywords as text is inserted in the buffer.
+
+Intended to be enabled via `sql-mode-hook' and/or `sql-login-hook'."
+  :lighter " sql^"
+  (if my-sql-upcase-mode
+      (add-hook 'after-change-functions 'my-sql-upcase-keywords nil :local)
+    (remove-hook 'after-change-functions 'my-sql-upcase-keywords :local)))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
