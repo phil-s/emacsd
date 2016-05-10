@@ -472,11 +472,22 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
   ;; Automatically upcase SQL keywords.
   (my-sql-upcase-mode 1))
 
+(define-minor-mode my-sql-upcase-mode
+  "Automatically upcase SQL keywords as text is inserted in the buffer.
+
+Intended to be enabled via `sql-mode-hook' and/or `sql-login-hook'."
+  :lighter " sql^"
+  (if my-sql-upcase-mode
+      (add-hook 'after-change-functions 'my-sql-upcase-keywords nil :local)
+    (remove-hook 'after-change-functions 'my-sql-upcase-keywords :local)))
+
 (defvar my-sql-upcase-mixed-case nil
   "If nil, `my-sql-upcase-keywords' looks only for lower-case keywords,
 and mixed-case keywords are ignored.
 
 If non-nil, then mixed-case keywords will also be upcased.")
+
+(defvar my-sql-upcase-regions)
 
 (defun my-sql-upcase-keywords (beginning end old-len)
   "Automatically upcase SQL keywords and builtin function names.
@@ -489,7 +500,7 @@ function arguments), and utilising the product-specific font-lock
 keywords specified in `sql-product-alist'."
   (when (eq old-len 0) ; The text change was an insertion.
     (unless undo-in-progress
-      (let ((upcase-regions nil)
+      (let ((my-sql-upcase-regions nil)
             (case-fold-search my-sql-upcase-mixed-case))
         (save-excursion
           ;; Any errors must be handled, otherwise we will be removed
@@ -506,22 +517,19 @@ keywords specified in `sql-product-alist'."
                (let ((syn (syntax-ppss)))
                  (not (or (nth 3 syn) ; string
                           (nth 4 syn)))) ; comment
-               ;; ...and the preceding word matches a SQL keyword...
-               (my-sql-upcase--keyword-matched)
-               ;; ...then we flag the matched region for upcasing.
-               (push (cons (match-beginning 0) (match-end 0))
-                     upcase-regions)))))
-        ;; upcase matched regions (if any)
-        (when upcase-regions
+               ;; Try to match the preceding word against the SQL keywords.
+               (my-sql-upcase--match-keyword)))))
+        ;; Upcase the matched regions (if any)
+        (when my-sql-upcase-regions
           (undo-boundary) ;; now that save-excursion has returned
           (mapc (lambda (r) (upcase-region (car r) (cdr r)))
-                upcase-regions))))))
+                my-sql-upcase-regions))))))
 
 ;; Silence byte-compilation warnings.
 (defvar sql-ansi-statement-starters)
 (declare-function sql-get-product-feature "sql")
 
-(defun my-sql-upcase--keyword-matched ()
+(defun my-sql-upcase--match-keyword ()
   "Matches a keyword for `my-sql-upcase-keywords'.
 
 Tests whether the preceding word:
@@ -563,16 +571,10 @@ Tests whether the preceding word:
      (or (not my-sql-upcase-mixed-case)
          (save-match-data
            (let ((case-fold-search nil))
-             (re-search-forward "[[:lower:]]" (match-end 0) :noerror)))))))
-
-(define-minor-mode my-sql-upcase-mode
-  "Automatically upcase SQL keywords as text is inserted in the buffer.
-
-Intended to be enabled via `sql-mode-hook' and/or `sql-login-hook'."
-  :lighter " sql^"
-  (if my-sql-upcase-mode
-      (add-hook 'after-change-functions 'my-sql-upcase-keywords nil :local)
-    (remove-hook 'after-change-functions 'my-sql-upcase-keywords :local)))
+             (re-search-forward "[[:lower:]]" (match-end 0) :noerror))))
+     ;; Store the matched keyword region for subsequent upcasing.
+     (push (cons (match-beginning 0) (match-end 0))
+           my-sql-upcase-regions))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
