@@ -471,14 +471,24 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
   ;; Automatically upcase SQL keywords.
   (my-sql-upcase-mode 1))
 
+(defvar my-sql-upcase-fold-search nil
+  "`my-sql-upcase-keywords' sets `case-fold-search' to this value.
+
+If nil, we look only for lower-case keywords, so that we do not
+find upper-case keywords and 'replace' them with identical text.
+
+Mixed-case keywords will consequently be ignored as well, but
+that should be an uncommon situation.")
+
 (defun my-sql-upcase-keywords (beginning end old-len)
   "Automatically upcase SQL keywords and builtin function names.
 
 Triggered by `after-change-functions' (see which regarding the
 function arguments), and utilising the product-specific font-lock
 keywords specified in `sql-product-alist'."
-  (when (eq old-len 0) ; the text change was an insertion.
-    (let (changes-made)
+  (when (eq old-len 0) ; The text change was an insertion.
+    (let ((upcase-regions nil)
+          (case-fold-search my-sql-upcase-fold-search))
       (save-excursion
         ;; Any errors must be handled, otherwise we will be removed
         ;; automatically from `after-change-functions'.
@@ -498,29 +508,49 @@ keywords specified in `sql-product-alist'."
              ;; (1) is itself preceded by (only) whitespace or (
              ;; (2a) matches the regexp for a keyword
              ;; (2b) matches the regexp for a builtin, followed by (
-             (save-excursion
-               (catch 'keyword
-                 (let ((inhibit-field-text-motion t)) ;; for comint
-                   (forward-word -1)
-                   (unless (bolp)
-                     (forward-char -1)))
-                 (dolist (keywords (sql-get-product-feature
-                                    sql-product :font-lock))
-                   (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
-                                  (looking-at
-                                   (concat "\\(?:^\\|[[:space:](]\\)"
-                                           (car keywords))))
-                             (and (eq (cdr keywords) 'font-lock-builtin-face)
-                                  (looking-at
-                                   (concat "\\(?:^\\|[[:space:](]\\)"
-                                           (car keywords) "("))))
-                     (throw 'keyword t)))))
-             ;; If so, we upcase the matched region.
-             (progn
-               (unless changes-made
-                 (undo-boundary))
-               (upcase-region (match-beginning 0) (match-end 0))
-               (setq changes-made t)))))))))
+             (my-sql-upcase--keyword-matched)
+             ;; If so, we flag the matched region for upcasing.
+             (push (cons (match-beginning 0) (match-end 0))
+                   upcase-regions)))))
+      ;; upcase matched regions (if any)
+      (when upcase-regions
+        (undo-boundary) ;; now that save-excursion has returned
+        (mapc (lambda (r) (upcase-region (car r) (cdr r)))
+              upcase-regions)))))
+
+(defun my-sql-upcase--keyword-matched ()
+  "Matches a keyword for `my-sql-upcase-keywords'.
+
+Tests whether the preceding word:
+
+1) is itself preceded by (only) whitespace or (
+2a) matches the regexp for a keyword
+2b) matches the regexp for a builtin, followed by ("
+  (save-excursion
+    (catch 'matched
+      (let ((inhibit-field-text-motion t)) ;; for comint
+        (forward-word -1)
+        (unless (bolp)
+          (forward-char -1)))
+      ;; Try to match a keyword using the regexps for this SQL product.
+      (let* ((prefix "\\(?:^\\|[[:space:](]\\)") ; precedes a keyword
+             ;; Build regexp for statement starters.
+             ;; FIXME: Generate once only, as a buffer-local var?
+             (statements
+              (delq nil (list (sql-get-product-feature sql-product :statement)
+                              sql-ansi-statement-starters)))
+             (statements-regexp
+              (concat "\\(?:" (mapconcat 'identity statements "\\|") "\\)")))
+        ;; Check statement starters first
+        (if (looking-at (concat prefix statements-regexp))
+            (throw 'matched t)
+          ;; Otherwise process the product's font-lock keywords.
+          (dolist (keywords (sql-get-product-feature sql-product :font-lock))
+            (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
+                           (looking-at (concat prefix (car keywords))))
+                      (and (eq (cdr keywords) 'font-lock-builtin-face)
+                           (looking-at (concat prefix (car keywords) "("))))
+              (throw 'matched t))))))))
 
 (define-minor-mode my-sql-upcase-mode
   "Automatically upcase SQL keywords as text is inserted in the buffer.
