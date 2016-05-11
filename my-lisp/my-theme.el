@@ -12,7 +12,7 @@
 (setq mumamo-background-colors nil)
 
 ;; Color theme - Zenburn
-;; http://www.emacswiki.org/emacs/ColorThemeZenburn
+;; https://www.emacswiki.org/emacs/ColorThemeZenburn
 (when (require 'zenburn-theme nil t)
 
   ;; hl-sexp-mode

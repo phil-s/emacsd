@@ -1,7 +1,7 @@
 ;;; so-long.el --- Say farewell to performance problems with minified code.
 ;;
 ;; Author: Phil S.
-;; URL: http://www.emacswiki.org/emacs/SoLong
+;; URL: https://www.emacswiki.org/emacs/SoLong
 ;; Keywords: convenience
 ;; Created: 12 Jan 2016
 ;; Package-Requires: ((emacs "24.3"))

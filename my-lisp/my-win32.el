@@ -285,6 +285,6 @@
 ;; NOTE:
 ;; The following *may* provide for a simpler approach:
 ;; Starting Server With Emacs 23 : Easy Way
-;; http://www.emacswiki.org/emacs/EmacsClient#toc2
+;; https://www.emacswiki.org/emacs/EmacsClient#toc2
 ;; It didn't work immediately, however, so I didn't pursue it.
 

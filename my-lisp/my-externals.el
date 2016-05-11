@@ -49,7 +49,7 @@
 
      (:name browse-kill-ring
             :type http
-            :url "http://www.emacswiki.org/emacs/download/browse-kill-ring.el"
+            :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el"
             :features browse-kill-ring)
 
      (:name dash
