@@ -15,17 +15,23 @@
 ;; https://www.emacswiki.org/emacs/ColorThemeZenburn
 (when (require 'zenburn-theme nil t)
 
-  ;; hl-sexp-mode
-  ;; See my-programming.el
-  (when (require 'hl-sexp nil 'noerror)
-    (set-face-background 'hl-sexp-face "#090909"))
-
   ;; Initialise zenburn
   (load-theme 'zenburn t)
+  ;; Custom changes to Zenburn defaults...
 
-  ;; Changes to Zenburn defaults
   ;; hl-line-mode
-  (set-face-background hl-line-face "#333333")
+  (eval-after-load "hl-line"
+    '(set-face-background hl-line-face "#333333"))
+
+  ;; hl-sexp-mode
+  ;; See my-programming.el
+  (eval-after-load "hl-sexp"
+    '(set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
+
+  ;; whitespace-mode
+  (eval-after-load "whitespace"
+    '(set-face-attribute
+      'whitespace-space nil :foreground "grey30" :background 'unspecified))
 
   ;; Magit customisation.
   (eval-after-load "magit"
