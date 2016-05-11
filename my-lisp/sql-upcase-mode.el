@@ -21,7 +21,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
+;;
 ;; `sql-upcase-mode' converts SQL keywords to upper-case as you type
 ;; or otherwise insert text in the buffer -- for instance, killing and
 ;; yanking an entire SQL query would upcase all keywords in that query.
@@ -35,8 +35,10 @@
 ;; (add-hook 'sql-mode-hook 'sql-upcase-mode)
 ;; (add-hook 'sql-interactive-mode-hook 'sql-upcase-mode)
 
+
 ;;; Change Log:
 ;;
+;; 0.2 - Added `sql-upcase-region' and `sql-upcase-buffer' commands
 ;; 0.1 - Initial release to EmacsWiki.
 
 
@@ -64,11 +66,48 @@ buffer are processed (e.g. cycling through the command history)."
       (remove-hook 'comint-preoutput-filter-functions
                    'sql-upcase-comint-preoutput :local))))
 
-(defvar sql-upcase-mixed-case nil
+;;;###autoload
+(defun sql-upcase-region (beginning end)
+  "Upcase SQL keywords within the marked region.
+
+Keywords overlapping BEGINNING will be upcased.
+Keywords overlapping END will not be upcased."
+  (interactive "*r")
+  (save-excursion
+    ;; Avoid upcasing a word preceding the region.
+    (goto-char beginning)
+    (and (not (eobp))
+         (looking-at sql-upcase-boundary-after)
+         (setq beginning (1+ beginning)))
+    ;; Allow upcasing the final word in the region.
+    (goto-char end)
+    (and (not (eobp))
+         (looking-at sql-upcase-boundary-after)
+         (setq end (1+ end))))
+  ;; Make an exception if the last character of the buffer is the last
+  ;; character of a keyword. Normally we require a trailing boundary
+  ;; character matching `sql-upcase-boundary-after', but for this
+  ;; command we will also treat the end of the buffer as a boundary.
+  (let ((sql-upcase-boundary-after
+         (concat "\\'\\|" sql-upcase-boundary-after)))
+    ;; Call our `after-change-functions' handler.
+    (sql-upcase-keywords beginning end 0)))
+
+;;;###autoload
+(defun sql-upcase-buffer ()
+  "Upcase all SQL keywords in the buffer."
+  (interactive)
+  (sql-upcase-region (point-min) (point-max)))
+
+(defcustom sql-upcase-mixed-case nil
   "If nil, `sql-upcase-keywords' looks only for lower-case keywords,
 and mixed-case keywords are ignored.
 
-If non-nil, then mixed-case keywords will also be upcased.")
+If non-nil, then mixed-case keywords will also be upcased."
+  :group 'sql)
+
+(defvar sql-upcase-boundary-after "[\t\n\r ();]"
+  "Regular expression matching a character which can follow a keyword.")
 
 (defvar sql-upcase-regions)
 
@@ -119,16 +158,16 @@ keywords specified in `sql-product-alist'."
               ;; upcase the previously-entered keyword before it.
               (goto-char beginning)
               (while (and (< (point) end)
-                          (re-search-forward "[\t\n\r ();]" end :noerror))
-                (and
-                 ;; ...if the preceding character is of word syntax...
-                 (eq (char-syntax (char-before (1- (point)))) ?w)
-                 ;; ...and we're not inside a string or a comment...
-                 (let ((syn (syntax-ppss)))
-                   (not (or (nth 3 syn) ; string
-                            (nth 4 syn)))) ; comment
-                 ;; Try to match the preceding word against the SQL keywords.
-                 (sql-upcase-match-keyword)))))
+                          (re-search-forward
+                           sql-upcase-boundary-after end :noerror))
+                ;; ...if the preceding character is of word syntax...
+                (and (eq (char-syntax (char-before (1- (point)))) ?w)
+                     ;; ...and we're not inside a string or a comment...
+                     (let ((syn (syntax-ppss)))
+                       (not (or (nth 3 syn) ; string
+                                (nth 4 syn)))) ; comment
+                     ;; Try to match the preceding word as a SQL keyword.
+                     (sql-upcase-match-keyword)))))
           ;; Upcase the matched regions (if any)
           (when sql-upcase-regions
             (undo-boundary) ;; now that save-excursion has returned
