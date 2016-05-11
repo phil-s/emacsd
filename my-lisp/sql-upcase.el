@@ -35,6 +35,9 @@
 ;;
 ;; (add-hook 'sql-mode-hook 'sql-upcase-mode)
 ;; (add-hook 'sql-interactive-mode-hook 'sql-upcase-mode)
+;;
+;; Note that, by default, only lower-case keywords are processed.
+;; To handle mixed-case keywords as well, customize `sql-upcase-mixed-case'.
 
 
 ;;; Change Log:
@@ -45,6 +48,8 @@
 
 
 ;;; Code:
+
+(require 'sql)
 
 ;;;###autoload
 (define-minor-mode sql-upcase-mode
@@ -106,7 +111,8 @@ Keywords overlapping END will not be upcased."
 and mixed-case keywords are ignored.
 
 If non-nil, then mixed-case keywords will also be upcased."
-  :group 'sql)
+  :type 'boolean
+  :group 'SQL)
 
 (defvar sql-upcase-boundary-after "[\t\n\r ();]"
   "Regular expression matching a character which can follow a keyword.")
@@ -175,11 +181,6 @@ keywords specified in `sql-product-alist'."
             (undo-boundary) ;; now that save-excursion has returned
             (mapc (lambda (r) (upcase-region (car r) (cdr r)))
                   sql-upcase-regions)))))))
-
-;; Silence byte-compiler warnings.
-(defvar sql-product)
-(defvar sql-ansi-statement-starters)
-(declare-function sql-get-product-feature "sql")
 
 (defun sql-upcase-match-keyword ()
   "Matches a keyword for `sql-upcase-keywords'.
