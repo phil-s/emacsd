@@ -51,6 +51,24 @@
 
 (require 'sql)
 
+(defcustom sql-upcase-mixed-case nil
+  "If nil, `sql-upcase-keywords' looks only for lower-case keywords,
+and mixed-case keywords are ignored.
+
+If non-nil, then mixed-case keywords will also be upcased."
+  :type 'boolean
+  :group 'SQL)
+
+(defvar sql-upcase-boundary-after "[\t\n\r ();]"
+  "Regular expression matching a character which can follow a keyword.")
+
+(defvar sql-upcase-inhibited nil
+  "Set non-nil to prevent `sql-upcase-keywords' from acting.")
+
+(defvar-local sql-upcase-comint-output nil)
+
+(defvar sql-upcase-regions)
+
 ;;;###autoload
 (define-minor-mode sql-upcase-mode
   "Automatically upcase SQL keywords as text is inserted in the buffer.
@@ -105,24 +123,6 @@ Keywords overlapping END will not be upcased."
   "Upcase all SQL keywords in the buffer."
   (interactive)
   (sql-upcase-region (point-min) (point-max)))
-
-(defcustom sql-upcase-mixed-case nil
-  "If nil, `sql-upcase-keywords' looks only for lower-case keywords,
-and mixed-case keywords are ignored.
-
-If non-nil, then mixed-case keywords will also be upcased."
-  :type 'boolean
-  :group 'SQL)
-
-(defvar sql-upcase-boundary-after "[\t\n\r ();]"
-  "Regular expression matching a character which can follow a keyword.")
-
-(defvar sql-upcase-regions)
-
-(defvar sql-upcase-inhibited nil
-  "Set non-nil to prevent `sql-upcase-keywords' from acting.")
-
-(defvar-local sql-upcase-comint-output nil)
 
 (defun sql-upcase-comint-preoutput (output)
   "Inhibit `sql-upcase-keywords' for comint process output.
