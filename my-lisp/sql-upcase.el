@@ -56,7 +56,8 @@
 and mixed-case keywords are ignored.
 
 If non-nil, then mixed-case keywords will also be upcased."
-  :type 'boolean
+  :type '(choice (const :tag "Lower-case only" nil)
+                 (const :tag "Both lower- and mixed-case" t))
   :group 'SQL)
 
 (defvar sql-upcase-boundary-after "[\t\n\r ();]"
