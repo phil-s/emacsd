@@ -1,11 +1,11 @@
-;;; sql-upcase-mode.el --- Automatically upcase SQL keywords as you type
+;;; sql-upcase.el --- Upcase SQL keywords -*- lexical-binding: t -*-
 
 ;; Author: Phil S.
 ;; URL: https://www.emacswiki.org/emacs/SqlUpcaseMode
 ;; Keywords: abbrev, convenience, languages
 ;; Created: 9 May 2016
 ;; Package-Requires: ((emacs "24.3"))
-;; Version: 0.1
+;; Version: 0.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 ;;; Commentary:
 ;;
@@ -39,6 +40,7 @@
 ;;; Change Log:
 ;;
 ;; 0.2 - Added `sql-upcase-region' and `sql-upcase-buffer' commands
+;;     - Rename from sql-upcase-mode.el to sql-upcase.el
 ;; 0.1 - Initial release to EmacsWiki.
 
 
@@ -226,5 +228,5 @@ Tests whether the preceding word:
      (push (cons (match-beginning 0) (match-end 0))
            sql-upcase-regions))))
 
-(provide 'sql-upcase-mode)
-;;; sql-upcase-mode.el ends here
+(provide 'sql-upcase)
+;;; sql-upcase.el ends here

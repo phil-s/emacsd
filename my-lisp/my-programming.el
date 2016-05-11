@@ -24,7 +24,7 @@
   (declare-function rainbow-delimiters-mode "rainbow-delimiters")
   (declare-function rainbow-mode "rainbow-mode")
   (declare-function so-long-enable "so-long")
-  (declare-function sql-upcase-mode "sql-upcase-mode")
+  (declare-function sql-upcase-mode "sql-upcase")
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -373,7 +373,7 @@ Advises `eldoc-print-current-symbol-info'."
 (eval-after-load "sql"
   '(progn
      (define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer)
-     (require 'sql-upcase-mode)))
+     (require 'sql-upcase)))
 
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
