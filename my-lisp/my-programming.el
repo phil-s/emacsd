@@ -24,6 +24,7 @@
   (declare-function rainbow-delimiters-mode "rainbow-delimiters")
   (declare-function rainbow-mode "rainbow-mode")
   (declare-function so-long-enable "so-long")
+  (declare-function sql-upcase-mode "sql-upcase-mode")
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -370,21 +371,23 @@ Advises `eldoc-print-current-symbol-info'."
 ;; Within SQLi buffer, open a sql-mode buffer (from which you can edit
 ;; queries and send them to SQLi; see C-h f sql-mode RET).
 (eval-after-load "sql"
-  '(define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer))
+  '(progn
+     (define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer)
+     (require 'sql-upcase-mode)))
 
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
   (setq show-trailing-whitespace nil)
   ;; Automatically upcase SQL keywords.
-  (my-sql-upcase-mode 1))
+  (sql-upcase-mode 1))
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
   (setq show-trailing-whitespace nil)
   ;; Automatically upcase SQL keywords.
-  (my-sql-upcase-mode 1)
+  (sql-upcase-mode 1)
   ;; Product-specific behaviours.
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
@@ -473,140 +476,6 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
-(define-minor-mode my-sql-upcase-mode
-  "Automatically upcase SQL keywords as text is inserted in the buffer.
-
-Intended to be enabled via `sql-mode-hook' and/or `sql-interactive-mode-hook'.
-
-Note that this can be a little aggressive in `sql-interactive-mode'. Although
-output from the inferior process is ignored, all other text changes to the
-buffer are processed (e.g. cycling through the command history)."
-  :lighter " sql^"
-  (if my-sql-upcase-mode
-      (progn
-        (add-hook 'after-change-functions 'my-sql-upcase-keywords nil :local)
-        (when (derived-mode-p 'sql-interactive-mode)
-          (add-hook 'comint-preoutput-filter-functions
-                    'my-sql-upcase-comint-preoutput nil :local)))
-    ;; Disable.
-    (remove-hook 'after-change-functions 'my-sql-upcase-keywords :local)
-    (when (derived-mode-p 'sql-interactive-mode)
-      (remove-hook 'comint-preoutput-filter-functions
-                   'my-sql-upcase-comint-preoutput :local))))
-
-
-(defvar my-sql-upcase-mixed-case nil
-  "If nil, `my-sql-upcase-keywords' looks only for lower-case keywords,
-and mixed-case keywords are ignored.
-
-If non-nil, then mixed-case keywords will also be upcased.")
-
-(defvar my-sql-upcase-regions)
-
-(defvar my-sql-upcase-inhibited nil
-  "Set non-nil to prevent `my-sql-upcase-keywords' from acting.")
-
-(defvar-local my-sql-upcase-comint-output nil)
-
-(defun my-sql-upcase-comint-preoutput (output)
-  "Inhibit `my-sql-upcase-keywords' for comint process output.
-
-Called via `comint-preoutput-filter-functions'."
-  (setq my-sql-upcase-comint-output t)
-  output)
-
-(defun my-sql-upcase-keywords (beginning end old-len)
-  "Automatically upcase SQL keywords and builtin function names.
-
-If `my-sql-upcase-mixed-case' is non-nil, then only lower-case keywords
-will be processed, and mixed-case keywords will be ignored.
-
-Triggered by `after-change-functions' (see which regarding the
-function arguments), and utilising the product-specific font-lock
-keywords specified in `sql-product-alist'."
-  (when (eq old-len 0) ; The text change was an insertion.
-    (if my-sql-upcase-comint-output
-        ;; The current input is output from comint, so ignore it and
-        ;; just reset this flag.
-        (setq my-sql-upcase-comint-output nil)
-      ;; User-generated input.
-      (unless (or undo-in-progress
-                  my-sql-upcase-inhibited)
-        (let ((my-sql-upcase-regions nil)
-              (case-fold-search my-sql-upcase-mixed-case))
-          (save-excursion
-            ;; Any errors must be handled, otherwise we will be removed
-            ;; automatically from `after-change-functions'.
-            (with-demoted-errors "my-sql-upcase-keywords error: %S"
-              ;; Process all keywords affected by the inserted text.
-              (goto-char beginning)
-              (while (and (< (point) end)
-                          (re-search-forward "[\t\n\r ();]" end :noerror))
-                (and
-                 ;; ...if the preceding character is of word syntax...
-                 (eq (char-syntax (char-before (1- (point)))) ?w)
-                 ;; ...and we're not inside a string or a comment...
-                 (let ((syn (syntax-ppss)))
-                   (not (or (nth 3 syn) ; string
-                            (nth 4 syn)))) ; comment
-                 ;; Try to match the preceding word against the SQL keywords.
-                 (my-sql-upcase--match-keyword)))))
-          ;; Upcase the matched regions (if any)
-          (when my-sql-upcase-regions
-            (undo-boundary) ;; now that save-excursion has returned
-            (mapc (lambda (r) (upcase-region (car r) (cdr r)))
-                  my-sql-upcase-regions)))))))
-
-;; Silence byte-compilation warnings.
-(defvar sql-ansi-statement-starters)
-(declare-function sql-get-product-feature "sql")
-
-(defun my-sql-upcase--match-keyword ()
-  "Matches a keyword for `my-sql-upcase-keywords'.
-
-Tests whether the preceding word:
-
-1) is itself preceded by (only) whitespace or (
-2a) matches the regexp for a keyword
-2b) matches the regexp for a builtin, followed by ("
-  (save-excursion
-    (and
-     (catch 'matched
-       (let ((inhibit-field-text-motion t)) ;; for comint
-         (forward-word -1)
-         (unless (bolp)
-           (forward-char -1)))
-       ;; Try to match a keyword using the regexps for this SQL product.
-       (let* ((prefix "\\(?:^\\|[[:space:](]\\)") ; precedes a keyword
-              ;; Build regexp for statement starters.
-              ;; FIXME: Generate once only, as a buffer-local var?
-              (statements ;; n.b. each of these is already a regexp
-               (delq nil (list (sql-get-product-feature sql-product :statement)
-                               sql-ansi-statement-starters)))
-              (statements-regexp
-               (concat "\\(?:" (mapconcat 'identity statements "\\|") "\\)")))
-         ;; Check statement starters first
-         (if (looking-at (concat prefix statements-regexp))
-             (throw 'matched t)
-           ;; Otherwise process the product's font-lock keywords.
-           ;; TODO: I'm not sure that `font-lock-builtin-face' can be assumed
-           ;; to just be functions. (e.g. SET is not seen as a keyword.)
-           (dolist (keywords (sql-get-product-feature sql-product :font-lock))
-             (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
-                            (looking-at (concat prefix (car keywords))))
-                       (and (eq (cdr keywords) 'font-lock-builtin-face)
-                            (looking-at (concat prefix (car keywords) "("))))
-               (throw 'matched t))))))
-     ;; If `my-sql-upcase-mixed-case' is non-nil then check for at least one
-     ;; lower-case character in the matched region, as otherwise the upcase
-     ;; will be a no-op (but stored as a change in the buffer undo list).
-     (or (not my-sql-upcase-mixed-case)
-         (save-match-data
-           (let ((case-fold-search nil))
-             (re-search-forward "[[:lower:]]" (match-end 0) :noerror))))
-     ;; Store the matched keyword region for subsequent upcasing.
-     (push (cons (match-beginning 0) (match-end 0))
-           my-sql-upcase-regions))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
