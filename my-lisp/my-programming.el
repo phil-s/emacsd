@@ -383,6 +383,9 @@ Advises `eldoc-print-current-symbol-info'."
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
   (setq show-trailing-whitespace nil)
+  ;; Automatically upcase SQL keywords.
+  (my-sql-upcase-mode 1)
+  ;; Product-specific behaviours.
   (when (eq sql-product 'postgres)
     ;; Allow symbol chars and hyphens in database names in prompt.
     ;; TODO: Try to make this *strictly* accurate, in accordance with:
@@ -468,14 +471,16 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
        proc "\\set G '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")
       ;; But actually :L is much easier to type, and a mnemonic for "long"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
-       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")))
-  ;; Automatically upcase SQL keywords.
-  (my-sql-upcase-mode 1))
+       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
 (define-minor-mode my-sql-upcase-mode
   "Automatically upcase SQL keywords as text is inserted in the buffer.
 
-Intended to be enabled via `sql-mode-hook' and/or `sql-login-hook'."
+Intended to be enabled via `sql-mode-hook' and/or `sql-interactive-mode-hook'.
+
+Note that this can be a little aggressive in `sql-interactive-mode'. Although
+output from the inferior process is ignored, all other text changes to the
+buffer are processed (e.g. cycling through the command history)."
   :lighter " sql^"
   (if my-sql-upcase-mode
       (progn
