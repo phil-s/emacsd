@@ -70,6 +70,8 @@
 
 ;; Don't let minified files bring Emacs to its knees.
 (when (require 'so-long nil :noerror)
+  (mapc (apply-partially 'add-to-list 'so-long-minor-modes)
+        '(hl-sexp-mode diff-hl-mode diff-hl-amend-mode diff-hl-flydiff-mode))
   (so-long-enable))
 
 ;; Provide nice keyboard access to imenu, using Ido.
