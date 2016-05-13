@@ -38,8 +38,8 @@
 ;; Use ws-trim mode to strip trailing whitespace automatically
 ;; from edited lines (the default ws-trim-level).
 (when (require 'ws-trim nil 'noerror)
-  (setq ws-trim-global-modes '(guess (not term-mode)))
-  (global-ws-trim-mode t))
+  (setq ws-trim-global-modes '(guess (not term-mode so-long-mode)))
+  (global-ws-trim-mode 1))
 
 ;; ;; Strip trailing whitespace.
 ;; ;; No need for this now; delete-trailing-whitespace is built in.
