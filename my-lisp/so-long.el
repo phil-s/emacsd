@@ -5,7 +5,7 @@
 ;; Keywords: convenience
 ;; Created: 12 Jan 2016
 ;; Package-Requires: ((emacs "24.3"))
-;; Version: 0.7.2
+;; Version: 0.7.3
 
 ;; This file is not part of GNU Emacs.
 
@@ -80,6 +80,7 @@
 
 ;;; Change Log:
 ;;
+;; 0.7.3 - Added customize group `so-long' with user options.
 ;; 0.7.2 - Remember the original major mode even with M-x `so-long-mode'.
 ;; 0.7.1 - Clarified interaction with globalized minor modes.
 ;; 0.7   - Handle header 'mode' declarations.
@@ -97,27 +98,35 @@
 
 ;;; Code:
 
-(defvar so-long-mode-enabled t
-  "Set to nil to prevent `so-long-mode' from being triggered.")
+(defgroup so-long nil
+  "Prevent unacceptable performance degradation with very long lines."
+  :prefix "so-long"
+  :group 'convenience)
 
-(defvar so-long-threshold 250
+(defcustom so-long-threshold 250
   "Maximum line length permitted before invoking `so-long-mode'.
 
-See `so-long-line-detected-p' for details.")
+See `so-long-line-detected-p' for details."
+  :type 'integer
+  :group 'so-long)
 
-(defvar so-long-max-lines 5
+(defcustom so-long-max-lines 5
   "Number of non-blank, non-comment lines to test for excessive length.
 
-See `so-long-line-detected-p' for details.")
+See `so-long-line-detected-p' for details."
+  :type 'integer
+  :group 'so-long)
 
-(defvar so-long-target-modes
+(defcustom so-long-target-modes
   '(prog-mode css-mode)
   "`so-long-mode' affects only these modes and their derivatives.
 
 Our primary use-case is minified programming code, so `prog-mode' covers
-most cases, but there are some exceptions to this.")
+most cases, but there are some exceptions to this."
+  :type '(repeat symbol) ;; not function, as may be unknown => mismatch.
+  :group 'so-long)
 
-(defvar so-long-minor-modes
+(defcustom so-long-minor-modes
   '(font-lock-mode
     highlight-changes-mode hi-lock-mode hl-line-mode linum-mode nlinum-mode
     prettify-symbols-mode visual-line-mode)
@@ -134,16 +143,23 @@ This happens during `after-change-major-mode-hook', and after any globalized
 minor modes have acted, so that buffer-local modes controlled by globalized
 modes can also be targeted.
 
-`so-long-hook' can be used where more custom behaviour is desired.")
+`so-long-hook' can be used where more custom behaviour is desired."
+  :type '(repeat symbol) ;; not function, as may be unknown => mismatch.
+  :group 'so-long)
 
-(defvar so-long-hook '(so-long-inhibit-whitespace-mode
-                       so-long-make-buffer-read-only) ;; n.b. do this last.
+(defcustom so-long-hook '(so-long-inhibit-whitespace-mode
+                          so-long-make-buffer-read-only) ;; n.b. do this last.
   "List of functions to call after `so-long-mode'.
 
 This hook runs during `after-change-major-mode-hook', and after any globalized
 minor modes have acted.
 
-See also `so-long-minor-modes'.")
+See also `so-long-minor-modes'."
+  :type '(repeat function)
+  :group 'so-long)
+
+(defvar so-long-mode-enabled t
+  "Set to nil to prevent `so-long-mode' from being triggered.")
 
 (defvar so-long-mode--inhibited nil) ; internal use
 (make-variable-buffer-local 'so-long-mode--inhibited)
