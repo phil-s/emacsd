@@ -81,6 +81,9 @@
 ;;; Change Log:
 ;;
 ;; 0.7.3 - Added customize group `so-long' with user options.
+;;       - Added `so-long-original-values' to generalise the storage and
+;;         restoration of values from the original mode upon `so-long-revert'.
+;;       - Added `so-long-revert-hook'.
 ;; 0.7.2 - Remember the original major mode even with M-x `so-long-mode'.
 ;; 0.7.1 - Clarified interaction with globalized minor modes.
 ;; 0.7   - Handle header 'mode' declarations.
@@ -158,6 +161,11 @@ See also `so-long-minor-modes'."
   :type '(repeat function)
   :group 'so-long)
 
+(defcustom so-long-revert-hook '(so-long-revert-buffer-read-only)
+  "List of functions to call after `so-long-mode-revert'."
+  :type '(repeat function)
+  :group 'so-long)
+
 (defvar so-long-mode-enabled t
   "Set to nil to prevent `so-long-mode' from being triggered.")
 
@@ -165,9 +173,29 @@ See also `so-long-minor-modes'."
 (make-variable-buffer-local 'so-long-mode--inhibited)
 (put 'so-long-mode--inhibited 'permanent-local t)
 
-(defvar-local so-long-original-mode nil
-  "Stores the original `major-mode' value.")
-(put 'so-long-original-mode 'permanent-local t)
+(defvar-local so-long-original-values nil
+  "Alist holding the buffer's original `major-mode' value, and other data.
+
+Any values to be restored by `so-long-revert' can be stored here during
+`change-major-mode-hook' and reinstated during `so-long-revert-hook'.
+
+See also `so-long-remember' and `so-long-original'.")
+(put 'so-long-original-values 'permanent-local t)
+
+(defun so-long-original (key &optional exists)
+  "Return the current value for KEY in `so-long-original-values'.
+
+If you need to differentiate between a stored value of nil and no stored value
+at all, make EXISTS non-nil. This then returns the result of `assq' directly:
+nil if no value was set, and a cons cell otherwise."
+  (if exists
+      (assq key so-long-original-values)
+    (cdr (assq key so-long-original-values))))
+
+(defun so-long-remember (variable)
+  "Push the `symbol-value' for VARIABLE to `so-long-original-values'."
+  (push (cons variable (symbol-value variable))
+        so-long-original-values))
 
 (add-hook 'change-major-mode-hook 'so-long-change-major-mode)
 
@@ -177,7 +205,8 @@ even when invoked interactively.
 
 Called by default during `change-major-mode-hook'."
   (unless (eq major-mode 'so-long-mode)
-    (setq so-long-original-mode major-mode)))
+    (so-long-remember 'major-mode)
+    (so-long-remember 'buffer-read-only)))
 
 ;; When the line's long
 ;; When the mode's slow
@@ -239,7 +268,7 @@ type \\[so-long-mode-revert], or else re-invoke it manually."
   ;; Inform the user about our major mode hijacking.
   (message "Changed to %s (from %s) on account of line length. %s to revert."
            major-mode
-           (or so-long-original-mode "Unknown")
+           (or (so-long-original 'major-mode) "<unknown>")
            (substitute-command-keys "\\[so-long-mode-revert]")))
 
 (add-hook 'so-long-mode-hook 'so-long-inhibit-global-hl-line-mode)
@@ -258,10 +287,12 @@ This happens during `after-change-major-mode-hook'."
   "Call the `major-mode' which was selected before `so-long-mode' replaced it,
 and re-process the local variables.  Lastly run `so-long-revert-hook'."
   (interactive)
-  (unless so-long-original-mode
-    (error "Original mode unknown."))
-  (funcall so-long-original-mode)
-  (hack-local-variables))
+  (let ((so-long-original-mode (so-long-original 'major-mode)))
+    (unless so-long-original-mode
+      (error "Original mode unknown."))
+    (funcall so-long-original-mode)
+    (hack-local-variables)
+    (run-hooks 'so-long-revert-hook)))
 
 (define-key so-long-mode-map (kbd "C-c C-c") 'so-long-mode-revert)
 
@@ -275,6 +306,14 @@ disabling `highlight-changes-mode').
 As such, making the buffer read-only should be the final action taken,
 to avoid any potential errors."
   (setq buffer-read-only t))
+
+(defun so-long-revert-buffer-read-only ()
+  "Restore `buffer-read-only' to its original value.
+
+Called by default in `so-long-revert-hook'."
+  (let ((readonly (so-long-original 'buffer-read-only :exists)))
+    (when readonly
+      (setq buffer-read-only (cdr readonly)))))
 
 (defun so-long-inhibit-global-hl-line-mode ()
   "Prevent `global-hl-line-mode' from activating.
