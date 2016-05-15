@@ -64,7 +64,10 @@ If non-nil, then mixed-case keywords will also be upcased."
   :group 'SQL)
 
 (defvar sql-upcase-boundary "[\t\n\r ();]"
-  "Regexp matching a character which can precede or follow a keyword.")
+  "Regexp matching a character which can precede or follow a keyword.
+
+In addition we match \"^\" at the start of a keyword; and `sql-upcase-region'
+and `sql-upcase-buffer' both match \"\\'\" at the end of a keyword.")
 
 (defvar sql-upcase-inhibited nil
   "Set non-nil to prevent `sql-upcase-keywords' from acting.")
@@ -118,7 +121,7 @@ Keywords overlapping END will not be upcased."
   ;; character matching `sql-upcase-boundary', but for this command we
   ;; will also treat the end of the buffer as a boundary.
   (let ((sql-upcase-boundary
-         (concat "\\'\\|" sql-upcase-boundary)))
+         (concat "\\(?:\\'\\|" sql-upcase-boundary "\\)")))
     ;; Call our `after-change-functions' handler.
     (sql-upcase-keywords beginning end 0)))
 
@@ -177,11 +180,23 @@ keywords specified in `sql-product-alist'."
                        ;; ...if the preceding character is of word syntax...
                        (eq (char-syntax (char-before)) ?w)
                        ;; ...and we're not inside a string or a comment...
-                       (let* ((from (save-excursion
-                                      (re-search-backward
+                       ;;
+                       ;; Must be bounded by the most recent query prompt. We
+                       ;; would include semicolons and/or the defined statement
+                       ;; starters as separators if that were dependable, but
+                       ;; these values could validly appear within a query
+                       ;; (in a quoted string, for example).
+                       ;;
+                       ;; The prompt pattern has the same issue, but can be
+                       ;; treated as more of a sure bet for SQLi.  In sql-mode
+                       ;; we must hope that any text preceding the query is
+                       ;; balanced.
+                       (let* ((sep (if sql-prompt-regexp
                                        (concat
-                                        ";\\|\\(?:" sql-prompt-regexp "\\)")
-                                       nil :noerror)
+                                        "\\`\\|\\(?:" sql-prompt-regexp "\\)")
+                                     "\\`"))
+                              (from (save-excursion
+                                      (re-search-backward sep nil :noerror)
                                       (or (match-end 0) (point-min))))
                               (syn (parse-partial-sexp from (point))))
                          (not (or (nth 3 syn) ; string
@@ -215,7 +230,8 @@ Tests whether the preceding word:
                 (statements ;; n.b. each of these is already a regexp
                  (delq nil
                        (list (sql-get-product-feature sql-product :statement)
-                             sql-ansi-statement-starters)))
+                             (unless (eq sql-product 'ansi)
+                               (sql-get-product-feature 'ansi :statement)))))
                 (statements-regexp
                  (concat "\\(?:" (mapconcat 'identity statements "\\|") "\\)")))
            ;; Check statement starters first
