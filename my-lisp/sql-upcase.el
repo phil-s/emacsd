@@ -63,8 +63,8 @@ If non-nil, then mixed-case keywords will also be upcased."
                  (const :tag "Both lower- and mixed-case" t))
   :group 'SQL)
 
-(defvar sql-upcase-boundary-after "[\t\n\r ();]"
-  "Regular expression matching a character which can follow a keyword.")
+(defvar sql-upcase-boundary "[\t\n\r ();]"
+  "Regexp matching a character which can precede or follow a keyword.")
 
 (defvar sql-upcase-inhibited nil
   "Set non-nil to prevent `sql-upcase-keywords' from acting.")
@@ -106,19 +106,19 @@ Keywords overlapping END will not be upcased."
     ;; Avoid upcasing a word preceding the region.
     (goto-char beginning)
     (and (not (eobp))
-         (looking-at sql-upcase-boundary-after)
+         (looking-at sql-upcase-boundary)
          (setq beginning (1+ beginning)))
     ;; Allow upcasing the final word in the region.
     (goto-char end)
     (and (not (eobp))
-         (looking-at sql-upcase-boundary-after)
+         (looking-at sql-upcase-boundary)
          (setq end (1+ end))))
   ;; Make an exception if the last character of the buffer is the last
-  ;; character of a keyword. Normally we require a trailing boundary
-  ;; character matching `sql-upcase-boundary-after', but for this
-  ;; command we will also treat the end of the buffer as a boundary.
-  (let ((sql-upcase-boundary-after
-         (concat "\\'\\|" sql-upcase-boundary-after)))
+  ;; character of a keyword.  Normally we require a trailing boundary
+  ;; character matching `sql-upcase-boundary', but for this command we
+  ;; will also treat the end of the buffer as a boundary.
+  (let ((sql-upcase-boundary
+         (concat "\\'\\|" sql-upcase-boundary)))
     ;; Call our `after-change-functions' handler.
     (sql-upcase-keywords beginning end 0)))
 
@@ -170,8 +170,7 @@ keywords specified in `sql-product-alist'."
               ;; upcase the previously-entered keyword before it.
               (goto-char beginning)
               (while (and (< (point) end)
-                          (re-search-forward
-                           sql-upcase-boundary-after end :noerror))
+                          (re-search-forward sql-upcase-boundary end :noerror))
                 (save-excursion
                   (goto-char (match-beginning 0))
                   (and (not (bobp))
@@ -209,8 +208,8 @@ Tests whether the preceding word:
            (unless (bolp)
              (forward-char -1)))
          ;; Try to match a keyword using the regexps for this SQL product.
-         (let* ((before "\\(?:^\\|[[:space:](]\\)") ; precedes a keyword
-                (after sql-upcase-boundary-after)
+         (let* ((before (concat "\\(?:^\\|" sql-upcase-boundary "\\)"))
+                (after sql-upcase-boundary)
                 ;; Build regexp for statement starters.
                 ;; FIXME: Generate once only, as a buffer-local var?
                 (statements ;; n.b. each of these is already a regexp
