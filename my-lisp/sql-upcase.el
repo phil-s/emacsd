@@ -42,8 +42,11 @@
 
 ;;; Change Log:
 ;;
-;; 0.2 - Added `sql-upcase-region' and `sql-upcase-buffer' commands
-;;     - Rename from sql-upcase-mode.el to sql-upcase.el
+;; 0.2 - Added `sql-upcase-region' and `sql-upcase-buffer' commands.
+;;     - Rename from sql-upcase-mode.el to sql-upcase.el.
+;;     - Match both boundaries of a keyword, to avoid false-positives.
+;;     - Constrain 'in string' and 'in comment' tests to current query.
+;;     - Fixed error with whitespace at beginning of buffer.
 ;; 0.1 - Initial release to EmacsWiki.
 
 
@@ -169,14 +172,23 @@ keywords specified in `sql-product-alist'."
               (while (and (< (point) end)
                           (re-search-forward
                            sql-upcase-boundary-after end :noerror))
-                ;; ...if the preceding character is of word syntax...
-                (and (eq (char-syntax (char-before (1- (point)))) ?w)
-                     ;; ...and we're not inside a string or a comment...
-                     (let ((syn (syntax-ppss)))
-                       (not (or (nth 3 syn) ; string
-                                (nth 4 syn)))) ; comment
-                     ;; Try to match the preceding word as a SQL keyword.
-                     (sql-upcase-match-keyword)))))
+                (save-excursion
+                  (goto-char (match-beginning 0))
+                  (and (not (bobp))
+                       ;; ...if the preceding character is of word syntax...
+                       (eq (char-syntax (char-before)) ?w)
+                       ;; ...and we're not inside a string or a comment...
+                       (let* ((from (save-excursion
+                                      (re-search-backward
+                                       (concat
+                                        ";\\|\\(?:" sql-prompt-regexp "\\)")
+                                       nil :noerror)
+                                      (or (match-end 0) (point-min))))
+                              (syn (parse-partial-sexp from (point))))
+                         (not (or (nth 3 syn) ; string
+                                  (nth 4 syn)))) ; comment
+                       ;; Try to match the preceding word as a SQL keyword.
+                       (sql-upcase-match-keyword))))))
           ;; Upcase the matched regions (if any)
           (when sql-upcase-regions
             (undo-boundary) ;; now that save-excursion has returned
@@ -191,44 +203,44 @@ Tests whether the preceding word:
 1) is itself preceded by (only) whitespace or (
 2a) matches the regexp for a keyword
 2b) matches the regexp for a builtin, followed by ("
-  (save-excursion
-    (and
-     (catch 'matched
-       (let ((inhibit-field-text-motion t)) ;; for comint
-         (forward-word -1)
-         (unless (bolp)
-           (forward-char -1)))
-       ;; Try to match a keyword using the regexps for this SQL product.
-       (let* ((prefix "\\(?:^\\|[[:space:](]\\)") ; precedes a keyword
-              ;; Build regexp for statement starters.
-              ;; FIXME: Generate once only, as a buffer-local var?
-              (statements ;; n.b. each of these is already a regexp
-               (delq nil (list (sql-get-product-feature sql-product :statement)
-                               sql-ansi-statement-starters)))
-              (statements-regexp
-               (concat "\\(?:" (mapconcat 'identity statements "\\|") "\\)")))
-         ;; Check statement starters first
-         (if (looking-at (concat prefix statements-regexp))
-             (throw 'matched t)
-           ;; Otherwise process the product's font-lock keywords.
-           ;; TODO: I'm not sure that `font-lock-builtin-face' can be assumed
-           ;; to just be functions. (e.g. SET is not seen as a keyword.)
-           (dolist (keywords (sql-get-product-feature sql-product :font-lock))
-             (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
-                            (looking-at (concat prefix (car keywords))))
-                       (and (eq (cdr keywords) 'font-lock-builtin-face)
-                            (looking-at (concat prefix (car keywords) "("))))
-               (throw 'matched t))))))
-     ;; If `sql-upcase-mixed-case' is non-nil then check for at least one
-     ;; lower-case character in the matched region, as otherwise the upcase
-     ;; will be a no-op (but stored as a change in the buffer undo list).
-     (or (not sql-upcase-mixed-case)
-         (save-match-data
-           (let ((case-fold-search nil))
-             (re-search-forward "[[:lower:]]" (match-end 0) :noerror))))
-     ;; Store the matched keyword region for subsequent upcasing.
-     (push (cons (match-beginning 0) (match-end 0))
-           sql-upcase-regions))))
+  (and (catch 'matched
+         (let ((inhibit-field-text-motion t)) ;; for comint
+           (forward-word -1)
+           (unless (bolp)
+             (forward-char -1)))
+         ;; Try to match a keyword using the regexps for this SQL product.
+         (let* ((before "\\(?:^\\|[[:space:](]\\)") ; precedes a keyword
+                (after sql-upcase-boundary-after)
+                ;; Build regexp for statement starters.
+                ;; FIXME: Generate once only, as a buffer-local var?
+                (statements ;; n.b. each of these is already a regexp
+                 (delq nil
+                       (list (sql-get-product-feature sql-product :statement)
+                             sql-ansi-statement-starters)))
+                (statements-regexp
+                 (concat "\\(?:" (mapconcat 'identity statements "\\|") "\\)")))
+           ;; Check statement starters first
+           (if (looking-at (concat before statements-regexp after))
+               (throw 'matched t)
+             ;; Otherwise process the product's font-lock keywords.
+             ;; TODO: I'm not sure that `font-lock-builtin-face' can be assumed
+             ;; to just be functions. (e.g. SET is not seen as a keyword.)
+             (dolist (keywords (sql-get-product-feature sql-product :font-lock))
+               (when (or (and (eq (cdr keywords) 'font-lock-keyword-face)
+                              (looking-at (concat before (car keywords) after)))
+                         (and (eq (cdr keywords) 'font-lock-builtin-face)
+                              (looking-at (concat before (car keywords) "("))))
+                 (throw 'matched t))))))
+       ;; If `sql-upcase-mixed-case' is non-nil then check for at least one
+       ;; lower-case character in the matched region, as otherwise the upcase
+       ;; will be a no-op (but stored as a change in the buffer undo list).
+       (or (not sql-upcase-mixed-case)
+           (save-match-data
+             (let ((case-fold-search nil))
+               (re-search-forward "[[:lower:]]" (match-end 0) :noerror))))
+       ;; Store the matched keyword region for subsequent upcasing.
+       (push (cons (match-beginning 0) (match-end 0))
+             sql-upcase-regions)))
 
 (provide 'sql-upcase)
 ;;; sql-upcase.el ends here
