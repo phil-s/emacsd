@@ -180,21 +180,13 @@ keywords specified in `sql-product-alist'."
                        ;; ...if the preceding character is of word syntax...
                        (eq (char-syntax (char-before)) ?w)
                        ;; ...and we're not inside a string or a comment...
-                       ;;
-                       ;; Must be bounded by the most recent query prompt. We
-                       ;; would include semicolons and/or the defined statement
-                       ;; starters as separators if that were dependable, but
-                       ;; these values could validly appear within a query
-                       ;; (in a quoted string, for example).
-                       ;;
-                       ;; The prompt pattern has the same issue, but can be
-                       ;; treated as more of a sure bet for SQLi.  In sql-mode
-                       ;; we must hope that any text preceding the query is
-                       ;; balanced.
                        (let* ((sep (if sql-prompt-regexp
                                        (concat
                                         "\\`\\|\\(?:" sql-prompt-regexp "\\)")
                                      "\\`"))
+                              ;; TODO: Use (sql-beginning-of-statement 1)?
+                              ;; Might error out. Should call that only once
+                              ;; (and only if needed), and cache the result.
                               (from (save-excursion
                                       (re-search-backward sep nil :noerror)
                                       (or (match-end 0) (point-min))))
