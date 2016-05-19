@@ -161,6 +161,7 @@ static char * data[] = {
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-summary-max-length)
+  (defvar magit-log-buffer-file-locked)
   (defvar magit-mode-map))
 
 ;; No, I really don't want Emacs to complain that my summary line is
@@ -176,9 +177,13 @@ static char * data[] = {
 ;; (as the standard formatting will add 8 chars of padding).
 (setq git-commit-summary-max-length 72)
 
-;; Magit TAB key: toggle or cycle?
-(eval-after-load 'magit
-  '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
+;; Make log and diff commands from `magit-file-popup' use separate
+;; buffers to show the specific-file log/diff. This avoids un/setting
+;; the file filter for regular log/diff commands.
+(setq magit-log-buffer-file-locked t)
+
+(eval-after-load "magit"
+  '(magit-file-mode 1)) ;; per-file popup on C-c M-g
 
 ;; I keep unintentionally checking out branches from the ref screen.
 (defadvice magit-visit-ref (around my-protect-accidental-checkout)

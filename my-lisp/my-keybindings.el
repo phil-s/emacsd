@@ -41,8 +41,16 @@
 (defun my-wgrep-setup-hook ()
   (define-key grep-mode-map (kbd "e") 'wgrep-change-to-wgrep-mode))
 
-;; iedit (additional)
-(define-key isearch-mode-map (kbd "C-;") 'iedit-mode)
+(eval-after-load "iedit"
+  '(define-key isearch-mode-map (kbd "C-;") 'iedit-mode))
+
+(eval-after-load "magit"
+  '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
+
+(eval-after-load "git-commit"
+  '(progn
+     (define-key git-commit-mode-map (kbd "s-[") 'git-commit-prev-message)
+     (define-key git-commit-mode-map (kbd "s-]") 'git-commit-next-message)))
 
 ;; Second selection support
 (global-set-key (kbd "C-M-y") 'secondary-dwim)
