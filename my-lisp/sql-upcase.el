@@ -1,11 +1,11 @@
 ;;; sql-upcase.el --- Upcase SQL keywords -*- lexical-binding: t -*-
 
 ;; Author: Phil S.
-;; URL: https://www.emacswiki.org/emacs/SqlUpcaseMode
+;; URL: https://www.emacswiki.org/emacs/SqlUpcase
 ;; Keywords: abbrev, convenience, languages
 ;; Created: 9 May 2016
 ;; Package-Requires: ((emacs "24.3"))
-;; Version: 0.2
+;; Version: 0.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 
 ;;; Change Log:
 ;;
+;; 0.3 - Enable `sql-upcase-region' in non-SQL buffers.
+;;     - Prefix argument to `sql-upcase-region' (or buffer) selects product.
 ;; 0.2 - Added `sql-upcase-region' and `sql-upcase-buffer' commands.
 ;;     - Rename from sql-upcase-mode.el to sql-upcase.el.
 ;;     - Match both boundaries of a keyword, to avoid false-positives.
@@ -99,37 +101,47 @@ buffer are processed (e.g. cycling through the command history)."
                    'sql-upcase-comint-preoutput :local))))
 
 ;;;###autoload
-(defun sql-upcase-region (beginning end)
-  "Upcase SQL keywords within the marked region.
-
-Keywords overlapping BEGINNING will be upcased.
-Keywords overlapping END will not be upcased."
-  (interactive "*r")
-  (save-excursion
-    ;; Avoid upcasing a word preceding the region.
-    (goto-char beginning)
-    (and (not (eobp))
-         (looking-at sql-upcase-boundary)
-         (setq beginning (1+ beginning)))
-    ;; Allow upcasing the final word in the region.
-    (goto-char end)
-    (and (not (eobp))
-         (looking-at sql-upcase-boundary)
-         (setq end (1+ end))))
-  ;; Make an exception if the last character of the buffer is the last
+(defun sql-upcase-region (beginning end arg)
+  "Upcase SQL keywords within the marked region."
+  (interactive "*r\nP")
+  (when arg
+    (setq-local sql-product (sql-read-product "SQL product: " sql-product)))
+  ;; Make an exception if the last character of the region is the last
   ;; character of a keyword.  Normally we require a trailing boundary
   ;; character matching `sql-upcase-boundary', but for this command we
-  ;; will also treat the end of the buffer as a boundary.
+  ;; will also treat the end of the region as a boundary.
   (let ((sql-upcase-boundary
-         (concat "\\(?:\\'\\|" sql-upcase-boundary "\\)")))
-    ;; Call our `after-change-functions' handler.
-    (sql-upcase-keywords beginning end 0)))
+         (concat "\\(?:\\'\\|" sql-upcase-boundary "\\)"))
+        (sql-upcase-product sql-product)
+        buf)
+    (save-current-buffer
+      (unless (derived-mode-p 'sql-mode 'sql-interactive-mode)
+        ;; Process the region in a `sql-mode' indirect copy of the buffer.
+        (setq buf (clone-indirect-buffer nil nil))
+        (set-buffer buf)
+        (message "%S" sql-product)
+        ;; Avoid the notice from `jit-lock-mode' on account of being
+        ;; an indirect buffer.
+        (cl-letf (((symbol-function 'jit-lock-mode) 'ignore))
+          (sql-mode))
+        (setq-local sql-product sql-upcase-product))
+      ;; Call our `after-change-functions' handler to process the region.
+      (save-restriction
+        (narrow-to-region beginning end)
+        (sql-upcase-keywords beginning end 0)))
+    ;; Kill the indirect buffer, if we used one.
+    (when buf
+      (kill-buffer buf)
+      ;; Refresh font-locking, as we changed major mode in the
+      ;; indirect buffer.
+      (when font-lock-mode
+        (font-lock-mode 1)))))
 
 ;;;###autoload
-(defun sql-upcase-buffer ()
+(defun sql-upcase-buffer (arg)
   "Upcase all SQL keywords in the buffer."
-  (interactive)
-  (sql-upcase-region (point-min) (point-max)))
+  (interactive "P")
+  (sql-upcase-region (point-min) (point-max) arg))
 
 (defun sql-upcase-comint-preoutput (output)
   "Inhibit `sql-upcase-keywords' for comint process output.
