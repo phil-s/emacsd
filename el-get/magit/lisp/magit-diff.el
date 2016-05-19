@@ -171,6 +171,15 @@ many spaces.  Otherwise, highlight neither."
   :group 'magit-diff
   :type 'boolean)
 
+;;;; File Diff
+
+(defcustom magit-diff-buffer-file-locked t
+  "Whether `magit-diff-buffer-file' uses a decicated buffer."
+  :package-version '(magit . "2.7.0")
+  :group 'magit-commands
+  :group 'magit-diff
+  :type 'boolean)
+
 ;;;; Revision Mode
 
 (defgroup magit-revision nil
@@ -547,6 +556,7 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=7847."
                      (nth 3 magit-refresh-args)))
            (list (default-value 'magit-diff-arguments) nil)))))
 
+;;;###autoload
 (defun magit-diff-popup (arg)
   "Popup console for diff commands."
   (interactive "P")
@@ -563,22 +573,23 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=7847."
            (default-value 'magit-diff-arguments))))
     (magit-invoke-popup 'magit-diff-popup nil arg)))
 
-(defun magit-diff-buffer-file-popup (arg)
-  "Popup console for diff commans.
+;;;###autoload
+(defun magit-diff-buffer-file-popup ()
+  "Popup console for diff commands.
 
 This is a variant of `magit-diff-popup' which shows the same popup
 but which limits the diff to the file being visited in the current
 buffer."
-  (interactive "P")
+  (interactive)
   (-if-let (file (magit-file-relative-name))
       (let ((magit-diff-arguments
              (magit-popup-import-file-args
               (-if-let (buffer (magit-mode-get-buffer 'magit-diff-mode))
                   (with-current-buffer buffer
-                    (nth 2 magit-refresh-args))
+                    (nth 3 magit-refresh-args))
                 (default-value 'magit-diff-arguments))
               (list file))))
-        (magit-invoke-popup 'magit-diff-popup nil arg))
+        (magit-invoke-popup 'magit-diff-popup nil nil))
     (user-error "Buffer isn't visiting a file")))
 
 (defun magit-diff-refresh-popup (arg)
@@ -775,6 +786,21 @@ be committed."
 
 (defun magit-diff-while-amending (&optional args files)
   (magit-diff-setup "HEAD^" (list "--cached") args files))
+
+;;;###autoload
+(defun magit-diff-buffer-file ()
+  "Show diff for the blob or file visited in the current buffer."
+  (interactive)
+  (-if-let (file (magit-file-relative-name))
+      (magit-mode-setup-internal #'magit-diff-mode
+                                 (list (or magit-buffer-refname
+                                           (magit-get-current-branch)
+                                           "HEAD")
+                                       nil
+                                       (cadr (magit-diff-arguments))
+                                       (list file))
+                                 magit-diff-buffer-file-locked)
+    (user-error "Buffer isn't visiting a file")))
 
 ;;;###autoload
 (defun magit-diff-paths (a b)
