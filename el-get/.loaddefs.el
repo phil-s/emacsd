@@ -320,8 +320,8 @@ to prevent the mode being treated as a minor mode.
 
 ;;;***
 
-;;;### (autoloads nil "diff-hl/diff-hl" "diff-hl/diff-hl.el" (21998
-;;;;;;  15765 321003 699000))
+;;;### (autoloads nil "diff-hl/diff-hl" "diff-hl/diff-hl.el" (22334
+;;;;;;  17133 710064 76000))
 ;;; Generated autoloads from diff-hl/diff-hl.el
 
 (autoload 'diff-hl-mode "diff-hl/diff-hl" "\
@@ -358,7 +358,7 @@ See `diff-hl-mode' for more information on Diff-Hl mode.
 ;;;***
 
 ;;;### (autoloads nil "diff-hl/diff-hl-amend" "diff-hl/diff-hl-amend.el"
-;;;;;;  (21998 15765 317003 629000))
+;;;;;;  (22334 17133 710064 76000))
 ;;; Generated autoloads from diff-hl/diff-hl-amend.el
 
 (autoload 'diff-hl-amend-mode "diff-hl/diff-hl-amend" "\
@@ -393,7 +393,7 @@ See `diff-hl-amend-mode' for more information on Diff-Hl-Amend mode.
 ;;;***
 
 ;;;### (autoloads nil "diff-hl/diff-hl-dired" "diff-hl/diff-hl-dired.el"
-;;;;;;  (21998 15765 317003 629000))
+;;;;;;  (22334 17133 710064 76000))
 ;;; Generated autoloads from diff-hl/diff-hl-dired.el
 
 (autoload 'diff-hl-dired-mode "diff-hl/diff-hl-dired" "\
@@ -409,7 +409,7 @@ Toggle VC diff highlighting on the side of a Dired window.
 ;;;***
 
 ;;;### (autoloads nil "diff-hl/diff-hl-flydiff" "diff-hl/diff-hl-flydiff.el"
-;;;;;;  (21998 15765 317003 629000))
+;;;;;;  (22334 17133 710064 76000))
 ;;; Generated autoloads from diff-hl/diff-hl-flydiff.el
 
 (defvar diff-hl-flydiff-mode nil "\
@@ -429,7 +429,7 @@ Highlight diffs on-the-fly
 ;;;***
 
 ;;;### (autoloads nil "diff-hl/diff-hl-margin" "diff-hl/diff-hl-margin.el"
-;;;;;;  (21998 15765 317003 629000))
+;;;;;;  (22334 17133 710064 76000))
 ;;; Generated autoloads from diff-hl/diff-hl-margin.el
 
 (defvar diff-hl-margin-mode nil "\
