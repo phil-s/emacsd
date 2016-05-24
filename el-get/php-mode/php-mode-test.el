@@ -32,8 +32,7 @@
 
 (require 'php-mode)
 (require 'ert)
-(eval-when-compile
-  (require 'cl))
+(require 'cl-lib)
 
 ;; Work around bug #14325
 ;; <http://debbugs.gnu.org/cgi/bugreport.cgi?bug=14325>.
@@ -51,29 +50,34 @@
 (defvar php-mode-test-magic-regexp "###php-mode-test### \\((.+)\\)"
   "Regexp which identifies a magic comment.")
 
+;; cl-letf does not work for global function on Emacs 24.3 or lower versions
+(when (and (= emacs-major-version 24) (<= emacs-minor-version 3))
+  (defun indent ()))
+
 (defun php-mode-test-process-magics ()
   "Process the test directives in the current buffer.
 These are the ###php-mode-test### comments. Valid magics are
 listed in `php-mode-test-valid-magics'; no other directives will
 be processed."
-  (flet ((indent (offset) (equal (current-indentation) offset)))
+  (cl-letf (((symbol-function 'indent)
+             (lambda (offset) (equal (current-indentation) offset))))
     (let (directives answers)
-     (save-excursion
-       (goto-char (point-min))
-       (while (re-search-forward php-mode-test-magic-regexp nil t)
-         (setq directives (read (buffer-substring (match-beginning 1)
-                                                  (match-end 1))))
-         (setq answers
-               (append (mapcar (lambda (curr)
-                                 (let ((fn (car curr))
-                                       (args (mapcar 'eval (cdr-safe curr))))
-                                   (if (memq fn php-mode-test-valid-magics)
-                                       (apply fn args))))
-                               directives)
-                       answers))))
-     answers)))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward php-mode-test-magic-regexp nil t)
+          (setq directives (read (buffer-substring (match-beginning 1)
+                                                   (match-end 1))))
+          (setq answers
+                (append (mapcar (lambda (curr)
+                                  (let ((fn (car curr))
+                                        (args (mapcar 'eval (cdr-safe curr))))
+                                    (if (memq fn php-mode-test-valid-magics)
+                                        (apply fn args))))
+                                directives)
+                        answers))))
+      answers)))
 
-(defmacro* with-php-mode-test ((file &key style indent magic custom) &rest body)
+(cl-defmacro with-php-mode-test ((file &key style indent magic custom) &rest body)
   "Set up environment for testing `php-mode'.
 Execute BODY in a temporary buffer containing the contents of
 FILE, in `php-mode'. Optional keyword `:style' can be used to set
@@ -96,7 +100,7 @@ run with specific customizations set."
      (insert-file-contents (expand-file-name ,file php-mode-test-dir))
      (php-mode)
      (font-lock-fontify-buffer)
-     ,(case style
+     ,(cl-case style
         (pear '(php-enable-pear-coding-style))
         (drupal '(php-enable-drupal-coding-style))
         (wordpress '(php-enable-wordpress-coding-style))
@@ -109,8 +113,8 @@ run with specific customizations set."
      ,(if indent
           '(indent-region (point-min) (point-max)))
      ,(if magic
-          '(should (reduce (lambda (l r) (and l r))
-                           (php-mode-test-process-magics))))
+          '(should (cl-reduce (lambda (l r) (and l r))
+                              (php-mode-test-process-magics))))
      (goto-char (point-min))
      (let ((case-fold-search nil))
        ,@body)))
@@ -573,6 +577,24 @@ style from Drupal."
 
     (search-forward "$x")
     (should (eq 'font-lock-variable-name-face (get-text-property (1- (point)) 'face)))))
+
+(ert-deftest psr-5-style-tag-annotation ()
+  "PSR-5 style tag annotation."
+  (with-php-mode-test ("annotation.php")
+    (re-search-forward "@\\([^\\]+\\)\\\\\\([^\\]+\\)\\\\\\([^\r\n]+\\)")
+    (cl-loop for i from 1 to 3
+             do
+             (progn
+               (should (eq (get-text-property (match-beginning i) 'face)
+                           'php-annotations-annotation-face))
+               (should (eq (get-text-property (1- (match-end i)) 'face)
+                           'php-annotations-annotation-face))))
+
+    (search-forward "@property-read")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'php-annotations-annotation-face))
+    (should (eq (get-text-property (1- (match-end 0)) 'face)
+                'php-annotations-annotation-face))))
 
 ;;; php-mode-test.el ends here
 

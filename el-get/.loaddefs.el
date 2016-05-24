@@ -2955,8 +2955,8 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
-;;;### (autoloads (php-mode php-extra-constants php) "php-mode/php-mode"
-;;;;;;  "php-mode/php-mode.el" (21345 65296 244409 7000))
+;;;### (autoloads nil "php-mode/php-mode" "php-mode/php-mode.el"
+;;;;;;  (22339 63855 300123 280000))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
@@ -2964,7 +2964,7 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 (defvar php-extra-constants 'nil "\
 A list of additional strings to treat as PHP constants.")
 
-(custom-autoload 'php-extra-constants "php-mode/php-mode" t)
+(custom-autoload 'php-extra-constants "php-mode/php-mode" nil)
 
 (add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
 
@@ -3669,8 +3669,8 @@ A major mode for displaying the directory tree in text mode.
 ;;;### (autoloads nil nil ("magit/lisp/magit-autoloads.el" "magit/lisp/magit-core.el"
 ;;;;;;  "magit/lisp/magit-git.el" "magit/lisp/magit-mode.el" "magit/lisp/magit-popup.el"
 ;;;;;;  "magit/lisp/magit-process.el" "magit/lisp/magit-section.el"
-;;;;;;  "magit/lisp/magit-utils.el" "magit/lisp/magit-version.el")
-;;;;;;  (22334 15237 270514 891000))
+;;;;;;  "magit/lisp/magit-utils.el" "php-mode/php-mode-test.el")
+;;;;;;  (22339 63856 96078 115000))
 
 ;;;***
 
