@@ -108,6 +108,18 @@
                      (run-with-idle-timer idle-highlight-idle-time
                                           :repeat 'idle-highlight-word-at-point)))
              (set (make-local-variable 'idle-highlight-regexp) nil))
+    ;; Disable the minor mode.
+    (unless (catch 'enabled-elsewhere
+              (mapc (lambda (buf)
+                      (with-current-buffer buf
+                        (and idle-highlight-mode
+                             (throw 'enabled-elsewhere t))))
+                    (buffer-list))
+              nil)
+      (when idle-highlight-global-timer
+        (when (timerp idle-highlight-global-timer)
+          (cancel-timer idle-highlight-global-timer))
+        (setq idle-highlight-global-timer nil)))
     (idle-highlight-unhighlight)))
 
 (provide 'idle-highlight-mode)
