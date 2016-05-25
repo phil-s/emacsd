@@ -137,6 +137,10 @@
             :type git
             :url "git://github.com/purcell/ibuffer-vc.git")
 
+     (:name idle-highlight-mode
+            :type git
+            :url "https://github.com/nonsequitur/idle-highlight-mode.git")
+
      (:name iedit)
 
      (:name image-dimensions-minor-mode

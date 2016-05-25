@@ -732,8 +732,19 @@ Set the current filter groups to filter by vc root dir.
 
 ;;;***
 
-;;;### (autoloads (iedit-mode) "iedit/iedit" "iedit/iedit.el" (20289
-;;;;;;  32888))
+;;;### (autoloads nil "idle-highlight-mode/idle-highlight-mode" "idle-highlight-mode/idle-highlight-mode.el"
+;;;;;;  (22341 9026 345036 427000))
+;;; Generated autoloads from idle-highlight-mode/idle-highlight-mode.el
+
+(autoload 'idle-highlight-mode "idle-highlight-mode/idle-highlight-mode" "\
+Idle-Highlight Minor Mode
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "iedit/iedit" "iedit/iedit.el" (22294 61345
+;;;;;;  6841 74000))
 ;;; Generated autoloads from iedit/iedit.el
 
 (autoload 'iedit-mode "iedit/iedit" "\

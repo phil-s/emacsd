@@ -16,7 +16,7 @@
   (declare-function comint-send-string "comint")
   (declare-function fic-mode "fic-mode")
   (declare-function hl-sexp-mode "hl-sexp")
-  (declare-function idle-highlight "idle-highlight")
+  (declare-function idle-highlight "idle-highlight-mode")
   (declare-function imenu--cleanup "imenu")
   (declare-function imenu--make-index-alist "imenu")
   (declare-function imenu--subalist-p "imenu")
@@ -35,7 +35,7 @@
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
   (if window-system (hl-line-mode t))
-  (idle-highlight)
+  (idle-highlight-mode 1)
   (when (require 'rainbow-delimiters nil t)
     (rainbow-delimiters-mode 1))
   (eldoc-mode 1)
@@ -71,7 +71,8 @@
 ;; Don't let minified files bring Emacs to its knees.
 (when (require 'so-long nil :noerror)
   (mapc (apply-partially 'add-to-list 'so-long-minor-modes)
-        '(hl-sexp-mode diff-hl-mode diff-hl-amend-mode diff-hl-flydiff-mode))
+        '(hl-sexp-mode diff-hl-mode diff-hl-amend-mode diff-hl-flydiff-mode
+                       idle-highlight-mode))
   (so-long-enable))
 
 ;; Provide nice keyboard access to imenu, using Ido.
@@ -250,7 +251,7 @@ Advises `eldoc-print-current-symbol-info'."
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
   (if window-system (hl-line-mode t))
-  (idle-highlight)
+  (idle-highlight-mode 1)
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "<C-M-right>") 'nxml-forward-element)
   (local-set-key (kbd "<C-M-left>") 'nxml-backward-element))

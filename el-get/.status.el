@@ -57,4 +57,5 @@
 :ibuffer-vc "installed"
 :with-editor "installed"
 :which-key "installed"
+:idle-highlight-mode "installed"
 )
