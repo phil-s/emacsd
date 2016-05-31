@@ -157,7 +157,8 @@ using the specified hippie-expand function."
   (let ((line (line-number-at-pos)))
     (with-selected-window (next-window)
       (recenter)
-      (goto-line line (window-buffer)))))
+      (goto-char (point-min))
+      (forward-line (1- line)))))
 
 (defun scroll-one-line-ahead ()
   "Scroll ahead one line"
@@ -969,7 +970,9 @@ point. This function returns a list (string) for use in `interactive'."
   "Place hyphens between words in region."
   (interactive "*r")
   (save-excursion
-    (replace-regexp "[[:space:]\n]+" "-" nil beginning end)))
+    (goto-char beginning)
+    (while (re-search-forward "[[:space:]\n]+" end :noerror)
+      (replace-match "-"))))
 
 (defcustom my-www-search-url
   "http://google.com/search?num=100&q=%s"
