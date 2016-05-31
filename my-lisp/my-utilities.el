@@ -1055,15 +1055,20 @@ or before point."
 
 (defvar my-sql-query-buffer)
 
-(defun my-sql-query-buffer ()
-  "Open a `sql-mode' buffer which interacts with the current SQLi buffer."
-  (interactive)
+(defun my-sql-query-buffer (arg)
+  "Open a `sql-mode' buffer which interacts with the current SQLi buffer.
+
+Switches to an existing buffer if possible, otherwise creates a new buffer.
+
+With C-u prefix arg, always creates a new buffer."
+  (interactive "P")
   (let ((sqlibuf (current-buffer)))
     (if (null (sql-buffer-live-p sqlibuf))
         (error "Buffer %s is not a working SQLi buffer" sqlibuf)
       (let ((product sql-product)
             (querybuf
-             (or (and (boundp 'my-sql-query-buffer)
+             (or (and (not (consp arg)) ;; prefix arg
+                      (boundp 'my-sql-query-buffer)
                       (buffer-live-p (get-buffer my-sql-query-buffer))
                       (get-buffer my-sql-query-buffer))
                  (generate-new-buffer
