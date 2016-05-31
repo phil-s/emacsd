@@ -932,7 +932,7 @@ See `clone-indirect-buffer'."
   (interactive)
   (let ((buf (clone-indirect-buffer nil nil)))
     (with-current-buffer buf
-      (narrow-to-defun _arg))
+      (my-narrow-to-defun)) ; _arg
     (pop-to-buffer buf)))
 
 (defun my-extend-selection (arg &optional incremental)
