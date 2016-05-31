@@ -36,8 +36,6 @@
   (column-number-mode t)
   (if window-system (hl-line-mode t))
   (idle-highlight-mode 1)
-  (when (require 'rainbow-delimiters nil t)
-    (rainbow-delimiters-mode 1))
   (eldoc-mode 1)
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
