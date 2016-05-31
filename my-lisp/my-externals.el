@@ -210,7 +210,9 @@
             :type http
             :url "http://www.xsteve.at/prg/emacs/psvn.el")
 
-     (:name rainbow-delimiters)
+     (:name rainbow-delimiters
+            :type git
+            :url "https://github.com/Fanael/rainbow-delimiters.git")
 
      (:name rainbow-mode)
 

@@ -72,7 +72,7 @@
 (when (require 'so-long nil :noerror)
   (mapc (apply-partially 'add-to-list 'so-long-minor-modes)
         '(hl-sexp-mode diff-hl-mode diff-hl-amend-mode diff-hl-flydiff-mode
-                       idle-highlight-mode))
+                       idle-highlight-mode rainbow-delimiters-mode))
   (so-long-enable))
 
 ;; Provide nice keyboard access to imenu, using Ido.

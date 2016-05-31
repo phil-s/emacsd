@@ -1285,17 +1285,6 @@ Regenerate PHP function argument hash table from php.net. This is slow!
 
 ;;;***
 
-;;;### (autoloads (rainbow-delimiters-mode) "rainbow-delimiters/rainbow-delimiters"
-;;;;;;  "rainbow-delimiters/rainbow-delimiters.el" (20289 32888))
-;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
-
-(autoload 'rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
-Color nested parentheses, brackets, and braces according to their depth.
-
-\(fn &optional ARG)" t nil)
-
-;;;***
-
 ;;;### (autoloads (geben geben-mode) "geben/geben" "geben/geben.el"
 ;;;;;;  (20289 32888))
 ;;; Generated autoloads from geben/geben.el
@@ -3012,6 +3001,17 @@ If there is no .svn directory, examine if there is CVS and run
 `cvs-examine'. Otherwise ask if to run `dired'.
 
 \(fn DIR &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "rainbow-delimiters/rainbow-delimiters" "rainbow-delimiters/rainbow-delimiters.el"
+;;;;;;  (22348 57241 431587 857000))
+;;; Generated autoloads from rainbow-delimiters/rainbow-delimiters.el
+
+(autoload 'rainbow-delimiters-mode "rainbow-delimiters/rainbow-delimiters" "\
+Color nested parentheses, brackets, and braces according to their depth.
+
+\(fn &optional ARG)" t nil)
 
 ;;;***
 

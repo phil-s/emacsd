@@ -1,13 +1,19 @@
-;;; rainbow-delimiters.el --- Color nested parentheses, brackets, and braces according to their depth.
+;;; rainbow-delimiters.el --- Highlight brackets according to their depth -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2011 Jeremy L. Rayman.
-;; Author: Jeremy L. Rayman <jeremy.rayman@gmail.com>
-;; Maintainer: Jeremy L. Rayman <jeremy.rayman@gmail.com>
+;; Copyright (C)
+;;   2010-2013 Jeremy Rayman
+;;   2013-2016 Fanael Linithien
+;; Author: Jeremy Rayman <opensource@jeremyrayman.com>
+;;         Fanael Linithien <fanael4@gmail.com>
+;; Maintainer: Fanael Linithien <fanael4@gmail.com>
 ;; Created: 2010-09-02
-;; Version: 1.3.1
-;; Keywords: faces, convenience, lisp, matching, tools, rainbow, rainbow parentheses, rainbow parens
-;; EmacsWiki: http://www.emacswiki.org/emacs/RainbowDelimiters
-;; URL: http://www.emacswiki.org/emacs/download/rainbow-delimiters.el
+;; Version: 2.1.3
+;; Keywords: faces, convenience, lisp, tools
+;; Homepage: https://github.com/Fanael/rainbow-delimiters
+
+;; Note: despite `lexical-binding', there's no Emacs 24 dependency.
+;; This is merely an optimization for Emacs 24+, the code is supposed to work
+;; with *both* dynamic and lexical binding.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -22,444 +28,265 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-;;; Commentary:
-
-;; This is a "rainbow parentheses" mode which includes support for
-;; parens "()", brackets "[]", and braces "{}". It conveys nesting depth
-;; by using a different color for each successive nested set of
-;; delimiters. It highlights all statements at a given level using the
-;; same color - if several statements are all at the same depth, they
-;; will all be the same color.
-;;
-;; Great care has been taken to make this mode FAST. You should see no
-;; discernible change in scrolling or editing speed while using it,
-;; even with delimiter-rich languages like Clojure, Lisp, and Scheme.
-;;
-;; The ultimate goal for the mode is to be useful with a wide variety
-;; of programming languages with optional semantics catered to each.
-;;
-;; Default colors are subtle, with the philosophy that it's better to
-;; avoid being visually intrusive. Color schemes are always a matter of
-;; taste.  If you take the time to design a new color scheme, please
-;; share it (a plain-text list of colors is fine) on the EmacsWiki page!
-;; URL: http://www.emacswiki.org/emacs/RainbowDelimiters
-
-
 ;;; Installation:
 
-;; 1. Place rainbow-delimiters.el on your emacs load-path.
+;; The recommended way is to use MELPA (http://melpa.org/) or MELPA Stable
+;; (http://stable.melpa.org/). If either is in your `package-archives', do
+;;   M-x package-install RET rainbow-delimiters RET
+;; Otherwise, open `rainbow-delimiters.el' in Emacs and use
+;;   M-x package-install-from-buffer
+;; Any other methods of installation are unsupported.
+
+;;; Commentary:
 ;;
-;; 2. Compile the file (necessary for speed):
-;; M-x byte-compile-file <location of rainbow-delimiters.el>
+;; Rainbow-delimiters is a "rainbow parentheses"-like mode which highlights
+;; parentheses, brackets, and braces according to their depth. Each
+;; successive level is highlighted in a different color. This makes it easy
+;; to spot matching delimiters, orient yourself in the code, and tell which
+;; statements are at a given level.
 ;;
-;; 3. Add the following to your dot-emacs/init file:
-;; (require 'rainbow-delimiters)
+;; Great care has been taken to make this mode fast. You shouldn't see
+;; any discernible change in scrolling or editing speed while using it,
+;; even in delimiter-rich languages like Clojure, Lisp, and Scheme.
 ;;
-;; 4. Add hooks for modes where you want it enabled, for example:
-;; (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+;; Usage:
 ;;
-;; - To activate rainbow-delimiters mode temporarily in a buffer:
-;; M-x rainbow-delimiters-mode
+;; To toggle the mode in the current buffer:
+;;   M-x rainbow-delimiters-mode
+;; To start the mode automatically in `foo-mode', add the following to your init
+;; file:
+;;   (add-hook 'foo-mode-hook #'rainbow-delimiters-mode)
+;; To start the mode automatically in most programming modes (Emacs 24 and
+;; above):
+;;   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 ;;
-;; 5. When using a dark background, if delimiter colors seem washed out
-;;   you may need to add the following to your dot-emacs and restart:
-;; (setq-default frame-background-mode 'dark)
+;; Customization:
 ;;
-;; This is because Emacs can guess frame-background-mode incorrectly,
-;; causing rainbow-delimiters to use its light color scheme on dark
-;; backgrounds.
+;; To customize various options, including the color theme:
+;;   M-x customize-group rainbow-delimiters
 ;;
-;; The light/dark color schemes differ only in their brightness level.
-
-;;; Customization:
-
-;; To customize various options, including the color scheme:
-;; M-x customize-group rainbow-delimiters
-;;
-;; color-theme.el users:
-;; If you use the color-theme package, you can specify custom colors
-;; by adding the appropriate faces to your theme.
-;; - Faces take the form of:
-;;   'rainbow-delimiters-depth-#-face' with # being the depth.
-;;   Depth begins at 1, the outermost color.
-;;   Faces exist for depths 1-9.
-;; - The unmatched delimiter face (normally colored red) is:
-;;   'rainbow-delimiters-unmatched-face'
-
-
-;;; Change Log:
-
-;; 1.0 - Initial release.
-;; 1.1 - Stop tracking each delimiter's depth independently.
-;;       This had lead to confusing results when viewing clojure
-;;       code. Instead, just color based on current nesting inside
-;;       all delimiters combined.
-;;     - Added 'all-delimiters' faces to apply a color scheme to
-;;       all delimiters at once. Other faces inherit from this group.
-;; 1.1.1 - Change color scheme to a lighter, more subtle style.
-;; 1.1.2: (2011-03-25)
-;;  - Add an unmatched-delimiter face and correct problem with
-;;    coloring of text following unmatched closing delims.
-;; 1.2: (2011-03-28)
-;;  - Unify delimiter faces: all delimiter types now use the same depth
-;;    faces, of form 'rainbow-delimiters-depth-#-face'.
-;; 1.2.1: (2011-03-29)
-;;  - Conform to ELPA conventions.
-;; 1.3: (2011-05-24)
-;;  - Add separate color schemes for light and dark background modes.
-;;  - Checkboxes to enable/disable highlighting for each delimiter type.
-;;  - Improvements to Customize interface.
-;;  - Infinite depth support by cycling through defined faces repeatedly.
-;;  - Documentation changes.
-;; 1.3.1 (2011-05-25)
-;;  - Light color theme appears entirely grey on SRGB monitors. Revert to
-;;    old color theme until a nicer light background theme can be added.
-;;  - Correct typo in the installation step for users of dark backgrounds.
-
-;;; TODO:
-
-;; - Add support for independent depth tracking for each delimiter type,
-;;   for users of C-like languages.
-;; - Add Python support - highlighting parens according to indentation level.
-;; - Add support for nested tags (XML, HTML)
-;; - Set up proper example color-theme.el themes for rainbow-delimiters mode.
-;; - Intelligent support for other languages: Ruby, et al.
-
-;;; Issues:
-
-;; - Rainbow-delimiters mode does not appear to change the color of
-;;   delimiters when Org-mode is also enabled.
-;; - Some Emacs versions don't set frame-background-mode to dark automatically,
-;;   causing users of dark backgrounds to receive the wrong set of colors.
-;;   See step number 5 in the Installation section.
-
+;; You can specify custom colors by customizing following faces:
+;; - Faces take the form `rainbow-delimiters-depth-N-face', with N being the
+;;   depth. Depth begins at 1, the outermost color. Faces exist for depths 1-9.
+;; - The unmatched delimiter face: `rainbow-delimiters-unmatched-face'.
+;; - The mismatched delimiter face: `rainbow-delimiters-mismatched-face'.
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-
-
-;;; Customize interface:
-
 (defgroup rainbow-delimiters nil
-  "Color nested parentheses, brackets, and braces according to their depth."
+  "Highlight nested parentheses, brackets, and braces according to their depth."
   :prefix "rainbow-delimiters-"
-  :link '(url-link :tag "Website for rainbow-delimiters (EmacsWiki)"
-                   "http://www.emacswiki.org/emacs/RainbowDelimiters")
+  :link '(url-link :tag "Website for rainbow-delimiters"
+                   "https://github.com/Fanael/rainbow-delimiters")
   :group 'applications)
 
 (defgroup rainbow-delimiters-faces nil
-  "Faces for each successively nested pair of delimiters.
+  "Faces for successively nested pairs of delimiters.
 
-Colors repeatedly cycle through when nesting depth exceeds innermost defined face."
-  :tag "Color Scheme"
+When depth exceeds innermost defined face, colors cycle back through."
   :group 'rainbow-delimiters
+  :group 'faces
   :link '(custom-group-link "rainbow-delimiters")
-  :link '(custom-group-link :tag "Toggle Delimiters" "rainbow-delimiters-toggle-delimiter-highlighting")
-  :prefix 'rainbow-delimiters-faces-)
+  :prefix "rainbow-delimiters-")
 
-;; Choose which delimiters you wish to highlight in your preferred language:
+(defcustom rainbow-delimiters-pick-face-function
+  #'rainbow-delimiters-default-pick-face
+  "The function used to pick a face used to highlight a delimiter.
+The function should take three arguments (DEPTH MATCH LOC), where:
+  - DEPTH is the delimiter depth; when zero or negative, it's an unmatched
+    delimiter.
+  - MATCH is nil iff the delimiter is a mismatched closing delimiter.
+  - LOC is the location of the delimiter.
+The function should return a value suitable to use as a value of the `face' text
+property, or nil, in which case the delimiter is not highlighted.
+The function should not move the point or mark or change the match data."
+  :tag "Pick face function"
+  :type 'function
+  :group 'rainbow-delimiters)
 
-(defgroup rainbow-delimiters-toggle-delimiter-highlighting nil
-  "Choose which delimiters this mode should colorize."
-  :tag "Toggle Delimiters"
-  :group 'rainbow-delimiters
-  :link '(custom-group-link "rainbow-delimiters")
-  :link '(custom-group-link :tag "Color Scheme" "rainbow-delimiters-faces"))
-
-(defcustom rainbow-delimiters-highlight-parens-p t
-  "Enable highlighting of nested parentheses -- ().
-
-Non-nil (default) enables highlighting of parentheses.
-Nil disables parentheses highlighting."
-  :tag "Highlight Parentheses?"
-  :type 'boolean
-  :group 'rainbow-delimiters-toggle-delimiter-highlighting)
-
-(defcustom rainbow-delimiters-highlight-brackets-p t
-  "Enable highlighting of nested brackets -- [].
-
-Non-nil (default) enables highlighting of brackets.
-Nil disables bracket highlighting."
-  :tag "Highlight Brackets?"
-  :type 'boolean
-  :group 'rainbow-delimiters-toggle-delimiter-highlighting)
-
-(defcustom rainbow-delimiters-highlight-braces-p t
-  "Enable highlighting of nested braces -- {}.
-
-Non-nil (default) enables highlighting of braces.
-Nil disables brace highlighting."
-  :tag "Highlight Braces?"
-  :type 'boolean
-  :group 'rainbow-delimiters-toggle-delimiter-highlighting)
-
-
-;;; Faces:
-
-;; Unmatched delimiter face:
 (defface rainbow-delimiters-unmatched-face
   '((((background light)) (:foreground "#88090B"))
     (((background dark)) (:foreground "#88090B")))
-  "Face to color unmatched closing delimiters with."
+  "Face to highlight unmatched closing delimiters in."
   :group 'rainbow-delimiters-faces)
 
-
-;; NOTE: The use of repetitious definitions for depth faces is temporary.
-;; Once the emacs 24 color theme support comes in, this will be reevaluated.
-
-;; Faces for colorizing delimiters at each level:
-(defface rainbow-delimiters-depth-1-face
-  '((((background light)) (:foreground "grey55"))
-    (((background dark)) (:foreground "grey55")))
-  "Nested delimiters face, depth 1 - the outermost pair."
-  :tag "Rainbow Delimiters Depth 1 Face -- OUTERMOST"
+(defface rainbow-delimiters-mismatched-face
+  '((t :inherit rainbow-delimiters-unmatched-face))
+  "Face to highlight mismatched closing delimiters in."
   :group 'rainbow-delimiters-faces)
 
-(defface rainbow-delimiters-depth-2-face
-  '((((background light)) (:foreground "#93a8c6"))
-    (((background dark)) (:foreground "#93a8c6")))
-  "Nested delimiters face, depth 2."
-  :group 'rainbow-delimiters-faces)
+(eval-when-compile
+  (defmacro rainbow-delimiters--define-depth-faces ()
+    (let ((faces '())
+          (light-colors ["#707183" "#7388d6" "#909183" "#709870" "#907373"
+                         "#6276ba" "#858580" "#80a880" "#887070"])
+          (dark-colors ["grey55" "#93a8c6" "#b0b1a3" "#97b098" "#aebed8"
+                        "#b0b0b3" "#90a890" "#a2b6da" "#9cb6ad"]))
+      (dotimes (i 9)
+        (push `(defface ,(intern (format "rainbow-delimiters-depth-%d-face" (1+ i)))
+                 '((((class color) (background light)) :foreground ,(aref light-colors i))
+                   (((class color) (background dark)) :foreground ,(aref dark-colors i)))
+                 ,(format "Nested delimiter face, depth %d." (1+ i))
+                 :group 'rainbow-delimiters-faces)
+              faces))
+      `(progn ,@faces))))
+(rainbow-delimiters--define-depth-faces)
 
-(defface rainbow-delimiters-depth-3-face
-  '((((background light)) (:foreground "#b0b1a3"))
-    (((background dark)) (:foreground "#b0b1a3")))
-  "Nested delimiters face, depth 3."
-  :group 'rainbow-delimiters-faces)
-
-(defface rainbow-delimiters-depth-4-face
-  '((((background light)) (:foreground "#97b098"))
-    (((background dark)) (:foreground "#97b098")))
-  "Nested delimiters face, depth 4."
-  :group 'rainbow-delimiters-faces)
-
-(defface rainbow-delimiters-depth-5-face
-  '((((background light)) (:foreground "#aebed8"))
-    (((background dark)) (:foreground "#aebed8")))
-  "Nested delimiters face, depth 5."
-  :group 'rainbow-delimiters-faces)
-
-(defface rainbow-delimiters-depth-6-face
-  '((((background light)) (:foreground "#b0b0b3"))
-    (((background dark)) (:foreground "#b0b0b3")))
-  "Nested delimiters face, depth 6."
-  :group 'rainbow-delimiters-faces)
-
-(defface rainbow-delimiters-depth-7-face
-  '((((background light)) (:foreground "#90a890"))
-    (((background dark)) (:foreground "#90a890")))
-  "Nested delimiters face, depth 7."
-  :group 'rainbow-delimiters-faces)
-
-(defface rainbow-delimiters-depth-8-face
-  '((((background light)) (:foreground "#a2b6da"))
-    (((background dark)) (:foreground "#a2b6da")))
-  "Nested delimiters face, depth 8."
-  :group 'rainbow-delimiters-faces)
-
-(defface rainbow-delimiters-depth-9-face
-  '((((background light)) (:foreground "#9cb6ad"))
-    (((background dark)) (:foreground "#9cb6ad")))
-  "Nested delimiters face, depth 9."
-  :group 'rainbow-delimiters-faces)
-
-;;; Faces 10+:
-;; NOTE: Currently unused. Additional faces for depths 9+ can be added on request.
-
-(defconst rainbow-delimiters-max-face-count 9
+(defcustom rainbow-delimiters-max-face-count 9
   "Number of faces defined for highlighting delimiter levels.
 
-Determines depth at which to cycle through faces again.")
+Determines depth at which to cycle through faces again.
 
-;;; Face utility functions
+It's safe to change this variable provided that for all integers from 1 to the
+new value inclusive, a face `rainbow-delimiters-depth-N-face' is defined."
+  :type 'integer
+  :group 'rainbow-delimiters)
 
-;; inlining this function for speed:
-;; see: http://www.gnu.org/s/emacs/manual/html_node/elisp/Compilation-Tips.html
-;; this will cause problems with debugging. To debug, change defsubst -> defun.
-(defsubst rainbow-delimiters-depth-face (depth)
-  "Return face-name for DEPTH as a string 'rainbow-delimiters-depth-DEPTH-face'.
-DEPTH is the number of nested levels deep for the delimiter being colorized.
+(defcustom rainbow-delimiters-outermost-only-face-count 0
+  "Number of faces to be used only for N outermost delimiter levels.
 
-Returns a face namestring the of form 'rainbow-delimiters-depth-DEPTH-face',
-e.g. 'rainbow-delimiters-depth-1-face'."
-  (concat "rainbow-delimiters-depth-"
-          (number-to-string
-           (or
-            ;; Our nesting depth has a face defined for it.
-            (and (< depth rainbow-delimiters-max-face-count)
-                 depth)
-            ;; Deeper than # of defined faces; cycle back through to beginning.
-            (let ((cycled-depth (mod depth rainbow-delimiters-max-face-count)))
-              (if (/= cycled-depth 0)
-                  ;; Return face # that corresponds to current nesting level.
-                  (mod depth rainbow-delimiters-max-face-count)
-                ;; Special case: depth divides evenly into max, correct face # is max.
-                rainbow-delimiters-max-face-count))))
-          "-face"))
+This should be smaller than `rainbow-delimiters-max-face-count'."
+  :type 'integer
+  :group 'rainbow-delimiters)
 
 
-;;; Nesting level
+(defun rainbow-delimiters-default-pick-face (depth match _loc)
+  "Return a face name appropriate for nesting depth DEPTH.
+DEPTH and MATCH are as in `rainbow-delimiters-pick-face-function'.
 
-;; syntax-table: used with parse-partial-sexp for determining current depth.
-(defvar rainbow-delimiters-delim-syntax-table
-  (let ((table (copy-syntax-table emacs-lisp-mode-syntax-table)))
-    (modify-syntax-entry ?\( "()  " table)
-    (modify-syntax-entry ?\) ")(  " table)
-    (modify-syntax-entry ?\[ "(]" table)
-    (modify-syntax-entry ?\] ")[" table)
-    (modify-syntax-entry ?\{ "(}" table)
-    (modify-syntax-entry ?\} "){" table)
-    table)
-  "Syntax table for recognizing all supported delimiter types.")
+The returned value is either `rainbow-delimiters-unmatched-face',
+`rainbow-delimiters-mismatched-face', or one of the
+`rainbow-delimiters-depth-N-face' faces, obeying
+`rainbow-delimiters-max-face-count' and
+`rainbow-delimiters-outermost-only-face-count'."
+  (cond
+   ((<= depth 0)
+    'rainbow-delimiters-unmatched-face)
+   ((not match)
+    'rainbow-delimiters-mismatched-face)
+   (t
+    (intern-soft
+     (concat "rainbow-delimiters-depth-"
+             (number-to-string
+              (if (<= depth rainbow-delimiters-max-face-count)
+                  ;; Our nesting depth has a face defined for it.
+                  depth
+                ;; Deeper than # of defined faces; cycle back through to
+                ;; `rainbow-delimiters-outermost-only-face-count' + 1.
+                ;; Return face # that corresponds to current nesting level.
+                (+ 1 rainbow-delimiters-outermost-only-face-count
+                   (mod (- depth rainbow-delimiters-max-face-count 1)
+                        (- rainbow-delimiters-max-face-count
+                           rainbow-delimiters-outermost-only-face-count)))))
+             "-face")))))
 
-(defun rainbow-delimiters-depth (point)
-  "Return # of nested levels of parens, brackets, braces POINT is inside of."
-  (save-excursion
-      (beginning-of-defun)
-      (let ((depth
-             (with-syntax-table rainbow-delimiters-delim-syntax-table
-               (car (parse-partial-sexp (point) point)))))
-        (if (>= depth 0)
-            depth
-          0)))) ; ignore negative depths created by unmatched closing parens.
+(defun rainbow-delimiters--apply-color (loc depth match)
+  "Highlight a single delimiter at LOC according to DEPTH.
 
+LOC is the location of the character to add text properties to.
+DEPTH is the nested depth at LOC, which determines the face to use.
+MATCH is nil iff it's a mismatched closing delimiter."
+  (let ((face (funcall rainbow-delimiters-pick-face-function depth match loc)))
+    (when face
+      (font-lock-prepend-text-property loc (1+ loc) 'face face))))
 
-;;; Text properties
+(defun rainbow-delimiters--char-ineligible-p (loc ppss delim-syntax-code)
+  "Return t if char at LOC should not be highlighted.
+PPSS is the `parse-partial-sexp' state at LOC.
+DELIM-SYNTAX-CODE is the `car' of a raw syntax descriptor at LOC.
 
-;; inlining this function for speed:
-;; see: http://www.gnu.org/s/emacs/manual/html_node/elisp/Compilation-Tips.html
-;; this will cause problems with debugging. To debug, change defsubst -> defun.
-(defsubst rainbow-delimiters-propertize-delimiter (point depth)
-  "Colorize delimiter at POINT according to DEPTH.
-
-POINT is the point of character to propertize.
-DEPTH is the nested delimiter depth at POINT, which determines the face to use.
-
-Sets text properties:
-`font-lock-face' to the corresponding delimiter face.
-`rear-nonsticky' to prevent color from bleeding into subsequent characters typed by the user."
-  (with-silent-modifications
-    (let ((delim-face (if (<= depth 0)
-                          "rainbow-delimiters-unmatched-face"
-                        (rainbow-delimiters-depth-face depth))))
-      ;; (when (eq depth -1) (message "Unmatched delimiter at char %s." point))
-      (add-text-properties point (1+ point)
-                           `(font-lock-face ,delim-face
-                             rear-nonsticky t)))))
-
-
-(defun rainbow-delimiters-unpropertize-delimiter (point)
-  "Remove text properties set by rainbow-delimiters mode from char at POINT."
-  (with-silent-modifications
-    (remove-text-properties point (1+ point)
-                            '(font-lock-face nil
-                              rear-nonsticky nil))))
-
-
-(defun rainbow-delimiters-char-ineligible-p (point)
-  "Return t if char at POINT should be skipped, e.g. if inside a comment.
-
-Returns t if char at point meets one of the following conditions:
+Returns t if char at loc meets one of the following conditions:
 - Inside a string.
 - Inside a comment.
 - Is an escaped char, e.g. ?\)"
-  (let ((parse-state (save-excursion
-                       (beginning-of-defun)
-                       ;; (point) is at beg-of-defun; point is the char location
-                       (parse-partial-sexp (point) point))))
-    (or
-     (nth 3 parse-state)                ; inside string?
-     (nth 4 parse-state)                ; inside comment?
-     (and (eq (char-before point) ?\\)  ; escaped char, e.g. ?\) - not counted
-          (and (not (eq (char-before (1- point)) ?\\)) ; special-case: ignore ?\\
-               (eq (char-before (1- point)) ?\?))))))
-;; NOTE: standard char read syntax '?)' is not tested for because emacs manual
-;; states punctuation such as delimiters should _always_ use escaped '?\)' form.
+  (or
+   (nth 3 ppss)                ; inside string?
+   (nth 4 ppss)                ; inside comment?
+   (nth 5 ppss)                ; escaped according to the syntax table?
+   ;; Note: no need to consider single-char openers, they're already handled
+   ;; by looking at ppss.
+   (cond
+    ;; Two character opener, LOC at the first character?
+    ((/= 0 (logand #x10000 delim-syntax-code))
+     (/= 0 (logand #x20000 (or (car (syntax-after (1+ loc))) 0))))
+    ;; Two character opener, LOC at the second character?
+    ((/= 0 (logand #x20000 delim-syntax-code))
+     (/= 0 (logand #x10000 (or (car (syntax-after (1- loc))) 0))))
+    (t
+     nil))))
 
+;; Main function called by font-lock.
+(defun rainbow-delimiters--propertize (end)
+  "Highlight delimiters in region between point and END.
 
-(defsubst rainbow-delimiters-apply-color (delim depth point)
-  "Apply color for DEPTH to DELIM at POINT following user settings.
+Used by font-lock for dynamic highlighting."
+  (let* ((last-ppss-pos (point))
+         (ppss (syntax-ppss)))
+    (while (> end (progn (skip-syntax-forward "^()" end)
+                         (point)))
+      (let* ((delim-pos (point))
+             (delim-syntax (syntax-after delim-pos)))
+        (setq ppss (parse-partial-sexp last-ppss-pos delim-pos nil nil ppss))
+        (setq last-ppss-pos delim-pos)
+        ;; `skip-syntax-forward' leaves the point at the delimiter, move past
+        ;; it.
+        (forward-char)
+        (let ((delim-syntax-code (car delim-syntax)))
+          (cond
+           ((rainbow-delimiters--char-ineligible-p delim-pos ppss delim-syntax-code)
+            nil)
+           ((= 4 (logand #xFFFF delim-syntax-code))
+            ;; The (1+ ...) is needed because `parse-partial-sexp' returns the
+            ;; depth at the opening delimiter, not in the block being started.
+            (rainbow-delimiters--apply-color delim-pos (1+ (nth 0 ppss)) t))
+           (t
+            ;; Not an opening delimiter, so it's a closing delimiter.
+            (let ((matches-p (eq (cdr delim-syntax) (char-after (nth 1 ppss)))))
+              (rainbow-delimiters--apply-color delim-pos (nth 0 ppss) matches-p))))))))
+  ;; We already fontified the delimiters, tell font-lock there's nothing more
+  ;; to do.
+  nil)
 
-DELIM is a string specifying delimiter type.
-DEPTH is the delimiter depth, or corresponding face # if colors are repeating.
-POINT is location of character (delimiter) to be colorized."
-  (and
-   ;; Ensure user has enabled highlighting of this delimiter type.
-   (symbol-value (intern-soft
-                  (concat "rainbow-delimiters-highlight-" delim "s-p")))
-   (rainbow-delimiters-propertize-delimiter point
-                                            depth)))
-
-
-;;; JIT-Lock functionality
-
-;; Used to skip delimiter-by-delimiter `rainbow-delimiters-propertize-region'.
-(defvar rainbow-delimiters-delim-regex "\\(\(\\|\)\\|\\[\\|\\]\\|\{\\|\}\\)"
-  "Regex matching all opening and closing delimiters we intend to colorize.")
-
-;; main function called by jit-lock:
-(defun rainbow-delimiters-propertize-region (start end)
-  "Colorize delimiters in region between START and END.
-
-Used by jit-lock for dynamic highlighting."
-  (save-excursion
-    (goto-char start)
-    ;; START can be anywhere in buffer; begin depth counts from values at START.
-    (let ((depth (rainbow-delimiters-depth start)))
-      (while (and (< (point) end)
-                  (re-search-forward rainbow-delimiters-delim-regex end t))
-        (backward-char) ; re-search-forward places point after delim; go back.
-        (unless (rainbow-delimiters-char-ineligible-p (point))
-          (let ((delim (char-after (point))))
-            (cond ((eq ?\( delim)       ; (
-                   (setq depth (1+ depth))
-                   (rainbow-delimiters-apply-color "paren" depth (point)))
-                  ((eq ?\) delim)       ; )
-                   (rainbow-delimiters-apply-color "paren" depth (point))
-                   (setq depth (or (and (<= depth 0) 0) ; unmatched paren
-                                   (1- depth))))
-                  ((eq ?\[ delim)       ; [
-                   (setq depth (1+ depth))
-                   (rainbow-delimiters-apply-color "bracket" depth (point)))
-                  ((eq ?\] delim)       ; ]
-                   (rainbow-delimiters-apply-color "bracket" depth (point))
-                   (setq depth (or (and (<= depth 0) 0) ; unmatched bracket
-                                   (1- depth))))
-                  ((eq ?\{ delim)       ; {
-                   (setq depth (1+ depth))
-                   (rainbow-delimiters-apply-color "brace" depth (point)))
-                  ((eq ?\} delim)       ; }
-                   (rainbow-delimiters-apply-color "brace" depth (point))
-                   (setq depth (or (and (<= depth 0) 0) ; unmatched brace
-                                   (1- depth)))))))
-        ;; move past delimiter so re-search-forward doesn't pick it up again
-        (forward-char)))))
-
-(defun rainbow-delimiters-unpropertize-region (start end)
-  "Remove mode faces from delimiters in region between START and END."
-  (save-excursion
-    (goto-char start)
-    (while (and (< (point) end)
-                (re-search-forward rainbow-delimiters-delim-regex end t))
-      ;; re-search-forward places point 1 further than the delim matched:
-      (rainbow-delimiters-unpropertize-delimiter (1- (point))))))
-
-
-;;; Minor mode:
+;; NB: no face defined here because we apply the faces ourselves instead of
+;; leaving that to font-lock.
+(defconst rainbow-delimiters--font-lock-keywords
+  '(rainbow-delimiters--propertize))
 
 ;;;###autoload
 (define-minor-mode rainbow-delimiters-mode
-  "Color nested parentheses, brackets, and braces according to their depth."
+  "Highlight nested parentheses, brackets, and braces according to their depth."
   nil "" nil ; No modeline lighter - it's already obvious when the mode is on.
-  (if (not rainbow-delimiters-mode)
-      (progn
-        (jit-lock-unregister 'rainbow-delimiters-propertize-region)
-        (rainbow-delimiters-unpropertize-region (point-min) (1- (point-max))))
-    (jit-lock-register 'rainbow-delimiters-propertize-region t)))
+  (font-lock-remove-keywords nil rainbow-delimiters--font-lock-keywords)
+  (when rainbow-delimiters-mode
+    (font-lock-add-keywords nil rainbow-delimiters--font-lock-keywords 'append)
+    (set (make-local-variable 'jit-lock-contextually) t)
+    (when (or (bound-and-true-p syntax-begin-function)
+              (bound-and-true-p font-lock-beginning-of-syntax-function))
+      ;; We're going to modify `syntax-begin-function', so flush the cache to
+      ;; avoid getting cached values that used the old value.
+      (syntax-ppss-flush-cache 0))
+    ;; `syntax-begin-function' may break the assumption we rely on that
+    ;; `syntax-ppss' is exactly equivalent to `parse-partial-sexp' from
+    ;; `point-min'. Just don't use it, the performance hit should be negligible.
+    (when (boundp 'syntax-begin-function)
+      (set (make-local-variable 'syntax-begin-function) nil))
+    ;; Obsolete equivalent of `syntax-begin-function'.
+    (when (boundp 'font-lock-beginning-of-syntax-function)
+      (set (make-local-variable 'font-lock-beginning-of-syntax-function) nil)))
+  (when font-lock-mode
+    (if (fboundp 'font-lock-flush)
+        (font-lock-flush)
+      (with-no-warnings (font-lock-fontify-buffer)))))
 
+;;;###autoload
+(defun rainbow-delimiters-mode-enable ()
+  "Enable `rainbow-delimiters-mode'."
+  (rainbow-delimiters-mode 1))
+
+;;;###autoload
+(defun rainbow-delimiters-mode-disable ()
+  "Disable `rainbow-delimiters-mode'."
+  (rainbow-delimiters-mode 0))
 
 (provide 'rainbow-delimiters)
-
-;;; rainbow-delimiters.el ends here.
+;;; rainbow-delimiters.el ends here
