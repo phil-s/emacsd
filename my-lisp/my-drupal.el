@@ -128,7 +128,7 @@ the following:
 See http://drupal.org/project/phpsh"
   (interactive)
   (require 'term)
-  (let* ((drush-args (concat drush-args " console"))
+  (let* ((drush-args (concat drush-args " php"))
          (switches (split-string-and-unquote drush-args))
          (buf (apply 'make-term "drush console" drush-cmd nil switches)))
     ;; Enable term mode for the process buffer.
