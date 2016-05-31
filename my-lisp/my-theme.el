@@ -19,24 +19,19 @@
   (load-theme 'zenburn t)
   ;; Custom changes to Zenburn defaults...
 
-  ;; hl-line-mode
-  (eval-after-load "hl-line"
-    '(set-face-background hl-line-face "#333333"))
-
-  ;; hl-sexp-mode
-  ;; See my-programming.el
   (eval-after-load "hl-sexp"
     '(set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
 
-  ;; whitespace-mode
-  (eval-after-load "whitespace"
-    '(set-face-attribute
-      'whitespace-space nil :foreground "grey30" :background 'unspecified))
+  (eval-after-load "hl-line"
+    '(set-face-background hl-line-face "#333333"))
 
-  ;; Magit customisation.
   (eval-after-load "magit"
-    '(progn
-       (set-face-foreground 'magit-section-heading "LemonChiffon")))
+    '(set-face-foreground 'magit-section-heading "LemonChiffon"))
+
+  (eval-after-load "whitespace"
+    '(set-face-attribute 'whitespace-space nil
+                         :foreground "grey30"
+                         :background 'unspecified))
 
   ;; StackExchange (sx library)
   ;; (plist-get (symbol-plist 'sx-question-mode-kbd-tag) 'face-defface-spec)
