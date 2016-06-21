@@ -143,7 +143,8 @@ Advises `eldoc-print-current-symbol-info'."
   :lighter " C-h"
   :global t
   (require 'help-mode) ;; for `help-xref-interned'
-  (message "Contextual help is %s" (if my-contextual-help-mode "on" "off"))
+  (when (eq this-command 'my-contextual-help-mode)
+    (message "Contextual help is %s" (if my-contextual-help-mode "on" "off")))
   (and my-contextual-help-mode
        (eldoc-mode 1)
        (eldoc-current-symbol)
