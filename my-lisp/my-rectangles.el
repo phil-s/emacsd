@@ -28,6 +28,8 @@
     (insert-rectangle content)
     (my-edit-rectangle-mode) ;; mode change kills local variables.
     (set-syntax-table source-syntax)
+    (setq fill-column width)
+    (buffer-enable-undo)
     ;; Store the rectangle details in a buffer-local structure.
     (set (make-local-variable 'my-edit-rectangle-data)
          (list start end width height source-buffer coords-point coords-mark))
