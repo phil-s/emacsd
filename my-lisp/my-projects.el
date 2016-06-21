@@ -99,7 +99,8 @@
    (makefile-gmake-mode . ((eval . (progn (conf-mode)
                                           (hack-local-variables)))))
    (dired-mode . ((dired-omit-mode . t)))
-   ("sites" . ((nil . ((my-inhibit-whitespace-mode . nil)))))
+   ;; whitespace-mode is SO SLOW :(
+   ;; ("sites" . ((nil . ((my-inhibit-whitespace-mode . nil)))))
    ("sites/all/modules/contrib" . ((nil . ((my-inhibit-whitespace-mode . t)))))
    ))
 

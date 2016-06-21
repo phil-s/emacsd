@@ -31,6 +31,12 @@
 ;; Programming language support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; whitespace-mode is SO SLOW :(
+;; (this is only defined in order to override the feature without
+;; removing it entirely.)
+(defvar my-inhibit-whitespace-mode t
+  "Inhibit `whitespace-mode' in `my-coding-hook'.")
+
 (defun my-coding-config ()
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
