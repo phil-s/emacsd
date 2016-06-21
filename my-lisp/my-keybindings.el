@@ -205,6 +205,7 @@
   (define-key keymap (kbd "C-c m m")   'magit-status)
   (define-key keymap (kbd "C-c m b")   'mo-git-blame-current)
   (define-key keymap (kbd "C-c m l")   'magit-log-popup)
+  (define-key keymap (kbd "C-c m f")   'magit-file-popup)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
   (define-key keymap (kbd "C-c n")     'deft)
   (define-key keymap (kbd "S-M-SPC")   'my-extend-selection)

@@ -183,7 +183,7 @@ static char * data[] = {
 (setq magit-log-buffer-file-locked t)
 
 (eval-after-load "magit"
-  '(magit-file-mode 1)) ;; per-file popup on C-c M-g
+  '(global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
 ;; I keep unintentionally checking out branches from the ref screen.
 (defadvice magit-visit-ref (around my-protect-accidental-checkout)
