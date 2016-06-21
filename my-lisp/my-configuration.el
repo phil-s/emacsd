@@ -116,6 +116,13 @@ when `auto-save-mode' is invoked manually.")
 ;; Retain point when scrolling off-screen and back
 (setq scroll-preserve-screen-position t)
 
+;; Disable bi-directional display support for performance reasons.
+;; The performance implications of this feature are probably very
+;; minor in most cases; but the likes of bug #23801, when combined
+;; with being fairly confident that this is a feature I will never
+;; need, makes a strong case for disabling it by default.
+(setq bidi-display-reordering nil)
+
 ;; Ignore case when searching and matching, and when reading
 ;; buffer names and file names
 (setq case-fold-search t
@@ -750,6 +757,8 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; Terminal buffer configuration.
 (add-hook 'term-mode-hook 'my-term-mode-hook)
 (defun my-term-mode-hook ()
+  ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-04/msg00611.html
+  (setq bidi-paragraph-direction 'left-to-right) ;; ^ HUGE performance improvement
   (subword-mode 0)
   (set (make-local-variable 'global-hl-line-mode) nil))
 
