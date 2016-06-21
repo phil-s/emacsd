@@ -595,6 +595,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   ;; so in time we could switch to that.
   (require 'dired-details)
   (dired-details-install)
+  (customize-set-value 'dired-details-hidden-string "| ")
 
   (define-key dired-mode-map (kbd "M-k") 'dired-kill-subdir)
   (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle))
