@@ -195,6 +195,20 @@ Advises `eldoc-print-current-symbol-info'."
 (defun my-compilation-mode-hook ()
   (local-set-key (kbd "n") 'compilation-next-error)
   (local-set-key (kbd "p") 'compilation-previous-error))
+
+(eval-after-load "compile"
+  '(require 'ansi-color))
+
+(defun colorize-compilation-output ()
+  "Process any ansi colour codes in `compile' command output.
+
+We deal only with `compilation-mode' itself, ignoring derivatives such as
+`grep-mode' (which tend to support colour already)."
+  (when (eq major-mode 'compilation-mode)
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region compilation-filter-start (point)))))
+
+(add-hook 'compilation-filter-hook 'colorize-compilation-output)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Modes
