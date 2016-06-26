@@ -287,8 +287,8 @@ multiple files is toggled as follows:
 
 ;;;***
 
-;;;### (autoloads nil "delight/delight" "delight/delight.el" (22235
-;;;;;;  29381 565124 656000))
+;;;### (autoloads nil "delight/delight" "delight/delight.el" (22383
+;;;;;;  36499 180133 958000))
 ;;; Generated autoloads from delight/delight.el
 
 (autoload 'delight "delight/delight" "\

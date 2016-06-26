@@ -61,8 +61,8 @@
             :url "git://jblevins.org/git/deft.git")
 
      (:name delight
-            :type http
-            :url ,(my-local-repository-url-for "delight"))
+            :type git
+            :url "git://git.savannah.nongnu.org/delight.git")
 
      ;; (:name dictionary-el
      ;;        :type apt-get)
