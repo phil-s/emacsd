@@ -182,6 +182,10 @@ static char * data[] = {
 ;; the file filter for regular log/diff commands.
 (setq magit-log-buffer-file-locked t)
 
+;; Stop asking to save modified buffers before every magit operation!
+;; Had I wanted to save the buffers first, I would likely have done so.
+(setq magit-save-repository-buffers nil)
+
 (eval-after-load "magit"
   '(global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
