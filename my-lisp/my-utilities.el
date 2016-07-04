@@ -252,7 +252,8 @@ command was `winner-undo' or `winner-redo'."
          (progn (winner-redo)
                 (setq this-command 'winner-redo)))
         ((and (derived-mode-p 'term-mode)
-              (term-in-char-mode))
+              (require 'term)      ; for byte-compilation
+              (term-in-char-mode)) ; <- macro expansion
          (term-send-raw-string "f"))
         (t ;else
          (progn (forward-word arg)
@@ -270,7 +271,8 @@ command was `winner-undo' or `winner-redo'."
          (progn (winner-undo)
                 (setq this-command 'winner-undo)))
         ((and (derived-mode-p 'term-mode)
-              (term-in-char-mode))
+              (require 'term)      ; for byte-compilation
+              (term-in-char-mode)) ; <- macro expansion
          (term-send-raw-string "b"))
         (t ;else
          (progn (backward-word arg)
