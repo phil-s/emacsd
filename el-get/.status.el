@@ -12,7 +12,6 @@
 :ediff-trees "installed"
 :scratch "installed"
 :escreen "installed"
-:rainbow-delimiters "installed"
 :htmlr "installed"
 :psvn "installed"
 :php-mode "installed"

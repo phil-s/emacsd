@@ -21,7 +21,6 @@
   (declare-function imenu--make-index-alist "imenu")
   (declare-function imenu--subalist-p "imenu")
   (declare-function lexbind-mode "lexbind-mode")
-  (declare-function rainbow-delimiters-mode "rainbow-delimiters")
   (declare-function rainbow-mode "rainbow-mode")
   (declare-function so-long-enable "so-long")
   (declare-function sql-upcase-mode "sql-upcase")
