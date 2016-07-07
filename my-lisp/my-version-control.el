@@ -177,6 +177,10 @@ static char * data[] = {
 ;; (as the standard formatting will add 8 chars of padding).
 (setq git-commit-summary-max-length 72)
 
+;; Whenever Git uses emacsclient as the editor for a commit message,
+;; (regardless of Magit), we want to edit in `git-commit-mode'.
+(global-git-commit-mode 1)
+
 ;; Make log and diff commands from `magit-file-popup' use separate
 ;; buffers to show the specific-file log/diff. This avoids un/setting
 ;; the file filter for regular log/diff commands.
