@@ -149,7 +149,7 @@ See `so-long-line-detected-p' for details."
   :group 'so-long)
 
 (defcustom so-long-target-modes
-  '(prog-mode css-mode)
+  '(prog-mode css-mode sgml-mode nxml-mode)
   "`so-long-mode' affects only these modes and their derivatives.
 
 Our primary use-case is minified programming code, so `prog-mode' covers
