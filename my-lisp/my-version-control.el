@@ -190,6 +190,9 @@ static char * data[] = {
 ;; Had I wanted to save the buffers first, I would likely have done so.
 (setq magit-save-repository-buffers nil)
 
+;; DWIM prompting when creating new branches.
+(setq magit-branch-read-upstream-first 'fallback)
+
 (eval-after-load "magit"
   '(global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
