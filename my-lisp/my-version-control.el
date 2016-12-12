@@ -193,16 +193,6 @@ static char * data[] = {
 (eval-after-load "magit"
   '(global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
-;; I keep unintentionally checking out branches from the ref screen.
-(defadvice magit-visit-ref (around my-protect-accidental-checkout)
-  "Protect against expensive accidental checkout of a reference."
-  (if (eq major-mode 'magit-refs-mode)
-      (if (y-or-n-p "Checkout reference? ")
-          ad-do-it
-        (message "Aborted."))
-    ad-do-it))
-(ad-activate 'magit-visit-ref)
-
 ;; Protect against accidental pushes to upstream
 (defadvice magit-push-current-to-upstream
     (around my-protect-accidental-magit-push-current-to-upstream)
