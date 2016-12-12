@@ -69,6 +69,9 @@ new list."
     (-map-last 'even? 'square '(1 2 3 4)) => '(1 2 3 16)
     (--map-last (> it 2) (* it it) '(1 2 3 4)) => '(1 2 3 16)
     (--map-last (= it 2) 17 '(1 2 3 2)) => '(1 2 3 17)
+    ;; the next two tests assert that the input list is not modified #158
+    (let ((l '(1 2 3))) (list (--map-last (< it 2) (number-to-string it) l) l)) => '(("1" 2 3) (1 2 3))
+    (let ((l '(1 2 3))) (list (--map-last (< it 3) (number-to-string it) l) l)) => '((1 "2" 3) (1 2 3))
     (-map-last 'even? 'square '(1 3 5 7)) => '(1 3 5 7)
     (-map-last 'even? 'square '(2)) => '(4)
     (-map-last 'even? 'square nil) => nil)
@@ -128,7 +131,10 @@ new list."
   (defexamples -remove-last
     (-remove-last 'even? '(1 3 5 4 7 8 10 11)) => '(1 3 5 4 7 8 11)
     (-remove-last 'stringp '(1 2 "last" "second" "third")) => '(1 2 "last" "second")
-    (--remove-last (> it 3) '(1 2 3 4 5 6 7 8 9 10)) => '(1 2 3 4 5 6 7 8 9))
+    (--remove-last (> it 3) '(1 2 3 4 5 6 7 8 9 10)) => '(1 2 3 4 5 6 7 8 9)
+    ;; the next two tests assert that the input list is not modified #158
+    (let ((l '(1 2 3))) (list (--remove-last (< it 2) l) l)) => '((2 3) (1 2 3))
+    (let ((l '(1 2 3))) (list (--remove-last (< it 4) l) l)) => '((1 2) (1 2 3)))
 
   (defexamples -remove-item
     (-remove-item 3 '(1 2 3 2 3 4 5 3)) => '(1 2 2 4 5)
@@ -162,9 +168,21 @@ new list."
     (-take 3 '(1 2 3 4 5)) => '(1 2 3)
     (-take 17 '(1 2 3 4 5)) => '(1 2 3 4 5))
 
+  (defexamples -take-last
+    (-take-last 3 '(1 2 3 4 5)) => '(3 4 5)
+    (-take-last 17 '(1 2 3 4 5)) => '(1 2 3 4 5)
+    (-take-last 1 '(1 2 3 4 5)) => '(5)
+    (let ((l '(1 2 3 4 5)))
+      (setcar (-take-last 2 l) 1)
+      l) => '(1 2 3 4 5))
+
   (defexamples -drop
     (-drop 3 '(1 2 3 4 5)) => '(4 5)
     (-drop 17 '(1 2 3 4 5)) => '())
+
+  (defexamples -drop-last
+    (-drop-last 3 '(1 2 3 4 5)) => '(1 2)
+    (-drop-last 17 '(1 2 3 4 5)) => '())
 
   (defexamples -take-while
     (-take-while 'even? '(1 2 3 4)) => '()
@@ -179,7 +197,15 @@ new list."
   (defexamples -select-by-indices
     (-select-by-indices '(4 10 2 3 6) '("v" "e" "l" "o" "c" "i" "r" "a" "p" "t" "o" "r")) => '("c" "o" "l" "o" "r")
     (-select-by-indices '(2 1 0) '("a" "b" "c")) => '("c" "b" "a")
-    (-select-by-indices '(0 1 2 0 1 3 3 1) '("f" "a" "r" "l")) => '("f" "a" "r" "f" "a" "l" "l" "a")))
+    (-select-by-indices '(0 1 2 0 1 3 3 1) '("f" "a" "r" "l")) => '("f" "a" "r" "f" "a" "l" "l" "a"))
+
+  (defexamples -select-columns
+    (-select-columns '(0 2) '((1 2 3) (a b c) (:a :b :c))) => '((1 3) (a c) (:a :c))
+    (-select-columns '(1) '((1 2 3) (a b c) (:a :b :c))) => '((2) (b) (:b))
+    (-select-columns nil '((1 2 3) (a b c) (:a :b :c))) => '(nil nil nil))
+
+  (defexamples -select-column
+    (-select-column 1 '((1 2 3) (a b c) (:a :b :c))) => '(2 b :b)))
 
 (def-example-group "List to list"
   "Bag of various functions which modify input list."
@@ -539,6 +565,15 @@ new list."
     (-intersection '(1 2 3) '(4 5 6)) => '()
     (-intersection '(1 2 3 4) '(3 4 5 6)) => '(3 4))
 
+  (defexamples -powerset
+    (-powerset '()) => '(nil)
+    (-powerset '(x y z)) => '((x y z) (x y) (x z) (x) (y z) (y) (z) nil))
+
+  (defexamples -permutations
+    (-permutations '()) => '(nil)
+    (-permutations '(1 2)) => '((1 2) (2 1))
+    (-permutations '(a b c)) => '((a b c) (a c b) (b a c) (b c a) (c a b) (c b a)))
+
   (defexamples -distinct
     (-distinct '()) => '()
     (-distinct '(1 2 2 4)) => '(1 2 4)))
@@ -594,6 +629,10 @@ new list."
   (defexamples -zip-fill
     (-zip-fill 0 '(1 2 3 4 5) '(6 7 8 9)) => '((1 . 6) (2 . 7) (3 . 8) (4 . 9) (5 . 0)))
 
+  (defexamples -unzip
+    (-unzip (-zip '(1 2 3) '(a b c) '("e" "f" "g"))) => '((1 2 3) (a b c) ("e" "f" "g"))
+    (-unzip '((1 2) (3 4) (5 6) (7 8) (9 10))) => '((1 3 5 7 9) (2 4 6 8 10)))
+
   (defexamples -cycle
     (-take 5 (-cycle '(1 2 3))) => '(1 2 3 1 2)
     (-take 7 (-cycle '(1 "and" 3))) => '(1 "and" 3 1 "and" 3 1)
@@ -617,6 +656,8 @@ new list."
     (-table-flat 'list '(1 2 3) '(a b c)) => '((1 a) (2 a) (3 a) (1 b) (2 b) (3 b) (1 c) (2 c) (3 c))
     (-table-flat '* '(1 2 3) '(1 2 3)) => '(1 2 3 2 4 6 3 6 9)
     (apply '-table-flat 'list (-repeat 3 '(1 2))) => '((1 1 1) (2 1 1) (1 2 1) (2 2 1) (1 1 2) (2 1 2) (1 2 2) (2 2 2))
+    (-table-flat '+ '(2)) => '(2)
+    (-table-flat '- '(2 4)) => '(-2 -4)
 
     ;; flatten law tests
     (-flatten-n 1 (-table 'list '(1 2 3) '(a b c))) => '((1 a) (2 a) (3 a) (1 b) (2 b) (3 b) (1 c) (2 c) (3 c))
@@ -640,11 +681,13 @@ new list."
 
   (defexamples -first-item
     (-first-item '(1 2 3)) => 1
-    (-first-item nil) => nil)
+    (-first-item nil) => nil
+    (let ((list (list 1 2 3))) (setf (-first-item list) 5) list) => '(5 2 3))
 
   (defexamples -last-item
     (-last-item '(1 2 3)) => 3
-    (-last-item nil) => nil)
+    (-last-item nil) => nil
+    (let ((list (list 1 2 3))) (setf (-last-item list) 5) list) => '(1 2 5))
 
   (defexamples -butlast
     (-butlast '(1 2 3)) => '(1 2)
@@ -988,9 +1031,17 @@ new list."
     (let (s) (-each-while '(2 4 5 6) 'even? (lambda (item) (!cons item s))) s) => '(4 2)
     (let (s) (--each-while '(1 2 3 4) (< it 3) (!cons it s)) s) => '(2 1))
 
+  (defexamples -each-indexed
+    (let (s) (-each-indexed '(a b c) (lambda (index item) (setq s (cons (list item index) s)))) s) => '((c 2) (b 1) (a 0))
+    (let (s) (--each-indexed '(a b c) (setq s (cons (list it it-index) s))) s) => '((c 2) (b 1) (a 0)))
+
   (defexamples -dotimes
     (let (s) (-dotimes 3 (lambda (n) (!cons n s))) s) => '(2 1 0)
-    (let (s) (--dotimes 5 (!cons it s)) s) => '(4 3 2 1 0)))
+    (let (s) (--dotimes 5 (!cons it s)) s) => '(4 3 2 1 0))
+
+  (defexamples -doto
+    (-doto '(1 2 3) (!cdr) (!cdr)) => '(3)
+    (-doto '(1 . 2) (setcar 3) (setcdr 4)) => '(3 . 4)))
 
 (def-example-group "Destructive operations" nil
   (defexamples !cons
@@ -1058,6 +1109,7 @@ new list."
     (defexamples -cut
       (funcall (-cut list 1 <> 3 <> 5) 2 4) => '(1 2 3 4 5)
       (-map (-cut funcall <> 5) '(1+ 1- (lambda (x) (/ 1.0 x)))) => '(6 4 0.2)
+      (-map (-cut <> 1 2 3) (list 'list 'vector 'string)) => '((1 2 3) [1 2 3] "")
       (-filter (-cut < <> 5) '(1 3 5 7 9)) => '(1 3))
 
     (defexamples -not

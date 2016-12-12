@@ -19,11 +19,11 @@ If you want the function combinators, then also:
 
 Add this to the big comment block at the top:
 
-    ;; Package-Requires: ((dash "2.12.1"))
+    ;; Package-Requires: ((dash "2.13.0"))
 
 To get function combinators:
 
-    ;; Package-Requires: ((dash "2.12.1") (dash-functional "1.2.0") (emacs "24"))
+    ;; Package-Requires: ((dash "2.13.0") (dash-functional "1.2.0") (emacs "24"))
 
 ## Upcoming breaking change!
 
@@ -37,7 +37,7 @@ To get function combinators:
 Font lock of dash functions in emacs lisp buffers is now optional.
 Include this in your emacs settings to get syntax highlighting:
 
-    (eval-after-load "dash" '(dash-enable-font-lock))
+    (eval-after-load 'dash '(dash-enable-font-lock))
 
 ## Functions
 
@@ -99,10 +99,14 @@ Functions returning a sublist of the original list.
 * [-non-nil](#-non-nil-list) `(list)`
 * [-slice](#-slice-list-from-optional-to-step) `(list from &optional to step)`
 * [-take](#-take-n-list) `(n list)`
+* [-take-last](#-take-last-n-list) `(n list)`
 * [-drop](#-drop-n-list) `(n list)`
+* [-drop-last](#-drop-last-n-list) `(n list)`
 * [-take-while](#-take-while-pred-list) `(pred list)`
 * [-drop-while](#-drop-while-pred-list) `(pred list)`
 * [-select-by-indices](#-select-by-indices-indices-list) `(indices list)`
+* [-select-columns](#-select-columns-columns-table) `(columns table)`
+* [-select-column](#-select-column-column-table) `(column table)`
 
 ### List to list
 
@@ -214,6 +218,7 @@ Other list functions not fit to be classified elsewhere.
 * [-zip-with](#-zip-with-fn-list1-list2) `(fn list1 list2)`
 * [-zip](#-zip-rest-lists) `(&rest lists)`
 * [-zip-fill](#-zip-fill-fill-value-rest-lists) `(fill-value &rest lists)`
+* [-unzip](#-unzip-lists) `(lists)`
 * [-cycle](#-cycle-list) `(list)`
 * [-pad](#-pad-fill-value-rest-lists) `(fill-value &rest lists)`
 * [-table](#-table-fn-rest-lists) `(fn &rest lists)`
@@ -271,7 +276,9 @@ Functions iterating over lists for side-effect only.
 
 * [-each](#-each-list-fn) `(list fn)`
 * [-each-while](#-each-while-list-pred-fn) `(list pred fn)`
+* [-each-indexed](#-each-indexed-list-fn) `(list fn)`
 * [-dotimes](#-dotimes-num-fn) `(num fn)`
+* [-doto](#-doto-eval-initial-value-rest-forms) `(eval-initial-value &rest forms)`
 
 ### Destructive operations
 
@@ -320,7 +327,7 @@ Return a new list consisting of the result of applying `fn` to the items in `lis
 
 #### -map-when `(pred rep list)`
 
-Return a new list where the elements in `list` that does not match the `pred` function
+Return a new list where the elements in `list` that do not match the `pred` function
 are unchanged, and where the elements in `list` that do match the `pred` function are mapped
 through the `rep` function.
 
@@ -363,6 +370,8 @@ See also: [`-map-when`](#-map-when-pred-rep-list), [`-replace-last`](#-replace-l
 Return a new list consisting of the result of (`fn` index item) for each item in `list`.
 
 In the anaphoric form `--map-indexed`, the index is exposed as `it-index`.
+
+See also: [`-each-indexed`](#-each-indexed-list-fn).
 
 ```el
 (-map-indexed (lambda (index item) (- item index)) '(1 2 3 4)) ;; => '(1 1 1 1)
@@ -425,6 +434,8 @@ Thus function `fn` should return a list.
 
 Create a shallow copy of `list`.
 
+(fn `list`)
+
 ```el
 (-copy '(1 2 3)) ;; => '(1 2 3)
 (let ((a '(1 2 3))) (eq a (-copy a))) ;; => nil
@@ -441,6 +452,8 @@ Functions returning a sublist of the original list.
 Return a new list of the items in `list` for which `pred` returns a non-nil value.
 
 Alias: `-select`
+
+See also: [`-keep`](#-keep-fn-list)
 
 ```el
 (-filter (lambda (num) (= 0 (% num 2))) '(1 2 3 4)) ;; => '(2 4)
@@ -528,18 +541,47 @@ section is returned.  Defaults to 1.
 
 Return a new list of the first `n` items in `list`, or all items if there are fewer than `n`.
 
+See also: [`-take-last`](#-take-last-n-list)
+
 ```el
 (-take 3 '(1 2 3 4 5)) ;; => '(1 2 3)
 (-take 17 '(1 2 3 4 5)) ;; => '(1 2 3 4 5)
+```
+
+#### -take-last `(n list)`
+
+Return the last `n` items of `list` in order.
+
+See also: [`-take`](#-take-n-list)
+
+```el
+(-take-last 3 '(1 2 3 4 5)) ;; => '(3 4 5)
+(-take-last 17 '(1 2 3 4 5)) ;; => '(1 2 3 4 5)
+(-take-last 1 '(1 2 3 4 5)) ;; => '(5)
 ```
 
 #### -drop `(n list)`
 
 Return the tail of `list` without the first `n` items.
 
+See also: [`-drop-last`](#-drop-last-n-list)
+
+(fn `n` `list`)
+
 ```el
 (-drop 3 '(1 2 3 4 5)) ;; => '(4 5)
 (-drop 17 '(1 2 3 4 5)) ;; => '()
+```
+
+#### -drop-last `(n list)`
+
+Remove the last `n` items of `list` and return a copy.
+
+See also: [`-drop`](#-drop-n-list)
+
+```el
+(-drop-last 3 '(1 2 3 4 5)) ;; => '(1 2)
+(-drop-last 17 '(1 2 3 4 5)) ;; => '()
 ```
 
 #### -take-while `(pred list)`
@@ -571,6 +613,39 @@ as `(nth i list)` for all i from `indices`.
 (-select-by-indices '(4 10 2 3 6) '("v" "e" "l" "o" "c" "i" "r" "a" "p" "t" "o" "r")) ;; => '("c" "o" "l" "o" "r")
 (-select-by-indices '(2 1 0) '("a" "b" "c")) ;; => '("c" "b" "a")
 (-select-by-indices '(0 1 2 0 1 3 3 1) '("f" "a" "r" "l")) ;; => '("f" "a" "r" "f" "a" "l" "l" "a")
+```
+
+#### -select-columns `(columns table)`
+
+Select `columns` from `table`.
+
+`table` is a list of lists where each element represents one row.
+It is assumed each row has the same length.
+
+Each row is transformed such that only the specified `columns` are
+selected.
+
+See also: [`-select-column`](#-select-column-column-table), [`-select-by-indices`](#-select-by-indices-indices-list)
+
+```el
+(-select-columns '(0 2) '((1 2 3) (a b c) (:a :b :c))) ;; => '((1 3) (a c) (:a :c))
+(-select-columns '(1) '((1 2 3) (a b c) (:a :b :c))) ;; => '((2) (b) (:b))
+(-select-columns nil '((1 2 3) (a b c) (:a :b :c))) ;; => '(nil nil nil)
+```
+
+#### -select-column `(column table)`
+
+Select `column` from `table`.
+
+`table` is a list of lists where each element represents one row.
+It is assumed each row has the same length.
+
+The single selected column is returned as a list.
+
+See also: [`-select-columns`](#-select-columns-columns-table), [`-select-by-indices`](#-select-by-indices-indices-list)
+
+```el
+(-select-column 1 '((1 2 3) (a b c) (:a :b :c))) ;; => '(2 b :b)
 ```
 
 
@@ -1237,6 +1312,8 @@ Take a predicate `pred` and a `list` and return the index of the
 first element in the list satisfying the predicate, or nil if
 there is no such element.
 
+See also [`-first`](#-first-pred-list).
+
 ```el
 (-find-index 'even? '(2 4 1 6 3 3 5 8)) ;; => 0
 (--find-index (< 5 it) '(2 4 1 6 3 3 5 8)) ;; => 3
@@ -1248,6 +1325,8 @@ there is no such element.
 Take a predicate `pred` and a `list` and return the index of the
 last element in the list satisfying the predicate, or nil if
 there is no such element.
+
+See also [`-last`](#-last-pred-list).
 
 ```el
 (-find-last-index 'even? '(2 4 1 6 3 3 5 8)) ;; => 7
@@ -1296,7 +1375,7 @@ Operations pretending lists are sets.
 
 #### -union `(list list2)`
 
-Return a new list containing the elements of `list1` and elements of `list2` that are not in `list1`.
+Return a new list containing the elements of `list` and elements of `list2` that are not in `list`.
 The test for equality is done with `equal`,
 or with `-compare-fn` if that's non-nil.
 
@@ -1443,7 +1522,7 @@ groupings are equal to the length of the shortest input list.
 If two lists are provided as arguments, return the groupings as a list
 of cons cells. Otherwise, return the groupings as a list of lists.
 
-Please note! This distinction is being removed in an upcoming 2.0
+Please note! This distinction is being removed in an upcoming 3.0
 release of Dash. If you rely on this behavior, use -zip-pair instead.
 
 ```el
@@ -1460,6 +1539,24 @@ longest input list.
 
 ```el
 (-zip-fill 0 '(1 2 3 4 5) '(6 7 8 9)) ;; => '((1 . 6) (2 . 7) (3 . 8) (4 . 9) (5 . 0))
+```
+
+#### -unzip `(lists)`
+
+Unzip `lists`.
+
+This works just like [`-zip`](#-zip-rest-lists) but takes a list of lists instead of
+a variable number of arguments, such that
+
+    (-unzip (-zip `l1` `l2` `l3` ...))
+
+is identity (given that the lists are the same length).
+
+See also: [`-zip`](#-zip-rest-lists)
+
+```el
+(-unzip (-zip '(1 2 3) '(a b c) '("e" "f" "g"))) ;; => '((1 2 3) (a b c) ("e" "f" "g"))
+(-unzip '((1 2) (3 4) (5 6) (7 8) (9 10))) ;; => '((1 3 5 7 9) (2 4 6 8 10))
 ```
 
 #### -cycle `(list)`
@@ -1515,7 +1612,7 @@ combinations created by taking one element from each list in
 order.  The results are flattened, ignoring the tensor structure
 of the result.  This is equivalent to calling:
 
-    (-flatten-n (1- (length lists)) (-table fn lists))
+    (-flatten-n (1- (length lists)) (apply '-table fn lists))
 
 but the implementation here is much more efficient.
 
@@ -1566,6 +1663,8 @@ Return the last x in `list` where (`pred` x) is non-nil, else nil.
 #### -first-item `(list)`
 
 Return the first item of `list`, or nil on an empty list.
+
+(fn `list`)
 
 ```el
 (-first-item '(1 2 3)) ;; => 1
@@ -2096,6 +2195,19 @@ Return nil, used for side-effects only.
 (let (s) (--each-while '(1 2 3 4) (< it 3) (!cons it s)) s) ;; => '(2 1)
 ```
 
+#### -each-indexed `(list fn)`
+
+Call (`fn` index item) for each item in `list`.
+
+In the anaphoric form `--each-indexed`, the index is exposed as `it-index`.
+
+See also: [`-map-indexed`](#-map-indexed-fn-list).
+
+```el
+(let (s) (-each-indexed '(a b c) (lambda (index item) (setq s (cons (list item index) s)))) s) ;; => '((c 2) (b 1) (a 0))
+(let (s) (--each-indexed '(a b c) (setq s (cons (list it it-index) s))) s) ;; => '((c 2) (b 1) (a 0))
+```
+
 #### -dotimes `(num fn)`
 
 Repeatedly calls `fn` (presumably for side-effects) passing in integers from 0 through `num-1`.
@@ -2103,6 +2215,18 @@ Repeatedly calls `fn` (presumably for side-effects) passing in integers from 0 t
 ```el
 (let (s) (-dotimes 3 (lambda (n) (!cons n s))) s) ;; => '(2 1 0)
 (let (s) (--dotimes 5 (!cons it s)) s) ;; => '(4 3 2 1 0)
+```
+
+#### -doto `(eval-initial-value &rest forms)`
+
+Eval a form, then insert that form as the 2nd argument to other forms.
+The `eval-initial-value` form is evaluated once. Its result is
+passed to `forms`, which are then evaluated sequentially. Returns
+the target form.
+
+```el
+(-doto '(1 2 3) (!cdr) (!cdr)) ;; => '(3)
+(-doto '(1 . 2) (setcar 3) (setcdr 4)) ;; => '(3 . 4)
 ```
 
 
@@ -2241,12 +2365,12 @@ See `srfi-26` for detailed description.
 ```el
 (funcall (-cut list 1 <> 3 <> 5) 2 4) ;; => '(1 2 3 4 5)
 (-map (-cut funcall <> 5) '(1+ 1- (lambda (x) (/ 1.0 x)))) ;; => '(6 4 0.2)
-(-filter (-cut < <> 5) '(1 3 5 7 9)) ;; => '(1 3)
+(-map (-cut <> 1 2 3) (list 'list 'vector 'string)) ;; => '((1 2 3) [1 2 3] "")
 ```
 
 #### -not `(pred)`
 
-Take an unary predicates `pred` and return an unary predicate
+Take a unary predicate `pred` and return a unary predicate
 that returns t if `pred` returns nil and nil if `pred` returns
 non-nil.
 
@@ -2257,7 +2381,7 @@ non-nil.
 
 #### -orfn `(&rest preds)`
 
-Take list of unary predicates `preds` and return an unary
+Take list of unary predicates `preds` and return a unary
 predicate with argument x that returns non-nil if at least one of
 the `preds` returns non-nil on x.
 
@@ -2270,7 +2394,7 @@ In types: [a -> Bool] -> a -> Bool
 
 #### -andfn `(&rest preds)`
 
-Take list of unary predicates `preds` and return an unary
+Take list of unary predicates `preds` and return a unary
 predicate with argument x that returns non-nil if all of the
 `preds` returns non-nil on x.
 
@@ -2287,7 +2411,7 @@ In types: [a -> Bool] -> a -> Bool
 Return a function `fn` composed `n` times with itself.
 
 `fn` is a unary function.  If you need to use a function of higher
-arity, use [`-applify`](#-applify-fn) first to turn it into an unary function.
+arity, use [`-applify`](#-applify-fn) first to turn it into a unary function.
 
 With n = 0, this acts as identity function.
 
@@ -2387,7 +2511,23 @@ Change `readme-template.md` or `examples-to-docs.el` instead.
 
 ## Changelist
 
-- Added lexical binding pragma to dash.el
+### From 2.12 to 2.13
+
+- `-let` now supports `&alist` in destructuring.
+- Various performance improvements.
+- `-zip` will change in future so it always returns lists. Added
+  `-zip-pair` for users who explicitly want the old behavior.
+- Added lexical binding pragma to dash.el, fixes
+  [#130](https://github.com/magnars/dash.el/issues/130) in Emacs 24+.
+- Added `-select-column` and `-select-columns`.
+- Fixed an issue with `-map-last` and `--remove-last` where they
+  modified their inputs
+  ([#158](https://github.com/magnars/dash.el/issues/158)).
+- Added `-each-indexed` and `--each-indexed`.
+- Added `-take-last` and `-drop-last`.
+- Added `-doto` macro.
+- `-cut <>` is now treated as a function, consistent with SRFI 26
+  ([#185](https://github.com/magnars/dash.el/issues/185))
 
 ### From 2.11 to 2.12
 
@@ -2523,7 +2663,7 @@ Thanks!
 
 ## License
 
-Copyright (C) 2012-2014 Magnar Sveen
+Copyright (C) 2012-2016 Free Software Foundation, Inc.
 
 Authors: Magnar Sveen <magnars@gmail.com>
 Keywords: lists
