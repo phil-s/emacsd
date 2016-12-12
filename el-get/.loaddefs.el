@@ -81,8 +81,8 @@ Setup the defualt shortcuts.
 
 ;;;***
 
-;;;### (autoloads nil "async/async" "async/async.el" (22208 60724
-;;;;;;  532691 608000))
+;;;### (autoloads nil "async/async" "async/async.el" (22605 62334
+;;;;;;  568091 74000))
 ;;; Generated autoloads from async/async.el
 
 (autoload 'async-start-process "async/async" "\
@@ -128,7 +128,7 @@ ready.  Example:
                  (async-get proc)))
 
 If you don't want to use a callback, and you don't care about any
-return value form the child process, pass the `ignore' symbol as
+return value from the child process, pass the `ignore' symbol as
 the second argument (if you don't, and never call `async-get', it
 will leave *emacs* process buffers hanging around):
 
@@ -148,7 +148,7 @@ returns nil.  It can still be useful, however, as an argument to
 ;;;***
 
 ;;;### (autoloads nil "async/async-bytecomp" "async/async-bytecomp.el"
-;;;;;;  (22208 60724 532691 608000))
+;;;;;;  (22605 62334 568091 74000))
 ;;; Generated autoloads from async/async-bytecomp.el
 
 (autoload 'async-byte-recompile-directory "async/async-bytecomp" "\
@@ -176,7 +176,7 @@ Async compilation of packages can be controlled by
 ;;;***
 
 ;;;### (autoloads nil "async/dired-async" "async/dired-async.el"
-;;;;;;  (22208 60724 532691 608000))
+;;;;;;  (22605 62334 568091 74000))
 ;;; Generated autoloads from async/dired-async.el
 
 (defvar dired-async-mode nil "\

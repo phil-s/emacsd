@@ -1,10 +1,10 @@
-;;; async.el --- Asynchronous processing in Emacs
+;;; async.el --- Asynchronous processing in Emacs -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2012-2016 Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <jwiegley@gmail.com>
 ;; Created: 18 Jun 2012
-;; Version: 1.6
+;; Version: 1.9
 
 ;; Keywords: async
 ;; X-URL: https://github.com/jwiegley/emacs-async
@@ -95,8 +95,8 @@ as follows:
       (unless async-debug
         (kill-buffer buf)))))
 
-(defun async-when-done (proc &optional change)
-  "Process sentinal used to retrieve the value from the child process."
+(defun async-when-done (proc &optional _change)
+  "Process sentinel used to retrieve the value from the child process."
   (when (eq 'exit (process-status proc))
     (with-current-buffer (process-buffer proc)
       (let ((async-current-process proc))
@@ -201,7 +201,7 @@ its FINISH-FUNC is nil."
             (funcall async-callback args))
       (async--transmit-sexp (car args) (list 'quote (cdr args))))))
 
-(defun async-receive (&rest args)
+(defun async-receive ()
   "Send the given messages to the asychronous Emacs PROCESS."
   (async--receive-sexp))
 
@@ -257,7 +257,7 @@ ready.  Example:
                  (async-get proc)))
 
 If you don't want to use a callback, and you don't care about any
-return value form the child process, pass the `ignore' symbol as
+return value from the child process, pass the `ignore' symbol as
 the second argument (if you don't, and never call `async-get', it
 will leave *emacs* process buffers hanging around):
 
@@ -297,6 +297,42 @@ returns nil.  It can still be useful, however, as an argument to
 (defmacro async-sandbox(func)
   "Evaluate FUNC in a separate Emacs process, synchronously."
   `(async-get (async-start ,func)))
+
+(defun async--fold-left (fn forms bindings)
+  (let ((res forms))
+    (dolist (binding bindings)
+      (setq res (funcall fn res
+                         (if (listp binding)
+                             binding
+                             (list binding)))))
+    res))
+
+(defmacro async-let (bindings &rest forms)
+  "Implements `let', but each binding is established asynchronously.
+For example:
+
+  (async-let ((x (foo))
+              (y (bar)))
+     (message \"%s %s\" x y))
+
+    expands to ==>
+
+  (async-start (foo)
+   (lambda (x)
+     (async-start (bar)
+      (lambda (y)
+        (message \"%s %s\" x y)))))"
+  (declare (indent 1))
+  (async--fold-left
+   (lambda (acc binding)
+     (let ((fun (pcase (cadr binding)
+                  ((and (pred functionp) f) f)
+                  (f `(lambda () ,f)))))
+       `(async-start ,fun
+                     (lambda (,(car binding))
+                       ,acc))))
+   `(progn ,@forms)
+   (reverse bindings)))
 
 (provide 'async)
 
