@@ -40,7 +40,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Magit User Manual
-@subtitle for version 2.8
+@subtitle for version 2.9
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -78,7 +78,6 @@ General Public License for more details.
 
 Installation
 
-* Updating from an older release::
 * Installing from an Elpa archive::
 * Installing from the Git repository::
 * Post-installation tasks::
@@ -146,8 +145,10 @@ Logging
 
 * Refreshing logs::
 * Log Buffer::
+* Log Margin::
 * Select from log::
 * Reflog::
+* Cherries::
 
 
 Diffing
@@ -277,28 +278,30 @@ Conventions
 
 FAQ
 
+* FAQ - How to @dots{}?::
+* FAQ - Issues and errors::
+
+FAQ - How to @dots{}?
+
+* How to show git's output?::
+* How to install the gitman info manual?::
+* How to show diffs for gpg-encrypted files?::
+* How does branching and pushing work?::
+* Can Magit be used as @code{ediff-version-control-package}?::
+
+
+FAQ - Issues and errors
+
 * Magit is slow::
 * I changed several thousand files at once and now Magit is unusable::
 * I am having problems committing::
-* Diffs are collapsed after un-/staging::
-* I don't understand how branching and pushing work::
-* I don't like the key binding in v2.4: I don't like the key binding in v24. 
-* I cannot install the pre-requisites for Magit v2::
-* I am using an Emacs release older than v24.4: I am using an Emacs release older than v244. 
-* I am using a Git release older than v1.9.4: I am using a Git release older than v194. 
 * I am using MS Windows and cannot push with Magit::
 * I am using OS X and SOMETHING works in shell, but not in Magit: I am using OS X and SOMETHING works in shell but not in Magit. 
-* How to install the gitman info manual?::
-* How can I show Git's output?::
 * Diffs contain control sequences::
 * Expanding a file to show the diff causes it to disappear::
 * Point is wrong in the @code{COMMIT_EDITMSG} buffer::
 * The mode-line information isn't always up-to-date::
-* Can Magit be used as @code{ediff-version-control-package}?::
-* How to show diffs for gpg-encrypted files?::
 * Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
-* Symbol's value as function is void @code{--some}::
-* Where is the branch manager::
 @end detailmenu
 @end menu
 
@@ -390,51 +393,13 @@ Magit can be installed using Emacs' package manager or manually from
 its development repository.
 
 @menu
-* Updating from an older release::
 * Installing from an Elpa archive::
 * Installing from the Git repository::
 * Post-installation tasks::
 @end menu
 
-@node Updating from an older release
-@section Updating from an older release
-
-When updating from @code{1.2.*} or @code{1.4.*}, you should first uninstall Magit
-and some of its dependencies and restart Emacs before installing the
-latest release.
-
-@itemize
-@item
-The old Magit installation has to be removed because some macros
-have changed and using the old definitions when building the new
-release would lead to very strange results, including compile
-errors.  This is due to a limitation in Emacs' package manager or
-rather Emacs itself: it's not possible to reliably unload a feature
-or even all features belonging to a package.
-
-
-@item
-Furthermore the old dependencies @code{git-commit-mode} and @code{git-rebase-mode}
-  have to be removed because they are no longer used by the @code{2.1.0}
-  release and later, and get in the way of their successors @code{git-commit}
-  and @code{git-rebase}.
-@end itemize
-
-So please uninstall the packages @code{magit}, @code{git-commit-mode}, and
-@code{git-rebase-mode}.  Then quit Emacs and start a new instance.  Only then
-follow the instructions in either one of the next two sections.
-
-Also note that starting with the @code{2.1.0} release, Magit requires at least
-Emacs @code{24.4} and Git @code{1.9.4}.  You should make sure you have at least
-these releases installed before updating Magit.  And if you connect to
-remote hosts using Tramp, then you should also make sure to install a
-recent enough Git version on these hosts.
-
 @node Installing from an Elpa archive
 @section Installing from an Elpa archive
-
-If you are updating from a release older than @code{2.1.0}, then you have to
-first uninstall the old version.  See @ref{Updating from an older release,Updating from an older release}.
 
 Magit is available from Melpa and Melpa-Stable.  If you haven't used
 Emacs' package manager before, then it is high time you familiarize
@@ -450,7 +415,7 @@ To use Melpa:
 @lisp
 (require 'package)
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "http://melpa.org/packages/") t)
 @end lisp
 
 @itemize
@@ -461,7 +426,7 @@ To use Melpa-Stable:
 @lisp
 (require 'package)
 (add-to-list 'package-archives
-	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 @end lisp
 
 Once you have added your preferred archive, you need to update the
@@ -482,9 +447,6 @@ Now see @ref{Post-installation tasks,Post-installation tasks}.
 
 @node Installing from the Git repository
 @section Installing from the Git repository
-
-If you are updating from a release older than @code{2.1.0}, then you have to
-first uninstall the old version.  See @ref{Updating from an older release,Updating from an older release}.
 
 Magit depends on the @code{dash} and @code{with-editor} library which are available
 from Melpa and Melpa-Stable.  Install them using @code{M-x package-install
@@ -530,7 +492,7 @@ Finally add this to your init file:
 (with-eval-after-load 'info
   (info-initialize)
   (add-to-list 'Info-directory-list
-	       "~/.emacs.d/site-lisp/magit/Documentation/"))
+               "~/.emacs.d/site-lisp/magit/Documentation/"))
 @end lisp
 
 Note that you have to add the @code{lisp} subdirectory to the @code{load-path}, not
@@ -539,6 +501,10 @@ not end with a slash, while those of @code{Info-directory-list} should.
 
 Instead of requiring the feature @code{magit}, you could load just the
 autoload definitions, by loading the file @code{magit-autoloads.el}.
+
+@lisp
+(load "/path/to/magit/lisp/magit-autoloads")
+@end lisp
 
 Instead of running Magit directly from the repository by adding that
 to the @code{load-path}, you might want to instead install it in some other
@@ -572,7 +538,7 @@ M-x magit-version RET
 should display something like
 
 @example
-Magit 2.8.0, Git 2.9.0, Emacs 24.5.1
+Magit 2.8.0, Git 2.10.2, Emacs 25.1.1, gnu/linux
 @end example
 
 Then you might also want to read about options that many users likely
@@ -585,11 +551,8 @@ See @ref{How to install the gitman info manual?,How to install the gitman info m
 
 If you are completely new to Magit then see @ref{Getting started,Getting started}.
 
-If you have used an older Magit release before, then you should have a
-look at the release notes @uref{https://github.com/magit/magit/releases}.
-
 And last but not least please consider making a donation, to ensure
-that I can keep working on Magit.  See @uref{http://magit.vc/donations.html}
+that I can keep working on Magit.  See @uref{https://magit.vc/donations}.
 for various donation options.
 
 @node Getting started
@@ -1428,46 +1391,42 @@ Cycle the visibility of current section and its children.
 
 Cycle the visibility of diff-related sections in the current buffer.
 
-@kindex s-<tab>
+@kindex S-<tab>
 @cindex magit-section-cycle-global
-@item @kbd{s-<tab>} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-cycle-global})
+@item @kbd{S-<tab>} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-cycle-global})
 
 Cycle the visibility of all sections in the current buffer.
-@end table
 
 @kindex 1
-@kindex 2
-@kindex 3
-@kindex 4
 @cindex magit-section-show-level-1
-@deffn Command magit-section-show-level-1
+@item @kbd{1} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-1})
+@kindex 2
 @cindex magit-section-show-level-2
-@deffnx Command magit-section-show-level-2
+@item @kbd{2} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-2})
+@kindex 3
 @cindex magit-section-show-level-3
-@deffnx Command magit-section-show-level-3
+@item @kbd{3} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-3})
+@kindex 4
 @cindex magit-section-show-level-4
-@deffnx Command magit-section-show-level-4
+@item @kbd{4} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-4})
 
-To show sections surrounding the current section, up to level N,
-press the respective number key (@code{1}, @code{2}, @code{3}, or @code{4}).
-@end deffn
+Show sections surrounding the current section up to level N.
 
 @kindex M-1
-@kindex M-2
-@kindex M-3
-@kindex M-4
 @cindex magit-section-show-level-1-all
-@deffn Command magit-section-show-level-1-all
+@item @kbd{M-1} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-1-all})
+@kindex M-2
 @cindex magit-section-show-level-2-all
-@deffnx Command magit-section-show-level-2-all
+@item @kbd{M-2} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-2-all})
+@kindex M-3
 @cindex magit-section-show-level-3-all
-@deffnx Command magit-section-show-level-3-all
+@item @kbd{M-3} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-3-all})
+@kindex M-4
 @cindex magit-section-show-level-4-all
-@deffnx Command magit-section-show-level-4-all
+@item @kbd{M-4} @tie{}@tie{}@tie{}@tie{}(@code{magit-section-show-level-4-all})
 
-To show all sections up to level N, press the respective number key
-and meta (@code{M-1}, @code{M-2}, @code{M-3}, or @code{M-4}).
-@end deffn
+Show all sections up to level N.
+@end table
 
 Some functions, which are used to implement the above commands, are
 also exposed as commands themselves.  By default no keys are bound to
@@ -1906,17 +1865,16 @@ as a subprocess.  They are placed right after the executable itself
 and before the git command - as in @code{git HERE... COMMAND REST}.  For
 valid arguments see 
 @ifinfo
-@ref{git,,,gitman,}
+@ref{git,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git">git(1)</a> manpage
+the <a href="http://git-scm.com/docs/git">git(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git(1) manpage
+the git(1) manpage.
 @end iftex
-.
 
 Be careful what you add here, especially if you are using Tramp to
 connect to servers with ancient Git versions.  Never remove anything
@@ -2020,9 +1978,9 @@ To make this command available, use something like:
 
 @lisp
 (add-hook 'ido-setup-hook
-	  (lambda ()
-	    (define-key ido-completion-map
-	      (kbd \"C-x g\") 'ido-enter-magit-status)))
+          (lambda ()
+            (define-key ido-completion-map
+              (kbd \"C-x g\") 'ido-enter-magit-status)))
 @end lisp
 
 Starting with Emacs 25.1 the Ido keymaps are defined just once
@@ -2099,7 +2057,11 @@ While bisecting, insert section logging bisect progress.
 @defun magit-insert-untracked-files
 
 Maybe insert a list or tree of untracked files.
-Do so depending on the value of @code{status.showUntrackedFiles}.
+
+Do so depending on the value of @code{status.showUntrackedFiles}.  Note
+that even if the value is @code{all}, Magit still initially only shows
+directories.  But the directory sections can then be expanded using
+@code{TAB}.
 @end defun
 
 @defun magit-insert-unstaged-changes
@@ -2324,6 +2286,37 @@ Insert a header line about the current user.
 Hook run after a status buffer has been refreshed.
 @end defopt
 
+@defopt magit-status-margin
+
+This option specifies whether the margin is initially shown in
+Magit-Status mode buffers and how it is formatted.
+
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
+
 @defopt magit-log-section-args
 
 Additional Git arguments used when creating log sections.  Only
@@ -2424,17 +2417,17 @@ then the default value of @code{magit-log-arguments} is used instead.
 
 For information about the various arguments, see 
 @ifinfo
-@ref{git-log,,,gitman,}
+@ref{git-log,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-log">git-log(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-log">git-log(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-log(1) manpage
+the git-log(1) manpage.
 @end iftex
-.
+
 The switch @code{++order=VALUE} is converted to one of @code{--author-date-order},
 @code{--date-order}, or @code{--topo-order} before being passed to @code{git log}.
 
@@ -2490,30 +2483,18 @@ Show log for all local and remote branches and @code{HEAD}.
 Show log for all references and @code{HEAD}.
 @end table
 
-The following related commands are not available from the popup.
 
-@table @asis
-@kindex Y
-@cindex magit-cherry
-@item @kbd{Y} @tie{}@tie{}@tie{}@tie{}(@code{magit-cherry})
-
-Show commits in a branch that are not merged in the upstream branch.
-
-@kindex M-x magit-log-buffer-file
-@cindex magit-log-buffer-file
-@item @kbd{M-x magit-log-buffer-file} @tie{}@tie{}@tie{}@tie{}(@code{magit-log-buffer-file})
-
-Show log for the file visited in the current buffer.
-@end table
-
-Two additional commands that show the log for the file or blob that is
-being visited in the current buffer exists, see @ref{Minor mode for buffers visiting files,Minor mode for buffers visiting files}.
+Two additional commands that show the log for the file or blob that
+is being visited in the current buffer exists, see @ref{Minor mode for buffers visiting files,Minor mode for buffers visiting files}.  The command @code{magit-cherry} also shows a log,
+see @ref{Cherries,Cherries}.
 
 @menu
 * Refreshing logs::
 * Log Buffer::
+* Log Margin::
 * Select from log::
 * Reflog::
+* Cherries::
 @end menu
 
 @node Refreshing logs
@@ -2657,24 +2638,95 @@ entry.  Only considered when moving past the last entry with
 @code{magit-goto-*-section} commands.
 @end defopt
 
-@defopt magit-log-show-margin
-
-Whether to initially show the margin in log buffers.
-
-When non-nil the author name and date are initially displayed in the
-margin of log buffers.  The margin can be shown or hidden in the
-current buffer using the command @code{magit-toggle-margin}.
-
-When a log buffer contains a verbose log, then the margin is never
-displayed.  In status buffers this option is ignored, but it is
-possible to show the margin using the mentioned command.
-@end defopt
-
 @defopt magit-log-show-refname-after-summary
 
 Whether to show the refnames after the commit summaries.  This is
 useful if you use really long branch names.
 @end defopt
+
+For a description of @code{magit-log-margin} see @ref{Log Margin,Log Margin}.
+
+@node Log Margin
+@subsection Log Margin
+
+In buffers which show one or more logs, it is possible to show
+additional information about each commit in the margin.  The options
+used to configure the margin are named @code{magit-INFIX-margin}, where INFIX
+is the same as in the respective major-mode @code{magit-INFIX-mode}.  In
+regular log buffers that would be @code{magit-log-margin}.
+
+@defopt magit-log-margin
+
+This option specifies whether the margin is initially shown in
+Magit-Log mode buffers and how it is formatted.
+
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
+
+You can change the STYLE and AUTHOR-WIDTH of all @code{magit-INFIX-margin}
+options to the same values by customizing @code{magit-log-margin} @strong{before}
+@code{magit} is loaded.  If you do that, then the respective values for the
+other options will default to what you have set for that variable.
+Likewise if you set INIT in @code{magit-log-margin} to @code{nil}, then that is used
+in the default of all other options.  But setting it to @code{t}, i.e.
+re-enforcing the default for that option, does not carry to other
+options.
+
+@table @asis
+@kindex L
+@cindex magit-margin-popup
+@item @kbd{L} @tie{}@tie{}@tie{}@tie{}(@code{magit-margin-popup})
+
+This prefix command features the following commands for changing the
+appearance of the margin.
+@end table
+
+In some buffers that support the margin, "L" is bound to
+@code{magit-log-refresh-popup}, but that popup features the same commands,
+and then some other unrelated commands.
+
+@table @asis
+@kindex L L
+@cindex magit-toggle-margin
+@item @kbd{L L} @tie{}@tie{}@tie{}@tie{}(@code{magit-toggle-margin})
+
+This command shows or hides the margin.
+
+@kindex L l
+@cindex magit-cycle-margin-style
+@item @kbd{L l} @tie{}@tie{}@tie{}@tie{}(@code{magit-cycle-margin-style})
+
+This command cycles the style used for the margin.
+
+@kindex L d
+@cindex magit-toggle-margin-details
+@item @kbd{L d} @tie{}@tie{}@tie{}@tie{}(@code{magit-toggle-margin-details})
+
+This command shows or hides details in the margin.
+@end table
 
 @node Select from log
 @subsection Select from log
@@ -2684,8 +2736,14 @@ When the user has to select a recent commit that is reachable from
 humans cannot remember hashes or "HEAD~5", at least not without double
 checking).  Instead a log buffer is used to select the commit, which
 has the advantage that commits are presented in order and with the
-commit message.  The following additional key bindings are available
-when a log is used for selection:
+commit message.
+
+Such selection logs are used when selecting the beginning of a rebase
+and when selecting the commit to be squashed into.
+
+In addition to the key bindings available in all log buffers, the
+following additional key bindings are available in selection log
+buffers:
 
 @table @asis
 @kindex C-c C-c
@@ -2701,26 +2759,55 @@ argument.
 @item @kbd{C-c C-k} @tie{}@tie{}@tie{}@tie{}(@code{magit-log-select-quit})
 
 Abort selecting a commit, don't act on any commit.
+
 @end table
 
-This feature is used by rebase and squash commands.
+@defopt magit-log-select-margin
+
+This option specifies whether the margin is initially shown in
+Magit-Log-Select mode buffers and how it is formatted.
+
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
 
 @node Reflog
 @subsection Reflog
 
 Also see 
 @ifinfo
-@ref{git-reflog,,,gitman,}
+@ref{git-reflog,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-reflog">git-reflog(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-reflog">git-reflog(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-reflog(1) manpage
+the git-reflog(1) manpage.
 @end iftex
-.
 
 These reflog commands are available from the log popup.  See @ref{Logging,Logging}.
 
@@ -2742,7 +2829,105 @@ Display the reflog of a branch.
 @item @kbd{l H} @tie{}@tie{}@tie{}@tie{}(@code{magit-reflog-head})
 
 Display the @code{HEAD} reflog.
+
 @end table
+
+@defopt magit-reflog-margin
+
+This option specifies whether the margin is initially shown in
+Magit-Reflog mode buffers and how it is formatted.
+
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
+
+@node Cherries
+@subsection Cherries
+
+Cherries are commits that haven't been applied upstream (yet), and are
+usually visualized using a log.  Each commit is prefixed with @code{-} if it
+has an equivalent in the upstream and @code{+} if it does not, i.e. if it is
+a cherry.
+
+The command @code{magit-cherry} shows cherries for a single branch, but the
+references buffer (see @ref{References buffer,References buffer}) can show cherries for
+multiple "upstreams" at once.
+
+Also see 
+@ifinfo
+@ref{git-reflog,,,gitman,}.
+@end ifinfo
+@ifhtml
+@html
+the <a href="http://git-scm.com/docs/git-reflog">git-reflog(1)</a> manpage.
+@end html
+@end ifhtml
+@iftex
+the git-reflog(1) manpage.
+@end iftex
+
+@table @asis
+@kindex Y
+@cindex magit-cherry
+@item @kbd{Y} @tie{}@tie{}@tie{}@tie{}(@code{magit-cherry})
+
+Show commits that are in a certain branch but that have not been
+merged in the upstream branch.
+
+@end table
+
+@defopt magit-cherry-margin
+
+This option specifies whether the margin is initially shown in
+Magit-Cherry mode buffers and how it is formatted.
+
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
 
 @node Diffing
 @section Diffing
@@ -2761,17 +2946,16 @@ then the default value of @code{magit-diff-arguments} is used instead.
 
 Also see 
 @ifinfo
-@ref{git-diff,,,gitman,}
+@ref{git-diff,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-diff">git-diff(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-diff">git-diff(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-diff(1) manpage
+the git-diff(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex d
@@ -2984,19 +3168,37 @@ This command moves forward in current buffer's history.
 @cindex magit-diff-visit-file
 @item @kbd{RET} @tie{}@tie{}@tie{}@tie{}(@code{magit-diff-visit-file})
 
-From a diff, visit the corresponding file at the appropriate
-position.
-
-When the file is already being displayed in another window of the
-same frame, then just select that window and adjust point.  With a
-prefix argument also display in another window.
+From a diff, visit the corresponding file at the appropriate position.
 
 If the diff shows changes in the worktree, the index, or @code{HEAD}, then
-visit the actual file.  Otherwise when the diff is about an older
-commit, then visit the respective blob using @code{magit-find-file}.  Also
-see @code{magit-diff-visit-file-worktree}, which, as the name suggests,
-always visits the actual file.
+visit the actual file.  Otherwise, when the diff is about an older
+commit or a range, then visit the appropriate blob.
 
+If point is on a removed line, then visit the blob for the first
+parent of the commit which removed that line, i.e. the last
+commit where that line still existed.  Otherwise visit the blob
+for the commit whose changes are being shown.
+
+When the file or blob to be displayed is already being displayed in
+another window of the same frame, then just select that window and
+adjust point.  Otherwise, or with a prefix argument, display the
+buffer in another window.
+
+@end table
+
+@defopt magit-diff-visit-previous-blob
+
+This option controls whether @code{magit-diff-visit-file} may visit the
+previous blob.  When this is @code{t} and point is on a removed line in a
+diff for a committed change, then @code{magit-diff-visit-file} visits the
+blob from the last revision which still had that line.
+
+Currently this is only supported for committed changes, for staged
+and unstaged changes @code{magit-diff-visit-file} always visits the file in
+the working tree.
+@end defopt
+
+@table @asis
 @kindex C-<return>
 @cindex magit-diff-visit-file-worktree
 @item @kbd{C-<return>} @tie{}@tie{}@tie{}@tie{}(@code{magit-diff-visit-file-worktree})
@@ -3089,6 +3291,40 @@ Otherwise, highlight neither.
 @defopt magit-diff-hide-trailing-cr-characters
 
 Whether to hide ^M characters at the end of a line in diffs.
+@end defopt
+
+@defopt magit-diff-highlight-hunk-region-functions
+
+This option specifies the functions used to highlight the
+hunk-internal region.
+
+@code{magit-diff-highlight-hunk-region-dim-outside} overlays the outside of
+the hunk internal selection with a face that causes the added and
+removed lines to have the same background color as context lines.
+This function should not be removed from the value of this option.
+
+@code{magit-diff-highlight-hunk-region-using-overlays} and
+@code{magit-diff-highlight-hunk-region-using-underline} emphasize the
+region by placing delimiting horizonal lines before and after it.
+Both of these functions have glitches which cannot be fixed due to
+limitations of Emacs' display engine.  For more information see
+@uref{https://github.com/magit/magit/issues/2758} ff.
+
+Instead of, or in addition to, using delimiting horizontal lines,
+to emphasize the boundaries, you may which to emphasize the text
+itself, using @code{magit-diff-highlight-hunk-region-using-face}.
+
+In terminal frames it's not possible to draw lines as the overlay
+and underline variants normally do, so there they fall back to
+calling the face function instead.
+@end defopt
+
+@defopt magit-diff-unmarked-lines-keep-foreground
+
+This option controls whether added and removed lines outside the
+hunk-internal region only lose their distinct background color or
+also the foreground color.  Whether the outside of the region is
+dimmed at all depends on @code{magit-diff-highlight-hunk-region-functions}.
 @end defopt
 
 @node Revision buffer
@@ -3291,13 +3527,42 @@ Whether to show commit counts in Magit-Refs mode buffers.
 The default is @code{nil} because anything else can be very expensive.
 @end defopt
 
-@defopt magit-refs-show-margin
+@defopt magit-refs-margin
 
-Whether to initially show the margin in refs buffers.
+This option specifies whether the margin is initially shown in
+Magit-Refs mode buffers and how it is formatted.
 
-When non-nil the committer name and date are initially displayed in
-the margin of refs buffers.  The margin can be shown or hidden in
-the current buffer using the command @code{magit-toggle-margin}.
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
+
+@defopt magit-refs-margin-for-tags
+
+This option specifies whether to show information about tags in the
+margin.  This is disabled by default because it is slow if there are
+many tags.
 @end defopt
 
 The following variables control how individual refs are displayed.  If
@@ -3360,43 +3625,91 @@ Indentation of cherries in refs buffers.  This should be N-1 where N
 is taken from "%Nc" in the above format strings.
 @end defvar
 
-Everywhere in Magit @code{RET} visits the thing represented by the section
-at point.  In almost all cases visiting is done by showing some
-information in another buffer and @strong{not} doing anything else.  In refs
-buffers @code{RET} behaves differently, and because many users have grown
-accustomed to that inconsistency we are keeping it that way.
-
 @table @asis
 @kindex RET
 @cindex magit-visit-ref
 @item @kbd{RET} @tie{}@tie{}@tie{}@tie{}(@code{magit-visit-ref})
 
-Everywhere except in refs buffers this command behaves exactly like
-@code{magit-show-commit}; it shows the commit at point in another buffer.
+This command visits the reference or revision at point in another
+buffer.  If there is no revision at point or with a prefix argument
+then it prompts for a revision.
 
-In refs buffers, when there is a local branch at point, then this
-command instead checks out that branch.  When there is a remote
-branch or a tag at point then the respective commit is checked out
-causing @code{HEAD} to be detached.
-
-When a prefix argument it used, then this command only @strong{focuses} on
-the reference at point, i.e. the commit counts and cherries are
-updated to be relative to that reference, but nothing is checked
-out.
+This command behaves just like @code{magit-show-commit} as described above,
+except if point is on a reference in a @code{magit-refs-mode} buffer, in
+which case the behavior may be different, but only if you have
+customized the option @code{magit-visit-ref-behavior}.
 
 @end table
 
-@defopt magit-visit-ref-create
+@defopt magit-visit-ref-behavior
 
-When this is non-nil and @code{magit-visit-ref} is called inside a refs
-buffer, then it "visits" the remote branch at point by creating a
-new local branch which tracks that remote branch and then checking
-out the newly created branch.
+This option controls how @code{magit-visit-ref} behaves in @code{magit-refs-mode}
+buffers.
 
-This is not enabled by default because one has to use an extremely
-loose definition of the verb "to visit" to be able to argue that
-creating and then checking out a new local branch is a form of
-visiting a remote branch.
+By default @code{magit-visit-ref} behaves like @code{magit-show-commits}, in all
+buffers, including @code{magit-refs-mode} buffers.  When the type of the
+section at point is @code{commit} then "RET" is bound to @code{magit-show-commit},
+and when the type is either @code{branch} or @code{tag} then it is bound to
+@code{magit-visit-ref}.
+
+"RET" is one of Magit's most essential keys and at least by default
+it should behave consistently across all of Magit, especially
+because users quickly learn that it does something very harmless; it
+shows more information about the thing at point in another buffer.
+
+However "RET" used to behave differently in @code{magit-refs-mode} buffers,
+doing surprising things, some of which cannot really be described as
+"visit this thing".  If you've grown accustomed this behavior, you
+can restore it by adding one or more of the below symbols to the
+value of this option.  But keep in mind that by doing so you don't
+only introduce inconsistencies, you also lose some functionality and
+might have to resort to @code{M-x magit-show-commit} to get it back.
+
+@code{magit-visit-ref} looks for these symbols in the order in which they
+are described here.  If the presence of a symbol applies to the
+current situation, then the symbols that follow do not affect the
+outcome.
+
+@itemize
+@item
+@code{focus-on-ref}
+
+With a prefix argument update the buffer to show commit counts
+and lists of cherry commits relative to the reference at point
+instead of relative to the current buffer or @code{HEAD}.
+
+Instead of adding this symbol, consider pressing "C-u y o RET".
+
+
+@item
+@code{create-branch}
+
+If point is on a remote branch, then create a new local branch
+with the same name, use the remote branch as its upstream, and
+then check out the local branch.
+
+Instead of adding this symbol, consider pressing "b c RET RET",
+like you would do in other buffers.
+
+
+@item
+@code{checkout-any}
+
+Check out the reference at point.  If that reference is a tag
+or a remote branch, then this results in a detached @code{HEAD}.
+
+Instead of adding this symbol, consider pressing "b b RET",
+like you would do in other buffers.
+
+
+@item
+@code{checkout-branch}
+
+Check out the local branch at point.
+
+Instead of adding this symbol, consider pressing "b b RET",
+like you would do in other buffers.
+@end itemize
 @end defopt
 
 @menu
@@ -3438,17 +3751,16 @@ Insert sections showing all tags.
 
 Also see 
 @ifinfo
-@ref{git-bisect,,,gitman,}
+@ref{git-bisect,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-bisect">git-bisect(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-bisect">git-bisect(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-bisect(1) manpage
+the git-bisect(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex B
@@ -3463,9 +3775,9 @@ When bisecting is not in progress, then the popup buffer features the
 following commands.
 
 @table @asis
-@kindex B s
+@kindex B B
 @cindex magit-bisect-start
-@item @kbd{B s} @tie{}@tie{}@tie{}@tie{}(@code{magit-bisect-start})
+@item @kbd{B B} @tie{}@tie{}@tie{}@tie{}(@code{magit-bisect-start})
 
 Start a bisect session.
 
@@ -3473,9 +3785,9 @@ Bisecting a bug means to find the commit that introduced it.
 This command starts such a bisect session by asking for a known
 good and a bad commit.
 
-@kindex B u
+@kindex B s
 @cindex magit-bisect-run
-@item @kbd{B u} @tie{}@tie{}@tie{}@tie{}(@code{magit-bisect-run})
+@item @kbd{B s} @tie{}@tie{}@tie{}@tie{}(@code{magit-bisect-run})
 
 Bisect automatically by running commands after each step.
 @end table
@@ -3547,17 +3859,16 @@ create a new window or reuse an existing one.
 
 Also see 
 @ifinfo
-@ref{git-blame,,,gitman,}
+@ref{git-blame,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-blame">git-blame(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-blame">git-blame(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-blame(1) manpage
+the git-blame(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex M-x magit-blame
@@ -3974,17 +4285,16 @@ commit using the file's content as message.
 
 Also see 
 @ifinfo
-@ref{git-commit,,,gitman,}
+@ref{git-commit,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-commit">git-commit(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-commit">git-commit(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-commit(1) manpage
+the git-commit(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex c
@@ -4540,6 +4850,17 @@ branch will be used as the starting point as usual, but the upstream
 of the starting-point may be used as the upstream of the new branch,
 instead of the starting-point itself.
 
+If optional FROM is non-nil, then the source branch is reset to
+that commit, instead of to the last commit it shares with its
+upstream.  Interactively, FROM is non-nil, when the region
+selects some commits, and among those commits, FROM it is the
+commit that is the fewest commits ahead of the source branch.
+
+The commit at the other end of the selection actually does not
+matter, all commits between FROM and @code{HEAD} are moved to the new
+branch.  If FROM is not reachable from @code{HEAD} or is reachable from the
+source branch's upstream, then an error is raised.
+
 @kindex b x
 @cindex magit-branch-reset
 @item @kbd{b x} @tie{}@tie{}@tie{}@tie{}(@code{magit-branch-reset})
@@ -4601,11 +4922,20 @@ for remote branches, but not for local branches.
 
 You might prefer to always use some remote branch as upstream.
 If the chosen starting-point is (1) a local branch, (2) whose
-name is a member of the value of this option, (3) the upstream of
-that local branch is a remote branch with the same name, and (4)
-that remote branch can be fast-forwarded to the local branch,
-then the chosen branch is used as starting-point, but its own
-upstream is used as the upstream of the new branch.
+name matches a member of the value of this option, (3) the
+upstream of that local branch is a remote branch with the same
+name, and (4) that remote branch can be fast-forwarded to the
+local branch, then the chosen branch is used as starting-point,
+but its own upstream is used as the upstream of the new branch.
+
+Members of this option's value are treated as branch names that
+have to match exactly unless they contain a character that makes
+them invalid as a branch name.  Recommended characters to use
+to trigger interpretation as a regexp are "*" and "^".  Some
+other characters which you might expect to be invalid, actually
+are not, e.g. ".+$" are all perfectly valid.  More precisely,
+if `git check-ref-format --branch STRING' exits with a non-zero
+status, then treat STRING as a regexp.
 
 Assuming the chosen branch matches these conditions you would end
 up with with e.g.:
@@ -4623,6 +4953,55 @@ feature --upstream--> master --upstream--> origin/master
 Which you prefer is a matter of personal preference.  If you do
 prefer the former, then you should add branches such as @code{master},
 @code{next}, and @code{maint} to the value of this options.
+@end defopt
+
+@defopt magit-branch-adjust-remote-upstream-alist
+
+The value of this option is an alist of branches to be used as
+the upstream when branching a remote branch.
+
+When creating a local branch from an ephemeral branch located on a
+remote, e.g. a feature or hotfix branch, then that remote branch
+should usually not be used as the upstream branch, since the
+push-remote already allows accessing it and having both the upstream
+and the push-remote reference the same related branch would be
+wasteful.  Instead a branch like "maint" or "master" should be used
+as the upstream.
+
+This option allows specifing the branch that should be used as the
+upstream when branching certain remote branches.  The value is an
+alist of the form @code{((UPSTREAM . RULE)...)}.  The first matching
+element is used, the following elements are ignored.
+
+UPSTREAM is the branch to be used as the upstream for branches
+specified by RULE.  It can be a local or a remote branch.
+
+RULE can either be a regular expression, matching branches whose
+upstream should be the one specified by UPSTREAM.  Or it can be a
+list of the only branches that should @strong{not} use UPSTREAM; all other
+branches will.  Matching is done after stripping the remote part of
+the name of the branch that is being branched from.
+
+If you use a finite set of non-ephemeral branches across all your
+repositories, then you might use something like:
+
+@lisp
+(("origin/master" "master" "next" "maint"))
+@end lisp
+
+Or if the names of all your ephemeral branches contain a slash,
+at least in some repositories, then a good value could be:
+
+@lisp
+(("origin/master" . "/"))
+@end lisp
+
+Of course you can also fine-tune:
+
+@lisp
+(("origin/maint" . "\\`hotfix/")
+ ("origin/master" . "\\`feature/"))
+@end lisp
 @end defopt
 
 @cindex magit-branch-orphan
@@ -4795,42 +5174,41 @@ git config --global remote.autoSetupMerge always
 For more information about these variables you should also see
 
 @ifinfo
-@ref{git-config,,,gitman,}
+@ref{git-config,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-config">git-config(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-config">git-config(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-config(1) manpage
+the git-config(1) manpage.
 @end iftex
-.  Also see 
+ Also see 
 @ifinfo
-@ref{git-branch,,,gitman,}
+@ref{git-branch,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-branch">git-branch(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-branch">git-branch(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-branch(1) manpage
+the git-branch(1) manpage.
 @end iftex
-,
-
+, 
 @ifinfo
-@ref{git-checkout,,,gitman,}
+@ref{git-checkout,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-checkout">git-checkout(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-checkout">git-checkout(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-checkout(1) manpage
+the git-checkout(1) manpage.
 @end iftex
-, and @ref{Pushing,Pushing}.
+ and @ref{Pushing,Pushing}.
 
 @defopt magit-prefer-remote-upstream
 
@@ -4849,17 +5227,17 @@ the upstream and many which create new branches.
 
 Also see 
 @ifinfo
-@ref{git-merge,,,gitman,}
+@ref{git-merge,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-merge">git-merge(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-merge">git-merge(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-merge(1) manpage
+the git-merge(1) manpage.
 @end iftex
-.  For information on how to resolve
+  For information on how to resolve
 merge conflicts see the next section.
 
 @table @asis
@@ -4953,9 +5331,9 @@ If a file has conflicts and Git cannot resolve them by itself, then it
 puts both versions into the affected file along with special markers
 whose purpose is to denote the boundaries of the unresolved part of
 the file and between the different versions.  These boundary lines
-begin with the strings "<<<<@anchor{orgradiotarget1}", "|||||||", "=======", and ">>>>"
-and are followed by information about the source of the respective
-versions, e.g.:
+begin with the strings consisting of six times the same character, one
+of @code{<}, @code{|}, @code{=} and @code{>} and are followed by information about the source of
+the respective versions, e.g.:
 
 @example
 <<<<<<< HEAD
@@ -4965,7 +5343,7 @@ Take the red pill.
 >>>>>>> feature
 @end example
 
-In this case you have chosen to take the red pill on one bracnh and on
+In this case you have chosen to take the red pill on one branch and on
 another you picked the blue pill.  Now that you are merging these two
 diverging branches, Git cannot possibly know which pill you want to
 take.
@@ -5053,17 +5431,17 @@ truely complex conflicts, the latter is usually overkill.
 
 Also see 
 @ifinfo
-@ref{git-rebase,,,gitman,}
+@ref{git-rebase,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-rebase">git-rebase(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-rebase">git-rebase(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-rebase(1) manpage
+the git-rebase(1) manpage.
 @end iftex
-.  For information on how to resolve
+  For information on how to resolve
 conflicts that occur during rebases see the preceding section.
 
 @table @asis
@@ -5221,8 +5599,8 @@ Show the commit on the current line in another buffer and select
 that buffer.
 
 @kindex SPC
-@cindex magit-diff-show-or-scroll-up
-@item @kbd{SPC} @tie{}@tie{}@tie{}@tie{}(@code{magit-diff-show-or-scroll-up})
+@cindex git-rebase-show-or-scroll-up
+@item @kbd{SPC} @tie{}@tie{}@tie{}@tie{}(@code{git-rebase-show-or-scroll-up})
 
 Show the commit on the current line in another buffer without
 selecting that buffer.  If the revision buffer is already visible in
@@ -5230,8 +5608,8 @@ another window of the current frame, then instead scroll that window
 up.
 
 @kindex DEL
-@cindex magit-diff-show-or-scroll-down
-@item @kbd{DEL} @tie{}@tie{}@tie{}@tie{}(@code{magit-diff-show-or-scroll-down})
+@cindex git-rebase-show-or-scroll-down
+@item @kbd{DEL} @tie{}@tie{}@tie{}@tie{}(@code{git-rebase-show-or-scroll-down})
 
 Show the commit on the current line in another buffer without
 selecting that buffer.  If the revision buffer is already visible in
@@ -5516,17 +5894,16 @@ commits which have already been applied.
 
 Also see 
 @ifinfo
-@ref{git-cherry-pick,,,gitman,}
+@ref{git-cherry-pick,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-cherry-pick">git-cherry-pick(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-cherry-pick">git-cherry-pick(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-cherry-pick(1) manpage
+the git-cherry-pick(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex A
@@ -5653,17 +6030,16 @@ changes made since the sequence started.
 
 Also see 
 @ifinfo
-@ref{git-reset,,,gitman,}
+@ref{git-reset,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-reset">git-reset(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-reset">git-reset(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-reset(1) manpage
+the git-reset(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex x
@@ -5720,17 +6096,16 @@ Both the revision and file are read from the user.
 
 Also see 
 @ifinfo
-@ref{git-stash,,,gitman,}
+@ref{git-stash,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-stash">git-stash(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-stash">git-stash(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-stash(1) manpage
+the git-stash(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex z
@@ -5816,18 +6191,12 @@ Try to preserve the stash index.  If that fails because there are
 staged changes, apply without preserving the stash index and forgo
 removing the stash.
 
-@kindex z d
+@kindex z k
 @cindex magit-stash-drop
-@item @kbd{z d} @tie{}@tie{}@tie{}@tie{}(@code{magit-stash-drop})
+@item @kbd{z k} @tie{}@tie{}@tie{}@tie{}(@code{magit-stash-drop})
 
 Remove a stash from the stash list.  When the region is active, offer
 to drop all contained stashes.
-
-@kindex z l
-@cindex magit-stash-list
-@item @kbd{z l} @tie{}@tie{}@tie{}@tie{}(@code{magit-stash-list})
-
-List all stashes in a buffer.
 
 @kindex z v
 @cindex magit-stash-show
@@ -5852,7 +6221,45 @@ Create a patch from STASH.
 @item @kbd{k} @tie{}@tie{}@tie{}@tie{}(@code{magit-stash-clear})
 
 Remove all stashes saved in REF's reflog by deleting REF.
+
+@kindex z l
+@cindex magit-stash-list
+@item @kbd{z l} @tie{}@tie{}@tie{}@tie{}(@code{magit-stash-list})
+
+List all stashes in a buffer.
+
 @end table
+
+@defopt magit-stashes-margin
+
+This option specifies whether the margin is initially shown in
+stashes buffers and how it is formatted.
+
+The value has the form @code{(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)}.
+
+@itemize
+@item
+If INIT is non-nil, then the margin is shown initially.
+
+@item
+STYLE controls how to format the committer date.  It can be one
+of @code{age} (to show the age of the commit), @code{age-abbreviated} (to
+abbreviate the time unit to a character), or a string (suitable
+for @code{format-time-string}) to show the actual date.
+
+@item
+WIDTH controls the width of the margin.  This exists for forward
+compatibility and currently the value should not be changed.
+
+@item
+AUTHOR controls whether the name of the author is also shown by
+default.
+
+@item
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+is shown, then this specifies how much space is used to do so.
+@end itemize
+@end defopt
 
 @node Transferring
 @chapter Transferring
@@ -5871,17 +6278,16 @@ Remove all stashes saved in REF's reflog by deleting REF.
 
 Also see 
 @ifinfo
-@ref{git-remote,,,gitman,}
+@ref{git-remote,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-remote">git-remote(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-remote">git-remote(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-remote(1) manpage
+the git-remote(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex M
@@ -5940,17 +6346,16 @@ For information about the differences between the @emph{upstream} and the
 
 Also see 
 @ifinfo
-@ref{git-fetch,,,gitman,}
+@ref{git-fetch,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-fetch">git-fetch(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-fetch">git-fetch(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-fetch(1) manpage
+the git-fetch(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex f
@@ -6018,17 +6423,16 @@ For information about the differences between the @emph{upstream} and the
 
 Also see 
 @ifinfo
-@ref{git-pull,,,gitman,}
+@ref{git-pull,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-pull">git-pull(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-pull">git-pull(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-pull(1) manpage
+the git-pull(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex F
@@ -6069,17 +6473,16 @@ For information about the differences between the @emph{upstream} and the
 
 Also see 
 @ifinfo
-@ref{git-push,,,gitman,}
+@ref{git-push,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-push">git-push(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-push">git-push(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-push(1) manpage
+the git-push(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex P
@@ -6244,17 +6647,16 @@ Request that upstream pulls from your public repository.
 
 Also see 
 @ifinfo
-@ref{git-am,,,gitman,}
+@ref{git-am,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-am">git-am(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-am">git-am(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-am(1) manpage
+the git-am(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex w
@@ -6317,17 +6719,16 @@ changes made since the sequence started.
 
 Also see 
 @ifinfo
-@ref{git-tag,,,gitman,}
+@ref{git-tag,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-tag">git-tag(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-tag">git-tag(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-tag(1) manpage
+the git-tag(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex t
@@ -6364,17 +6765,16 @@ Offer to delete tags missing locally from REMOTE, and vice versa.
 
 Also see 
 @ifinfo
-@ref{git-notes,,,gitman,}
+@ref{git-notes,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-notes">git-notes(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-notes">git-notes(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-notes(1) manpage
+the git-notes(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex T
@@ -6471,17 +6871,16 @@ Abort the current notes ref merge.
 
 Also see 
 @ifinfo
-@ref{git-submodule,,,gitman,}
+@ref{git-submodule,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-submodule">git-submodule(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-submodule">git-submodule(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-submodule(1) manpage
+the git-submodule(1) manpage.
 @end iftex
-.
 
 @menu
 * Listing submodules::
@@ -6595,17 +6994,16 @@ Unregister the submodule at PATH.
 
 Also see 
 @ifinfo
-@ref{git-subtree,,,gitman,}
+@ref{git-subtree,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-subtree">git-subtree(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-subtree">git-subtree(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-subtree(1) manpage
+the git-subtree(1) manpage.
 @end iftex
-.
 
 @table @asis
 @kindex O
@@ -7065,17 +7463,16 @@ To set a Git variable for one repository only, simply set it in
 @code{/path/to/repo/.git/config} instead of @code{$HOME/.gitconfig} or
 @code{/etc/gitconfig}.  See 
 @ifinfo
-@ref{git-config,,,gitman,}
+@ref{git-config,,,gitman,}.
 @end ifinfo
 @ifhtml
 @html
-the <a href="http://git-scm.com/docs/git-config">git-config(1)</a> manpage
+the <a href="http://git-scm.com/docs/git-config">git-config(1)</a> manpage.
 @end html
 @end ifhtml
 @iftex
-the git-config(1) manpage
+the git-config(1) manpage.
 @end iftex
-.
 
 Similarly, Emacs options can be set for one repository only by editing
 @code{/path/to/repo/.dir-locals.el}.  See @ref{Directory Variables,,,emacs,}.
@@ -7104,7 +7501,7 @@ For example:
 
 @example
 [include]
-	path = /path/to/huge-gitconfig
+        path = /path/to/huge-gitconfig
 @end example
 
 
@@ -7113,7 +7510,7 @@ For example:
 
 @example
 [status]
-	showUntrackedFiles = no
+        showUntrackedFiles = no
 @end example
 
 
@@ -7367,6 +7764,10 @@ into separate libraries/packages, so that they can be used by other
 packages, without having to depend on Magit.  These libraries are
 described in separate manuals, see @ref{Top,,,with-editor,} and
 @ref{Top,,,magit-popup,}.
+
+If you are trying to find an unused key that you can bound to a
+command provided by your own Magit extension, then checkout
+@uref{https://github.com/magit/magit/wiki/Plugin-Dispatch-Key-Registry}.
 
 @menu
 * Calling Git::
@@ -7820,9 +8221,10 @@ returned by @code{magit-section-ident}.
 @defun magit-section-match condition &optional section
 
 Return @code{t} if SECTION matches CONDITION.  SECTION defaults to the
-section at point.
+section at point.  If SECTION is not specified and there also is no
+section at point, then return @code{nil}.
 
-Conditions can take the following forms:
+CONDITION can take the following forms:
 @itemize
 @item
 @code{(CONDITION...)}
@@ -7833,8 +8235,8 @@ matches if any of the CONDITIONs matches.
 @item
 @code{[TYPE...]}
 
-matches if the first TYPE matches the type of the section at
-point, the second matches that of its parent, and so on.
+matches if the first TYPE matches the type of the section, the
+second matches that of its parent, and so on.
 
 
 @item
@@ -7847,7 +8249,8 @@ their child sections.
 @item
 @code{TYPE}
 
-matches TYPE regardless of its parents.
+matches sections of TYPE regardless of the types of the parent
+sections.
 @end itemize
 Each TYPE is a symbol.  Note that it is not necessary to specify all
 TYPEs up to the root section as printed by @code{magit-describe-type},
@@ -7858,9 +8261,11 @@ unless of course you want to be that precise.
 
 If the section at point matches CONDITION evaluate BODY.
 
-If the section matches evaluate BODY forms sequentially and return
-the value of the last one, or if there are no BODY forms return the
-value of the section.  If the section does not match return nil.
+If the section matches, then evaluate BODY forms sequentially with
+@code{it} bound to the section and return the value of the last form.  If
+there are no BODY forms, then return the value of the section.  If
+the section does not match or if there is no section at point then
+return nil.
 
 See @code{magit-section-match} for the forms CONDITION can take.
 @end defun
@@ -8167,230 +8572,29 @@ all.
 @node FAQ
 @appendix FAQ
 
-Below you find a list of frequently asked questions.  For a list of
+The next two nodes lists frequently asked questions.  For a list of
 frequently @strong{and recently} asked questions, i.e. questions that haven't
-made it into the manual yet, see @uref{https://github.com/magit/magit/wiki/FAQ}.
+made it into the manual yet, see
+@uref{https://github.com/magit/magit/wiki/FAQ}.
 
 @menu
-* Magit is slow::
-* I changed several thousand files at once and now Magit is unusable::
-* I am having problems committing::
-* Diffs are collapsed after un-/staging::
-* I don't understand how branching and pushing work::
-* I don't like the key binding in v2.4: I don't like the key binding in v24. 
-* I cannot install the pre-requisites for Magit v2::
-* I am using an Emacs release older than v24.4: I am using an Emacs release older than v244. 
-* I am using a Git release older than v1.9.4: I am using a Git release older than v194. 
-* I am using MS Windows and cannot push with Magit::
-* I am using OS X and SOMETHING works in shell, but not in Magit: I am using OS X and SOMETHING works in shell but not in Magit. 
-* How to install the gitman info manual?::
-* How can I show Git's output?::
-* Diffs contain control sequences::
-* Expanding a file to show the diff causes it to disappear::
-* Point is wrong in the @code{COMMIT_EDITMSG} buffer::
-* The mode-line information isn't always up-to-date::
-* Can Magit be used as @code{ediff-version-control-package}?::
-* How to show diffs for gpg-encrypted files?::
-* Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
-* Symbol's value as function is void @code{--some}::
-* Where is the branch manager::
+* FAQ - How to @dots{}?::
+* FAQ - Issues and errors::
 @end menu
 
-@node Magit is slow
-@section Magit is slow
+@node FAQ - How to @dots{}?
+@section FAQ - How to @dots{}?
 
-See @ref{Performance,Performance}.
+@menu
+* How to show git's output?::
+* How to install the gitman info manual?::
+* How to show diffs for gpg-encrypted files?::
+* How does branching and pushing work?::
+* Can Magit be used as @code{ediff-version-control-package}?::
+@end menu
 
-@node I changed several thousand files at once and now Magit is unusable
-@section I changed several thousand files at once and now Magit is unusable
-
-Magit is @strong{currently} not expected to work under such conditions. It sure
-would be nice if it did, and v2.5 will hopefully be a big step into
-that direction.  But it might take until v3.1 to accomplish fully
-satisfactory performance, because that requires some heavy refactoring.
-
-But for now we recommend you use the command line to complete this one
-commit.  Also see @ref{Performance,Performance}.
-
-@node I am having problems committing
-@section I am having problems committing
-
-That likely means that Magit is having problems finding an appropriate
-emacsclient executable.  See @ref{Configuring With-Editor,,,with-editor,}
-and @ref{Debugging,,,with-editor,}.
-
-@node Diffs are collapsed after un-/staging
-@section Diffs are collapsed after un-/staging
-
-This typically happens on Windows and/or large repositories where
-preparing diffs takes longer than @code{magit-diff-expansion-threshold}. The
-default is one second, try increasing it to a larger value.
-
-Currently when one part of a Magit buffer has to be updated the whole
-buffer is recreated from scratch.  That obviously isn't good for
-performance and will be fixed eventually.  Meanwhile we need a kludge
-that prevents the update from taking very long under certain
-circumstances, e.g. when showing the difference for hundrets of
-changes files.
-
-For that reason the variable @code{magit-diff-expansion-threshold} was added,
-defaulting to one second.  If it takes longer than that to recreate a
-Magit buffer, then no further diff sections are expanded because
-that's one of the steps that take the longest.  If a diff is not
-expanded, then some work can be delayed until it actually is.
-
-You can then still expand sections manually, but when you refresh the
-complete buffer explicitly using @code{g} or by performing an action which
-triggers a refresh, then previously expanded diffs could be collapsed.
-You can set @code{magit-diff-expansion-threshold} to a higher value to
-prevent that from happening.
-
-@node I don't understand how branching and pushing work
-@section I don't understand how branching and pushing work
-
-Please see @ref{Branching,Branching} and @uref{http://emacsair.me/2016/01/18/magit-2.4}
-
-@node I don't like the key binding in v24
-@section I don't like the key binding in v2.4
-
-Please see @uref{http://emacsair.me/2016/01/1/restore-old-bindings}.
-
-@node I cannot install the pre-requisites for Magit v2
-@section I cannot install the pre-requisites for Magit v2
-
-An Elpa archive featuring obsolete Magit v1.4.2 and its dependencies
-is available from @uref{http://magit.vc/elpa/v1}.  But note that v1.4.2 is
-obsolete and no longer maintained.
-
-@node I am using an Emacs release older than v244
-@section I am using an Emacs release older than v24.4
-
-At least Emacs v24.4 is required.  There is no way around it, if you
-want to use Magit v2.
-
-If you own the machine you work on, then consider updating to the
-latest release provided by your distribution.  If it doesn't feature a
-recent enough release, then you will have to use a backport package or
-build Emacs from source.
-
-Installing Emacs from source is quite simple. See the instructions at
-@uref{http://git.savannah.gnu.org/cgit/emacs.git/tree/INSTALL} and
-@uref{http://git.savannah.gnu.org/cgit/emacs.git/tree/INSTALL.REPO} to get an
-idea of that this involves.  But when you perform the installation
-then use the instructions for the release you are actually installing.
-
-Unfortunately these instructions do not cover the hardest part (which
-is the hardest part exactly because it is not covered there):
-installing the build time dependencies.
-
-For that you'll need to perform a web search and find an appropriate
-tutorial for your distribution.  If you think you should not have had
-to do that yourself, then consider informing me about the resources
-that helped you figure what to do for your specific setup, so that I
-can post a link here.  That way those coming after you have it easier.
-
-An Elpa archive featuring obsolete Magit v1.4.2 and its dependencies
-is available from @uref{http://magit.vc/elpa/v1}.
-
-@node I am using a Git release older than v194
-@section I am using a Git release older than v1.9.4
-
-At least Git v1.9.4 is required.  There is no way around it, if you
-want to use Magit v2.
-
-If you own the machine, then consider updating to the latest release
-provided by your distribution.  If it doesn't feature a recent enough
-release, then you will have to use a backport package or build Git
-from source.
-
-Installing Git from source is quite simple. See the instructions at
-@uref{https://github.com/git/git/blob/master/INSTALL} to get an idea of that
-this involves.  But when you perform the installation then use the
-instructions for the release you are actually installing.
-
-An Elpa archive featuring obsolete Magit v1.4.2 and its dependencies
-is available from @uref{http://magit.vc/elpa/v1}.
-
-@node I am using MS Windows and cannot push with Magit
-@section I am using MS Windows and cannot push with Magit
-
-It's almost certain that Magit is only incidental to this issue.  It
-is much more likely that this is a configuration issue, even if you
-can push on the command line.
-
-Detailed setup instructions can be found at
-@uref{https://github.com/magit/magit/wiki/Pushing-with-Magit-from-Windows}.
-
-@node I am using OS X and SOMETHING works in shell but not in Magit
-@section I am using OS X and SOMETHING works in shell, but not in Magit
-
-This usually occurs because Emacs doesn't have the same environment
-variables as your shell.  Try installing and configuring
-@uref{https://github.com/purcell/exec-path-from-shell}.  By default it
-synchronizes @code{$PATH}, which helps Magit find the same @code{git} as the one you
-are using on the shell.
-
-If SOMETHING is "passphrase caching with gpg-agent for commit and/or
-tag signing", then you'll also need to synchronize @code{$GPG_AGENT_INFO}.
-
-@node How to install the gitman info manual?
-@section How to install the gitman info manual?
-
-Git's manpages can be exported as an info manual called @code{gitman}.
-Magit's own info manual links to nodes in that manual instead of the
-actual manpages because texinfo sadly doesn't support linking to
-manpages.
-
-Unfortunately many distributions do not install the @code{gitman} manual by
-default.  Some distributions may provide a separate package containing
-the info manual.  Please let me know the name of that package for your
-distribution, so that I can mention here.
-
-If the distribution you are using does not offer a package that
-contains the @code{gitman} manual, then you have to install it manually.
-Clone Git's own Git repository, checkout the tag corresponding to the
-Git release you have installed, and follow the instructions in
-@code{INSTALL}.  The relevant make targets are @code{info} and @code{install-info}.
-
-Alternatively you may add this advice to your @code{init.el} file.
-
-@lisp
-(defadvice Info-follow-nearest-node (around gitman activate)
-  "When encountering a cross reference to the `gitman' info
-manual, then instead of following that cross reference show
-the actual manpage using the function `man'."
-  (let ((node (Info-get-token
-	       (point) "\\*note[ \n\t]+"
-	       "\\*note[ \n\t]+\\([^:]*\\):\\(:\\|[ \n\t]*(\\)?")))
-    (if (and node (string-match "^(gitman)\\(.+\\)" node))
-	(progn (require 'man)
-	       (man (match-string 1 node)))
-      ad-do-it)))
-@end lisp
-
-Or if you are using MS Windows and @code{man} is not available, use this
-variation with used the Emacs Lisp implementation provided by the
-@code{woman} package.
-
-@lisp
-(defadvice Info-follow-nearest-node (around gitman activate)
-  "When encountering a cross reference to the `gitman' info
-manual, then instead of following that cross reference show
-the actual manpage using the function `woman'."
-  (let ((node (Info-get-token
-	       (point) "\\*note[ \n\t]+"
-	       "\\*note[ \n\t]+\\([^:]*\\):\\(:\\|[ \n\t]*(\\)?")))
-    (if (and node (string-match "^(gitman)\\(.+\\)" node))
-	(progn (require 'woman)
-	       (woman (match-string 1 node)))
-      ad-do-it)))
-@end lisp
-
-Did I mention that texinfo cross reference are just awful?  (This is
-just one of many issues.)
-
-@node How can I show Git's output?
-@section How can I show Git's output?
+@node How to show git's output?
+@subsection How to show git's output?
 
 To show the output of recently run git commands, press @code{$} (or, if that
 isn't available, @code{M-x magit-process-buffer}).  This will show a buffer
@@ -8403,89 +8607,45 @@ also inserting it into the process buffer would be to expensive.  For
 debugging purposes it's possible to do so anyway by setting
 @code{magit-git-debug} to @code{t}.
 
-@node Diffs contain control sequences
-@section Diffs contain control sequences
+@node How to install the gitman info manual?
+@subsection How to install the gitman info manual?
 
-This happens when you configure Git to always color diffs and/or all
-of its output.  The valid values for relevant Git variables @code{color.ui}
-and @code{color.diff} are @code{false}, @code{true} and @code{always}, and the default is @code{true}.
-You should leave it that because then you get colorful output in
-terminals but git's output is consumed by something else, then no
-colors are used.
+Git's manpages can be exported as an info manual called @code{gitman}.
+Magit's own info manual links to nodes in that manual instead of the
+actual manpages because Info doesn't support linking to manpages.
 
-If you actually use some other tool which expects that requires that
-you force git to output control sequences (which is highly unlikely),
-then you can override these settings just for Magit by using:
+Unfortunately some distributions do not install the @code{gitman} manual by
+default and you will have to install a separate documentation package
+to get it.
 
-@lisp
-(setq magit-git-global-arguments
-      (nconc magit-git-global-arguments
-	     '("-c" "color.ui=false"
-	       "-c" "color.diff=false")))
-@end lisp
-
-@node Expanding a file to show the diff causes it to disappear
-@section Expanding a file to show the diff causes it to disappear
-
-This is probably caused by a change of a @code{diff.*} Git variable.  You
-probably set that variable for a reason, and should therefore
-only undo that setting in Magit by customizing
-@code{magit-git-global-arguments}.
-
-@node Point is wrong in the @code{COMMIT_EDITMSG} buffer
-@section Point is wrong in the @code{COMMIT_EDITMSG} buffer
-
-Neither Magit nor `git-commit` fiddle with point in the buffer used to
-write commit messages, so something else must be doing it.
-
-You have probably globally enabled a mode which does restore point in
-file-visiting buffers.  It might be a bit surprising, but when you
-write a commit message, then you are actually editing a file.
-
-So you have to figure out which package is doing.  @code{saveplace},
-@code{pointback}, and @code{session} are likely candidates.  These snippets might
-help:
+Magit patches Info adding the ability to visit links to the @code{gitman}
+Info manual by instead viewing the respective manpage.  If you prefer
+that approach, then set the value of @code{magit-view-git-manual-method} to
+one of the supported packages @code{man} or @code{woman}, e.g.:
 
 @lisp
-(setq session-name-disable-regexp "\\(?:\\`'\\.git/[A-Z_]+\\'\\)")
-
-(with-eval-after-load 'pointback
-  (lambda ()
-    (when (or git-commit-mode git-rebase-mode)
-      (pointback-mode -1))))
+(setq magit-view-git-manual-method 'man)
 @end lisp
 
-@node The mode-line information isn't always up-to-date
-@section The mode-line information isn't always up-to-date
+@node How to show diffs for gpg-encrypted files?
+@subsection How to show diffs for gpg-encrypted files?
 
-Magit is not responsible for the version control information that is
-being displayed in the mode-line and looks something like @code{Git-master}.
-The built-in "Version Control" package, also known as "VC", updates
-that information, and can be told to do so more often:
+Git supports showing diffs for encrypted files, but has to be told to
+do so.  Since Magit just uses Git to get the diffs, configuring Git
+also affects the diffs displayed inside Magit.
 
-@lisp
-(setq auto-revert-check-vc-info t)
-@end lisp
+@example
+git config --global diff.gpg.textconv "gpg --no-tty --decrypt"
+echo "*.gpg filter=gpg diff=gpg" > .gitattributes
+@end example
 
-But doing so isn't good for performance.  For more (overly optimistic)
-information see @ref{VC Mode Line,,,emacs,}.
+@node How does branching and pushing work?
+@subsection How does branching and pushing work?
 
-If you don't really care about seeing that information in the
-mode-line, but just don't want to see @emph{incorrect} information, then
-consider disabling VC when using Git:
-
-@lisp
-(setq vc-handled-backends (delq 'Git vc-handled-backends))
-@end lisp
-
-Or to disable it completely:
-
-@lisp
-(setq vc-handled-backends nil)
-@end lisp
+Please see @ref{Branching,Branching} and @uref{http://emacsair.me/2016/01/18/magit-2.4}
 
 @node Can Magit be used as @code{ediff-version-control-package}?
-@section Can Magit be used as @code{ediff-version-control-package}?
+@subsection Can Magit be used as @code{ediff-version-control-package}?
 
 No, it cannot.  For that to work the functions @code{ediff-magit-internal}
 and @code{ediff-magit-merge-internal} would have to be implemented, and they
@@ -8517,37 +8677,156 @@ conflicts, in which case you @strong{can} use these commands, which then use
 command @code{magit-ediff-resolve} which only shows yet-to-be resolved
 conflicts.
 
-@node How to show diffs for gpg-encrypted files?
-@section How to show diffs for gpg-encrypted files?
+@node FAQ - Issues and errors
+@section FAQ - Issues and errors
 
-Git supports showing diffs for encrypted files, but has to be told to
-do so.  Since Magit just uses Git to get the diffs, configuring Git
-also affects the diffs displayed inside Magit.
+@menu
+* Magit is slow::
+* I changed several thousand files at once and now Magit is unusable::
+* I am having problems committing::
+* I am using MS Windows and cannot push with Magit::
+* I am using OS X and SOMETHING works in shell, but not in Magit: I am using OS X and SOMETHING works in shell but not in Magit. 
+* Diffs contain control sequences::
+* Expanding a file to show the diff causes it to disappear::
+* Point is wrong in the @code{COMMIT_EDITMSG} buffer::
+* The mode-line information isn't always up-to-date::
+* Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
+@end menu
 
-@example
-git config --global diff.gpg.textconv "gpg --no-tty --decrypt"
-echo "*.gpg filter=gpg diff=gpg" > .gitattributes
-@end example
+@node Magit is slow
+@subsection Magit is slow
+
+See @ref{Performance,Performance}.
+
+@node I changed several thousand files at once and now Magit is unusable
+@subsection I changed several thousand files at once and now Magit is unusable
+
+Magit is @strong{currently} not expected to work under such conditions. It sure
+would be nice if it did, and v2.5 will hopefully be a big step into
+that direction.  But it might take until v3.1 to accomplish fully
+satisfactory performance, because that requires some heavy refactoring.
+
+But for now we recommend you use the command line to complete this one
+commit.  Also see @ref{Performance,Performance}.
+
+@node I am having problems committing
+@subsection I am having problems committing
+
+That likely means that Magit is having problems finding an appropriate
+emacsclient executable.  See @ref{Configuring With-Editor,,,with-editor,}
+and @ref{Debugging,,,with-editor,}.
+
+@node I am using MS Windows and cannot push with Magit
+@subsection I am using MS Windows and cannot push with Magit
+
+It's almost certain that Magit is only incidental to this issue.  It
+is much more likely that this is a configuration issue, even if you
+can push on the command line.
+
+Detailed setup instructions can be found at
+@uref{https://github.com/magit/magit/wiki/Pushing-with-Magit-from-Windows}.
+
+@node I am using OS X and SOMETHING works in shell but not in Magit
+@subsection I am using OS X and SOMETHING works in shell, but not in Magit
+
+This usually occurs because Emacs doesn't have the same environment
+variables as your shell.  Try installing and configuring
+@uref{https://github.com/purcell/exec-path-from-shell}.  By default it
+synchronizes @code{$PATH}, which helps Magit find the same @code{git} as the one you
+are using on the shell.
+
+If SOMETHING is "passphrase caching with gpg-agent for commit and/or
+tag signing", then you'll also need to synchronize @code{$GPG_AGENT_INFO}.
+
+@node Diffs contain control sequences
+@subsection Diffs contain control sequences
+
+This happens when you configure Git to always color diffs and/or all
+of its output.  The valid values for relevant Git variables @code{color.ui}
+and @code{color.diff} are @code{false}, @code{true} and @code{always}, and the default is @code{true}.
+You should leave it that because then you get colorful output in
+terminals but git's output is consumed by something else, then no
+colors are used.
+
+If you actually use some other tool which expects that requires that
+you force git to output control sequences (which is highly unlikely),
+then you can override these settings just for Magit by using:
+
+@lisp
+(setq magit-git-global-arguments
+      (nconc magit-git-global-arguments
+             '("-c" "color.ui=false"
+               "-c" "color.diff=false")))
+@end lisp
+
+@node Expanding a file to show the diff causes it to disappear
+@subsection Expanding a file to show the diff causes it to disappear
+
+This is probably caused by a change of a @code{diff.*} Git variable.  You
+probably set that variable for a reason, and should therefore
+only undo that setting in Magit by customizing
+@code{magit-git-global-arguments}.
+
+@node Point is wrong in the @code{COMMIT_EDITMSG} buffer
+@subsection Point is wrong in the @code{COMMIT_EDITMSG} buffer
+
+Neither Magit nor `git-commit` fiddle with point in the buffer used to
+write commit messages, so something else must be doing it.
+
+You have probably globally enabled a mode which does restore point in
+file-visiting buffers.  It might be a bit surprising, but when you
+write a commit message, then you are actually editing a file.
+
+So you have to figure out which package is doing.  @code{saveplace},
+@code{pointback}, and @code{session} are likely candidates.  These snippets might
+help:
+
+@lisp
+(setq session-name-disable-regexp "\\(?:\\`'\\.git/[A-Z_]+\\'\\)")
+
+(with-eval-after-load 'pointback
+  (lambda ()
+    (when (or git-commit-mode git-rebase-mode)
+      (pointback-mode -1))))
+@end lisp
+
+@node The mode-line information isn't always up-to-date
+@subsection The mode-line information isn't always up-to-date
+
+Magit is not responsible for the version control information that is
+being displayed in the mode-line and looks something like @code{Git-master}.
+The built-in "Version Control" package, also known as "VC", updates
+that information, and can be told to do so more often:
+
+@lisp
+(setq auto-revert-check-vc-info t)
+@end lisp
+
+But doing so isn't good for performance.  For more (overly optimistic)
+information see @ref{VC Mode Line,,,emacs,}.
+
+If you don't really care about seeing that information in the
+mode-line, but just don't want to see @emph{incorrect} information, then
+consider disabling VC when using Git:
+
+@lisp
+(setq vc-handled-backends (delq 'Git vc-handled-backends))
+@end lisp
+
+Or to disable it completely:
+
+@lisp
+(setq vc-handled-backends nil)
+@end lisp
 
 @node Emacs 245 hangs when loading Magit
-@section Emacs 24.5 hangs when loading Magit
+@subsection Emacs 24.5 hangs when loading Magit
 
 This is actually triggered by loading Tramp.  See
 @uref{https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20015} for details. You
 can work around the problem by setting
 @code{tramp-ssh-controlmaster-options}. Changing your DNS server (e.g. to
 Google's @code{8.8.8.8}) may also be sufficient to work around the issue.
-
-@node Symbol's value as function is void @code{--some}
-@section Symbol's value as function is void @code{--some}
-
-Update @code{dash}, restart Emacs, and then it will be defined.
-
-@node Where is the branch manager
-@section Where is the branch manager
-
-@code{y} is bound to the command that shows the "refs buffer", the successor
-of the "branch manager".
 
 @node Keystroke Index
 @appendix Keystroke Index

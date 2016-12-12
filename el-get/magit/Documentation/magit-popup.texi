@@ -37,7 +37,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Magit-Popup User Manual
-@subtitle for version 2.8
+@subtitle for version 2.9
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -194,10 +194,12 @@ a chance to notice them.
 
 @defopt magit-popup-show-common-commands
 
-This option controls whether the section which lists the commands
-that are common to all popups is initially show.  We recommend you
-set this to @code{nil} - after you have memorized that it can be shown on
-demand using @code{C-t}.
+This option controls whether the section that lists the commands
+that are common to all popups is initially shown.
+
+By default this is not the case, but note that you can temporarily
+show this section using @code{C-t}, which therefore is the only common
+command you actually have to memorize.
 @end defopt
 
 @table @asis
@@ -422,20 +424,9 @@ is:
 @defopt magit-popup-use-prefix-argument
 
 This option controls the effect that the use of a prefix argument
-before entering a popup has.  The @strong{intended} default is @code{default}, but
-the @strong{actual} default is @code{disabled}.  This is necessary because the old
-popup implementation did simply forward such a pre-popup prefix
-argument to the suffix command invoked from the popup, and changing
-that without users being aware of it could lead to tears.
+before entering a popup has.
 
 @itemize
-@item
-@code{disabled}
-
-Bring up a Custom option buffer so that the user reads
-this and then makes an informed choice.
-
-
 @item
 @code{default}
 
@@ -510,19 +501,19 @@ infix arguments, and then also one of its suffix commands.
   'magit-commands
   :man-page "git-tag"
   :switches '((?a "Annotate" "--annotate")
-	      (?s "Sign"     "--sign")
-	      (?f "Force"    "--force"))
+              (?s "Sign"     "--sign")
+              (?f "Force"    "--force"))
   :actions  '((?t "Create"   magit-tag)
-	      (?k "Delete"   magit-tag-delete)
-	      (?p "Prune"    magit-tag-prune))
+              (?k "Delete"   magit-tag-delete)
+              (?p "Prune"    magit-tag-prune))
   :default-action 'magit-tag)
 
 ;;;###autoload
 (defun magit-tag (name rev &optional args)
   "Create a new tag with the given NAME at REV."
   (interactive (list (magit-read-tag "Tag name")
-		     (magit-read-branch-or-commit "Place tag on")
-		     (magit-tag-arguments)))
+                     (magit-read-branch-or-commit "Place tag on")
+                     (magit-tag-arguments)))
   (magit-run-git-with-editor "tag" args name rev))
 @end lisp
 
@@ -588,12 +579,6 @@ The actions which can be invoked from the popup.  VALUE is a list
 whose members have the form (KEY DESC COMMAND), see
 @code{magit-define-popup-action} for details.
 
-How the actions are split into rows and columns currently depends
-on the available space and @code{:max-action-columns}.
-
-WARNING: This will likely be change to use a more explicit format
-(((KEY DESC COMMAND)@dots{})@dots{}) before the release.
-
 Actions are regular Emacs commands, which usually have an
 @code{interactive} form setup to consume the values of the popup
 @code{:switches} and @code{:options} when invoked from the corresponding popup,
@@ -631,6 +616,16 @@ specified, should be one of @code{default} or @code{prefix}.
 
 
 @item
+@code{:max-action-columns}
+
+The maximum number of actions to display on a single line, a
+number or a function that return a number and takes the name of
+the section currently being inserted as argument.  If there isn't
+enough room to display as many columns as specified here, then
+fewer are used.
+
+
+@item
 @code{:switches}
 
 The popup arguments which can be toggled on and off.  VALUE is a
@@ -642,16 +637,8 @@ list whose members have the form @code{(KEY DESC SWITCH)}, see
 @code{:options}
 
 The popup arguments which take a value, as in "--opt~OPTVAL".
-VALUE is a list whose members have the form (KEY DESC OPTION
-READER), see @code{magit-define-popup-option} for details.
-
-
-@item
-@code{:variables}
-
-Git variables which can be set from the popup.  VALUE is a list
-whose members have the form (KEY DESC COMMAND FORMATTER), see
-@code{magit-define-popup-variable} for details.
+VALUE is a list whose members have the form @code{(KEY DESC OPTION
+    READER)}, see @code{magit-define-popup-option} for details.
 
 
 @item
@@ -659,7 +646,15 @@ whose members have the form (KEY DESC COMMAND FORMATTER), see
 
 The default arguments, a list of switches (which are then enabled
 by default) and options with there default values, as in
-"--OPT~OPTVAL\".
+@code{"--OPT=OPTVAL"}.
+
+
+@item
+@code{:variables}
+
+Git variables which can be set from the popup.  VALUE is a list
+whose members have the form @code{(KEY DESC COMMAND FORMATTER)}, see
+@code{magit-define-popup-variable} for details.
 
 
 @item

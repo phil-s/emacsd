@@ -40,15 +40,17 @@ Contributors
 
 - Aaron Culich <aculich@gmail.com>
 - Abdo Roig-Maranges <abdo.roig@gmail.com>
-- acple <silentsphere110@gmail.com>
+- Adam Porter <adam@alphapapa.net>
 - Adam Spiers <emacs@adamspiers.org>
 - Adeodato Simó <dato@net.com.org.es>
 - Ævar Arnfjörð Bjarmason <avarab@gmail.com>
 - Alan Falloon <alan.falloon@gmail.com>
+- Alexander Gramiak <fice-t@protonmail.com>
 - Alex Dunn <adunn@ucsb.edu>
 - Alexey Voinov <alexey.v.voinov@gmail.com>
 - Alex Kost <alezost@gmail.com>
 - Alex Ott <alexott@gmail.com>
+- Allen <darkfeline@felesatra.moe>
 - Andreas Fuchs <asf@boinkor.net>
 - Andreas Liljeqvist <andreas.liljeqvist@robacks.se>
 - Andreas Rottmann <a.rottmann@gmx.at>
@@ -68,6 +70,7 @@ Contributors
 - Brian Warner <warner@lothar.com>
 - Bryan Shell <bryan.shell@orbitz.com>
 - Carl Lieberman <liebermancarl@gmail.com>
+- Chillar Anand <anand21nanda@gmail.com>
 - Chris Bernard <cebernard@gmail.com>
 - Chris Done <chrisdone@gmail.com>
 - Chris Moore <dooglus@gmail.com>
@@ -104,6 +107,7 @@ Contributors
 - Geoff Shannon <geoffpshannon@gmail.com>
 - George Kadianakis <desnacked@gmail.com>
 - Graham Clark <grclark@gmail.com>
+- Graham Dobbins <gdobbins@protonmail.com>
 - Greg A. Woods <woods@planix.com>
 - Greg Lucas <greg@glucas.net>
 - Greg Sexton <gregsexton@gmail.com>
@@ -118,6 +122,7 @@ Contributors
 - Jeff Bellegarde <jbellegarde@whitepages.com>
 - Jeff Dairiki <dairiki@dairiki.org>
 - Jesse Alama <jesse.alama@gmail.com>
+- Joakim Jalap <JOJA@stoneridge.com>
 - Johann Klähn <kljohann@gmail.com>
 - John Mastro <john.b.mastro@gmail.com>
 - John Wiegley <johnw@newartisans.com>
@@ -129,6 +134,7 @@ Contributors
 - Justin Caratzas <justin.caratzas@gmail.com>
 - Kan-Ru Chen <kanru@kanru.info>
 - Kan-Ru Chen <koster@debian.org>
+- Keshav Kini <keshav.kini@gmail.com>
 - Kimberly Wolk <kimwolk@hotmail.com>
 - Kyle Meyer <kyle@kyleam.com>
 - Laurent Laffont <laurent.laffont@gmail.com>
@@ -147,7 +153,8 @@ Contributors
 - Marc Herbert <marc.herbert@gmail.com>
 - Marcin Bachry <hegel666@gmail.com>
 - Marco Craveiro <marco.craveiro@gmail.com>
-- Marian Schubert <marian.schubert@gooddata.com>
+- Marco Wahl <marcowahlsoft@gmail.com>
+- Marian Schubert <marian.schubert@gmail.com>
 - Mario Rodas <marsam@users.noreply.github.com>
 - Marius Vollmer <marius.vollmer@gmail.com>
 - Mark Hepburn <Mark.Hepburn@csiro.au>
@@ -186,6 +193,7 @@ Contributors
 - Peter Vasil <mail@petervasil.net>
 - Philippe Vaucher <philippe.vaucher@gmail.com>
 - Philipp Haselwarter <philipp@haselwarter.org>
+- Philipp Stephani <phst@google.com>
 - Philip Weaver <philip.weaver@gmail.com>
 - Phil Jackson <phil@shellarchive.co.uk>
 - Phil Sainty <phil@catalyst.net.nz>
@@ -211,6 +219,7 @@ Contributors
 - Samuel Bronson <naesten@gmail.com>
 - Samuel W. Flint <swflint@flintfam.org>
 - Sanjoy Das <sanjoy@playingwithpointers.com>
+- Sean Allred <code@seanallred.com>
 - Sean Bryant <sbryant@hackinggibsons.com>
 - Sebastian Wiesner <lunaryorn@gmail.com>
 - Sébastien Gross <seb@chezwam.org>
@@ -218,6 +227,7 @@ Contributors
 - Sergey Pashinin <sergey@pashinin.com>
 - Sergey Vinokurov <serg.foo@gmail.com>
 - Servilio Afre Puentes <afrepues@mcmaster.ca>
+- Silent Sphere <silentsphere110@gmail.com>
 - Štěpán Němec <stepnem@gmail.com>
 - Steven Chow <steve@myfreestuffapp.com>
 - Steven E. Harris <seh@panix.com>
@@ -241,6 +251,7 @@ Contributors
 - Tim Wraight <tim@wraight.net>
 - Ting-Yu Lin <aethanyc@gmail.com>
 - Tom Feist <shabble@metavore.org>
+- Tunc Uzlu <bb2020@users.noreply.github.com>
 - Vineet Naik <vineet@helpshift.com>
 - Wei Huang <weih@opera.com>
 - Wilfred Hughes <me@wilfred.me.uk>

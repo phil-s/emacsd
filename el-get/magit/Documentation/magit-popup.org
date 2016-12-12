@@ -7,16 +7,18 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Magit-Popup: (magit-popup).
 #+TEXINFO_DIR_DESC: Infix arguments with feedback
-#+SUBTITLE: for version 2.8
+#+SUBTITLE: for version 2.9
 
-#+OPTIONS: H:4 num:3 toc:2
+#+TEXINFO_DEFFN: t
+#+TEXINFO_CLASS: info+
+#+OPTIONS: H:4 num:nil toc:2
 
 * Copying
 :PROPERTIES:
 :COPYING:    t
 :END:
 
-#+BEGIN_TEXINFO
+#+BEGIN_EXPORT texinfo
 @ifnottex
 Taking inspiration from regular prefix commands and prefix arguments,
 this library implements a similar abstraction; a new kind of prefix
@@ -37,7 +39,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 @end quotation
-#+END_TEXINFO
+#+END_EXPORT
 
 * Introduction
 
@@ -147,10 +149,12 @@ a chance to notice them.
 
 - User Option: magit-popup-show-common-commands
 
-  This option controls whether the section which lists the commands
-  that are common to all popups is initially show.  We recommend you
-  set this to ~nil~ - after you have memorized that it can be shown on
-  demand using ~C-t~.
+  This option controls whether the section that lists the commands
+  that are common to all popups is initially shown.
+
+  By default this is not the case, but note that you can temporarily
+  show this section using ~C-t~, which therefore is the only common
+  command you actually have to memorize.
 
 - Key: C-t, magit-popup-toggle-show-common-commands
 
@@ -342,16 +346,7 @@ is:
 - User Option: magit-popup-use-prefix-argument
 
   This option controls the effect that the use of a prefix argument
-  before entering a popup has.  The *intended* default is ~default~, but
-  the *actual* default is ~disabled~.  This is necessary because the old
-  popup implementation did simply forward such a pre-popup prefix
-  argument to the suffix command invoked from the popup, and changing
-  that without users being aware of it could lead to tears.
-
-  - ~disabled~
-
-    Bring up a Custom option buffer so that the user reads
-    this and then makes an informed choice.
+  before entering a popup has.
 
   - ~default~
 
@@ -488,12 +483,6 @@ commands have to be defined separately using plain ~defun~.
     whose members have the form (KEY DESC COMMAND), see
     ~magit-define-popup-action~ for details.
 
-    How the actions are split into rows and columns currently depends
-    on the available space and ~:max-action-columns~.
-
-    WARNING: This will likely be change to use a more explicit format
-    (((KEY DESC COMMAND)...)...) before the release.
-
     Actions are regular Emacs commands, which usually have an
     ~interactive~ form setup to consume the values of the popup
     ~:switches~ and ~:options~ when invoked from the corresponding popup,
@@ -525,6 +514,14 @@ commands have to be defined separately using plain ~defun~.
     default set using ~magit-popup-use-prefix-argument~.  The value, if
     specified, should be one of ~default~ or ~prefix~.
 
+  - ~:max-action-columns~
+
+    The maximum number of actions to display on a single line, a
+    number or a function that return a number and takes the name of
+    the section currently being inserted as argument.  If there isn't
+    enough room to display as many columns as specified here, then
+    fewer are used.
+
   - ~:switches~
 
     The popup arguments which can be toggled on and off.  VALUE is a
@@ -534,20 +531,20 @@ commands have to be defined separately using plain ~defun~.
   - ~:options~
 
     The popup arguments which take a value, as in "--opt~OPTVAL".
-    VALUE is a list whose members have the form (KEY DESC OPTION
-    READER), see ~magit-define-popup-option~ for details.
-
-  - ~:variables~
-
-    Git variables which can be set from the popup.  VALUE is a list
-    whose members have the form (KEY DESC COMMAND FORMATTER), see
-    ~magit-define-popup-variable~ for details.
+    VALUE is a list whose members have the form ~(KEY DESC OPTION
+    READER)~, see ~magit-define-popup-option~ for details.
 
   - ~:default-arguments~
 
     The default arguments, a list of switches (which are then enabled
     by default) and options with there default values, as in
-    "--OPT~OPTVAL\".
+    ~"--OPT=OPTVAL"~.
+
+  - ~:variables~
+
+    Git variables which can be set from the popup.  VALUE is a list
+    whose members have the form ~(KEY DESC COMMAND FORMATTER)~, see
+    ~magit-define-popup-variable~ for details.
 
   - ~:sequence-predicate~
 
@@ -630,3 +627,9 @@ Except when redefining the former, you should not use these directly.
 #  LocalWords:  ARG DESC KEY's LocalWords Magit OPTVAL POPUP PREPEND
 #  LocalWords:  Popup SHORTNAME args desc magit manpage popup popup's
 #  LocalWords:  popups pre prepend
+
+# Local Variables:
+# eval: (require 'magit-utils nil t)
+# eval: (require 'org-man     nil t)
+# eval: (require 'ox-texinfo+ nil t)
+# End:
