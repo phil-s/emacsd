@@ -13,6 +13,9 @@
   (defvar dired-guess-shell-alist-user)
   (defvar dired-mode-map)
   (defvar dired-omit-files)
+  (defvar ediff-control-buffer)
+  (defvar ediff-current-difference)
+  (defvar ediff-mode-map)
   (defvar ediff-split-window-function)
   (defvar ediff-window-setup-function)
   (defvar erc-log-channels-directory)
@@ -41,6 +44,8 @@
   (declare-function dired-dwim-target "dired")
   (declare-function dired-find-file "dired")
   (declare-function dired-mode-map "dired")
+  (declare-function ediff-copy-diff "ediff-util")
+  (declare-function ediff-get-region-contents "ediff-util")
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function my-isearch-delete "my-configuration")
   (declare-function notify "notify")
@@ -818,6 +823,21 @@ return to the save-some-buffers minibuffer prompt."
        (remove-hook 'ediff-after-quit-hook-internal
                     'my-save-some-buffers-with-ediff-quit)
        (exit-recursive-edit))))
+
+;; Make "d" in a merge conflict concatenate A and B together.
+(defun my-ediff-copy-both-to-C ()
+  "Concatenate variants A and B together as C."
+  (interactive)
+  (ediff-copy-diff
+   ediff-current-difference nil 'C nil
+   (concat (ediff-get-region-contents ediff-current-difference
+                                      'A ediff-control-buffer)
+           (ediff-get-region-contents ediff-current-difference
+                                      'B ediff-control-buffer))))
+(defun my-ediff-keymap-setup-hook ()
+  (define-key ediff-mode-map "d" 'my-ediff-copy-both-to-C))
+
+(add-hook 'ediff-keymap-setup-hook 'my-ediff-keymap-setup-hook)
 
 ;; Allow buffer reverts to be undone
 (defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)
