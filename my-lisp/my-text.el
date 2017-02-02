@@ -10,6 +10,14 @@
   (defvar deft-text-mode)
   )
 
+;; PDFs
+(defun my-pdf-tools-install ()
+  "Initialise `pdf-tools' if the package is installed."
+  (and (fboundp 'pdf-tools-install)
+       (pdf-tools-install)))
+
+(add-hook 'doc-view-mode-hook #'my-pdf-tools-install)
+
 ;; CSV mode
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
 (autoload 'csv-mode "csv-mode"
