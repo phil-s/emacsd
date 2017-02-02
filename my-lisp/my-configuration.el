@@ -26,6 +26,7 @@
   (defvar erc-save-queries-on-quit)
   (defvar erc-server-reconnect-attempts)
   (defvar erc-server-reconnect-timeout)
+  (defvar erc-track-exclude-types)
   (defvar eshell-directory-name)
   (defvar ffap-url-regexp)
   (defvar goto-address-mail-regexp)
@@ -700,6 +701,10 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
       erc-server-reconnect-timeout 5
       erc-prompt 'my-erc-prompt
       )
+
+;; Stop displaying channels in the mode line for no good reason.
+(setq erc-track-exclude-types
+      '("JOIN" "KICK" "NICK" "PART" "QUIT" "MODE" "333" "353"))
 
 (defun my-erc-prompt ()
   "Prompt generator function assigned to the `erc-prompt' variable."
