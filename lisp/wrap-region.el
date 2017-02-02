@@ -143,6 +143,7 @@
 
 (defun wrap-region-with-tag ()
   "Wraps region with tag."
+  (interactive)
   (let* ((tag (read-string "Enter Tag (with optional attributes): "))
          (split (split-string tag " "))
          (tag-name (car split))
