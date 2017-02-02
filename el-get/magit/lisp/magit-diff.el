@@ -244,7 +244,8 @@ visits the file in the working tree."
 (defcustom magit-revision-mode-hook nil
   "Hook run after entering Magit-Revision mode."
   :group 'magit-revision
-  :type 'hook)
+  :type 'hook
+  :options '(bug-reference-mode))
 
 (defcustom magit-revision-sections-hook
   '(magit-insert-revision-tag
@@ -890,6 +891,8 @@ be committed."
                     nil (list (expand-file-name a)
                               (expand-file-name b))))
 
+(defvar-local magit-buffer-revision-hash nil)
+
 ;;;###autoload
 (defun magit-show-commit (rev &optional args files module)
   "Visit the revision at point in another buffer.
@@ -1051,14 +1054,6 @@ Customize variable `magit-diff-refine-hunk' to change the default mode."
   (magit-diff-update-hunk-refinement))
 
 ;;;; Visit commands
-
-(defun magit-diff-visit-file-other-window (file &optional force-worktree)
-  "`magit-diff-visit-file' in other window, but not selecting the window."
-  (interactive (list (--if-let (magit-file-at-point)
-                         (expand-file-name it)
-                       (user-error "No file at point"))))
-  (save-selected-window
-    (magit-diff-visit-file file :other-window force-worktree)))
 
 (defun magit-diff-visit-file (file &optional other-window force-worktree)
   "From a diff, visit the corresponding file at the appropriate position.
@@ -1333,7 +1328,9 @@ commit or stash at point, then prompt for a commit."
         (if (and buf
                  (setq win (get-buffer-window buf))
                  (with-current-buffer buf
-                   (equal rev (car magit-refresh-args))))
+                   (and (equal rev (car magit-refresh-args))
+                        (equal (magit-rev-parse rev)
+                               magit-buffer-revision-hash))))
             (with-selected-window win
               (condition-case nil
                   (funcall fn)
@@ -1364,7 +1361,7 @@ commit or stash at point, then prompt for a commit."
 (define-derived-mode magit-diff-mode magit-mode "Magit Diff"
   "Mode for looking at a Git diff.
 
-This mode is documented in info node `(magit)Diff buffer'.
+This mode is documented in info node `(magit)Diff Buffer'.
 
 \\<magit-mode-map>\
 Type \\[magit-refresh] to refresh the current buffer.
@@ -1372,7 +1369,7 @@ Type \\[magit-section-toggle] to expand or hide the section at point.
 Type \\[magit-visit-thing] to visit the hunk or file at point.
 
 Staging and applying changes is documented in info node
-`(magit)Staging and unstaging' and info node `(magit)Applying'.
+`(magit)Staging and Unstaging' and info node `(magit)Applying'.
 
 \\<magit-hunk-section-map>Type \
 \\[magit-apply] to apply the change at point, \
@@ -1428,7 +1425,6 @@ is set in `magit-mode-setup'."
       (define-key map (kbd "C-j") 'magit-diff-visit-file-worktree))
     (define-key map [C-return] 'magit-diff-visit-file-worktree)
     (define-key map [remap magit-visit-thing]      'magit-diff-visit-file)
-    (define-key map [remap magit-diff-show-or-scroll-up] 'magit-diff-visit-file-other-window)
     (define-key map [remap magit-delete-thing]     'magit-discard)
     (define-key map [remap magit-revert-no-commit] 'magit-reverse)
     (define-key map "a" 'magit-apply)
@@ -1444,7 +1440,6 @@ is set in `magit-mode-setup'."
       (define-key map (kbd "C-j") 'magit-diff-visit-file-worktree))
     (define-key map [C-return] 'magit-diff-visit-file-worktree)
     (define-key map [remap magit-visit-thing]      'magit-diff-visit-file)
-    (define-key map [remap magit-diff-show-or-scroll-up] 'magit-diff-visit-file-other-window)
     (define-key map [remap magit-delete-thing]     'magit-discard)
     (define-key map [remap magit-revert-no-commit] 'magit-reverse)
     (define-key map "a" 'magit-apply)
@@ -1718,7 +1713,7 @@ section or a child thereof."
 (define-derived-mode magit-revision-mode magit-diff-mode "Magit Rev"
   "Mode for looking at a Git commit.
 
-This mode is documented in info node `(magit)Revision buffer'.
+This mode is documented in info node `(magit)Revision Buffer'.
 
 \\<magit-mode-map>\
 Type \\[magit-refresh] to refresh the current buffer.
@@ -1726,7 +1721,7 @@ Type \\[magit-section-toggle] to expand or hide the section at point.
 Type \\[magit-visit-thing] to visit the hunk or file at point.
 
 Staging and applying changes is documented in info node
-`(magit)Staging and unstaging' and info node `(magit)Applying'.
+`(magit)Staging and Unstaging' and info node `(magit)Applying'.
 
 \\<magit-hunk-section-map>Type \
 \\[magit-apply] to apply the change at point, \
@@ -1749,6 +1744,7 @@ Staging and applying changes is documented in info node
                               (_ (concat " in files "
                                          (mapconcat #'identity files ", ")))))
                     'face 'magit-header-line))
+  (setq magit-buffer-revision-hash (magit-rev-parse rev))
   (magit-insert-section (commitbuf)
     (run-hook-with-args 'magit-revision-sections-hook rev)))
 

@@ -179,6 +179,7 @@ The major mode configured here is turned on by the minor mode
              git-commit-turn-on-auto-fill
              git-commit-turn-on-flyspell
              git-commit-propertize-diff
+             bug-reference-mode
              with-editor-usage-message))
 
 (defcustom git-commit-finish-query-functions
@@ -407,7 +408,7 @@ already using it, then you probably shouldn't start doing so."
                                                (regexp-quote buffer-file-name)
                                                "\\'")
                                        git-commit-major-mode))))
-      (normal-mode)))
+      (normal-mode t)))
   (setq with-editor-show-usage nil)
   (with-editor-mode 1)
   (add-hook 'with-editor-finish-query-functions
