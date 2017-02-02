@@ -98,6 +98,26 @@ when `auto-save-mode' is invoked manually.")
 (setq inhibit-startup-screen t)
 (eval '(setq inhibit-startup-echo-area-message "phil"))
 
+;; Supply a random fortune cookie as the *scratch* message.
+(defun my-fortune-scratch-message ()
+  (interactive)
+  (let ((fortune
+         (when (executable-find "fortune")
+           (with-temp-buffer
+             (shell-command "fortune" t)
+             (let ((comment-start ";;"))
+               (comment-region (point-min) (point-max)))
+             (delete-trailing-whitespace (point-min) (point-max))
+             (concat (buffer-string) "\n")))))
+    (if (called-interactively-p 'any)
+        (insert fortune)
+      fortune)))
+
+;; initial-scratch-message
+(let ((fortune (my-fortune-scratch-message)))
+  (when fortune
+    (setq initial-scratch-message fortune)))
+
 ;; Enable disabled commands
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'downcase-region           'disabled nil)
