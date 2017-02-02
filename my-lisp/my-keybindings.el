@@ -309,6 +309,23 @@ Called via `after-load-functions', as well as `after-init-hook'."
 
 ;; (global-set-key (kbd "s-x") 'my-keys-pass-through)
 
+(defun my-describe-keymap (keymap)
+  "Describe a keymap using `substitute-command-keys'."
+  (interactive
+   (list (completing-read
+          "Keymap: " (let (maps)
+                       (mapatoms (lambda (sym)
+                                   (and (boundp sym)
+                                        (keymapp (symbol-value sym))
+                                        (push sym maps))))
+                       maps)
+          nil t)))
+  (with-output-to-temp-buffer (format "*keymap: %s*" keymap)
+    (princ (format "%s\n\n" keymap))
+    (princ (substitute-command-keys (format "\\{%s}" keymap)))
+    (with-current-buffer standard-output ;; temp buffer
+      (setq help-xref-stack-item (list #'my-describe-keymap keymap)))))
+
 (defun my-buffer-local-set-key (key command)
   ;; Helper intended for use in local variables. e.g.:
   ;; eval: (my-buffer-local-set-key (kbd "C-c f") 'foo)
