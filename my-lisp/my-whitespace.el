@@ -94,10 +94,11 @@
 (defun my-ignore-whitespace-long-lines ()
   "Stop highlighting long lines in whitespace mode."
   (interactive)
-  (set (make-local-variable 'whitespace-style)
-       (remq 'lines-tail (remq 'lines whitespace-style)))
-  (whitespace-mode 0)
-  (whitespace-mode 1))
+  (when (boundp 'whitespace-style)
+    (set (make-local-variable 'whitespace-style)
+         (remq 'lines-tail (remq 'lines whitespace-style)))
+    (whitespace-mode 0)
+    (whitespace-mode 1)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
