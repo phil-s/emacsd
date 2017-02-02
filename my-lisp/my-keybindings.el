@@ -14,6 +14,7 @@
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
+(global-set-key (kbd "M-z") 'zap-up-to-char)
 (eval-after-load "my-utilities"
   '(when (fboundp 'jp/yank)
      (global-set-key (kbd "C-y") 'jp/yank)

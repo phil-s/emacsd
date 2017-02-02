@@ -168,6 +168,11 @@ when `auto-save-mode' is invoked manually.")
 ;; Use day/month/year format in calendar
 (setq calendar-date-style 'european)
 
+;; Make the `zap-up-to-char' command available.
+(autoload 'zap-up-to-char "misc"
+  "Kill up to, but not including ARGth occurrence of CHAR."
+  :interactive)
+
 ;; Use stealth fontification.
 ;; n.b. This approach requires much more time for fontification to be
 ;; completed, and performance can be a little sluggish in the interim,
