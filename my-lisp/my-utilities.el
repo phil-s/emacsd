@@ -238,8 +238,12 @@ any numeric prefix argument is passed to `occur' as nlines."
                     (add-to-list 'visible-buffers (window-buffer window))))
     (multi-occur visible-buffers regexp)))
 
-(eval-when-compile (require 'term)) ;; `term-in-char-mode' is a macro.
-
+(eval-when-compile
+  (declare-function term-send-raw-string "term" (chars))
+  (declare-function term-mode "term" ())
+  (declare-function term-char-mode "term" ())
+  (require 'term) ;; `term-in-char-mode' is a macro.
+  )
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call `next-buffer' if the last command was
 `next-buffer' or `previous-buffer', and `winner-redo' if the last
