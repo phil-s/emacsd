@@ -194,7 +194,9 @@ static char * data[] = {
 (setq magit-branch-read-upstream-first 'fallback)
 
 (eval-after-load "magit"
-  '(global-magit-file-mode 1)) ;; per-file popup on C-c M-g
+  '(progn
+     (define-key magit-mode-map (kbd "TAB") 'magit-section-cycle)
+     (global-magit-file-mode 1))) ;; per-file popup on C-c M-g
 
 ;; Protect against accidental pushes to upstream
 (defadvice magit-push-current-to-upstream
