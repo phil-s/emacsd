@@ -335,6 +335,11 @@
 ;; setq debug-on-event
 ;; setq debug-on-message REGEXP
 
+;; Watching for variable changes (Emacs 25.2? 26.1?)
+;; Function `add-variable-watcher' can be used to call a function when
+;; a symbol's value is changed.  This is used to implement the new
+;; debugger command `debug-on-variable-change'.
+
 ;; Spinning:
 ;; setq debug-on-quit t
 ;; When the problem occurs, hit C-g for a backtrace.
@@ -550,6 +555,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Quick notes:
+;;;
+;;; Face remapping: C-h i g (elisp) Face Remapping RET
+;;; e.g.: (face-remap-add-relative 'default :family "Monospace")
+;;;
 ;;;
 ;;; Never forget that modifying a (quote)d argument == self-modifying code!
 ;;; http://stackoverflow.com/q/16670989/324105

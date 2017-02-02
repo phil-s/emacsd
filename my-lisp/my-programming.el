@@ -201,6 +201,7 @@ Advises `eldoc-print-current-symbol-info'."
   (local-set-key (kbd "n") 'compilation-next-error)
   (local-set-key (kbd "p") 'compilation-previous-error))
 
+;; Handle ansi colour codes in compile command output.
 (eval-after-load "compile"
   '(require 'ansi-color))
 
