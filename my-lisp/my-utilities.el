@@ -1257,12 +1257,22 @@ or \"user@example.com\""
 (defvar my-emacs-uptime-log (locate-user-emacs-file "uptime.log")
   "Log file for `my-log-emacs-uptime'.")
 
+(defun my-log-emacs-start-time ()
+  "Write emacs start time to `my-emacs-uptime-log'.
+
+If emacs doesn't get a chance to shut down cleanly, this may
+still give me some idea of how long it was running for."
+  (with-temp-buffer
+    (insert (format "PID %d started at " (emacs-pid))
+            (format-time-string "%Y-%m-%d %H:%M:%S" (current-time)) "\n")
+    (append-to-file nil nil my-emacs-uptime-log)))
+
 (defun my-log-emacs-uptime ()
   "Write emacs uptime to `my-emacs-uptime-log'. Use with `kill-emacs-hook'."
   (with-temp-buffer
     (insert (format-time-string "%Y-%m-%d %H:%M:%S" before-init-time) " to "
             (format-time-string "%Y-%m-%d %H:%M:%S" (current-time)) " = "
-            (emacs-uptime) "\n")
+            (emacs-uptime) (format " (PID %d)\n" (emacs-pid)))
     (append-to-file nil nil my-emacs-uptime-log)))
 
 (defun my-insert-kbd (key)

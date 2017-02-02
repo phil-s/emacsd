@@ -721,7 +721,8 @@
 (unless (server-running-p)
   (server-start))
 
-;; Log uptime to `my-emacs-uptime-log'.
+;; Log start and uptime to `my-emacs-uptime-log'.
+(my-log-emacs-start-time)
 (add-hook 'kill-emacs-hook 'my-log-emacs-uptime)
 
 ;; Display the time taken to start Emacs.
