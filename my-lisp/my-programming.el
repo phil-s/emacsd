@@ -402,6 +402,7 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 (eval-after-load "sql"
   '(progn
      (define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer)
+     (define-key sql-mode-map (kbd "C-c C-r") 'my-sql-send-region)
      (require 'sql-upcase)))
 
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
@@ -505,6 +506,16 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
+(defun my-sql-send-region (start end &optional arg)
+  "Send a region to the SQL process."
+  (interactive "r\nP")
+  (let ((string (buffer-substring-no-properties start end)))
+    (sql-send-string
+     (if (consp arg)
+         string
+       (if (string-match-p ";[[:space:]\n]*\\'" string)
+           string
+         (concat string ";"))))))
 
 ;; Python / Plone / Zope
 (require 'my-python nil :noerror)
