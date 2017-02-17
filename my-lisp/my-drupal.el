@@ -66,8 +66,11 @@
   '(add-to-list 'grep-find-ignored-directories
                 (cons 'my-drupal-grep-find-ignore-files-dir-p "files")))
 (defun my-drupal-grep-find-ignore-files-dir-p (dir)
-  "Test whether to ignore directories matching \"files\"."
-  (locate-dominating-file dir "index.php"))
+  "Test whether to ignore directories matching \"files\".
+
+Used in `grep-find-ignored-directories'."
+  (when dir
+    (locate-dominating-file dir "index.php")))
 ;; Problematic code below...
 ;; FIXME:
 
