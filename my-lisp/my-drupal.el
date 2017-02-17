@@ -195,13 +195,19 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 ;; Ensure Emacs doesn't prompt us when the TAGS file has changed.
 (setq tags-revert-without-query t)
 
+;; Index drush.api.php
+(defcustom drupal-drush-api-php
+  "/usr/local/src/drush/docs/drush.api.php"
+  "Location of drush.api.php"
+  :group 'drupal)
+
 ;; Update TAGS file automatically.
 (require 'grep) ;; Use non-cons members of `grep-find-ignored-directories'.
 (defcustom drupal-tags-autoupdate-prune
   (concat
    "^.*/\\("
    "sites/[^/]+/files\\|"
-   (mapconcat 'shell-quote-argument
+   (mapconcat 'regexp-quote
               (delq nil (mapcar
                          #'(lambda (dir) (and (stringp dir) dir))
                          grep-find-ignored-directories))
@@ -260,18 +266,20 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
       ;; root directory so in practice it's ok to use 'find *'. This
       ;; is an annoying bug, though.  n.b. Using an absolute path is
       ;; also safe, but makes the TAGS non-portable.
-      " find * \\( -type d -regex \"%s\" -prune \\)" ;prune
-      " -o -type f \\( -regex \"%s\" "               ;ignore
-      "                -o -iregex \"%s\" -print \\)" ;pattern
+      " find * %s" ;include drush.api.php
+      " \\( -type d -regex %s -prune \\)" ;prune
+      " -o -type f \\( -regex %s "               ;ignore
+      "                -o -iregex %s -print \\)" ;pattern
       " | ctags -e --php-kinds=-v --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
       " && mv -f TAGS.new TAGS"
       " ; rm -f TAGS.new"
       " ; touch TAGS")
     (shell-quote-argument dir)
-    drupal-tags-autoupdate-prune
-    drupal-tags-autoupdate-ignore
-    drupal-tags-autoupdate-pattern)
+    (shell-quote-argument drupal-drush-api-php)
+    (shell-quote-argument drupal-tags-autoupdate-prune)
+    (shell-quote-argument drupal-tags-autoupdate-ignore)
+    (shell-quote-argument drupal-tags-autoupdate-pattern))
   "A shell command to update TAGS.
 Do not replace the original file unless there are differences.
 
@@ -288,15 +296,15 @@ See function `drupal-tags-autoupdate-command' for details.")
   ;; TODO: This uses `tags-file-name'. What about `tags-table-list'??
   ;; (Should I use `locate-dominating-file' instead?)
   `(,(concat
-      " find %s \\( -type d -regex \"%s\" -prune \\)" ;dir,prune
-      " -o -type f \\( -regex \"%s\"" ;ignore
-      "                -o -newer %s -iregex \"%s\" -print \\)" ;mtime,pattern
+      " find %s \\( -type d -regex %s -prune \\)" ;dir,prune
+      " -o -type f \\( -regex %s" ;ignore
+      "                -o -newer %s -iregex %s -print \\)" ;mtime,pattern
       " | head -1")
     (shell-quote-argument dir)
-    drupal-tags-autoupdate-prune
-    drupal-tags-autoupdate-ignore
+    (shell-quote-argument drupal-tags-autoupdate-prune)
+    (shell-quote-argument drupal-tags-autoupdate-ignore)
     (shell-quote-argument tags-file-name)
-    drupal-tags-autoupdate-pattern)
+    (shell-quote-argument drupal-tags-autoupdate-pattern))
   "A shell command to determine whether any files have been modified
 since the TAGS file was generated.
 
@@ -329,8 +337,17 @@ files are not relevant.")
 (defun drupal-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
   (when (and drupal-tags-autoupdate-enabled
-             (eq major-mode 'drupal-mode)
-             (bound-and-true-p tags-file-name))
+             tags-file-name
+             ;; Verify that the TAGS file actually exists on the
+             ;; server the shell commands will be running on.  We can
+             ;; be called in a buffer with a tramp default-directory,
+             ;; in which case all of our shell commands will be
+             ;; running on the remote server, and that may not be the
+             ;; intended server.
+             (let ((max-mini-window-height 1))
+               (eq 0 (shell-command
+                      (format "stat --printf='' %s"
+                              (shell-quote-argument tags-file-name))))))
     (let ((dir (file-name-directory tags-file-name)))
       (when (drupal-tags-autoupdate-tree-modified dir)
         (save-window-excursion
