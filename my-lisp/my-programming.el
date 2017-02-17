@@ -7,8 +7,14 @@
   (defvar fic-highlighted-words)
   (defvar imenu--index-alist)
   (defvar imenu--rescan-item)
+  (defvar js-mode-map)
   (defvar name-and-pos)
   (defvar selected-symbol)
+  (defvar sql-interactive-mode-map)
+  (defvar sql-mode-map)
+  (defvar sql-product)
+  (defvar sql-prompt-cont-regexp)
+  (defvar sql-prompt-regexp)
   (defvar symbol-names)
   (defvar web-mode-autocompletes)
   (defvar web-mode-tag-auto-close-style)
@@ -25,6 +31,7 @@
   (declare-function lexbind-mode "lexbind-mode")
   (declare-function rainbow-mode "rainbow-mode")
   (declare-function so-long-enable "so-long")
+  (declare-function sql-send-string "sql")
   (declare-function sql-upcase-mode "sql-upcase")
   )
 
@@ -345,8 +352,6 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 
 ;; Javascript
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
-(eval-when-compile
-  (defvar js-mode-map))
 
 (add-hook 'js-mode-hook 'my-js-mode-hook)
 (defun my-js-mode-hook ()
@@ -391,12 +396,6 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 (add-to-list 'auto-mode-alist '("\\.vcl\\'" . vcl-mode))
 
 ;; SQL
-
-(eval-when-compile
-  (defvar sql-interactive-mode-map)
-  (defvar sql-product)
-  (defvar sql-prompt-regexp)
-  (defvar sql-prompt-cont-regexp))
 
 ;; Within SQLi buffer, open a sql-mode buffer (from which you can edit
 ;; queries and send them to SQLi; see C-h f sql-mode RET).
