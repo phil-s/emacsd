@@ -205,6 +205,7 @@
   (define-key keymap (kbd "C-c C-f")   'my-find-file-in-project)
   (define-key keymap (kbd "C-c m m")   'magit-status)
   (define-key keymap (kbd "C-c m b")   'mo-git-blame-current)
+  (define-key keymap (kbd "C-c m d")   'magit-diff-popup)
   (define-key keymap (kbd "C-c m l")   'magit-log-popup)
   (define-key keymap (kbd "C-c m f")   'magit-file-popup)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
@@ -290,6 +291,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'llle 'find-el-get-dir)
 (defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
 (defalias 'rb   'revert-buffer)
+(defalias 'rn   'rename-buffer)
 (defalias 'ws   'whitespace-mode)
 (defalias 'il   'lisp-interaction-mode)
 (defalias 'el   'emacs-lisp-mode)
