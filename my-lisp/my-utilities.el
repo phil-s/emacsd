@@ -890,7 +890,13 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
 ;; Include any header comment when using narrow-to-defun
 (defun my-narrow-to-defun ()
   (interactive)
-  (narrow-to-defun) ;; Default behaviour.
+  ;; Allow point to be within a leading comment.
+  (save-excursion
+    (let ((cstart (comment-beginning)))
+      (when cstart
+        (goto-char cstart)))
+    (while (comment-forward))
+    (narrow-to-defun)) ;; Default behaviour.
   (when (buffer-narrowed-p)
     (save-excursion
       (let ((min (point-min))
