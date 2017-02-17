@@ -1132,7 +1132,9 @@ window. If a prefix argument is supplied, we open ibuffer in the
 current window even if another window is also displaying it."
   (interactive "P")
   (if (eq major-mode 'ibuffer-mode)
-      (ibuffer-quit)
+      (if (fboundp 'ibuffer-quit)
+          (ibuffer-quit)
+        (quit-window))
     (if arg
         (ibuffer)
       (let ((win (get-buffer-window "*Ibuffer*" (selected-frame))))

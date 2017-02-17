@@ -69,6 +69,12 @@
 ;; n.b. If `current-language-environment' is customized, it clobbers this.
 (setq default-input-method "latin-4-postfix")
 
+;; Partial workaround for X paste bug/hanging.
+;; The paste fails :/ but at least we don't hang for long!
+;; 25.1 shouldn't have this bug, based on:
+;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=16737
+(setq x-selection-timeout 1000)
+
 ;; Put other files and dirs into .emacs.d
 (setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
       eshell-directory-name "~/.emacs.d/eshell/")
@@ -138,6 +144,10 @@ when `auto-save-mode' is invoked manually.")
 
 ;; Scroll-bar on the right-hand side
 (set-scroll-bar-mode 'right)
+
+;; No horizontal scroll bars.
+(when (fboundp 'horizontal-scroll-bar-mode)
+  (horizontal-scroll-bar-mode 0))
 
 ;; Retain point when scrolling off-screen and back
 (setq scroll-preserve-screen-position t)

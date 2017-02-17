@@ -14,6 +14,8 @@
   (defvar web-mode-tag-auto-close-style)
   (defvar whitespace-style)
   (declare-function comint-send-string "comint")
+  (declare-function eldoc-current-symbol "eldoc")
+  (declare-function elisp--current-symbol "elisp-mode")
   (declare-function fic-mode "fic-mode")
   (declare-function hl-sexp-mode "hl-sexp")
   (declare-function idle-highlight "idle-highlight-mode")
@@ -41,7 +43,9 @@
   (column-number-mode t)
   (if window-system (hl-line-mode t))
   (idle-highlight-mode 1)
-  (eldoc-mode 1)
+  ;; `global-eldoc-mode' is enabled in 25.1 by default
+  (when (< emacs-major-version 25)
+    (eldoc-mode 1))
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
   (local-set-key (kbd "<S-return>") 'newline)
@@ -152,7 +156,9 @@ Advises `eldoc-print-current-symbol-info'."
     (message "Contextual help is %s" (if my-contextual-help-mode "on" "off")))
   (and my-contextual-help-mode
        (eldoc-mode 1)
-       (eldoc-current-symbol)
+       (if (fboundp 'eldoc-current-symbol)
+           (eldoc-current-symbol)
+         (elisp--current-symbol))
        (my-contextual-help :force)))
 
 (defadvice eldoc-print-current-symbol-info (before my-contextual-help activate)
@@ -171,7 +177,9 @@ Advises `eldoc-print-current-symbol-info'."
   "Describe function, variable, or face at point, if *Help* buffer is visible."
   (let ((help-visible-p (get-buffer-window (help-buffer))))
     (when (or help-visible-p force)
-      (let ((sym (eldoc-current-symbol)))
+      (let ((sym (if (fboundp 'eldoc-current-symbol)
+                     (eldoc-current-symbol)
+                   (elisp--current-symbol))))
         ;; We ignore keyword symbols, as their help is redundant.
         ;; If something else changes the help buffer contents, ensure we
         ;; don't immediately revert back to the current symbol's help.
