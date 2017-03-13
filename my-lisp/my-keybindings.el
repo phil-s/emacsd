@@ -81,7 +81,7 @@
 
 ;;;; my-keys-minor-mode
 
-;; Global minor mode: `my-keys-minor-mode'
+;; Globalized minor mode: `my-keys-minor-mode'
 ;;
 ;; These bindings take precedence over major mode keymaps (as well as
 ;; other minor mode maps in general -- see `my-keys-have-priority'.)
@@ -90,9 +90,9 @@
 ;; in the global keymap if over-riding them on a per-mode basis may
 ;; be desirable.
 
-(defvar my-keys-minor-mode-map (make-sparse-keymap)
-  "`my-keys-minor-mode' keymap.")
-(let ((keymap my-keys-minor-mode-map))
+(defvar my-keys-local-minor-mode-map (make-sparse-keymap)
+  "`my-keys-local-minor-mode' keymap.")
+(let ((keymap my-keys-local-minor-mode-map))
   ;; Apropos
   (define-key keymap (kbd "C-h a")     'apropos-command)
   (define-key keymap (kbd "C-h C-a")   'my-apropos-prefix)
@@ -235,7 +235,18 @@
     (define-key keymap (kbd "M-SPC")   'cycle-spacing))
   ) ; end of key definitions
 
-(define-minor-mode my-keys-minor-mode
+;; I found that the :global minor mode was getting disabled by
+;; minibuffer-setup-hook (despite the local variable trick),
+;; so a globalized minor mode seems to make more sense.
+(define-globalized-minor-mode my-keys-minor-mode
+  my-keys-local-minor-mode my-keys-turn-on)
+
+(defun my-keys-turn-on ()
+  "Used by `my-keys-minor-mode' to enable `my-keys-local-minor-mode'."
+  (unless (minibufferp)
+    (my-keys-local-minor-mode 1)))
+
+(define-minor-mode my-keys-local-minor-mode
   "A minor mode so that my key bindings take precedence over other modes.
 
 We also have precedence over minor mode keymaps which appear later in the
@@ -245,10 +256,11 @@ will still over-ride us.
 
 TODO: Switch to using `emulation-mode-map-alists' ?
 
-\\{my-keys-minor-mode-map}"
-  :init-value t
-  :global     t
-  :keymap     my-keys-minor-mode-map)
+\\{my-keys-local-minor-mode-map}"
+  :keymap my-keys-local-minor-mode-map)
+
+;; Enable my keys by default.
+(my-keys-minor-mode 1)
 
 ;; An alternative would be to use `emulation-mode-map-alists' (which has
 ;; a higher priority than `minor-mode-map-alist').
@@ -268,20 +280,13 @@ As keymaps can be generated at compile time, we need to check this
 every time we `load' a library.
 
 Called via `after-load-functions', as well as `after-init-hook'."
-  (unless (eq (caar minor-mode-map-alist) 'my-keys-minor-mode)
-    (let ((mykeys (assq 'my-keys-minor-mode minor-mode-map-alist)))
-      (assq-delete-all 'my-keys-minor-mode minor-mode-map-alist)
+  (unless (eq (caar minor-mode-map-alist) 'my-keys-local-minor-mode)
+    (let ((mykeys (assq 'my-keys-local-minor-mode minor-mode-map-alist)))
+      (assq-delete-all 'my-keys-local-minor-mode minor-mode-map-alist)
       (add-to-list 'minor-mode-map-alist mykeys))))
 
 (add-hook 'after-load-functions 'my-keys-have-priority)
 (add-hook 'after-init-hook      'my-keys-have-priority)
-
-;; Disable my custom keys in the minibuffer
-(defun my-keys-minor-mode-minibuffer-setup-hook ()
-  (set (make-local-variable 'my-keys-minor-mode) 0)
-  (my-keys-minor-mode 0))
-
-(add-hook 'minibuffer-setup-hook 'my-keys-minor-mode-minibuffer-setup-hook)
 
 ;;;; Custom aliases
 
@@ -306,7 +311,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 ;; (defun my-keys-pass-through (arg)
 ;;   "Allow a key sequence to pass through to its next binding."
 ;;   (interactive)
-;;   (let ((my-keys-minor-mode nil))
+;;   (let ((my-keys-local-minor-mode nil))
 ;;     (call-interactively (read-key-sequence))))
 
 ;; (global-set-key (kbd "s-x") 'my-keys-pass-through)
