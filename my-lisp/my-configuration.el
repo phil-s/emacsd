@@ -444,17 +444,17 @@ See also: `my-copy-buffer-file-name'."
 ;; (add-hook 'focus-in-hook 'my-configure-visible-bell)
 
 ;; Per-frame/terminal configuration.
-(defun my-frame-config (frame)
-  "Custom behaviours for new frames."
-  (with-selected-frame frame
+(defun my-frame-behaviours (&optional frame)
+  "Make frame- and/or terminal-local changes."
+  (with-selected-frame (or frame (selected-frame))
     ;; do things
     (unless window-system
       (set-terminal-coding-system 'utf-8))
     ))
 ;; Run now, for non-daemon Emacs...
-(my-frame-config (selected-frame))
+(my-frame-behaviours)
 ;; ...and later, for new frames / emacsclient
-(add-hook 'after-make-frame-functions 'my-frame-config)
+(add-hook 'after-make-frame-functions 'my-frame-behaviours)
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq-default indicate-empty-lines t)
