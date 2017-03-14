@@ -96,10 +96,12 @@ an exceedingly quick way of adding multiple cursors to multiple lines."
   (multiple-cursors-mode 1))
 
 (defadvice er/expand-region (before switch-from-rrm-to-mc activate)
+  (defvar rectangular-region-mode)
   (when rectangular-region-mode
     (rrm/switch-to-multiple-cursors)))
 
 (defadvice kill-ring-save (before switch-from-rrm-to-mc activate)
+  (defvar rectangular-region-mode)
   (when rectangular-region-mode
     (rrm/switch-to-multiple-cursors)))
 

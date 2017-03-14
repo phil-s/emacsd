@@ -238,6 +238,9 @@ cursor with updated info."
 ;; answer them for every single cursor
 
 (defadvice read-char (around mc-support activate)
+  (defvar mc--read-char)
+  (defvar mc--read-quoted-char)
+  (defvar multiple-cursors-mode)
   (if (not multiple-cursors-mode)
       ad-do-it
     (unless mc--read-char
@@ -245,6 +248,9 @@ cursor with updated info."
     (setq ad-return-value mc--read-char)))
 
 (defadvice read-quoted-char (around mc-support activate)
+  (defvar mc--read-char)
+  (defvar mc--read-quoted-char)
+  (defvar multiple-cursors-mode)
   (if (not multiple-cursors-mode)
       ad-do-it
     (unless mc--read-quoted-char
