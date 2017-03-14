@@ -1099,13 +1099,23 @@ With C-u prefix arg, always creates a new buffer."
 
 (defun my-drush-console (retain-window-layout)
   (interactive "P")
-  (unless (get-buffer-process (get-buffer "*drush console*"))
-    (call-interactively 'drush-console))
-  (pop-to-buffer "*drush console*" '((display-buffer-reuse-window
-                                      display-buffer-same-window)
-                                     . ((reusable-frames . visible))))
+  (require 'drush-php)
+  (unless (get-buffer-process (get-buffer "*Drush-PHP*"))
+    (call-interactively 'run-drush-php))
+  (pop-to-buffer "*Drush-PHP*" '((display-buffer-reuse-window
+                                  display-buffer-same-window)
+                                 . ((reusable-frames . visible))))
   (unless retain-window-layout
     (delete-other-windows)))
+;; (defun my-drush-console (retain-window-layout)
+;;   (interactive "P")
+;;   (unless (get-buffer-process (get-buffer "*drush console*"))
+;;     (call-interactively 'drush-console))
+;;   (pop-to-buffer "*drush console*" '((display-buffer-reuse-window
+;;                                       display-buffer-same-window)
+;;                                      . ((reusable-frames . visible))))
+;;   (unless retain-window-layout
+;;     (delete-other-windows)))
 
 (defvar my-terminal-run-history nil)
 (defun my-terminal-run (command &optional name)
