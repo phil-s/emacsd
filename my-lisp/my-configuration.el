@@ -125,6 +125,21 @@ when `auto-save-mode' is invoked manually.")
   (when fortune
     (setq initial-scratch-message fortune)))
 
+;; Restore traditional `yow' functionality.
+(setq yow-file (expand-file-name "~/.emacs.d/yow.lines"))
+(autoload 'yow "yow"
+  "Return or display a random Zippy quotation.  With prefix arg, insert it."
+  :interactive)
+(autoload 'insert-zippyism "yow"
+  "Prompt with completion for a known Zippy quotation, and insert it at point."
+  :interactive)
+(autoload 'apropos-zippy "yow"
+  "Return a list of all Zippy quotes matching REGEXP."
+  :interactive)
+(autoload 'psychoanalyze-pinhead "yow"
+  "Zippy goes to the analyst."
+  :interactive)
+
 ;; Enable disabled commands
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'downcase-region           'disabled nil)
