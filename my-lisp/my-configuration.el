@@ -475,7 +475,9 @@ See also: `my-copy-buffer-file-name'."
                                     "Toggle" . lexbind-toggle-lexical-binding)))
          help-echo (lambda (window object pos)
                      (format "Switch to %s binding"
-                             (if lexical-binding "dynamic" "lexical"))))))
+                             (if lexical-binding "dynamic" "lexical")))))
+      ;; Mode name for `re-builder', including a syntax indicator.
+      (reb-mode-name '("Regexp[" (:eval (symbol-name reb-re-syntax)) "]")))
   (delight `(;; Override specified mode names in the mode line.
              (abbrev-mode " Abv" abbrev)
              (auto-revert-mode " Rvt" autorevert)
@@ -491,6 +493,8 @@ See also: `my-copy-buffer-file-name'."
              ;; Major modes
              (emacs-lisp-mode ("Elisp" ,my-lexbind-indicator) :major)
              (lisp-interaction-mode ("iElisp" ,my-lexbind-indicator) :major)
+             (reb-mode ,reb-mode-name :major)
+             (reb-lisp-mode ,reb-mode-name :major)
              )))
 
 ;; Display the hostname in the mode-line
