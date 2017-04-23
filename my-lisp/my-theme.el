@@ -18,6 +18,7 @@
   ;; Initialise zenburn
   (load-theme 'zenburn t)
   ;; Custom changes to Zenburn defaults...
+  (setq frame-background-mode 'dark)
 
   (eval-after-load "hl-sexp"
     '(set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
