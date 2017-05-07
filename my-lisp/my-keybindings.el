@@ -202,7 +202,7 @@
   (define-key keymap (kbd "C-M-z")     'zap-to-char-backwards)
   (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
-  (define-key keymap (kbd "C-c C-f")   'my-find-file-in-project)
+  (define-key keymap (kbd "C-z C-f")   'my-find-file-in-project)
   (define-key keymap (kbd "C-c m m")   'magit-status)
   (define-key keymap (kbd "C-c m b")   'mo-git-blame-current)
   (define-key keymap (kbd "C-c m d")   'magit-diff-popup)

@@ -658,19 +658,34 @@ When binary files differ, set the trigger variable." (condition-case err (progn 
 
 ;;;***
 
-;;;### (autoloads (find-file-in-project) "ffip/find-file-in-project"
-;;;;;;  "ffip/find-file-in-project.el" (21346 5180 344357 317000))
+;;;### (autoloads nil "ffip/find-file-in-project" "ffip/find-file-in-project.el"
+;;;;;;  (22799 6188 644457 880000))
 ;;; Generated autoloads from ffip/find-file-in-project.el
 
 (autoload 'find-file-in-project "ffip/find-file-in-project" "\
 Prompt with a completing list of all files in the project to find one.
 
 The project's scope is defined as the first directory containing
-an `.emacs-project' file. You can override this by locally
-setting the `ffip-project-root' variable.
+an `.emacs-project' file.  You can override this by locally
+setting the variable `ffip-project-root'.
 
 \(fn)" t nil)
 
+(defalias 'ffip 'find-file-in-project)
+
+(put 'ffip-patterns 'safe-local-variable 'listp)
+
+(put 'ffip-find-options 'safe-local-variable 'stringp)
+
+(put 'ffip-project-file 'safe-local-variable 'stringp)
+
+(put 'ffip-project-root 'safe-local-variable 'stringp)
+
+(put 'ffip-project-root-function 'safe-local-variable 'functionp)
+
+(put 'ffip-limit 'safe-local-variable 'integerp)
+
+;;;***
 
 ;;;### (autoloads nil "git-modes/gitattributes-mode" "git-modes/gitattributes-mode.el"
 ;;;;;;  (21982 36614 78925 222000))
