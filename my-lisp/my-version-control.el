@@ -222,6 +222,19 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 (ad-activate 'magit-push-current-to-upstream)
 (ad-activate 'magit-git-push)
 
+;; Custom major mode for commits
+(define-derived-mode my-git-commit-mode text-mode "Git commit"
+  ;; Insert a WR# prefix based on the branch name. e.g.:
+  ;; # On branch phil/wr123456-feature-description
+  (save-match-data
+    (unless (looking-at "\\`[^#\n]")
+      (let ((wr "^# On branch \\(?:[^/]+/\\)?[wW][rR]#?\\([0-9]+\\)"))
+        (when (save-excursion (re-search-forward wr nil :noerror))
+          (insert (format "WR#%s - " (match-string 1)))
+          (open-line 1))))))
+
+(setq git-commit-major-mode 'my-git-commit-mode)
+
 ;; pcomplete
 
 ;; Silence compiler warnings
