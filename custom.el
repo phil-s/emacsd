@@ -39,6 +39,9 @@
         (mode . java-mode)
         (mode . idl-mode)
         (mode . lisp-mode)))))))
+ '(package-selected-packages
+   (quote
+    (project-local-variables pdf-tools etags-select)))
  '(safe-local-variable-values
    (quote
     ((eval when
