@@ -520,6 +520,29 @@ See also: `my-copy-buffer-file-name'."
 
 (add-to-list 'mode-line-misc-info 'my-hostname :append)
 
+;; Display the hostname and time in the minibuffer window.
+(defun my-minibuffer-line-justify-right (text)
+  "Return a string of `window-width' length with TEXT right-aligned."
+  (with-selected-window (minibuffer-window)
+    (format (format "%%%ds" (window-width))
+            text)))
+
+(defun my-minibuffer-line-config ()
+  "Require and configure the `minibuffer-line' library."
+  (when (require 'minibuffer-line nil :noerror)
+    (setq minibuffer-line-refresh-interval 5
+          minibuffer-line-format
+          '("" (:eval (my-minibuffer-line-justify-right
+                       (concat system-name
+                               " | "
+                               (format-time-string "%F %R"))))))
+    (set-face-attribute 'minibuffer-line nil :inherit 'unspecified)
+    (set-face-attribute 'minibuffer-line nil :foreground "dark gray")
+    (minibuffer-line-mode 1)))
+
+;; Assume `minibuffer-line' is installed as an ELPA package.
+(add-hook 'after-init-hook 'my-minibuffer-line-config)
+
 ;; Use Firefox as the default web browser
 (setq browse-url-browser-function 'browse-url-firefox)
 
