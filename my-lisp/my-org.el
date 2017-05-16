@@ -144,12 +144,12 @@
 
 ;; Org conflicts with the default windmove bindings, and I'm much too
 ;; used to those, so I'm changing the bindings for Org instead:
-(custom-set-variables
- '(org-replace-disputed-keys t)
- '(org-disputed-keys '(([(shift up)] . [(super shift up)])
+(customize-set-value 'org-replace-disputed-keys t)
+(customize-set-value 'org-disputed-keys
+                     '(([(shift up)] . [(super shift up)])
                        ([(shift down)] . [(super shift down)])
                        ([(shift left)] . [(super shift left)])
-                       ([(shift right)] . [(super shift right)]))))
+                       ([(shift right)] . [(super shift right)])))
 
 ;; n.b. Org also conflicts with shift-selection, but I don't use that:
 ;; ([(control shift right)] . [(meta shift +)])
