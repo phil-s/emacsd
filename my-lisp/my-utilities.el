@@ -1433,6 +1433,29 @@ We assume that a buffer is visiting the most recent version of this time."
       " | tail -1")
      (shell-quote-argument dir)))))
 
+(defun my-trace-package (prefix)
+  "Trace all functions which start with PREFIX.
+For example, to trace all ELP functions, do the following:
+
+    \\[my-trace-package] RET elp- RET"
+  (interactive ;; derived from `elp-instrument-package'.
+   (list (completing-read "Prefix of package to trace: "
+                          obarray 'my-traceable-p)))
+  (if (zerop (length prefix))
+      (error "Tracing all Emacs functions would render Emacs unusable"))
+  (mapc (lambda (name)
+          (trace-function-foreground (intern name)))
+        (all-completions prefix obarray 'my-traceable-p))
+  (message "Use %s to cease tracing."
+           (substitute-command-keys "\\[untrace-all]")))
+
+(defun my-traceable-p (fun)
+  "Predicate for `my-trace-package'."
+  ;; Derived from `elp-profilable-p'. Fewer restrictions are needed here.
+  (and (symbolp fun)
+       (fboundp fun)
+       (not (keymapp fun))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
