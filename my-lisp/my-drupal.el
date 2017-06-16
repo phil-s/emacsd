@@ -40,11 +40,26 @@
   (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
   (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
 
+(defun my-compilation-relative-paths-filter ()
+  "Make paths relative to `default-directory'."
+  (save-excursion
+    (let ((inhibit-read-only t)
+          (pattern (concat "^" (regexp-quote default-directory))))
+      (goto-char compilation-filter-start)
+      (while (and (not (eobp))
+                  (looking-at pattern))
+        (delete-region (point) (match-end 0))
+        (forward-line 1)))))
+
+;; I think this is generic enough to use everywhere?
+(add-hook 'compilation-filter-hook 'my-compilation-relative-paths-filter)
+
 (defun my-drupal-php-code-sniffer ()
   "Run phpcs (with Drupal standards) for the current buffer."
   (interactive)
   (compile (format "phpcs --report=emacs --standard=Drupal %s"
-                   (buffer-file-name))))
+                   (shell-quote-argument
+                    (file-relative-name (buffer-file-name))))))
 
 ;; Ew.
 (fset 'drupal-quick-and-dirty-debugging
