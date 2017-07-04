@@ -147,6 +147,30 @@ See http://drupal.org/project/phpsh"
     (switch-to-buffer buf)))
 
 
+;; SQL support
+(defun my-drupal-db-name ()
+  "Directory-local value for `my-sql-db-name-getter'."
+  ;; Assumes the presence of shell script db-branch, which uses drush
+  ;; to establish the database name as follows:
+  ;;
+  ;; sqlc=$(drush -r "/path/to/drupal" sql-connect)
+  ;; if [ $? -ne 0 ]; then
+  ;;     exit 1
+  ;; fi
+  ;; sqlc1=${sqlc##*--dbname=} #remove prefix
+  ;; sqlc2=${sqlc1%% *} #remove suffix
+  ;; printf %s\\n "${sqlc2}"
+  (shell-command-to-string "printf %s $(db-branch 2>/dev/null)"))
+(defun my-drupal-db-user ()
+  "Directory-local value for `my-sql-db-user-getter'."
+  ;; Assumes the presence of shell script db-user, which uses drush
+  ;; to establish the database user, similarly to `my-drupal-db-name'
+  ;; (see the comments for which), but parsing the --username value
+  ;; instead of the --dbname value.
+  (shell-command-to-string "printf %s $(db-user 2>/dev/null)"))
+
+
+
 (defun my-insert-drupal-hook (tagname)
   "Clone the specified function as a new module hook implementation.
 

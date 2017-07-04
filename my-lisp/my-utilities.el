@@ -1050,6 +1050,7 @@ or before point."
 (defun my-sql-console (retain-window-layout)
   "Switch to an interactive SQLi buffer (creating it if necessary)."
   (interactive "P")
+  (require 'sql)
   (let ((sqlibuf
          (catch 'found
            (mapc (lambda (buf)
@@ -1064,7 +1065,15 @@ or before point."
                                   display-buffer-same-window)
                                  . ((reusable-frames . visible))))
       (let ((current-prefix-arg '(4)))
-        (call-interactively 'sql-postgres))))
+        (let* ((sql-user
+                (or (and (bound-and-true-p my-sql-db-user-getter)
+                         (funcall my-sql-db-user-getter))
+                    sql-user))
+               (sql-database
+                (or (and (bound-and-true-p my-sql-db-name-getter)
+                         (funcall my-sql-db-name-getter))
+                    sql-database)))
+          (call-interactively 'sql-postgres)))))
   (unless retain-window-layout
     (delete-other-windows)))
 
@@ -1087,7 +1096,9 @@ With C-u prefix arg, always creates a new buffer."
                       (buffer-live-p (get-buffer my-sql-query-buffer))
                       (get-buffer my-sql-query-buffer))
                  (generate-new-buffer
-                  (format "*SQL ctl: %s*" (buffer-name sqlibuf))))))
+                  (format "*SQL(CTL): %s*" (replace-regexp-in-string
+                                           "\\*SQL: \\(.+\\)\\*" "\\1"
+                                           (buffer-name sqlibuf)))))))
         (setq-local my-sql-query-buffer querybuf)
         (my-pop-to-buffer querybuf)
         (unless (eq major-mode 'sql-mode)

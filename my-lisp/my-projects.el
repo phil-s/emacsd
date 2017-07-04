@@ -72,6 +72,8 @@
            (ff-other-file-alist . (("\\.module$" (".install" ".info"))
                                    ("\\.install$" (".info"))
                                    ("\\.info$" (".module"))))
+           (my-sql-db-name-getter . my-drupal-db-name)
+           (my-sql-db-user-getter . my-drupal-db-user)
            (eval . (when (and buffer-file-name
                               (string-match "\\.make\\'" buffer-file-name))
                      (conf-mode)))
