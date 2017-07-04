@@ -16,6 +16,7 @@
 ;;     // 'requireSemicolons' => true, // Helps with multi-line statements.
 ;;     // 'errorLoggingLevel' => E_ALL,
 ;; );
+;; See also https://github.com/bobthecow/psysh/issues/361
 
 ;; Set a custom config file:
 ;; The only way we have of doing this is by making psysh use a different
@@ -26,17 +27,29 @@
 ;; the best option available to us.  Here we use a config file named
 ;; "~/.config/psysh/comint.config.php".
 ;;
-;; (setq drush-args
-;;       "-u 1 -r \"/PATH/TO/SITE/ROOT\" -l \"http://SITE.DOMAIN/\""))
-;; (setq drush-php-command
-;;       (format "env \"PSYSH_CONFIG=%s\" drush %s php"
-;;               (expand-file-name "~/.config/psysh/comint.config.php")
-;;               drush-args))
+;; ;; Note the double-quoting around all of \"PSYSH_CONFIG=%s\" so that
+;; ;; `split-string-and-unquote' sees it as a single argument.
+;; (let ((psysh-config "~/.config/psysh/comint.config.php")
+;;       (drush-args "-u 1 -r /PATH/TO/SITE/ROOT -l http://SITE.DOMAIN/"))
+;;   (setq drush-php-command
+;;         (format "env \"PSYSH_CONFIG=%s\" drush %s php"
+;;                 (expand-file-name psysh-config)
+;;                 drush-args)))
+
+;; Show drush status automatically on start-up:
+;; printf %s\\n "status" >"~/.config/psysh/comint.init.commands"
+;; (setq drush-php-startfile
+;;       (expand-file-name "~/.config/psysh/comint.init.commands"))
 
 (require 'comint)
 
 (defvar drush-php-command "drush php"
-  "Command and arguments used by `run-drush-php'")
+  "Command and arguments used by `run-drush-php'.
+
+This string is processed by `split-string-and-unquote' to establish
+the command and its arguments.  No shell quoting of special characters
+is needed, but you may need to double-quote arguments which would
+otherwise be split.")
 
 (defvar drush-php-startfile nil
   "The name of a file, whose contents are sent to the process as initial input.
