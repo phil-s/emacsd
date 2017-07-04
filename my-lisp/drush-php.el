@@ -68,7 +68,13 @@ continuation prompt '... '")
              (program (car command))
              (switches (cdr command)))
         (setq buffer (apply 'make-comint-in-buffer "Drush-PHP" nil
-                            program drush-php-startfile switches))))
+                            program drush-php-startfile switches))
+        ;; The default `internal-default-process-sentinel' sentinel
+        ;; used by comint conflicts with `comint-prompt-read-only',
+        ;; generating errors like the following:
+        ;; * comint-exec: Text is read-only
+        ;; * error in process sentinel: Text is read-only
+        (set-process-sentinel (get-buffer-process buffer) 'ignore)))
     ;; Check that buffer is in `drush-php-mode'.
     (with-current-buffer buffer
       (unless (derived-mode-p 'drush-php-mode)
