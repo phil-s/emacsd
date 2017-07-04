@@ -464,6 +464,7 @@ See also: `my-copy-buffer-file-name'."
   (with-selected-frame (or frame (selected-frame))
     ;; do things
     (unless window-system
+      (set-frame-parameter frame 'menu-bar-lines 0)
       (set-terminal-coding-system 'utf-8))
     ))
 ;; Run now, for non-daemon Emacs...
@@ -524,7 +525,8 @@ See also: `my-copy-buffer-file-name'."
 (defun my-minibuffer-line-justify-right (text)
   "Return a string of `window-width' length with TEXT right-aligned."
   (with-selected-window (minibuffer-window)
-    (format (format "%%%ds" (window-width))
+    (format (format "%%%ds" ;; terminals appear to need 1 column fewer.
+                    (if window-system (window-width) (1- (window-width))))
             text)))
 
 (defun my-minibuffer-line-config ()
