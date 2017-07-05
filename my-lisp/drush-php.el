@@ -62,6 +62,13 @@ status command automatically when invoking the REPL.")
     ;; Example definition
     (define-key map "\t" 'completion-at-point)
     (define-key map (kbd "C-a") 'drush-php-move-beginning-of-line)
+    ;; When there is no running process, 'g' starts a new one.
+    ;; So to restart drush-php, use 'C-d' (to exit), and then 'g'.
+    (define-key map "g"
+      `(menu-item "" run-drush-php
+                  :filter ,(lambda (cmd)
+                             (unless (get-buffer-process (current-buffer))
+                               cmd))))
     map)
   "Basic mode map for `drush-php-mode'")
 
