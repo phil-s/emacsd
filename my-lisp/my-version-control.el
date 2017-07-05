@@ -235,6 +235,15 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 
 (setq git-commit-major-mode 'my-git-commit-mode)
 
+(add-hook 'magit-mode-hook 'my-magit-mode-hook)
+(defun my-magit-mode-hook ()
+  "Custom `magit-mode' behaviours."
+  ;; Magit uses big margins which reduce the effective window width, and
+  ;; cause `window-splittable-p' to return nil for horizontal splits even
+  ;; in a full-width widescreen window.  Reduce `split-width-threshold'
+  ;; from its usual value of 160, as a workaround.
+  (setq-local split-width-threshold 120))
+
 ;; pcomplete
 
 ;; Silence compiler warnings
