@@ -218,7 +218,11 @@ Advises `eldoc-print-current-symbol-info'."
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 (defun my-compilation-mode-hook ()
   (local-set-key (kbd "n") 'compilation-next-error)
-  (local-set-key (kbd "p") 'compilation-previous-error))
+  (local-set-key (kbd "p") 'compilation-previous-error)
+  ;; `winnow' provides bindings "m" and "x" to Match and eXclude results
+  ;; from the list (it's essentially `keep-lines' and `flush-lines').
+  (when (fboundp 'winnow-mode)
+    (winnow-mode 1)))
 
 ;; Handle ansi colour codes in compile command output.
 (eval-after-load "compile"

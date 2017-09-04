@@ -57,4 +57,5 @@
 :with-editor "installed"
 :which-key "installed"
 :idle-highlight-mode "installed"
+:winnow "installed"
 )

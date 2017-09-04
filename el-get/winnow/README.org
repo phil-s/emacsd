@@ -1,0 +1,67 @@
+#+TITLE: winnow.el
+#+AUTHOR: Charles L.G. Comstock
+#+EMAIL: dgtized@gmail.com
+
+[[https://circleci.com/gh/dgtized/winnow.el][https://circleci.com/gh/dgtized/winnow.el.svg?style=svg]]
+
+#+BEGIN_QUOTE
+Winnow - verb
+
+1.  Blow a current of air through (grain) in order to remove the chaff.
+
+1.1.  Remove (chaff) from grain.
+
+1.2.  Remove (people or things) from a group until only the best ones are left.
+
+1.3.  Find or identify (a valuable or useful part of something)
+#+END_QUOTE
+
+* Usage
+
+Winnow the results from ~compilation-mode~ buffers by matching or excluding
+lines from the results.
+
+This was written to enhance [[https://github.com/Wilfred/ag.el][ag.el]], by filtering ~ag-mode~ results buffers by
+iteratively applying match and exclude, winnowing the results.
+
+The following key bindings are enabled:
+
+| Key | Function             |
+|-----+----------------------|
+| x   | winnow-exclude-lines |
+| m   | winnow-match-lines   |
+
+The builtin ~highlight-regexp~ (=M-s h r=) can be used to show interesting
+matches in the set.
+
+Basic workflow is to run an ag search (through say ~projectile-ag~), and then use
+~winnow-exclude-lines~ and ~winnow-match-lines~ to keep/flush matching lines in
+the search results. If it's too filtered, just ~recompile~.
+
+* Install
+
+Using ~package-install-file~,
+
+ : M-x package-install-file [RET] /path/to/winnow.el [RET]
+
+And then add the following somewhere in your emacs initialization
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'ag-mode-hook 'winnow-mode)
+#+END_SRC
+
+Broadly it should work anything that derives from ~compilation-mode~ so
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'compilation-mode-hook 'winnow-mode)
+#+END_SRC
+
+will enable it everywhere. That should definitely work on ~grep-mode~, and may
+be applicable to other compilation modes. Unfortunately it is not applicable for
+~rspec-mode~ as it currently stands.
+
+* License
+
+Copyright © 2017 Charles L.G. Comstock
+
+Distributed under the GNU General Public License, version 3

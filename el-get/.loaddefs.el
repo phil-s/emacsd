@@ -3161,6 +3161,21 @@ prefix) if `which-key-use-C-h-commands' is non nil.
 
 ;;;***
 
+;;;### (autoloads nil "winnow/winnow" "winnow/winnow.el" (22956 41943
+;;;;;;  68615 59000))
+;;; Generated autoloads from winnow/winnow.el
+
+(autoload 'winnow-mode "winnow/winnow" "\
+Filter compilation results by matching/excluding lines.
+
+This is invaluable for excluding or limiting to matching `ag-mode' results.
+
+\\{winnow-mode-map}
+
+\(fn &optional ARG)" t nil)
+
+;;;***
+
 ;;;### (autoloads nil "ws-trim/ws-trim" "ws-trim/ws-trim.el" (22168
 ;;;;;;  21846 835944 629000))
 ;;; Generated autoloads from ws-trim/ws-trim.el
