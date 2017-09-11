@@ -1,7 +1,7 @@
 ;;; gitconfig-mode.el --- Major mode for editing .gitconfig files -*- lexical-binding: t; -*-
 
 ;; Copyright (c) 2012-2013  Sebastian Wiesner
-;; Copyright (C) 2012-2015  The Magit Project Developers
+;; Copyright (C) 2012-2017  The Magit Project Contributors
 
 ;; Author: Sebastian Wiesner <lunaryorn@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
@@ -77,6 +77,8 @@
   (let ((table (make-syntax-table conf-unix-mode-syntax-table)))
     ;; ; is a comment in .gitconfig
     (modify-syntax-entry ?\; "<" table)
+    ;; ' is not used for string quoting
+    (modify-syntax-entry ?\' "." table)
     table)
   "Syntax table to use in .gitconfig buffers.")
 
@@ -92,11 +94,12 @@
                     (group (syntax string-quote)
                            (minimal-match (one-or-more not-newline))
                            (syntax string-quote)))
-          "]" (zero-or-more (syntax whitespace)) line-end)
+          "]" (zero-or-more not-newline) line-end)
      (1 'font-lock-type-face t nil)
      (2 'font-lock-function-name-face t t))
     (,(rx line-start (zero-or-more (syntax whitespace)) symbol-start
-          (group (one-or-more (or (syntax word) (syntax symbol))))
+          (group alphanumeric
+                 (zero-or-more (or (syntax word) (syntax symbol))))
           symbol-end (zero-or-more (syntax whitespace))
           (optional "=" (zero-or-more not-newline)) line-end)
      (1 'font-lock-variable-name-face))
@@ -122,8 +125,9 @@
        'gitconfig-indent-line))
 
 ;;;###autoload
-(dolist (pattern '("/\\.gitconfig\\'" "/\\.git/config\\'"
-                   "/git/config\\'"   "/\\.gitmodules\\'"))
+(dolist (pattern '("/\\.gitconfig\\'"      "/\\.git/config\\'"
+                   "/modules/.*/config\\'" "/git/config\\'"
+                   "/\\.gitmodules\\'"     "/etc/gitconfig\\'"))
   (add-to-list 'auto-mode-alist (cons pattern 'gitconfig-mode)))
 
 (provide 'gitconfig-mode)

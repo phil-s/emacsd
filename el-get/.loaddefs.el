@@ -643,7 +643,7 @@ setting the variable `ffip-project-root'.
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitattributes-mode" "git-modes/gitattributes-mode.el"
-;;;;;;  (21982 36614 78925 222000))
+;;;;;;  (22966 5434 663872 724000))
 ;;; Generated autoloads from git-modes/gitattributes-mode.el
 
 (autoload 'gitattributes-mode "git-modes/gitattributes-mode" "\
@@ -652,12 +652,12 @@ A major mode for editing .gitattributes files.
 
 \(fn)" t nil)
 
-(dolist (pattern '("/\\.gitattributes\\'" "/\\.git/info/attributes\\'" "/git/attributes\\'")) (add-to-list 'auto-mode-alist (cons pattern #'gitattributes-mode)))
+(dolist (pattern '("/\\.gitattributes\\'" "/info/attributes\\'" "/git/attributes\\'")) (add-to-list 'auto-mode-alist (cons pattern #'gitattributes-mode)))
 
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitconfig-mode" "git-modes/gitconfig-mode.el"
-;;;;;;  (21982 36614 78925 222000))
+;;;;;;  (22966 5434 663872 724000))
 ;;; Generated autoloads from git-modes/gitconfig-mode.el
 
 (autoload 'gitconfig-mode "git-modes/gitconfig-mode" "\
@@ -665,12 +665,12 @@ A major mode for editing .gitconfig files.
 
 \(fn)" t nil)
 
-(dolist (pattern '("/\\.gitconfig\\'" "/\\.git/config\\'" "/git/config\\'" "/\\.gitmodules\\'")) (add-to-list 'auto-mode-alist (cons pattern 'gitconfig-mode)))
+(dolist (pattern '("/\\.gitconfig\\'" "/\\.git/config\\'" "/modules/.*/config\\'" "/git/config\\'" "/\\.gitmodules\\'" "/etc/gitconfig\\'")) (add-to-list 'auto-mode-alist (cons pattern 'gitconfig-mode)))
 
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitignore-mode" "git-modes/gitignore-mode.el"
-;;;;;;  (21982 36932 728320 173000))
+;;;;;;  (22966 5434 663872 724000))
 ;;; Generated autoloads from git-modes/gitignore-mode.el
 
 (autoload 'gitignore-mode "git-modes/gitignore-mode" "\
@@ -678,7 +678,7 @@ A major mode for editing .gitignore files.
 
 \(fn)" t nil)
 
-(dolist (pattern (list "/\\.gitignore\\'" "/\\.git/info/exclude\\'" "/git/ignore\\'")) (add-to-list 'auto-mode-alist (cons pattern 'gitignore-mode)))
+(dolist (pattern (list "/\\.gitignore\\'" "/info/exclude\\'" "/git/ignore\\'")) (add-to-list 'auto-mode-alist (cons pattern 'gitignore-mode)))
 
 ;;;***
 
