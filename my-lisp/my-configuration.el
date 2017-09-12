@@ -1018,6 +1018,13 @@ when the file path is too long to show on one line."
                          '((inhibit-same-window . nil)
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
+
+;; Workaround for security problem.  See the release announcement:
+;; https://lists.gnu.org/archive/html/emacs-devel/2017-09/msg00211.html
+(when (version< emacs-version "25.3")
+  (eval-after-load "enriched"
+    '(defun enriched-decode-display-prop (start end &optional param)
+       (list start end))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
