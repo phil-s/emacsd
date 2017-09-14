@@ -81,8 +81,8 @@ Setup the defualt shortcuts.
 
 ;;;***
 
-;;;### (autoloads nil "async/async" "async/async.el" (22605 62334
-;;;;;;  568091 74000))
+;;;### (autoloads nil "async/async" "async/async.el" (22694 39803
+;;;;;;  0 0))
 ;;; Generated autoloads from async/async.el
 
 (autoload 'async-start-process "async/async" "\
@@ -148,7 +148,7 @@ returns nil.  It can still be useful, however, as an argument to
 ;;;***
 
 ;;;### (autoloads nil "async/async-bytecomp" "async/async-bytecomp.el"
-;;;;;;  (22605 62334 568091 74000))
+;;;;;;  (22694 39803 0 0))
 ;;; Generated autoloads from async/async-bytecomp.el
 
 (autoload 'async-byte-recompile-directory "async/async-bytecomp" "\
@@ -159,7 +159,8 @@ All *.elc files are systematically deleted before proceeding.
 
 (defvar async-bytecomp-package-mode nil "\
 Non-nil if Async-Bytecomp-Package mode is enabled.
-See the command `async-bytecomp-package-mode' for a description of this minor mode.
+See the `async-bytecomp-package-mode' command
+for a description of this minor mode.
 Setting this variable directly does not take effect;
 either customize it (see the info node `Easy Customization')
 or call the function `async-bytecomp-package-mode'.")
@@ -176,12 +177,13 @@ Async compilation of packages can be controlled by
 ;;;***
 
 ;;;### (autoloads nil "async/dired-async" "async/dired-async.el"
-;;;;;;  (22605 62334 568091 74000))
+;;;;;;  (22694 39803 0 0))
 ;;; Generated autoloads from async/dired-async.el
 
 (defvar dired-async-mode nil "\
 Non-nil if Dired-Async mode is enabled.
-See the command `dired-async-mode' for a description of this minor mode.
+See the `dired-async-mode' command
+for a description of this minor mode.
 Setting this variable directly does not take effect;
 either customize it (see the info node `Easy Customization')
 or call the function `dired-async-mode'.")
