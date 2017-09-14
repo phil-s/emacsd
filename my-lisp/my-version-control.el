@@ -193,6 +193,10 @@ static char * data[] = {
 ;; DWIM prompting when creating new branches.
 (setq magit-branch-read-upstream-first 'fallback)
 
+;; Keep much more than 32 process log entries.  I sometimes wish to
+;; refer back to the output of previous commands.
+(setq magit-process-log-max 1024)
+
 (eval-after-load "magit"
   '(progn
      (define-key magit-mode-map (kbd "TAB") 'magit-section-cycle)
