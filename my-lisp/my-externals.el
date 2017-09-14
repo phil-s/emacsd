@@ -114,9 +114,8 @@
             :url "git@github.com:Lindydancer/font-lock-studio.git")
 
      (:name geben
-            :type http-tar
-            :options ("zxf")
-            :url "http://geben-on-emacs.googlecode.com/files/geben-0.26.tar.gz")
+            :type git
+            :url "https://github.com/ahungry/geben.git")
 
      (:name git-modes
             :type git
