@@ -197,6 +197,9 @@ static char * data[] = {
 ;; refer back to the output of previous commands.
 (setq magit-process-log-max 1024)
 
+;; FIXME. (el-get is messing this up? Why?)
+(load "magit-autoloads")
+
 (eval-after-load "magit"
   '(progn
      (define-key magit-mode-map (kbd "TAB") 'magit-section-cycle)
