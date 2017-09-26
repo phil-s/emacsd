@@ -509,8 +509,9 @@
 ;; ":"; exec emacs -Q --script "$0" -- "$@" # -*-emacs-lisp-*-
 ;; (pop argv) ; Remove the "--" argument
 ;; ;; (setq debug-on-error t) ; if a backtrace is wanted
-;; ;; (defun stdout (string args) (princ (format string args)))
-;; ;; (defun stderr (string args) (message string args)) ; n.b. auto newline.
+;; ;; (defun stdout (msg args) (princ (format msg args)))
+;; ;; (defun stderr (msg args) (princ (format msg args)
+;; ;;                                 #'external-debugging-output))
 ;; ;; [script body]
 ;; (kill-emacs 0) ; Always exit explicitly. This returns the desired exit
 ;;                ; status, and also avoids the need to (setq argv nil).
