@@ -84,6 +84,10 @@
 
 ;; Don't let minified files bring Emacs to its knees.
 (when (require 'so-long nil :noerror)
+  ;; Additional target major modes to trigger for.
+  (mapc (apply-partially 'add-to-list 'so-long-target-modes)
+        '(sgml-mode nxml-mode))
+  ;; Additional buffer-local minor modes to disable.
   (mapc (apply-partially 'add-to-list 'so-long-minor-modes)
         '(hl-sexp-mode diff-hl-mode diff-hl-amend-mode diff-hl-flydiff-mode
                        idle-highlight-mode rainbow-delimiters-mode))
