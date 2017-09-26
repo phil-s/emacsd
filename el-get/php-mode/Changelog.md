@@ -5,6 +5,43 @@ Changes for PHP Mode by Version
 because when I (Eric James Michael Ritz) took over the project I did
 not have a record of all changes available.
 
+1.18.3
+------
+
+* Fix warning over `imenu--make-index-alist` (#336)
+* Fix highlighting of PHPDoc style comments
+* Small improvements and corrects to the README
+* Allow customizing `php-site-url`
+* Refactored `php-search-web-documentation` and `php-browse-manual`
+* Highlight nullable types in docblocks
+* Fix a warning when compiling PHP Mode with GNU Emacs 25.1
+* Fix the list of reserved keywords
+* Change `font-lock-*-face`s to customizable `php-*-face`s
+	
+1.18.2
+------
+
+* Fix namespace indentation issue(#335)
+
+1.18.1
+------
+
+* Fix hung up issue(#333)
+
+1.18.0
+------
+
+* Improve PHPDoc highlighting
+* Fix this, that highlighting
+* Drop Emacs 23 support
+* Improve Emacs 25 support
+* Support PHP 7 syntax highlighting
+* Fix closure indentation issue
+* Improve php-xmlparser.el
+* Support 'strict_types'
+* Support 'yield from' keyword
+
+
 1.13
 ----
 

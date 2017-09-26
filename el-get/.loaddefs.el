@@ -2671,7 +2671,9 @@ A list of additional strings to treat as PHP constants.")
 
 (custom-autoload 'php-extra-constants "php-mode/php-mode" nil)
 
-(add-to-list 'interpreter-mode-alist (cons "php" 'php-mode))
+(add-to-list 'interpreter-mode-alist (cons "php\\(?:-?[3457]\\(?:\\.[0-9]+\\)*\\)?" 'php-mode))
+
+(let ((loads (get 'php-faces 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php-faces 'custom-loads (cons '"php-mode/php-mode" loads))))
 
 (autoload 'php-mode "php-mode/php-mode" "\
 Major mode for editing PHP code.
@@ -2680,7 +2682,17 @@ Major mode for editing PHP code.
 
 \(fn)" t nil)
 
-(dolist (pattern '("\\.php[s345t]?\\'" "\\.phtml\\'" "Amkfile" "\\.amk$")) (add-to-list 'auto-mode-alist `(,pattern . php-mode) t))
+(autoload 'php-current-class "php-mode/php-mode" "\
+Insert current class name if cursor in class context.
+
+\(fn)" t nil)
+
+(autoload 'php-current-namespace "php-mode/php-mode" "\
+Insert current namespace if cursor in namespace context.
+
+\(fn)" t nil)
+
+(dolist (pattern '("\\.php[s345t]?\\'" "/\\.php_cs\\(\\.dist\\)?\\'" "\\.phtml\\'" "/Amkfile\\'" "\\.amk\\'")) (add-to-list 'auto-mode-alist `(,pattern . php-mode) t))
 
 ;;;***
 

@@ -14,10 +14,10 @@ All contributors listed below improved PHP Mode as well.
 
 The current maintainers are:
 
-1. Eric James Michael Ritz
-2. Syohei Yoshida
+1. Syohei Yoshida
+2. Eric James Michael Ritz
 
-Please submit any bug reports or feature requests by creating issues on [the GitHub page for PHP Mode](https://github.com/ejmr/php-mode).  You can also send email for any bugs or features to `ejmr at plutono dot com`.  However, we prefer GitHub issues because they are easier for all contributors to see.
+Please submit any bug reports or feature requests by creating issues on [the GitHub page for PHP Mode](https://github.com/ejmr/php-mode).
 
 
 Installation
@@ -127,12 +127,22 @@ The key command `C-c C-f` will search the PHP website for documentation on the w
 
 The command `php-send-region`, which is bound to `C-c C-r` by default, will execute the selected region of PHP code.  In conjunction with the Emacs command `C-x h` you can use this to execute an entire file.  Any output will appear in a buffer called `*PHP*`.
 
-### Annotation Highlighting ###
+### PHPDoc Tag / Annotation Highlighting ###
 
-Projects like [Symfony](http://symfony.com/) use annotations in comments.  For example, here is code from their website:
+PHPDoc is a documentation format similar to [JavaDoc](https://en.wikipedia.org/wiki/Javadoc).
+
+There are `@param`, `@return`, `@var`... etc in the notation called **tag**, look at [list of tags defined by phpDocumentor2](https://phpdoc.org/docs/latest/references/phpdoc/tags/index.html).  (These tags are compatible with static type checkers like PhpStorm and [Phan](https://github.com/etsy/phan).)
+
+In addition, it also partially supports notation called **annotation**.  Annotation has a slightly different grammar from tag, and the example is `@Annotation(attr1="vvv", attr2="zzz")`.
+
+[Symfony](http://symfony.com/) project and [Go! AOP](https://github.com/goaop/framework) and some projects/frameworks use annotation grammer based on [Doctrine Annotations](http://docs.doctrine-project.org/projects/doctrine-common/en/latest/reference/annotations.html).
 
 ```php
 /**
+ * Summary of Product class
+ *
+ * @copyright 2112 John Doe
+ * @license https://spdx.org/licenses/Apache-2.0.html Apache License 2.0
  * @ORM\Entity
  * @ORM\Table(name="product")
  */
@@ -163,6 +173,8 @@ class Product
 ```
 
 The annotations are the lines that begin with the `@` character, and PHP Mode will give these special highlighting to help them stand out.
+
+PHP Mode has not fully supported [PSR-5: PHPDoc (Draft)](https://github.com/phpDocumentor/fig-standards/blob/master/proposed/phpdoc.md) yet.
 
 ### Coding Styles ###
 
@@ -222,29 +234,36 @@ The key-binding `C-c C-w` will also toggle Subword Mode on and off.
 
 Viewing and editing build scripts for [Amaka](http://trashofmasters.github.io/amaka/) will automatically enable PHP Mode.
 
+### Insert current class/namespace ###
+
+```el
+(with-eval-after-load 'php-mode
+  (define-key php-mode-map (kbd "C-c C--") 'php-current-class)
+  (define-key php-mode-map (kbd "C-c C-=") 'php-current-namespace))
+```
 
 Other Packages for PHP programming
 ----------------------------------
 
 - Completions
- - [ac-php](https://github.com/xcwen/ac-php): [company-mode](https://github.com/company-mode/company-mode) and [auto-complete](https://github.com/auto-complete/auto-complete) for PHP
+  - [ac-php](https://github.com/xcwen/ac-php): [company-mode](https://github.com/company-mode/company-mode) and [auto-complete](https://github.com/auto-complete/auto-complete) for PHP
 - Syntax checking
- - [flycheck](https://github.com/flycheck/flycheck/): On the fly syntax checker
- - [flymake-php](https://github.com/purcell/flymake-php): flymake for PHP files
+  - [flycheck](https://github.com/flycheck/flycheck/): On the fly syntax checker
+  - [flymake-php](https://github.com/purcell/flymake-php): flymake for PHP files
 - Snippet
- - [php-auto-yasnippets](https://github.com/ejmr/php-auto-yasnippets): Dynamically Generated YASnippets for PHP Code
+  - [php-auto-yasnippets](https://github.com/ejmr/php-auto-yasnippets): Dynamically Generated YASnippets for PHP Code
 - Documentation
- - [ggtags](https://github.com/leoliu/ggtags): eldoc by using GNU global tags
- - [php-eldoc](https://github.com/sabof/php-eldoc): eldoc backend for PHP
+  - [ggtags](https://github.com/leoliu/ggtags): eldoc by using GNU global tags
+  - [php-eldoc](https://github.com/sabof/php-eldoc): eldoc backend for PHP
 - Testing
- - [phpunit](https://github.com/nlamirault/phpunit.el): phpunit test command tool
+  - [phpunit](https://github.com/nlamirault/phpunit.el): phpunit test command tool
 - Style
- - [phpcbf](https://github.com/nishimaki10/emacs-phpcbf): PHP_CodeSniffer for Emacs
+  - [phpcbf](https://github.com/nishimaki10/emacs-phpcbf): PHP_CodeSniffer for Emacs
 - Semantic
- - [ede-php-autoload](https://github.com/stevenremot/ede-php-autoload): Semantic for PHP
+  - [ede-php-autoload](https://github.com/stevenremot/ede-php-autoload): Semantic for PHP
 - Framework
- - [cake](https://github.com/k1LoW/emacs-cake): minor-mode for CakePHP
- - [cake2](https://github.com/k1LoW/emacs-cake2): minor-mode for CakePHP2
+  - [cake](https://github.com/k1LoW/emacs-cake): minor-mode for CakePHP
+  - [cake2](https://github.com/k1LoW/emacs-cake2): minor-mode for CakePHP2
 
 
 How to Contribute
@@ -252,17 +271,19 @@ How to Contribute
 
 All contributions to PHP Mode are welcome.  But please try to do the following when sending improvements or bug fixes:
 
-1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a GitHub page and/or personal site then please link your name to it, so people can see your other work.
+1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a GitHub page and/or personal site then please feel free to link your name to it so people can see your other work.
 
-2. If your contribution addresses an issue on the GitHub project page then include a single line like `GitHub-Issue: 16` with the appropriate issue number.
+2. If your contribution addresses an issue on the GitHub project page then include a single line like `GitHub-Issue: #16` with the appropriate issue number.
 
 3. Make sure to update the constant `php-mode-modified` *only if you patch affects `php-mode.el`,* which means this step is unnecessary for patches related to unit tests.
 
-4. However, please do not modify `php-mode-version-number`.  I will decide what constitutes a bump in the version number.
+4. However, please do not modify `php-mode-version-number`.  The maintainers will decide what constitutes a bump in the version number.
 
 5. Open the `php-mode-test.el` file and [run all of the tests](http://www.gnu.org/software/emacs/manual/html_node/ert/Running-Tests-Interactively.html#Running-Tests-Interactively) to ensure they still pass as expected.  Sometimes we expect for a test to fail, and those unit tests have the appropriate configuration so their failure will not raise any warnings.  You can use `make test` script to run all tests from a terminal, which is also useful in conjunction with [`git bisect run`](http://git-scm.com/book/en/Git-Tools-Debugging-with-Git).
 
-6. Send us a pull request here on GitHub.  Or if you do not have a GitHub account then email the patches to me at `ejmr at plutono dot com`, in which case make sure the patches are acceptable input to the command `git am`.  Please note that even if you send a pull request it is possible that we will *not* simply merge your branch through GitHub, as sometimes we prefer to go through commits and cherry-pick them for review and to maintain a cleaner repository history.  You can see which commits we merge by using the [`git-cherry`](http://www.kernel.org/pub/software/scm/git/docs/git-cherry.html) command.
+6. Send us a pull request here on GitHub.
+
+7. Please make your commit messages as detailed as possible.  It is better to be too verbose than to write too little.  Look at the commits of the maintainers to see many examples of the level of detail that we feel is ideal.  Please never assume that your patch is so simple that future developers will be able to understand the *reason* for the change without comment.  And that is important: your commit message should always strive to answer *"Why"* the patch exists, *"What*" does it accomplish?  The maintainers will sometimes write detailed commit messages for pull-requests by other developers, but please do not rely on us to do this consistently.
 
 If you are fixing a bug related to a GitHub issue, then first of all, thank you for the help improving PHP Mode.  Second, there is a `tests/` directory which contains PHP scripts for issues (although not all of them).  Please consider adding a test script to that directory that documents the expected behavior and provides code that allows others to see if said behavior works properly.  Then create a unit test within `php-mode-test.el` using [ERT][]. Please try to follow the format of the existing tests.
 
@@ -363,6 +384,11 @@ In chronological order:
 66. [Sebastian Wiesner](https://github.com/lunaryorn)
 67. [Michael Stolovitzsky](https://github.com/emestee)
 68. [David Arroyo Menéndez](https://github.com/davidam)
+69. [USAMI Kenta](https://tadsan.github.io/) (@zonuexe)
+70. [Tim Landscheidt](http://www.tim-landscheidt.de)
+71. [Fabian Wiget](https://github.com/fabacino)
+72. tangxifan
+73. [Serghei Iakovlev](https://github.com/sergeyklay)
 
 
 

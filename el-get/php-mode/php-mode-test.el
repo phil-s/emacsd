@@ -33,6 +33,7 @@
 (require 'php-mode)
 (require 'ert)
 (require 'cl-lib)
+(require 'imenu)
 
 ;; Work around bug #14325
 ;; <http://debbugs.gnu.org/cgi/bugreport.cgi?bug=14325>.
@@ -99,7 +100,10 @@ run with specific customizations set."
   `(with-temp-buffer
      (insert-file-contents (expand-file-name ,file php-mode-test-dir))
      (php-mode)
-     (font-lock-fontify-buffer)
+     ,(if (fboundp 'font-lock-ensure)
+          '(font-lock-ensure)
+        '(with-no-warnings (font-lock-fontify-buffer)))
+
      ,(cl-case style
         (pear '(php-enable-pear-coding-style))
         (drupal '(php-enable-drupal-coding-style))
@@ -111,7 +115,7 @@ run with specific customizations set."
      ,(unless custom '(custom-set-variables '(php-lineup-cascaded-calls nil)))
 
      ,(if indent
-          '(indent-region (point-min) (point-max)))
+          '(let ((inhibit-message t)) (indent-region (point-min) (point-max))))
      ,(if magic
           '(should (cl-reduce (lambda (l r) (and l r))
                               (php-mode-test-process-magics))))
@@ -119,13 +123,17 @@ run with specific customizations set."
      (let ((case-fold-search nil))
        ,@body)))
 
+(ert-deftest php-mode-test-namespace-block ()
+  "Proper indentation for classs and functions in namespace block."
+  (with-php-mode-test ("namespace-block.php" :indent t :magic t)))
+
 (ert-deftest php-mode-test-issue-8 ()
   "Annotation highlighting."
   (with-php-mode-test ("issue-8.php")
     (search-forward "@ORM")
-    (should (eq
+    (should (equal
              (get-text-property (match-beginning 0) 'face)
-             'php-annotations-annotation-face))))
+             '(php-doc-annotation-tag font-lock-doc-face)))))
 
 (ert-deftest php-mode-test-issue-9 ()
   "Single quote in text in HTML misinterpreted.
@@ -137,7 +145,7 @@ have a string face."
                       (forward-char) ;; Jump to after the opening apostrophe
     (should-not (eq
                  (get-text-property (point) 'face)
-                 'font-lock-string-face))))
+                 'php-string))))
 
 (ert-deftest php-mode-test-issue-14 ()
   "Array indentation."
@@ -181,7 +189,7 @@ Gets the face of the text after the comma."
     (search-forward "= ")
     (while (not (looking-at ";"))
       (should (eq (get-text-property (point) 'face)
-                  'font-lock-string-face))
+                  'php-string))
       (forward-char))))
 
 (ert-deftest php-mode-test-issue-22 ()
@@ -227,7 +235,7 @@ style from Drupal."
    ("issue-53.php")
    (search-forward "return $this->bar;")
    ;; the file written to has no significance, only the buffer
-   (let ((tmp-filename (make-temp-name temporary-file-directory)))
+   (let ((tmp-filename (concat (make-temp-name temporary-file-directory) ".php")))
      (dolist (mode '(pear wordpress symfony2))
        (php-mode-custom-coding-style-set 'php-mode-coding-style 'drupal)
        (php-mode-custom-coding-style-set 'php-mode-coding-style mode)
@@ -266,7 +274,6 @@ style from Drupal."
   "All static method should appear on imenu whether 'static' keyword is placed before or after visibility"
   (with-php-mode-test
    ("issue-83.php")
-   (require 'imenu)
    (let* ((index-alist (imenu--make-index-alist))
           (public-methods (mapcar 'car (cdr (assoc "Public Methods" index-alist))))
           (all-methods (mapcar 'car (cdr (assoc "All Methods" index-alist)))))
@@ -323,7 +330,7 @@ style from Drupal."
       (dolist (variable variables)
         (search-forward variable)
         (goto-char (match-beginning 0))
-        (should (eq 'font-lock-variable-name-face
+        (should (eq 'php-variable-name
                     (get-text-property (point) 'face)))))))
 
 (ert-deftest php-mode-test-issue-144 ()
@@ -335,6 +342,313 @@ style from Drupal."
 (ert-deftest php-mode-test-issue-145 ()
   "Closure indentation."
   (with-php-mode-test ("issue-145.php" :indent t)))
+
+(ert-deftest php-mode-test-comments ()
+  "Proper highlighting for comments and doc-blocks."
+  (with-php-mode-test ("comments.php")
+    (search-forward "/**")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-doc-face))
+
+    (search-forward "@copyright")
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (search-forward-regexp "@link +\\(https://github.com/ejmr/php-mode\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face)
+                   '(link font-lock-doc-face)))
+
+
+    (search-forward-regexp "// \\(@annotation This is NOT annotation. 1\\)")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-delimiter-face))
+    (should (eq (get-text-property (match-beginning 1) 'face)
+                'font-lock-comment-face))
+
+    (search-forward-regexp "\\* \\(@annotation This is NOT annotation. 2\\)")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-face))
+    (should (eq (get-text-property (match-beginning 1) 'face)
+                'font-lock-comment-face))
+
+    ;; Comment outed doc-block
+    (search-forward "/**")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-face))
+
+    (search-forward-regexp "\\* \\(@annotation This is NOT annotation. 3\\)")
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   'font-lock-comment-face))
+
+    (should (equal (get-text-property (match-beginning 1) 'face)
+                   'font-lock-comment-face))
+
+    (search-forward "class CommentOuted")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-face))
+
+    ;; Class level doc-comment
+    (search-forward-regexp "{@internal \\(Description\\)}")
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 1) 'face)
+                   '(php-string php-doc-annotation-tag font-lock-doc-face)))
+
+    (should (equal (get-text-property (1- (match-end 0)) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (match-end 0) 'face)
+                   'font-lock-doc-face))
+
+    (search-forward-regexp "@property\\(-read\\)")
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+
+    (should (equal (get-text-property (match-beginning 1) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+
+    (search-forward-regexp "@ORM\\(\\\\Table\\)")
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 1) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+
+    (search-forward-regexp "@var \\(string\\) \\(sample property doc-comment\\)")
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 1) 'face)
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face)
+                   'font-lock-doc-face))
+
+    (search-forward-regexp "// \\(comment in after code\\)")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-delimiter-face))
+    (should (eq (get-text-property (match-beginning 1) 'face)
+                'font-lock-comment-face))
+
+    (search-forward-regexp "@var \\(string\\)|\\(bool\\)|\\(array\\)\\([[]]\\)|\\(ArrayObject\\) \\*/$")
+    (should (equal (get-text-property (match-beginning 0) 'face) ;; matches `@'
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `s'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-end 1) 'face)       ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `b'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-end 2) 'face)       ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `a'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 4) 'face) ;; matches `['
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-end 4) 'face)       ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 5) 'face) ;; matches `A'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-end 5) 'face)       ;; matches ` '
+                   ' font-lock-doc-face))
+
+    (search-forward-regexp "// \\(one-line comment\\)")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-delimiter-face))
+    (should (eq (get-text-property (match-beginning 1) 'face)
+                'font-lock-comment-face))
+
+    (search-forward-regexp "// \\(@annotation This is NOT annotation. 4\\)")
+    (should (eq (get-text-property (match-beginning 0) 'face)
+                'font-lock-comment-delimiter-face))
+    (should (eq (get-text-property (match-beginning 1) 'face)
+                'font-lock-comment-face))
+
+    (search-forward-regexp "@var \\(int\\) \\(internal linter variable\\) \\*/$")
+    (should (equal (get-text-property (match-beginning 0) 'face) ;; matches `@'
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-end 1) 'face)       ;; matches ` '
+                   'font-lock-doc-face))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `i'
+                   'font-lock-doc-face))
+    (should (equal (get-text-property (match-end 2) 'face)       ;; matches ` '
+                   'font-lock-doc-face))))
+
+(ert-deftest php-mode-test-comment-return-type ()
+  "Proper highlighting for type annotation in doc-block."
+  (with-php-mode-test ("doc-comment-return-type.php")
+    ;; Test for premitive type (int)
+    (search-forward-regexp "@return \\(int\\) +\\(A integer value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\?int\\) +\\(A nullable integer value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `?'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\int\\[\\]\\) +\\(A list of integer values\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1- (match-end 1)) 'face) ;; matches `]'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    ;; Test for class type (DateTime)
+    (search-forward-regexp "@return \\(DateTime\\) +\\(A DateTime object value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `D'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\?DateTime\\) +\\(A nullable DateTime object value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `?'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `D'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\DateTime\\[]\\) +\\(A list of DateTime object values\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `D'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1- (match-end 1)) 'face) ;; matches `]'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    ;; Test for class type (stdClass)
+    (search-forward-regexp "@return \\(stdClass\\) +\\(A stdClass object value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `s'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\?stdClass\\) +\\(A nullable stdClass object value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `?'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `s'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(stdClass\\[]\\) +\\(A list of stdClass object values\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `s'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1- (match-end 1)) 'face) ;; matches `]'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    ;; Test for class type (\App\User)
+    (search-forward-regexp "@return \\(\\\\App\\\\User\\) +\\(A \\\\App\\\\User object value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `\'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `A'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\?\\\\App\\\\User\\) +\\(A nullable \\\\App\\\\User object value\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `?'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `\\'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\\\App\\\\User\\[]\\) +\\(A list of \\\\App\\\\User object values\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `\'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1- (match-end 1)) 'face) ;; matches `]'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `A'
+                'font-lock-doc-face))
+
+    ;; Test for multiple types
+    (search-forward-regexp "@return \\(int\\)\\(|\\)\\(string\\) +\\(Multiple types by int and string\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `s'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 4) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(int\\[]\\)\\(|\\)\\(string\\) +\\(Multiple types by list of int and string\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1- (match-end 1)) 'face) ;; matches `]'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `s'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 4) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(int\\)\\(|\\)\\(stdClass\\) +\\(Multiple types by int and stdClass\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `s'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 4) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(int\\)\\(|\\)\\(\\\\App\\\\User\\) +\\(Multiple types by int and \\\\App\\\\User\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `\'
+                   '(php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 4) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(DateTime\\)\\(|\\)\\(int\\) +\\(Multiple types by DateTime and int\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `D'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 4) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\\\App\\\\User\\)\\(|\\)\\(int\\) +\\(Multiple types by \\\\App\\\\User and int\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `\'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `A'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 2) 'face) ;; matches `|'
+                   '(php-string font-lock-doc-face)))
+    (should (equal (get-text-property (match-beginning 3) 'face) ;; matches `i'
+                   '(font-lock-type-face php-string font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 4) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\$this\\) +\\(this is special variable\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `$'
+                   '(php-doc-$this-sigil php-doc-variable-sigil font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `t'
+                   '(php-doc-$this php-variable-name font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `M'
+                'font-lock-doc-face))
+
+    (search-forward-regexp "@return \\(\\$that\\) +\\(that is NOT special variable\\)")
+    (should (equal (get-text-property (match-beginning 1) 'face) ;; matches `$'
+                   '(php-doc-variable-sigil font-lock-doc-face)))
+    (should (equal (get-text-property (1+ (match-beginning 1)) 'face) ;; matches `t'
+                   '(php-variable-name font-lock-doc-face)))
+    (should (eq (get-text-property (match-beginning 2) 'face) ;; matches `M'
+                'font-lock-doc-face))
+    ))
 
 (ert-deftest php-mode-test-constants ()
   "Proper highlighting for constants."
@@ -349,22 +663,23 @@ style from Drupal."
                        "IS_CONSTANT99"
                        "extraconstant"
                        "ClassName"
-                       "class")))
+                       "class;")))
       (dolist (variable variables)
         (search-forward variable)
         (goto-char (match-beginning 0))
-        (should (eq 'font-lock-constant-face
+        (should (eq 'php-constant
                     (get-text-property (point) 'face))))))
   (custom-set-variables '(php-extra-constants (quote ())))
   (with-php-mode-test ("constants.php")
     (let ((variables '("no_constant"
                        "no_CONSTANT"
                        "extraconstant"
+                       "classIdentifier()"
                        "2FOO")))
       (dolist (variable variables)
         (search-forward variable)
         (goto-char (match-beginning 0))
-        (should (not (eq 'font-lock-constant-face
+        (should (not (eq 'php-constant
                      (get-text-property (point) 'face))))))))
 
 (ert-deftest php-mode-test-identifiers()
@@ -380,19 +695,19 @@ style from Drupal."
                     (get-text-property (point) 'face)))))
     (search-forward "var")
     (goto-char (match-beginning 0))
-    (should (eq 'font-lock-variable-name-face
+    (should (eq 'php-variable-name
                 (get-text-property (point) 'face)))
     (search-forward "syntaxerror")
     (goto-char (match-beginning 0))
-    (should (not (eq 'font-lock-variable-name-face
+    (should (not (eq 'php-variable-name
                      (get-text-property (point) 'face))))
     (search-forward "ClassName")
     (goto-char (match-beginning 0))
-    (should (eq 'font-lock-constant-face
+    (should (eq 'php-constant
                 (get-text-property (point) 'face)))
     (search-forward "SpaceName")
     (goto-char (match-beginning 0))
-    (should (eq 'font-lock-constant-face
+    (should (eq 'php-constant
                 (get-text-property (point) 'face)))))
 
 (ert-deftest php-mode-test-variables()
@@ -400,42 +715,48 @@ style from Drupal."
   (with-php-mode-test ("variables.php")
     (let ((variables '("regularVariable"
                        "variableVariable"
-                       "staticVariable"
-                       "memberVariable")))
+                       "staticVariable")))
       (dolist (variable variables)
         (save-excursion
           (search-forward variable)
           (goto-char (match-beginning 0))
-          (should (eq 'font-lock-variable-name-face
+          (should (eq 'php-variable-name
                       (get-text-property (point) 'face))))))
+
+    (search-forward "memberVariable")
+    (should (eq 'php-property-name
+                (get-text-property (match-beginning 0) 'face)))
+
     (search-forward "funCall")
-    (goto-char (match-beginning 0))
-    (should-not (eq 'font-lock-variable-name-face
-                    (get-text-property (point) 'face)))))
+    (should-not (eq 'php-property-name
+                    (get-text-property (match-beginning 0) 'face)))))
 
 (ert-deftest php-mode-test-arrays()
   "Proper highlighting for array keyword."
   (with-php-mode-test ("arrays.php")
+    ;; Keyword situations
     (let ((variables '("array();"
-                       "array $test"
                        "array()")))
       (dolist (variable variables)
         (search-forward variable)
         (goto-char (match-beginning 0))
-        (should (eq 'font-lock-keyword-face
+        (should (eq 'php-keyword
                     (get-text-property (point) 'face)))))
-    ;; when used as a cast, array should behave like other casts
-    (search-forward "(array)")
-    (goto-char (match-beginning 0))
-    (right-char)
-    (should (eq 'font-lock-type-face
-                (get-text-property (point) 'face)))))
+    ;; Type situations
+    (let ((variables '("(array)"
+                       "array $test"
+                       ": array")))
+      (dolist (variable variables)
+        (search-forward variable)
+        (search-backward "array")
+        (should (eq 'font-lock-type-face
+                    (get-text-property (point) 'face)))))))
 
 (ert-deftest php-mode-test-issue-174 ()
   "Test escaped quotes in string literals"
   (with-php-mode-test ("issue-174.php")
     (while (search-forward "quotation mark" nil t)
-      (should (eq 'font-lock-string-face
+      (should (eq 'php-string
                   (get-text-property (- (point) 1) 'face))))))
 
 (ert-deftest php-mode-test-issue-175 ()
@@ -457,26 +778,26 @@ style from Drupal."
     (search-forward "Start:")
     (while (not (= (line-number-at-pos) (count-lines (point-min) (point-max))))
       (forward-line 1)
-      (should (eq 'font-lock-keyword-face
+      (should (eq 'php-keyword
                   (get-text-property (point) 'face))))))
 
 (ert-deftest php-mode-test-issue-178 ()
   "Highligth as keyword and following symbol"
   (with-php-mode-test ("issue-178.php")
     (search-forward "use Test as")
-    (should (eq 'font-lock-keyword-face
+    (should (eq 'php-keyword
                 (get-text-property (- (point) 1) 'face)))
     (should (eq 'font-lock-type-face
                 (get-text-property (+ (point) 1) 'face)))
     (search-forward "$values as")
-    (should (eq 'font-lock-keyword-face
+    (should (eq 'php-keyword
                 (get-text-property (- (point) 1) 'face)))
-    (should (eq 'font-lock-variable-name-face
+    (should (eq 'php-variable-name
                 (get-text-property (+ (point) 2) 'face)))
     (search-forward "test as")
-    (should (eq 'font-lock-keyword-face
+    (should (eq 'php-keyword
                 (get-text-property (- (point) 1) 'face)))
-    (should (eq 'font-lock-keyword-face
+    (should (eq 'php-keyword
                 (get-text-property (+ (point) 1) 'face)))))
 
 (ert-deftest php-mode-test-issue-186 ()
@@ -502,15 +823,15 @@ style from Drupal."
   (with-php-mode-test ("issue-201.php")
     (search-forward "Start:")
     (search-forward "$this")
-    (should (eq 'font-lock-constant-face (get-text-property (- (point) 1) 'face)))
+    (should (eq 'php-$this (get-text-property (- (point) 1) 'face)))
     (search-forward "$that")
-    (should (eq 'font-lock-constant-face (get-text-property (- (point) 1) 'face)))
+    (should (eq 'php-$this (get-text-property (- (point) 1) 'face)))
     (search-forward "self")
-    (should (eq 'font-lock-keyword-face (get-text-property (- (point) 1) 'face)))
+    (should (eq 'php-keyword (get-text-property (- (point) 1) 'face)))
     (search-forward "static")
-    (should (eq 'font-lock-keyword-face (get-text-property (- (point) 1) 'face)))
+    (should (eq 'php-keyword (get-text-property (- (point) 1) 'face)))
     (search-forward "parent")
-    (should (eq 'font-lock-keyword-face (get-text-property (- (point) 1) 'face)))))
+    (should (eq 'php-keyword (get-text-property (- (point) 1) 'face)))))
 
 (ert-deftest php-mode-test-issue-211 ()
   "Test indentation of string concatination"
@@ -570,13 +891,15 @@ style from Drupal."
   "Test highlight after string literal which contains many escaped quotes."
   (with-php-mode-test ("issue-253.php")
     (search-forward "$x" nil nil 3)
-    (should (eq 'font-lock-variable-name-face (get-text-property (1- (point)) 'face)))
+    (should (eq 'php-variable-name (get-text-property (1- (point)) 'face)))
 
     (search-forward "$this")
-    (should (eq 'font-lock-constant-face (get-text-property (1- (point)) 'face)))
+    (should (eq 'php-$this-sigil (get-text-property (match-beginning 0) 'face)))
+    (should (eq 'php-$this (get-text-property (1+ (match-beginning 0)) 'face)))
 
     (search-forward "$x")
-    (should (eq 'font-lock-variable-name-face (get-text-property (1- (point)) 'face)))))
+    (should (eq 'php-variable-sigil (get-text-property (match-beginning 0) 'face)))
+    (should (eq 'php-variable-name (get-text-property (1+ (match-beginning 0)) 'face)))))
 
 (ert-deftest psr-5-style-tag-annotation ()
   "PSR-5 style tag annotation."
@@ -585,16 +908,114 @@ style from Drupal."
     (cl-loop for i from 1 to 3
              do
              (progn
-               (should (eq (get-text-property (match-beginning i) 'face)
-                           'php-annotations-annotation-face))
-               (should (eq (get-text-property (1- (match-end i)) 'face)
-                           'php-annotations-annotation-face))))
+               (should (equal (get-text-property (match-beginning i) 'face)
+                              '(php-doc-annotation-tag font-lock-doc-face)))
+               (should (equal (get-text-property (1- (match-end i)) 'face)
+                              '(php-doc-annotation-tag font-lock-doc-face)))))
 
     (search-forward "@property-read")
-    (should (eq (get-text-property (match-beginning 0) 'face)
-                'php-annotations-annotation-face))
-    (should (eq (get-text-property (1- (match-end 0)) 'face)
-                'php-annotations-annotation-face))))
+    (should (equal (get-text-property (match-beginning 0) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))
+    (should (equal (get-text-property (1- (match-end 0)) 'face)
+                   '(php-doc-annotation-tag font-lock-doc-face)))))
+
+(ert-deftest php-mode-test-issue-305 ()
+  "Test highlighting variables which contains 'this' or 'that'."
+  (with-php-mode-test ("issue-305.php")
+    (search-forward "Start:")
+    (search-forward "$this")
+    (should-not (eq 'php-constant (get-text-property (- (point) 1) 'face)))
+    (search-forward "$that")
+    (should-not (eq 'php-constant (get-text-property (- (point) 1) 'face)))))
+
+(ert-deftest php-mode-test-issue-307 ()
+  "Activating php-mode should not mark the buffer as modified."
+  (with-php-mode-test ("issue-307.php")
+    (set-buffer-modified-p nil)
+    (php-mode)
+    (should-not (buffer-modified-p))))
+
+(ert-deftest php-mode-test-issue-314 ()
+  "Activating php-mode should not move point."
+  (with-php-mode-test ("issue-314.php")
+    (let ((orig-point (point)))
+      (php-mode)
+      (should (eq (point) orig-point)))))
+
+(ert-deftest php-mode-test-issue-310 ()
+  "Proper indentation after function with return type."
+  (with-php-mode-test ("issue-310.php" :indent t :magic t)))
+
+(ert-deftest php-mode-test-issue-333 ()
+  "Do not freeze Emacs by font-lock regexp pattern."
+  (with-php-mode-test ("issue-333.php")))
+
+(ert-deftest php-mode-test-issue-357 ()
+  "Match version-specific interpreters."
+  (dolist (on '("php" "php3" "php5" "php7" "php-5" "php-5.5" "php7.0.1"))
+    (with-temp-buffer
+      (insert "#!" on)
+      (set-auto-mode)
+      (should (eq 'php-mode major-mode))))
+
+  (dolist (off '("php2" "xphp5" "foo" "php8" "php7x"))
+    (with-temp-buffer
+      (insert "#!" off)
+      (set-auto-mode)
+      (should (not (eq 'php-mode major-mode))))))
+
+(ert-deftest php-mode-test-type-hints ()
+  "Test highlighting of type hints and return types."
+  (with-php-mode-test ("type-hints.php")
+    (search-forward "void")
+    (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face)))
+    (dotimes (num 4)
+      (search-forward "string")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    (dotimes (num 4)
+      (search-forward "int")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    (dotimes (num 4)
+      (search-forward "float")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    (dotimes (num 4)
+      (search-forward "bool")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    (dotimes (num 4)
+      (search-forward "array")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    (dotimes (num 4)
+      (search-forward "stdClass")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    (dotimes (num 4)
+      (search-forward "\\path\\to\\my\\Object")
+      (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))
+    ;; Parameters on different lines
+    (let ((variables '("string"
+                       "int"
+                       "bool"
+                       "array"
+                       "stdClass"
+                       "\\path\\to\\my\\Object"
+                       "void")))
+      (dolist (variable variables)
+        (search-forward variable)
+        (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face)))))
+    ;; Return types on different lines
+    (search-forward "void")
+    (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face)))
+    (let ((variables '("string"
+                       "int"
+                       "float"
+                       "bool"
+                       "array"
+                       "stdClass"
+                       "\\path\\to\\my\\Object"
+                       )))
+      (dolist (variable variables)
+        (dotimes (num 2)
+          (search-forward variable)
+          (should (eq 'font-lock-type-face (get-text-property (- (point) 1) 'face))))))))
 
 ;;; php-mode-test.el ends here
 
