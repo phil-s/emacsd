@@ -1,3 +1,96 @@
+;;;; * Bug reports:
+
+;; Suggest the addition of loop-collect:
+;; https://www.reddit.com/r/emacs/comments/6ndc80/list_comprehensions_in_elisp/dk9n6ka/
+;;
+;; (defmacro loop-collect (item &rest loop)
+;;   "Emulate list comprehension syntax/order for `cl-loop'.
+;;
+;; \(loop-collect x for x in ...) => (cl-loop for x in ... collect x)"
+;;   (require 'cl-macs)
+;;   `(cl-loop ,@loop collect ,item))
+;;
+;; (loop-collect b for b being the buffers if (buffer-file-name b))
+;;
+;; (loop-collect (cons b (buffer-file-name b))
+;;               for b being the buffers
+;;               if (buffer-file-name b))
+
+;; Emacs mode docstrings should indicate local/global/globalized-ness
+;; The manual should also describe the differences.
+;; Adapt my SO/ES answers on the subject.
+;; http://emacs.stackexchange.com/a/20915
+;; http://stackoverflow.com/a/6839968
+;; http://emacs.stackexchange.com/a/24785
+;; http://emacs.stackexchange.com/a/22511
+
+;; dired '% R' binding doesn't allow \,(...) interactive replacements.
+
+;;; http://stackoverflow.com/questions/2592095/how-do-i-create-an-empty-file-in-emacs/18885461#18885461
+
+;; + Add new variable `standard-error' with value 'external-debugging-output
+;; Re: bug#17390: 24.4.50; Doc bug: Batch Mode
+;; + Fix existing documentation so that it isn't lying!:
+;; > (info "(elisp) Batch Mode") says:
+;; >     Any Lisp program output that would normally go to the echo
+;; >     area, either using `message', or using `prin1', etc., with
+;; >     `t' as the stream, goes instead to Emacs's standard error
+;; >     descriptor when in batch mode.
+;; + s/standard error/standard output/
+;; + Add new variable `standard-error' with value 'external-debugging-output
+;; + Update documentation to indicate the new `standard-error' facility.
+
+;; Should there be any difference between `set-variable' and
+;; `customize-set-value' ?! Could one become an alias for the other?
+;; See also https://debbugs.gnu.org/cgi/bugreport.cgi?bug=21695
+;;
+;; (if I've understood correctly that `customize-set-variable' will cause
+;; an update to your init file, and `customize-set-value' will not, in
+;; which case `customize-set-value' would be the way to manage the values
+;; in code without also bulking up your init file unnecessarily (i.e.
+;; use `customize-set-value' instead of setq for user options??) It's
+;; already the case that `set-variable' deals only with user options, and
+;; so I can't see any reason for the current differences. i.e. No one
+;; should be calling it non-interactively, and for interactive calls you
+;; would invariably(?!) want the `customize-set-value' behaviour?
+
+;; my-rectangles.el
+;; rectangle editing
+;; http://stackoverflow.com/a/11130708
+;; but consider actually doing that via:
+;; C-x r e runs the command my-edit-rectangle
+;; in order to get line-wrapping behaviours?
+;; (i.e. via replace-regexp-lax-whitespace. but maybe that's daft.)
+;; etc...
+
+;; Indirect clone enhancements:
+;; Provide some way to establish the parent buffer from
+;; the indirect buffer.
+;; Use-case: Allow diff-buffer-with-file to work from an
+;; indirect buffer, by actually running the diff for the
+;; parent buffer.
+;; (Or more generically? Not sure if that's feasible!)
+
+
+;; Absolutely crazy that "Only useful in lexical-binding mode" is
+;; relegated to a comment in the definition of `letrec` rather than
+;; appearing in the docstring. In 24.5 at least. Search for any other
+;; such comments in the code! => A couple of commented-out macros in
+;; cconv.el are all I found: defmacro dlet, and defmacro llet.
+
+
+;; Enhance `define-globalized-minor-mode' to create some *standard*
+;; mechanism for specifying exceptions to the TURN-ON behaviour?
+;; (Was that the thing I wanted to do??)  Maybe make TURN-ON &optional
+;; and provide a functional default?  Or provide functionality which
+;; is layered on top of that which is already provided?
+
+
+;; ...and I need to review my S.O. and E.S. history -- there will be things
+;; I've found over the years which could improve the documentation, or be
+;; raised as bug fixes / feature requests.
+
+
 ;;;; * Useful links
 ;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
 ;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
@@ -26,6 +119,8 @@
 ;; http://bruce-connor.github.io/emacs-online-documentation/
 ;; ;; Elisp package development and testing:
 ;; http://emacs.stackexchange.com/a/2324/454
+;; ;; How can i change the color of my cursor in gnome terminal?
+;; http://askubuntu.com/questions/104609
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
