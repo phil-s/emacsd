@@ -29,17 +29,51 @@
 ;; ;; Set maximum indentation for description lists.
 ;; (setq org-list-description-max-indent 5)
 
-;; Default notes file.
-(setq org-default-notes-file "~/notes.org")
-
-;; Default agenda files.
-(setq org-agenda-files '("~/todo.org"))
-
 ;; Prevent the demoting of a heading also shifting text within its sections.
 (setq org-adapt-indentation nil)
 
 ;; Use a real ellipsis character.
 (setq org-ellipsis "…")
+
+
+;;; Agenda / Capture
+
+;; Default notes file.
+(setq org-default-notes-file "~/notes.org")
+
+;; Default agenda files.
+(setq org-agenda-files `(,org-default-notes-file "~/todo.org"))
+
+;; https://cestlaz.github.io/posts/using-emacs-24-capture-2/
+;; Bind Key to: emacsclient --eval "(my-org-capture)"
+;; XMonad: , ((modMask, xK_o), spawn "emacsclient --eval \"(my-org-capture)\"")
+(defun my-org-capture ()
+  "Create a new frame and run `org-capture'."
+  (interactive)
+  (select-frame (make-frame '((my-org-capture . t))))
+  (delete-other-windows)
+  (cl-letf (((symbol-function 'switch-to-buffer-other-window) #'switch-to-buffer))
+    (condition-case err
+        (org-capture)
+      ;; `org-capture' signals (error "Abort") when "q" is typed, so
+      ;; delete the newly-created frame in this scenario.
+      (error (when (equal err '(error "Abort"))
+               (delete-frame))))))
+
+(defadvice org-capture-finalize (after my-delete-capture-frame activate)
+  "Delete the frame after `capture-finalize'."
+  (when (frame-parameter nil 'my-org-capture)
+    (delete-frame)))
+
+(defadvice org-capture-destroy (after my-delete-capture-frame activate)
+  "Delete the frame after `capture-destroy'."
+  (when (frame-parameter nil 'my-org-capture)
+    (delete-frame)))
+
+;; (ad-remove-advice 'org-capture-finalize 'after 'my-delete-capture-frame)
+;; (ad-activate 'org-capture-finalize)
+;; (ad-remove-advice 'org-capture-destroy 'after 'my-delete-capture-frame)
+;; (ad-activate 'org-capture-destroy)
 
 
 ;;; Babel
