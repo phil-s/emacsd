@@ -44,8 +44,7 @@
 
 (defconst my-php-style
   ;; Check the `c-offsets-alist' variable and `c-set-offset' function.
-  '("php" (c-offsets-alist . ((arglist-close . c-lineup-close-paren)
-                              (case-label . +))))
+  '("php" (c-offsets-alist . ((case-label . +))))
   "My PHP programming style")
 (c-add-style "my-php-style" my-php-style)
 
