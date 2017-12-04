@@ -61,7 +61,8 @@ status command automatically when invoking the REPL.")
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
     ;; Example definition
     (define-key map "\t" 'completion-at-point)
-    (define-key map (kbd "C-a") 'drush-php-move-beginning-of-line)
+    (define-key map [remap move-beginning-of-line]
+      'drush-php-move-beginning-of-line)
     ;; When there is no running process, 'g' starts a new one.
     ;; So to restart drush-php, use 'C-d' (to exit), and then 'g'.
     (define-key map "g"
@@ -204,5 +205,22 @@ continuation prompt '... '")
   (interactive)
   (beginning-of-line)
   (comint-skip-prompt))
+
+(defun drush-php-beginning-of-line-or-indentation ()
+  "Move to beginning of line, or indentation, respecting the prompt."
+  (interactive)
+  (if (not (bolp))
+      ;; Find the end of the prompt (if any) on this line.
+      (let ((eop (save-excursion
+                   (beginning-of-line)
+                   (comint-skip-prompt)
+                   (point))))
+        (if (<= (point) eop) ;; At (or within) the prompt, so go to bol.
+            (beginning-of-line)
+          (goto-char eop))) ;; Else beyond the prompt, so return to it.
+    ;; Otherwise we were initially at bol, and may want to move forwards.
+    (comint-skip-prompt) ;; If there is a prompt, move to that.
+    (when (bolp) ;; There was no prompt to skip.  Skip indentation instead.
+      (back-to-indentation))))
 
 (provide 'drush-php)

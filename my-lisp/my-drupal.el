@@ -14,6 +14,12 @@
   (declare-function term-mode "term")
   )
 
+(eval-after-load "drush-php"
+  '(progn
+     (define-key drush-php-mode-map
+       [remap my-beginning-of-line-or-indentation]
+       'drush-php-beginning-of-line-or-indentation)))
+
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
