@@ -115,13 +115,25 @@ continuation prompt '... '")
   (setq-local comint-use-prompt-regexp t)
   (setq-local comint-prompt-regexp drush-php-prompt-regexp)
 
-  ;; This makes it read only; a contentious subject as some prefer the
-  ;; buffer to be overwritable. (This causes problems when the process
-  ;; exits, however, so commenting for now...)
+  ;; `drush-php-comint-output-filter' needs a version of the prompt
+  ;; which is not anchored to the start of the line, in order to
+  ;; remove any additional prompts following the initial one.
+  (setq-local drush-php-duplicate-prompt-regexp
+              (string-remove-prefix "^" drush-php-prompt-regexp))
+
+  ;; Make the prompt read only.
   (setq-local comint-prompt-read-only t)
 
   ;; Assume that the subprocess echoes input appropriately.
   (setq-local comint-process-echoes t)
+
+  ;; Filter process output before insertion into buffer.
+  (add-hook 'comint-preoutput-filter-functions
+            'drush-php-comint-preoutput-filter nil :local)
+
+  ;; Filter process output after insertion into buffer.
+  (add-hook 'comint-output-filter-functions
+            'drush-php-comint-output-filter nil :local)
 
   ;; Enable ANSI colour.
   (ansi-color-for-comint-mode-on)
@@ -201,6 +213,26 @@ continuation prompt '... '")
 ;; Another useful variable is `comint-input-sender', which lets you
 ;; alter the input string mid-stream. Annoyingly its name is
 ;; inconsistent with the filter functions above.
+
+(defun drush-php-comint-preoutput-filter (output)
+  "Strip trailing whitespace from comint process output lines.
+
+Called via `comint-preoutput-filter-functions'."
+  (replace-regexp-in-string "  +$" "" output t t))
+
+(defun drush-php-comint-output-filter (output)
+  "Delete any duplicate prompts.
+
+Called via `comint-output-filter-functions'."
+  (save-excursion
+    (goto-char (point-max))
+    (beginning-of-line)
+    (when (looking-at comint-prompt-regexp)
+      (comint-skip-prompt)
+      (let ((pos (point))
+            (comint-prompt-regexp drush-php-duplicate-prompt-regexp))
+        (while (comint-skip-prompt)
+          (delete-region pos (point)))))))
 
 (defun drush-php-move-beginning-of-line ()
   "Move to the beginning of the line, respecting the prompt."
