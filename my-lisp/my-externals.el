@@ -121,6 +121,10 @@
             :type git
             :url "https://github.com/ahungry/geben.git")
 
+     (:name ghub
+            :type git
+            :url "https://github.com/magit/ghub.git")
+
      (:name git-modes
             :type git
             :branch "master"

@@ -59,4 +59,5 @@
 :idle-highlight-mode "installed"
 :winnow "installed"
 :avy "installed"
+:ghub "installed"
 )

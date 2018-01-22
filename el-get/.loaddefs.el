@@ -877,6 +877,28 @@ setting the variable `ffip-project-root'.
 (put 'ffip-project-root-function 'safe-local-variable 'functionp)
 
 (put 'ffip-limit 'safe-local-variable 'integerp)
+;;;***
+
+;;;### (autoloads nil "ghub/ghub" "ghub/ghub.el" (23142 29662 590988
+;;;;;;  864000))
+;;; Generated autoloads from ghub/ghub.el
+
+(autoload 'ghub-create-token "ghub/ghub" "\
+Create, store and return a new token.
+
+HOST is the Github instance, usually \"api.github.com\".
+USERNAME is the name of a user on that instance.
+PACKAGE is the package that will use the token.
+SCOPES are the scopes the token is given access to.
+
+\(fn HOST USERNAME PACKAGE SCOPES)" t nil)
+
+(autoload 'ghub-token-scopes "ghub/ghub" "\
+Return and echo the scopes of the specified token.
+This is intended for debugging purposes only.  The user
+has to provide several values including their password.
+
+\(fn HOST USERNAME PACKAGE)" t nil)
 
 ;;;***
 
