@@ -9,6 +9,10 @@
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
+  (declare-function browse-url-encode-url "browse-url")
+  (declare-function browse-url-interactive-arg "browse-url")
+  (declare-function browse-url-maybe-new-window "browse-url")
+  (declare-function browse-url-process-environment "browse-url")
   (declare-function dired-add-file "dired-aux")
   (declare-function dired-create-directory "dired-aux")
   (declare-function dired-current-directory "dired")
@@ -1020,6 +1024,52 @@ Prompts for a string, defaulting to the active region or the current word at
 or before point."
   (interactive (my-region-or-word "WWW search: "))
   (browse-url (format my-www-search-url (url-hexify-string string))))
+
+(defcustom browse-url-palemoon-program "palemoon"
+  "The name by which to invoke Palemoon."
+  :type 'string
+  :group 'browse-url)
+
+(defcustom browse-url-palemoon-arguments nil
+  "A list of strings to pass to Palemoon (or variant) as arguments."
+  :type '(repeat (string :tag "Argument"))
+  :group 'browse-url)
+
+(defcustom browse-url-palemoon-new-window-is-tab nil
+  "Whether to open up new windows in a tab or a new window.
+If non-nil, then open the URL in a new tab rather than a new window if
+`browse-url-palemoon' is asked to open it in a new window."
+  :type 'boolean
+  :group 'browse-url)
+
+(defun browse-url-palemoon (url &optional new-window)
+  "Ask the Palemoon WWW browser to load URL.
+Defaults to the URL around or before point.  Passes the strings
+in the variable `browse-url-palemoon-arguments' to Palemoon.
+
+Interactively, if the variable `browse-url-new-window-flag' is non-nil,
+loads the document in a new Palemoon window.  A non-nil prefix argument
+reverses the effect of `browse-url-new-window-flag'.
+
+If `browse-url-palemoon-new-window-is-tab' is non-nil, then
+whenever a document would otherwise be loaded in a new window, it
+is loaded in a new tab in an existing window instead.
+
+Non-interactively, this uses the optional second argument NEW-WINDOW
+instead of `browse-url-new-window-flag'."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (setq url (browse-url-encode-url url))
+  (let* ((process-environment (browse-url-process-environment)))
+    (apply 'start-process
+           (concat "palemoon " url) nil
+           browse-url-palemoon-program
+           (append
+            browse-url-palemoon-arguments
+            (if (browse-url-maybe-new-window new-window)
+                (if browse-url-palemoon-new-window-is-tab
+                    '("-new-tab")
+                  '("-new-window")))
+            (list url)))))
 
 (defvar my-ssh-history nil)
 (defun my-ssh (args)
