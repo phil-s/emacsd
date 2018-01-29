@@ -47,6 +47,10 @@
             :type git
             :url "https://github.com/tarsius/auto-compile")
 
+     (:name avy
+            :type git
+            :url "https://github.com/abo-abo/avy.git")
+
      (:name browse-kill-ring
             :type http
             :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el"

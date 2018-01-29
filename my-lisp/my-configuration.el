@@ -652,6 +652,12 @@ If the current search is successful, then only delete the last char."
              (eq last-input-event ?\r))
     (dired-find-file)))
 
+;; Make the avy library use more keys.
+(setq avy-keys
+      (nconc (number-sequence ?a ?z)
+             (number-sequence ?1 ?9)
+             '(?0)))
+
 ;; n.b. We bind C-x C-j to `my-dired-jump' in my-keys-minor-mode, so
 ;; this won't really be used. The custom function facilitates using
 ;; C-u C-x C-j instead of typing 'a' on the '..' entry in a dired

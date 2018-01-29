@@ -58,4 +58,5 @@
 :which-key "installed"
 :idle-highlight-mode "installed"
 :winnow "installed"
+:avy "installed"
 )
