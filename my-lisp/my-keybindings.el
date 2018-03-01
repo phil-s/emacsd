@@ -99,7 +99,7 @@
 
   ;; Use ibuffer in place of list-buffers
   (define-key keymap (kbd "C-x C-b")   'ibuffer)
-  (define-key keymap (kbd "<menu>")    'ibuffer)
+  (define-key keymap (kbd "<menu> <menu>") 'ibuffer)
   (define-key keymap (kbd "<f8>")      'ibuffer) ; for terminals
   (define-key keymap [remap ibuffer]   'my-ibuffer)
   (define-key keymap (kbd "M-<menu>")  'switch-to-buffer)
@@ -190,6 +190,7 @@
 
   ;; Miscellaneous (mine/third-party)
   (define-key keymap (kbd "s-/")       'avy-goto-char-timer)
+  (define-key keymap (kbd "<menu> s")  'avy-goto-char-timer)
   (define-key keymap (kbd "<f9>")      'avy-goto-char-timer)
   (define-key keymap (kbd "C-c v")     'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
