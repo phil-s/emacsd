@@ -61,6 +61,18 @@
 ;; (and `browse-kill-ring.el').  I do.  If you do that, then
 ;; load `second-sel.el' first.
 
+;;;; * Translation keymaps
+
+;; I want to be able to use my <menu> key in a terminal; so I have
+;; <menu> mapped to <f8> via xmodmap (as terminals can send <f8>), and
+;; here I map <f8> back to <menu> inside Emacs.  (I effectively lose
+;; <f8> as a separate binding option, but I gain a far more convenient
+;; key on the keyboard, and get consistency with my GUI emacs keys.)
+(define-key key-translation-map (kbd "<f8>") (kbd "<menu>"))
+;; Possibly better would be to send a custom escape sequence from the
+;; terminal and handle that in `input-decode-map', but I don't know
+;; whether there are any escape sequence ranges reserved for end users?
+
 ;;;; * Help and documentation bindings
 
 ;; Custom 'apropos' key bindings. Prefix binding is: C-h C-a
@@ -100,7 +112,6 @@
   ;; Use ibuffer in place of list-buffers
   (define-key keymap (kbd "C-x C-b")   'ibuffer)
   (define-key keymap (kbd "<menu> <menu>") 'ibuffer)
-  (define-key keymap (kbd "<f8>")      'ibuffer) ; for terminals
   (define-key keymap [remap ibuffer]   'my-ibuffer)
   (define-key keymap (kbd "M-<menu>")  'switch-to-buffer)
 
