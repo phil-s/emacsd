@@ -488,14 +488,11 @@ Runs after `sql-interactive-remove-continuation-prompt' in
           (unless (looking-at "\n")
             (insert "\n")))
         ;; Limit the length of record separator lines in the 'expanded'
-        ;; output format.  There is a fuzz factor to account for large
-        ;; record numbers, as we don't count the characters in \1. I
-        ;; should probably use a (window-width) substring of the entire
-        ;; match to get it exactly right.
-        (let* ((sep (format "^\\(-\\[ RECORD [0-9]+ \\][-+]\\{%d\\}\\)-+$"
-                            (- (window-width) 17))))
-          (while (re-search-forward sep nil :noerror)
-            (replace-match "\\1")))
+        ;; output format, so that they do not exceed the window width.
+        (while (re-search-forward "^-\\[ RECORD [0-9]+ \\][-+]+$" nil t)
+          (when (> (- (match-end 0) (match-beginning 0)) (window-body-width))
+            (replace-match
+             (substring (match-string 0) 0 (window-body-width)))))
         ;; Return the filtered output.
         (buffer-substring-no-properties (point-min) (point-max))))))
 
