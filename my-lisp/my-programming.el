@@ -492,8 +492,8 @@ Runs after `sql-interactive-remove-continuation-prompt' in
         ;; record numbers, as we don't count the characters in \1. I
         ;; should probably use a (window-width) substring of the entire
         ;; match to get it exactly right.
-        (let* ((sep (format "^\\(-\\[ RECORD [0-9]+ \\]-\\{%d\\}\\)-+$"
-                            (- (window-width) 18))))
+        (let* ((sep (format "^\\(-\\[ RECORD [0-9]+ \\][-+]\\{%d\\}\\)-+$"
+                            (- (window-width) 17))))
           (while (re-search-forward sep nil :noerror)
             (replace-match "\\1")))
         ;; Return the filtered output.
