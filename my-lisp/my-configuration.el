@@ -240,6 +240,11 @@ when `auto-save-mode' is invoked manually.")
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
 
+;; `switch-to-buffer' should display the buffer at its previous
+;; position in the selected window, provided the buffer is currently
+;; displayed in some other window on any visible or iconified frame.
+(setq switch-to-buffer-preserve-window-point 'already-displayed)
+
 ;; The arguments to `pop-to-buffer' have changed in Emacs 24.
 ;; I suspect this code is simply defunct now, and can be removed.
 ;; ;; Improve the dedicated window facility.
