@@ -711,9 +711,6 @@
 (defun my-gc-cons-threshold-set-normal ()
   (setq gc-cons-threshold my-gc-cons-threshold-normal))
 (my-gc-cons-threshold-set-large)
-;; Disable non-local file handlers during start-up
-(defvar my-original-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
 
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/packed"))
@@ -835,9 +832,7 @@
 (add-hook
  'emacs-startup-hook
  (lambda ()
-   (my-gc-cons-threshold-set-normal)
-   (setq file-name-handler-alist my-original-file-name-handler-alist)
-   (makunbound 'my-original-file-name-handler-alist)))
+   (my-gc-cons-threshold-set-normal)))
 
 ;;; Local Variables:
 ;;; page-delimiter: ";;;; "
