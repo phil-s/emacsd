@@ -60,4 +60,5 @@
 :winnow "installed"
 :avy "installed"
 :ghub "installed"
+:magit-popup "installed"
 )

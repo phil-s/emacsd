@@ -183,6 +183,10 @@
             ;; :build ("make lisp") ;; just the code; fewer dependencies.
             :depends (async dash git-modes))
 
+     (:name magit-popup
+            :type git
+            :url "git://github.com/magit/magit-popup.git")
+
      (:name mo-git-blame)
 
      (:name multiple-cursors
