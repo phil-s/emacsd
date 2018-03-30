@@ -20,6 +20,9 @@
   ;; Custom changes to Zenburn defaults...
   (setq frame-background-mode 'dark)
 
+  ;; Make errors slightly less red for a nicer zenburn contrast.
+  (set-face-foreground 'error "orangered")
+
   (eval-after-load "hl-sexp"
     '(set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
 
@@ -27,7 +30,9 @@
     '(set-face-background hl-line-face "#333333"))
 
   (eval-after-load "magit"
-    '(set-face-foreground 'magit-section-heading "LemonChiffon"))
+    '(progn
+       (set-face-foreground 'magit-section-heading "LemonChiffon")
+       (set-face-foreground 'magit-mode-line-process "yellow")))
 
   (eval-after-load "whitespace"
     '(set-face-attribute 'whitespace-space nil
