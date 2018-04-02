@@ -245,6 +245,7 @@
   (define-key keymap (kbd "C-x 4 C-j") 'dired-jump-other-window)
   (define-key keymap (kbd "<f6>")      'rgrep)
   (define-key keymap (kbd "s-\\")      'toggle-truncate-lines)
+  (define-key keymap (kbd "<menu> z")  'repeat)
   (when (fboundp 'cycle-spacing) ;; replace just-one-space in Emacs 24.4
     (define-key keymap (kbd "M-SPC")   'cycle-spacing))
   ) ; end of key definitions
