@@ -251,6 +251,14 @@ Advice to `magit-push-current-to-upstream' triggers this query."
   ;; from its usual value of 160, as a workaround.
   (setq-local split-width-threshold 120))
 
+;; Always open magit windows in the current frame.
+(add-to-list 'display-buffer-alist
+             (cons "^magit[-:]"
+                   (cons 'display-buffer-reuse-major-mode-window
+                         '((inhibit-same-window . nil)
+                           (reusable-frames . visible)
+                           (inhibit-switch-frame . nil)))))
+
 ;; pcomplete
 
 ;; Silence compiler warnings
