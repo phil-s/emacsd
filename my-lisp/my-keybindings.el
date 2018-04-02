@@ -10,6 +10,10 @@
 (global-unset-key (kbd "C-z")) ; suspend-frame
 (global-set-key (kbd "C-z C-z") 'suspend-frame)
 
+;; The global binding for <menu> sometimes gets in the way when testing,
+;; as that's a prefix binding in my custom keymap (see below).
+(global-unset-key (kbd "<menu>"))
+
 ;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
