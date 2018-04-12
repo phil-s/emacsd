@@ -171,6 +171,7 @@
   (define-key keymap (kbd "C-x M-k")   'kill-other-buffer)
   (define-key keymap (kbd "C-x M-2")   'split-window-vertically-change-buffer)
   (define-key keymap (kbd "C-c \\")    'toggle-window-split)
+  (define-key keymap (kbd "C-c |")     'rotate-frame)
   (define-key keymap (kbd "C-c C-\\")  'transpose-frame)
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
