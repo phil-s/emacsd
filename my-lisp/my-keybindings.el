@@ -260,6 +260,7 @@
   (define-key keymap (kbd "C-h C-k")   'find-function-on-key)
   (define-key keymap (kbd "C-h C-v")   'find-variable)
   (define-key keymap (kbd "C-h C-l")   'find-library)
+  (define-key keymap (kbd "C-h C-c")   'finder-commentary)
   (define-key keymap (kbd "C-x C-j")   'my-dired-jump)
   (define-key keymap (kbd "C-x 4 C-j") 'dired-jump-other-window)
   (define-key keymap (kbd "<f6>")      'rgrep)
