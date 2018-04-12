@@ -271,6 +271,12 @@ when `auto-save-mode' is invoked manually.")
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
 
+;; Do not use the new 'pretty' quoting that makes quotes unsearchable
+;; and unusable in verbatim copy/paste scenarios.  The old style was
+;; never a problem, so let's not introduce issues for the sake of
+;; accommodating a new approach that we don't need.
+(setq text-quoting-style 'grave)
+
 ;; Avoid garbage collection in the minibuffer, for improved responsiveness.
 (add-hook 'minibuffer-setup-hook #'my-gc-cons-threshold-set-large)
 (add-hook 'minibuffer-exit-hook #'my-gc-cons-threshold-set-normal)
