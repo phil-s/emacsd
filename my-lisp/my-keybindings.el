@@ -52,6 +52,20 @@
 (eval-after-load "magit"
   '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
 
+(eval-after-load "magit-diff"
+  '(progn
+     ;; Swap the meanings of RET and C-RET on diff hunks.
+     ;; Note that the default RET bindings are [remap magit-visit-thing]
+     ;; in the original keymaps, but I am only concerned with RET here.
+     ;; Note also that in a terminal, C-RET sends C-j.
+     ;; Using the same key formats here as magit-diff.el
+     (define-key magit-file-section-map [return] 'magit-diff-visit-file-worktree)
+     (define-key magit-file-section-map [C-return] 'magit-diff-visit-file)
+     (define-key magit-file-section-map (kbd "C-j") 'magit-diff-visit-file)
+     (define-key magit-hunk-section-map [return] 'magit-diff-visit-file-worktree)
+     (define-key magit-hunk-section-map [C-return] 'magit-diff-visit-file)
+     (define-key magit-hunk-section-map (kbd "C-j") 'magit-diff-visit-file)))
+
 (eval-after-load "git-commit"
   '(progn
      (define-key git-commit-mode-map (kbd "s-[") 'git-commit-prev-message)

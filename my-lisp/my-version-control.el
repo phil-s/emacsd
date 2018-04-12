@@ -202,7 +202,6 @@ static char * data[] = {
 
 (eval-after-load "magit"
   '(progn
-     (define-key magit-mode-map (kbd "TAB") 'magit-section-cycle)
      (global-magit-file-mode 1))) ;; per-file popup on C-c M-g
 
 ;; Protect against accidental pushes to upstream
