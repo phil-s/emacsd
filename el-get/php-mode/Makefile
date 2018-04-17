@@ -1,14 +1,23 @@
 EMACS ?= emacs
-ELS = php-mode.el php-mode-test.el
+ELS = php-project.el php-mode.el php-mode-test.el
+AUTOLOADS = php-project-autoloads.el php-mode-autoloads.el
 ELCS = $(ELS:.el=.elc)
 
 %.elc: %.el
 	$(EMACS) -Q -batch -L . -f batch-byte-compile $<
 
-all: $(ELCS)
+all: autoloads $(ELCS)
+
+autoloads: $(AUTOLOADS)
+
+$(AUTOLOADS): php-project.el php-mode.el
+	$(EMACS) -Q -batch -L . --eval \
+	"(progn \
+	   (require 'package) \
+	   (package-generate-autoloads \"php-mode\" default-directory))"
 
 clean:
-	rm -f $(ELCS)
+	rm -f $(ELCS) $(AUTOLOADS)
 
 # Runs all unit tests from php-mode-test.el and shows the results. The
 # script will exit with the status code zero if all tests pass. If any
@@ -21,9 +30,7 @@ clean:
 #
 # for an example of using a script like this with the 'git bisect run'
 # command.
-test:
-	make clean
-	make all
+test: clean all
 	$(EMACS) -Q -batch -L . -l php-mode-test.el -f ert-run-tests-batch-and-exit
 
-.PHONY: all clean test
+.PHONY: all autoloads clean test

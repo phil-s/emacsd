@@ -1,21 +1,26 @@
 PHP Mode for GNU Emacs
 ======================
-[![travis badge][travis-badge]][travis-link] [![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+
+[![lang: PHP 7](https://img.shields.io/badge/lang-PHP%207-brightgreen.svg)](http://php.net/manual/migration70.php)
+[![lang: PHP 5](https://img.shields.io/badge/lang-PHP%205-green.svg)](http://php.net/downloads.php)
+[![travis badge][travis-badge]][travis-link]
+[![melpa badge][melpa-badge]][melpa-link]
+[![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+[![GPL v3](https://img.shields.io/badge/license-GPL_v3-green.svg)](http://www.gnu.org/licenses/gpl-3.0.txt)
 
 This project updates PHP Mode for GNU Emacs with features to make it more friendly to use with PHP 5.4 and later.  This fork builds on the work of:
 
 1. Turadg Aleahmad (Original Author)
-
 2. Aaron S. Hawley
-
 3. Lennart Borgman
+4. Eric James Michael Ritz
+5. Syohei Yoshida
 
 All contributors listed below improved PHP Mode as well.
 
-The current maintainers are:
+The current maintainer is:
 
-1. Syohei Yoshida
-2. Eric James Michael Ritz
+1. USAMI Kenta (@zonuexe)
 
 Please submit any bug reports or feature requests by creating issues on [the GitHub page for PHP Mode](https://github.com/ejmr/php-mode).
 
@@ -389,7 +394,9 @@ In chronological order:
 71. [Fabian Wiget](https://github.com/fabacino)
 72. tangxifan
 73. [Serghei Iakovlev](https://github.com/sergeyklay)
-
+74. [Christian Albrecht](https://github.com/calbrecht)
+75. [Sebastian Fieber](https://github.com/fallchildren)
+76. [Mark A. Hershberger](https://github.com/hexmode)
 
 
 [wiki]: https://github.com/ejmr/php-mode/wiki

@@ -3020,7 +3020,7 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 ;;;***
 
 ;;;### (autoloads nil "php-mode/php-mode" "php-mode/php-mode.el"
-;;;;;;  (22339 63855 300123 280000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from php-mode/php-mode.el
 
 (let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
@@ -3030,7 +3030,9 @@ A list of additional strings to treat as PHP constants.")
 
 (custom-autoload 'php-extra-constants "php-mode/php-mode" nil)
 
-(add-to-list 'interpreter-mode-alist (cons "php\\(?:-?[3457]\\(?:\\.[0-9]+\\)*\\)?" 'php-mode))
+(if (version< emacs-version "24.4") (dolist (i '("php" "php5" "php7")) (add-to-list 'interpreter-mode-alist (cons i 'php-mode))) (add-to-list 'interpreter-mode-alist (cons "php\\(?:-?[3457]\\(?:\\.[0-9]+\\)*\\)?" 'php-mode)))
+
+(define-obsolete-variable-alias 'php-available-project-root-files 'php-project-available-root-files "1.19.0")
 
 (let ((loads (get 'php-faces 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php-faces 'custom-loads (cons '"php-mode/php-mode" loads))))
 
@@ -3051,7 +3053,86 @@ Insert current namespace if cursor in namespace context.
 
 \(fn)" t nil)
 
-(dolist (pattern '("\\.php[s345t]?\\'" "/\\.php_cs\\(\\.dist\\)?\\'" "\\.phtml\\'" "/Amkfile\\'" "\\.amk\\'")) (add-to-list 'auto-mode-alist `(,pattern . php-mode) t))
+(add-to-list 'auto-mode-alist (cons (eval-when-compile (rx (or (: "." (or (: "php" (32 (in "s345t"))) "amk" "phtml")) (: "/" (or "Amkfile" ".php_cs" ".php_cs.dist"))) string-end)) 'php-mode) t)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/php-mode" '("php-")))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/php-mode-test" "php-mode/php-mode-test.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/php-mode-test.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/php-mode-test" '("php-mode-test-")))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/php-project" "php-mode/php-project.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/php-project.el
+
+(defvar php-project-root 'auto "\
+Method of searching for the top level directory.
+
+`auto' (default)
+      Try to search file in order of `php-project-available-root-files'.
+
+SYMBOL
+      Key of `php-project-available-root-files'.
+
+STRING
+      A file/directory name of top level marker.
+      If the string is an actual directory path, it is set as the absolute path
+      of the root directory, not the marker.")
+
+(make-variable-buffer-local 'php-project-root)
+
+(put 'php-project-root 'safe-local-variable #'(lambda (v) (or (stringp v) (assq v php-project-available-root-files))))
+
+(defvar php-project-bootstrap-scripts nil "\
+List of path to bootstrap php script file.
+
+The ideal bootstrap file is silent, it only includes dependent files,
+defines constants, and sets the class loaders.")
+
+(make-variable-buffer-local 'php-project-bootstrap-scripts)
+
+(put 'php-project-bootstrap-scripts 'safe-local-variable #'php-project--eval-bootstrap-scripts)
+
+(defvar php-project-php-executable nil "\
+Path to php executable file.")
+
+(make-variable-buffer-local 'php-project-php-executable)
+
+(put 'php-project-php-executable 'safe-local-variable #'(lambda (v) (and (stringp v) (file-executable-p v))))
+
+(defvar php-project-phan-executable nil "\
+Path to phan executable file.")
+
+(make-variable-buffer-local 'php-project-phan-executable)
+
+(put 'php-project-phan-executable 'safe-local-variable #'php-project--eval-bootstrap-scripts)
+
+(defvar php-project-coding-style nil "\
+Symbol value of the coding style of the project that PHP major mode refers to.
+
+Typically it is `pear', `drupal', `wordpress', `symfony2' and `psr2'.")
+
+(make-variable-buffer-local 'php-project-coding-style)
+
+(put 'php-project-coding-style 'safe-local-variable #'symbolp)
+
+(autoload 'php-project-get-bootstrap-scripts "php-mode/php-project" "\
+Return list of bootstrap script.
+
+\(fn)" nil nil)
+
+(autoload 'php-project-get-root-dir "php-mode/php-project" "\
+Return path to current PHP project.
+
+\(fn)" nil nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/php-project" '("php-project-")))
 
 ;;;***
 

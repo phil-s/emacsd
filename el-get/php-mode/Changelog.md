@@ -5,6 +5,28 @@ Changes for PHP Mode by Version
 because when I (Eric James Michael Ritz) took over the project I did
 not have a record of all changes available.
 
+## 1.19.0 (2018-03-05)
+
+* The mechanism of font locking has been rewritten (#401, #413)
+* Fix breaking `semantic-imenu` (#400, #406)
+* The link to [PHP official site](https://secure.php.net/) is now https
+* Add `php-mode-debug` for error reporting (#421)
+* Support for `.dir-locals.el` has been enhanced by new `php-project.el`
+* Clean redundant codes and refactor test codes
+
+## 1.18.4
+
+* Change face symbols of `php-*-face`s to `php-*`
+* Add detailed faces (#343)
+  * `php-function-call`, `php-method-call`, `php-static-method-call`, `php-property-name`
+  * `php-variable-sigil`(`$`), `php-object-op`(`->`), `php-paamayim-nekudotayim`(`::`)
+  * `php-$this`, `php-$this-sigil`, `php-doc-variable-sigil`, `php-doc-$this`, `php-doc-$this-sigil`
+* Improve highlighting of type hints and return types (#353)
+* Match php5 and php7 version-specific interpreters (#357)
+* Move `php-current-*` functions move into `php-mode.el` (#323, #359)
+* Enhance the rationality of integration with cc-mode
+  * Add `php-set-style` command
+
 1.18.3
 ------
 
@@ -17,7 +39,7 @@ not have a record of all changes available.
 * Fix a warning when compiling PHP Mode with GNU Emacs 25.1
 * Fix the list of reserved keywords
 * Change `font-lock-*-face`s to customizable `php-*-face`s
-	
+
 1.18.2
 ------
 
