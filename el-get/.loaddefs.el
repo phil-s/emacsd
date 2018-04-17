@@ -3448,12 +3448,13 @@ Setup wgrep preparation.
 ;;;***
 
 ;;;### (autoloads nil "which-key/which-key" "which-key/which-key.el"
-;;;;;;  (22284 31196 789752 862000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from which-key/which-key.el
 
 (defvar which-key-mode nil "\
 Non-nil if Which-Key mode is enabled.
-See the command `which-key-mode' for a description of this minor mode.
+See the `which-key-mode' command
+for a description of this minor mode.
 Setting this variable directly does not take effect;
 either customize it (see the info node `Easy Customization')
 or call the function `which-key-mode'.")
@@ -3484,16 +3485,31 @@ bottom.
 
 (autoload 'which-key-setup-minibuffer "which-key/which-key" "\
 Apply suggested settings for minibuffer.
+Do not use this setup if you use the paging commands. Instead use
+`which-key-setup-side-window-bottom', which is nearly identical
+but more functional.
 
 \(fn)" t nil)
 
 (autoload 'which-key-add-key-based-replacements "which-key/which-key" "\
 Replace the description of KEY-SEQUENCE with REPLACEMENT.
-Both KEY-SEQUENCE and REPLACEMENT should be strings.  For Example,
+KEY-SEQUENCE is a string suitable for use in `kbd'. REPLACEMENT
+may either be a string, as in
 
 \(which-key-add-key-based-replacements \"C-x 1\" \"maximize\")
 
-MORE allows you to specifcy additional KEY REPL pairs.  All
+a cons of two strings as in
+
+\(which-key-add-key-based-replacements \"C-x 8\"
+                                        '(\"unicode\" . \"Unicode keys\"))
+
+or a function that takes a (KEY . BINDING) cons and returns a
+replacement.
+
+In the second case, the second string is used to provide a longer
+name for the keys under a prefix.
+
+MORE allows you to specifcy additional KEY REPLACEMENT pairs.  All
 replacements are added to
 `which-key-key-based-description-replacement-alist'.
 
@@ -3507,56 +3523,20 @@ addition KEY-SEQUENCE REPLACEMENT pairs) to apply.
 
 \(fn MODE KEY-SEQUENCE REPLACEMENT &rest MORE)" nil nil)
 
-(autoload 'which-key-add-prefix-title "which-key/which-key" "\
-Deprecated in favor of `which-key-declare-prefixes'.
-
-Add title for KEY-SEQ-STR given by TITLE. FORCE, if non-nil, will
-add the new title even if one already exists. KEY-SEQ-STR should
-be a key sequence string suitable for `kbd' and TITLE should be a
-string.
-
-\(fn KEY-SEQ-STR TITLE &optional FORCE)" nil nil)
-
-(autoload 'which-key-declare-prefixes "which-key/which-key" "\
-Name the KEY-SEQUENCE prefix NAME.
-KEY-SEQUENCE should be a string, acceptable to `kbd'. NAME can be
-a string or a cons cell of two strings. In the first case, the
-string is used as both the name and the title (the title is
-displayed in the echo area only). For Example,
-
-\(which-key-declare-prefixes \"C-x 8\" \"unicode\")
-
-or
-
-\(which-key-declare-prefixes \"C-x 8\" (\"unicode\" . \"Unicode Chararcters\"))
-
-MORE allows you to specifcy additional KEY-SEQUENCE NAME pairs.
-All names are added to `which-key-prefix-names-alist' and titles
-to `which-key-prefix-title-alist'.
-
-\(fn KEY-SEQUENCE NAME &rest MORE)" nil nil)
-
-(autoload 'which-key-declare-prefixes-for-mode "which-key/which-key" "\
-Functions like `which-key-declare-prefixes'.
-The difference is that MODE specifies the `major-mode' that must
-be active for KEY-SEQUENCE and NAME (MORE contains
-addition KEY-SEQUENCE NAME pairs) to apply.
-
-\(fn MODE KEY-SEQUENCE NAME &rest MORE)" nil nil)
-
 (autoload 'which-key-reload-key-sequence "which-key/which-key" "\
 Simulate entering the key sequence KEY-SEQ.
 KEY-SEQ should be a list of events as produced by
-`listify-key-sequence'. Any prefix arguments that were used are
-reapplied to the new key sequence.
+`listify-key-sequence'. If nil, KEY-SEQ defaults to
+`which-key--current-key-list'. Any prefix arguments that were
+used are reapplied to the new key sequence.
 
-\(fn KEY-SEQ)" nil nil)
+\(fn &optional KEY-SEQ)" nil nil)
 
 (autoload 'which-key-show-standard-help "which-key/which-key" "\
 Call the command in `which-key--prefix-help-cmd-backup'.
 Usually this is `describe-prefix-bindings'.
 
-\(fn)" t nil)
+\(fn &optional _)" t nil)
 
 (autoload 'which-key-show-next-page-no-cycle "which-key/which-key" "\
 Show next page of keys unless on the last page, in which case
@@ -3574,23 +3554,32 @@ case do nothing.
 Show the next page of keys, cycling from end to beginning
 after last page.
 
-\(fn)" t nil)
+\(fn &optional _)" t nil)
 
 (autoload 'which-key-show-previous-page-cycle "which-key/which-key" "\
 Show the previous page of keys, cycling from beginning to end
 after first page.
 
-\(fn)" t nil)
+\(fn &optional _)" t nil)
 
 (autoload 'which-key-show-top-level "which-key/which-key" "\
 Show top-level bindings.
+
+\(fn &optional _)" t nil)
+
+(autoload 'which-key-show-major-mode "which-key/which-key" "\
+Show top-level bindings in the map of the current major mode.
+
+This function will also detect evil bindings made using
+`evil-define-key' in this map. These bindings will depend on the
+current evil state. 
 
 \(fn)" t nil)
 
 (autoload 'which-key-undo-key "which-key/which-key" "\
 Undo last keypress and force which-key update.
 
-\(fn)" t nil)
+\(fn &optional _)" t nil)
 
 (autoload 'which-key-C-h-dispatch "which-key/which-key" "\
 Dispatch C-h commands by looking up key in
@@ -3598,6 +3587,26 @@ Dispatch C-h commands by looking up key in
 prefix) if `which-key-use-C-h-commands' is non nil.
 
 \(fn)" t nil)
+
+(autoload 'which-key-show-keymap "which-key/which-key" "\
+Show the top-level bindings in KEYMAP using which-key. KEYMAP
+is selected interactively from all available keymaps.
+
+\(fn KEYMAP)" t nil)
+
+(autoload 'which-key-show-full-keymap "which-key/which-key" "\
+Show all bindings in KEYMAP using which-key. KEYMAP is
+selected interactively from all available keymaps.
+
+\(fn KEYMAP)" t nil)
+
+(autoload 'which-key-show-minor-mode-keymap "which-key/which-key" "\
+Show the top-level bindings in KEYMAP using which-key. KEYMAP
+is selected interactively by mode in `minor-mode-map-alist'.
+
+\(fn)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "which-key/which-key" '(#("which-key-" 0 10 (fontified nil)))))
 
 ;;;***
 

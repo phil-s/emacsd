@@ -1,9 +1,9 @@
 ;;; which-key-tests.el --- Tests for which-key.el -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015 Justin Burkett
+;; Copyright (C) 2017  Free Software Foundation, Inc.
 
 ;; Author: Justin Burkett <justin@burkett.cc>
-;; URL: https://github.com/justbur/emacs-which-key
+;; Maintainer: Justin Burkett <justin@burkett.cc>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,28 +30,120 @@
 (ert-deftest which-key-test-prefix-declaration ()
   "Test `which-key-declare-prefixes' and
 `which-key-declare-prefixes-for-mode'. See Bug #109."
-  (let* (test-mode which-key-prefix-name-alist which-key-prefix-title-alist)
-    (which-key-declare-prefixes
+  (let* ((major-mode 'test-mode)
+         which-key-replacement-alist)
+    (which-key-add-key-based-replacements
       "SPC C-c" '("complete" . "complete title")
       "SPC C-k" "cancel")
-    (which-key-declare-prefixes-for-mode 'test-mode
+    (which-key-add-major-mode-key-based-replacements 'test-mode
       "C-c C-c" '("complete" . "complete title")
       "C-c C-k" "cancel")
     (should (equal
-             (assoc-string "SPC C-k" which-key-prefix-name-alist)
+             (which-key--maybe-replace '("SPC C-k" . ""))
              '("SPC C-k" . "cancel")))
     (should (equal
-             (assoc-string
-              "C-c C-c" (cdr (assq 'test-mode which-key-prefix-name-alist)))
-             '("C-c C-c" . "complete")))
-    (pp which-key-prefix-title-alist)
+             (which-key--maybe-replace '("C-c C-c" . ""))
+             '("C-c C-c" . "complete")))))
+
+(ert-deftest which-key-test--maybe-replace ()
+  "Test `which-key--maybe-replace'. See #154"
+  (let ((which-key-replacement-alist
+         '((("C-c [a-d]" . nil) . ("C-c a" . "c-c a"))
+           (("C-c .+" . nil) . ("C-c *" . "c-c *"))))
+        (test-mode-1 t)
+        (test-mode-2 nil)
+        which-key-allow-multiple-replacements)
+    (which-key-add-key-based-replacements
+      "C-c ." "test ."
+      "SPC ." "SPC ."
+      "C-c \\" "regexp quoting"
+      "C-c [" "bad regexp"
+      "SPC t1" (lambda (kb)
+                 (cons (car kb)
+                       (if test-mode-1
+                           "[x] test mode"
+                         "[ ] test mode")))
+      "SPC t2" (lambda (kb)
+                 (cons (car kb)
+                       (if test-mode-2
+                           "[x] test mode"
+                         "[ ] test mode"))))
     (should (equal
-             (assoc-string "SPC C-k" which-key-prefix-title-alist)
-             '("SPC C-k" . "cancel")))
+             (which-key--maybe-replace '("C-c g" . "test"))
+             '("C-c *" . "c-c *")))
     (should (equal
-             (assoc-string
-              "C-c C-c" (cdr (assq 'test-mode which-key-prefix-title-alist)))
-             '("C-c C-c" . "complete title")))))
+             (which-key--maybe-replace '("C-c b" . "test"))
+             '("C-c a" . "c-c a")))
+    (should (equal
+             (which-key--maybe-replace '("C-c ." . "not test ."))
+             '("C-c ." . "test .")))
+    (should (not
+             (equal
+              (which-key--maybe-replace '("C-c +" . "not test ."))
+              '("C-c ." . "test ."))))
+    (should (equal
+             (which-key--maybe-replace '("C-c [" . "orig bad regexp"))
+             '("C-c [" . "bad regexp")))
+    (should (equal
+             (which-key--maybe-replace '("C-c \\" . "pre quoting"))
+             '("C-c \\" . "regexp quoting")))
+    ;; see #155
+    (should (equal
+             (which-key--maybe-replace '("SPC . ." . "don't replace"))
+             '("SPC . ." . "don't replace")))
+    (should (equal
+             (which-key--maybe-replace '("SPC t 1" . "test mode"))
+             '("SPC t 1" . "[x] test mode")))
+    (should (equal
+             (which-key--maybe-replace '("SPC t 2" . "test mode"))
+             '("SPC t 2" . "[ ] test mode")))))
+
+(ert-deftest which-key-test--maybe-replace-multiple ()
+  "Test `which-key-allow-multiple-replacements'. See #156."
+  (let ((which-key-replacement-alist
+         '(((nil . "helm") . (nil . "HLM"))
+           ((nil . "projectile") . (nil . "PRJTL"))))
+        (which-key-allow-multiple-replacements t))
+    (should (equal
+             (which-key--maybe-replace '("C-c C-c" . "helm-x"))
+             '("C-c C-c" . "HLM-x")))
+    (should (equal
+             (which-key--maybe-replace '("C-c C-c" . "projectile-x"))
+             '("C-c C-c" . "PRJTL-x")))
+    (should (equal
+             (which-key--maybe-replace '("C-c C-c" . "helm-projectile-x"))
+             '("C-c C-c" . "HLM-PRJTL-x")))))
+
+(ert-deftest which-key-test--key-extraction ()
+  "Test `which-key--extract-key'. See #161."
+  (should (equal (which-key--extract-key "SPC a") "a"))
+  (should (equal (which-key--extract-key "C-x a") "a"))
+  (should (equal (which-key--extract-key "<left> b a") "a"))
+  (should (equal (which-key--extract-key "<left> a .. c") "a .. c"))
+  (should (equal (which-key--extract-key "M-a a .. c") "a .. c")))
+
+(ert-deftest which-key-test--get-keymap-bindings ()
+  (let ((map (make-sparse-keymap))
+        which-key-replacement-alist)
+    (define-key map [which-key-a] '(which-key "blah"))
+    (define-key map "b" 'ignore)
+    (define-key map "c" "c")
+    (define-key map "dd" "dd")
+    (define-key map "eee" "eee")
+    (should (equal
+             (sort (which-key--get-keymap-bindings map)
+                   (lambda (a b) (string-lessp (car a) (car b))))
+             '(("b" . "ignore")
+               ("c" . "c")
+               ("d" . "Prefix Command")
+               ("e" . "Prefix Command"))))
+    (should (equal
+             (sort (which-key--get-keymap-bindings map t)
+                   (lambda (a b) (string-lessp (car a) (car b))))
+             '(("b" . "ignore")
+               ("c" . "c")
+               ("d d" . "dd")
+               ("e e e" . "eee"))))))
 
 (provide 'which-key-tests)
 ;;; which-key-tests.el ends here
