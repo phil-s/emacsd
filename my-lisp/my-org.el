@@ -89,7 +89,7 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    (mapcar (lambda (lang) (cons lang t))
-           '(
+           `(
              ;; asymptote
              awk
              ;; C
@@ -125,7 +125,8 @@
              sass
              ;; scala
              ;; scheme
-             sh
+             ;; ;; ob-sh changed to ob-shell in emacs 26.1
+             ,(if (locate-library "ob-shell") 'shell 'sh)
              ;; shen
              sql
              ;; sqlite
