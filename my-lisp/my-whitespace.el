@@ -35,6 +35,13 @@
         (tab-mark 9 [187 9] [92 9])
         ))
 
+;; One of my webmail clients inserts the glyphless WORD JOINER unicode
+;; character after hyphens, which makes copying and pasting from email
+;; liable to cause invisible problems :( e.g. glyphless-⁠char
+;;
+;; This makes any such characters apparent!
+(set-face-background 'glyphless-char "red")
+
 ;; Use ws-trim mode to strip trailing whitespace automatically
 ;; from edited lines (the default ws-trim-level).
 (when (require 'ws-trim nil 'noerror)
