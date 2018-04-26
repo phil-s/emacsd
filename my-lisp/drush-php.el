@@ -58,6 +58,11 @@ otherwise be split.")
 For example you could use a file containing the word 'status' to run the drush
 status command automatically when invoking the REPL.")
 
+(defvar drush-php-history-file nil
+  "If non-nil, name of the file to read/write input history.
+
+`comint-input-ring-file-name' will be set to this.")
+
 (defvar drush-php-mode-map
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
     ;; Example definition
@@ -100,9 +105,11 @@ continuation prompt '... '")
         ;; generating errors like the following:
         ;; * comint-exec: Text is read-only
         ;; * error in process sentinel: Text is read-only
+        ;; In lieu of any custom sentinel requirements, set the
+        ;; sentinel to 'ignore in otder to avoid these errors.
         (let ((proc (get-buffer-process buffer)))
           (when (processp proc)
-            (set-process-sentinel proc 'ignore)))))
+            (set-process-sentinel proc 'drush-php-sentinel)))))
     ;; Check that buffer is in `drush-php-mode'.
     (with-current-buffer buffer
       (unless (derived-mode-p 'drush-php-mode)
@@ -147,6 +154,10 @@ continuation prompt '... '")
 
   ;; Don't highlight whitespace.
   (setq show-trailing-whitespace nil)
+
+  ;; Restore the input history.
+  (setq-local comint-input-ring-file-name drush-php-history-file)
+  (comint-read-input-ring :silent)
 
   ;; ;; Don't try to use a PAGER in our (dumb) terminal.
   ;; (make-local-variable 'process-environment)
@@ -237,6 +248,11 @@ Called via `comint-output-filter-functions'."
             (comint-prompt-regexp drush-php-duplicate-prompt-regexp))
         (while (comint-skip-prompt)
           (delete-region pos (point)))))))
+
+(defun drush-php-sentinel (process signal)
+  "Process signals from the drush process."
+  (when (memq (process-status process) '(exit signal))
+    (comint-write-input-ring)))
 
 (defun drush-php-move-beginning-of-line ()
   "Move to the beginning of the line, respecting the prompt."
