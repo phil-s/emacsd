@@ -42,6 +42,7 @@
 ;;       (expand-file-name "~/.config/psysh/comint.init.commands"))
 
 (require 'comint)
+(require 'subr-x)
 
 (defvar drush-php-command "drush php"
   "Command and arguments used by `run-drush-php'.
@@ -78,6 +79,9 @@ status command automatically when invoking the REPL.")
 
 Defaults to matching PsySH's main prompt '>>> ' as well as its
 continuation prompt '... '")
+
+(defvar-local drush-php-duplicate-prompt-regexp nil
+  "Used by `drush-php-comint-output-filter' to detect duplicate prompts.")
 
 (defun run-drush-php ()
   "Run an inferior instance of `drush-php-command' inside Emacs."
