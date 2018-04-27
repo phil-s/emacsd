@@ -1511,6 +1511,6 @@ For example, to trace all ELP functions, do the following:
 (provide 'my-utilities)
 
 ;;; Local Variables:
-;;; mode:outline-minor
+;;; eval:(outline-minor-mode 1)
 ;;; eval:(hide-body)
 ;;; End:
