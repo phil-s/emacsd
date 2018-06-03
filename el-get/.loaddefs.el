@@ -935,8 +935,7 @@ setting the variable `ffip-project-root'.
 (put 'ffip-limit 'safe-local-variable 'integerp)
 ;;;***
 
-;;;### (autoloads nil "ghub/ghub" "ghub/ghub.el" (23142 29662 590988
-;;;;;;  864000))
+;;;### (autoloads nil "ghub/ghub" "ghub/ghub.el" (0 0 0 0))
 ;;; Generated autoloads from ghub/ghub.el
 
 (autoload 'ghub-create-token "ghub/ghub" "\
@@ -955,6 +954,15 @@ This is intended for debugging purposes only.  The user
 has to provide several values including their password.
 
 \(fn HOST USERNAME PACKAGE)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ghub/ghub" '("auth-source-netrc-parse-next-interesting@save-match-data" "ghub-")))
+
+;;;***
+
+;;;### (autoloads nil "ghub/glab" "ghub/glab.el" (0 0 0 0))
+;;; Generated autoloads from ghub/glab.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ghub/glab" '("glab-default-host")))
 
 ;;;***
 
