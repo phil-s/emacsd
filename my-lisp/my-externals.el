@@ -17,6 +17,7 @@
    el-get-sources
    `((:name async
             :type git
+            :branch "v1.9.3" ;; install a specific release
             :url "git@github.com:jwiegley/emacs-async.git")
 
      (:name el-get

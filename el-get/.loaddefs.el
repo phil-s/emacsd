@@ -81,8 +81,7 @@ Setup the defualt shortcuts.
 
 ;;;***
 
-;;;### (autoloads nil "async/async" "async/async.el" (22694 39803
-;;;;;;  0 0))
+;;;### (autoloads nil "async/async" "async/async.el" (0 0 0 0))
 ;;; Generated autoloads from async/async.el
 
 (autoload 'async-start-process "async/async" "\
@@ -145,10 +144,12 @@ returns nil.  It can still be useful, however, as an argument to
 
 \(fn START-FUNC &optional FINISH-FUNC)" nil nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/async" '(#("async-" 0 6 (fontified t face font-lock-function-name-face)))))
+
 ;;;***
 
 ;;;### (autoloads nil "async/async-bytecomp" "async/async-bytecomp.el"
-;;;;;;  (22694 39803 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from async/async-bytecomp.el
 
 (autoload 'async-byte-recompile-directory "async/async-bytecomp" "\
@@ -174,10 +175,20 @@ Async compilation of packages can be controlled by
 
 \(fn &optional ARG)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/async-bytecomp" '("async-byte")))
+
+;;;***
+
+;;;### (autoloads nil "async/async-test" "async/async-test.el" (0
+;;;;;;  0 0 0))
+;;; Generated autoloads from async/async-test.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/async-test" '("async-test-")))
+
 ;;;***
 
 ;;;### (autoloads nil "async/dired-async" "async/dired-async.el"
-;;;;;;  (22694 39803 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from async/dired-async.el
 
 (defvar dired-async-mode nil "\
@@ -194,6 +205,36 @@ or call the function `dired-async-mode'.")
 Do dired actions asynchronously.
 
 \(fn &optional ARG)" t nil)
+
+(autoload 'dired-async-do-copy "async/dired-async" "\
+Run ‘dired-do-copy’ asynchronously.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'dired-async-do-symlink "async/dired-async" "\
+Run ‘dired-do-symlink’ asynchronously.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'dired-async-do-hardlink "async/dired-async" "\
+Run ‘dired-do-hardlink’ asynchronously.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'dired-async-do-rename "async/dired-async" "\
+Run ‘dired-do-rename’ asynchronously.
+
+\(fn &optional ARG)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/dired-async" '("dired-async-")))
+
+;;;***
+
+;;;### (autoloads nil "async/smtpmail-async" "async/smtpmail-async.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from async/smtpmail-async.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/smtpmail-async" '("async-smtpmail-")))
 
 ;;;***
 
