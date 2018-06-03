@@ -1,3 +1,0 @@
-Reverted c6ef61b "Hide reverse blame in popups when it cannot be used"
-because it introduced an as-yet undefined variable, breaking the file
-popup feature.

@@ -9,7 +9,7 @@ This is magit.info, produced by makeinfo version 6.1 from magit.texi.
 
      This document is distributed in the hope that it will be useful,
      but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
      General Public License for more details.
 INFO-DIR-SECTION Emacs
 START-INFO-DIR-ENTRY
@@ -30,7 +30,7 @@ to perform almost all of their daily version control tasks directly from
 within Emacs.  While many fine Git clients exist, only Magit and Git
 itself deserve to be called porcelains.
 
-This manual is for Magit version 2.12.1.
+This manual is for Magit version 2.13.0.
 
      Copyright (C) 2015-2018 Jonas Bernoulli <jonas@bernoul.li>
 
@@ -41,7 +41,7 @@ This manual is for Magit version 2.12.1.
 
      This document is distributed in the hope that it will be useful,
      but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
      General Public License for more details.
 
 * Menu:
@@ -225,6 +225,7 @@ Miscellaneous
 * Notes::
 * Submodules::
 * Subtree::
+* Worktree::
 * Common Commands::
 * Wip Modes::
 * Minor Mode for Buffers Visiting Files::
@@ -299,6 +300,7 @@ FAQ - Issues and Errors
 * The mode-line information isn't always up-to-date::
 * Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
 * A branch and tag sharing the same name breaks SOMETHING::
+* My Git hooks work on the command line but not in Magit::
 
 
 
@@ -783,8 +785,8 @@ File: magit.info,  Node: Switching Buffers,  Next: Naming Buffers,  Up: Modes an
 
      This function displays most buffers so that they fill the entire
      height of the frame.  However, the buffer is displayed in another
-     window if 1) the buffer’s mode derives from ‘magit-process-mode’,
-     or 2) the buffer’s mode derives from ‘magit-diff-mode’, provided
+     window if (1) the buffer’s mode derives from ‘magit-process-mode’,
+     or (2) the buffer’s mode derives from ‘magit-diff-mode’, provided
      that the mode of the current buffer derives from ‘magit-log-mode’
      or ‘magit-cherry-mode’.
 
@@ -1312,9 +1314,9 @@ Any of the functions listed below can be used as members of this hook.
 
      Delay before automatically updating the other window.
 
-     When moving around in certain buffers certain other buffers, which
-     are being displayed in another window, may optionally be updated to
-     display information about the section at point.
+     When moving around in certain buffers, then certain other buffers,
+     which are being displayed in another window, may optionally be
+     updated to display information about the section at point.
 
      When holding down a key to move by more than just one section, then
      that would update that buffer for each section on the way.  To
@@ -1476,11 +1478,11 @@ this manual along with the appropriate "section inserter functions".
 
      If optional AT is non-nil and a member of the hook list, then add
      FUNCTION next to that instead.  Add before or after AT, or replace
-     AT with FUNCTION depending on APPEND. If APPEND is the symbol
-     ‘replace’, then replace AT with FUNCTION. For any other non-nil
-     value place FUNCTION right after AT. If nil, then place FUNCTION
-     right before AT. If FUNCTION already is a member of the list but AT
-     is not, then leave FUNCTION where ever it already is.
+     AT with FUNCTION depending on APPEND.  If APPEND is the symbol
+     ‘replace’, then replace AT with FUNCTION.  For any other non-nil
+     value place FUNCTION right after AT.  If nil, then place FUNCTION
+     right before AT.  If FUNCTION already is a member of the list but
+     AT is not, then leave FUNCTION where ever it already is.
 
      If optional LOCAL is non-nil, then modify the hook’s buffer-local
      value rather than its global value.  This makes the hook local by
@@ -1718,6 +1720,30 @@ telling Magit to ask fewer questions.
                then the user always has to confirm by accepting the
                default (or selecting another).  This action only
                concerns the deletion of multiple stashes at once.
+
+        • Edit published history:
+
+          Without adding these symbols here, you will be warned before
+          editing commits that have already been pushed to one of the
+          branches listed in ‘magit-published-branches’.
+
+             • ‘amend-published’ Affects most commands that amend to
+               "HEAD".
+
+             • ‘rebase-published’ Affects commands that perform
+               interactive rebases.  This includes commands from the
+               commit popup that modify a commit other than "HEAD",
+               namely the various fixup and squash variants.
+
+             • ‘edit-published’ Affects the commands
+               ‘magit-edit-line-commit’ and
+               ‘magit-diff-edit-hunk-commit’.  These two commands make
+               it quite easy to accidentally edit a published commit, so
+               you should think twice before configuring them not to ask
+               for confirmation.
+
+          To disable confirmation completely, add all three symbols here
+          or set ‘magit-published-branches’ to ‘nil’.
 
         • Various:
 
@@ -2278,8 +2304,8 @@ that it should be bound globally.  We recommend using ‘C-x g’:
 
      List of directories that are or contain Git repositories.  Each
      element has the form ‘(DIRECTORY . DEPTH)’ or, for backward
-     compatibility, just DIRECTORY. DIRECTORY has to be a directory or a
-     directory file-name, a string.  DEPTH, an integer, specifies the
+     compatibility, just DIRECTORY.  DIRECTORY has to be a directory or
+     a directory file-name, a string.  DEPTH, an integer, specifies the
      maximum depth to look for Git repositories.  If it is 0, then only
      add DIRECTORY itself.  For elements that are strings, the value of
      option ‘magit-repository-directories-depth’ specifies the depth.
@@ -2417,6 +2443,14 @@ default the following functions are also members of that hook:
  -- Function: magit-insert-tracked-files
 
      Insert a tree of tracked files.
+
+ -- Function: magit-insert-ignored-files
+
+     Insert a tree of ignored files.
+
+     If the first element of ‘magit-diff-section-arguments’ is a
+     directory, then limit the list to files below that.  The value of
+     that variable can be set using ‘D = f <DIRECTORY> RET g’.
 
  -- Function: magit-insert-unpulled-or-recent-commits
 
@@ -3347,6 +3381,8 @@ File: magit.info,  Node: Diff Buffer,  Next: Diff Options,  Prev: Refreshing Dif
 5.4.2 Diff Buffer
 -----------------
 
+These commands are available in diff buffers.
+
 ‘RET’     (‘magit-diff-visit-file’)
 
      From a diff, visit the corresponding file at the appropriate
@@ -3361,10 +3397,20 @@ File: magit.info,  Node: Diff Buffer,  Next: Diff Options,  Prev: Refreshing Dif
      where that line still existed.  Otherwise visit the blob for the
      commit whose changes are being shown.
 
-     When the file or blob to be displayed is already being displayed in
-     another window of the same frame, then just select that window and
-     adjust point.  Otherwise, or with a prefix argument, display the
-     buffer in another window.
+     Interactively, when the file or blob to be displayed is already
+     being displayed in another window of the same frame, then just
+     select that window and adjust point.  Otherwise, or with a prefix
+     argument, display the buffer in another window.  The meaning of the
+     prefix argument can be inverted or further modified using the
+     option ‘magit-display-file-buffer-function’.
+
+     Non-interactively the optional OTHER-WINDOW argument is taken
+     literally.  DISPLAY-FN can be used to specify the display function
+     explicitly, in which case OTHER-WINDOW is ignored.
+
+     The optional FORCE-WORKTREE means to force visiting the worktree
+     version of the file.  To do this interactively use the command
+     ‘magit-diff-visit-file-worktree’ instead.
 
  -- User Option: magit-diff-visit-previous-blob
 
@@ -3398,6 +3444,29 @@ File: magit.info,  Node: Diff Buffer,  Next: Diff Options,  Prev: Refreshing Dif
 
      From a diff, visit the corresponding file at the appropriate
      position in another window.
+
+‘C-c C-t’     (‘magit-diff-trace-definition’)
+
+     From a diff, show log for the definition at point.
+
+‘C-c C-e’     (‘magit-diff-edit-hunk-commit’)
+
+     From a hunk, edit the respective commit and visit the file.
+
+     First visit the file being modified by the hunk at the correct
+     location using ‘magit-diff-visit-file’.  This actually visits a
+     blob.  When point is on a diff header, not within an individual
+     hunk, then this visits the blob the first hunk is about.
+
+     Then invoke ‘magit-edit-line-commit’, which uses an interactive
+     rebase to make the commit editable, or if that is not possible
+     because the commit is not reachable from ‘HEAD’ by checking out
+     that commit directly.  This also causes the actual worktree file to
+     be visited.
+
+     Neither the blob nor the file buffer are killed when finishing the
+     rebase.  If that is undesirable, then it might be better to use
+     ‘magit-rebase-edit-command’ instead of this command.
 
 ‘j’     (‘magit-jump-to-diffstat-or-diff’)
 
@@ -4020,7 +4089,7 @@ File: magit.info,  Node: Visiting Blobs,  Next: Blaming,  Prev: Bisecting,  Up: 
 
 ‘M-x magit-find-file’     (‘magit-find-file’)
 
-     View FILE from REV. Switch to a buffer visiting blob REV:FILE,
+     View FILE from REV.  Switch to a buffer visiting blob REV:FILE,
      creating one if none already exists.
 
 ‘M-x magit-find-file-other-window’     (‘magit-find-file-other-window’)
@@ -4036,13 +4105,16 @@ File: magit.info,  Node: Blaming,  Prev: Visiting Blobs,  Up: Inspecting
 
 Also see *note (gitman)git-blame::.
 
-   To start blaming use ‘M-x’ in a file-visiting buffer to invoke one of
-the next tree commands.  In a blob-visiting buffer you can also use the
-key bindings described below, and when Magit-File mode is enabled, then
-you can at least use ‘C-c M-g’ to enter the blaming popup instead of
-having to type out the command name.
+   To start blaming you can use ‘M-x’ in a file-visiting buffer to
+invoke one of the following commands.  You can also invoke these
+commands using the blame popup, which is available on ‘b’ in
+file-visiting buffers that already contain blame information and, also
+on ‘b’, in all blob-visiting buffers.  You can also enter the blame
+popup from the file popup, which is available on ‘C-c M-g’, provided
+‘magit-file-mode’ is enabled, see *note Minor Mode for Buffers Visiting
+Files::.
 
-‘M-x magit-blame’     (‘magit-blame’)
+ -- Command: magit-blame
 
      This command augments each line or chunk of lines in the current
      file- or blob-visiting buffer with information about what commits
@@ -4054,10 +4126,24 @@ having to type out the command name.
 
      If Magit-Blame mode is already turned on in the current buffer then
      blaming is done recursively, by visiting REVISION:FILE (using
-     ‘magit-find-file’), where REVISION is the revision before the
-     revision that added the current line or chunk of lines.
+     ‘magit-find-file’), where REVISION is a parent of the revision that
+     added the current line or chunk of lines.
 
-‘M-x magit-blame-reverse’     (‘magit-blame-reverse’)
+ -- Command: magit-blame-echo
+
+     This command is like ‘magit-blame’ except that it doesn’t turn on
+     ‘read-only-mode’ and that it initially uses the visualization style
+     specified by option ‘magit-blame-echo-style’.
+
+ -- Command: magit-blame-removal
+
+     This command augments each line or chunk of lines in the current
+     blob-visiting buffer with information about the revision that
+     removes it.  It cannot be used in file-visiting buffers.
+
+     Like ‘magit-blame’, this command can be used recursively.
+
+ -- Command: magit-blame-reverse
 
      This command augments each line or chunk of lines in the current
      file- or blob-visiting buffer with information about the last
@@ -4065,23 +4151,10 @@ having to type out the command name.
 
      Like ‘magit-blame’, this command can be used recursively.
 
-‘M-x magit-blame-popup’     (‘magit-blame-popup’)
-
-     This prefix command shows the above suffix command along with the
-     appropriate infix arguments in a popup buffer.
-
-   The above commands are also bound in the keymaps
-‘magit-blame-mode-map’ and ‘magit-blob-mode-map’, and in the popup
-‘magit-file-popup’.  Once Magit-Blame mode is enabled in a file-visiting
-buffer, you can use ‘B’ to show the blaming popup, ‘b’ to blame
-recursively going backward in time, and ‘f’ to blame recursively going
-forward in time (i.e.  blame in reverse).  These bindings are always
-available in blob-visiting buffers.
-
-   Additionally the following key bindings are available when
-Magit-Blame mode is enabled.  These commands are also available in other
-buffers; here only the behavior is described that is relevant in
-file-visiting buffers that are being blamed.
+   The following key bindings are available when Magit-Blame mode is
+enabled and Read-Only mode is not enabled.  These commands are also
+available in other buffers; here only the behavior is described that is
+relevant in file-visiting buffers that are being blamed.
 
 ‘RET’     (‘magit-show-commit’)
 
@@ -4106,6 +4179,14 @@ file-visiting buffers that are being blamed.
      displayed in the current frame and if that buffer contains
      information about that commit, then the buffer is scrolled down
      instead.
+
+   The following key bindings are available when Magit-Blame mode is
+enabled and Read-Only mode is not enabled.
+
+‘b’     (‘magit-blame-popup’)
+
+     This prefix command shows the above suffix command along with the
+     appropriate infix arguments in a popup buffer.
 
 ‘n’     (‘magit-blame-next-chunk’)
 
@@ -4136,28 +4217,45 @@ file-visiting buffers that are being blamed.
      When the region is active, the command saves the region’s content
      instead of the hash, like ‘kill-ring-save’ would.
 
-‘t’     (‘magit-blame-toggle-headings’)
+‘c’     (‘magit-blame-cycle-style’)
 
-     This command shows or hides blame chunk headings.
+     This command changes how blame information is visualized in the
+     current buffer by cycling through the styles specified using the
+     option ‘magit-blame-styles’.
 
- -- User Option: magit-blame-heading-format
+   Blaming is also controlled using the following options.
 
-     The format string used for blame headings.
+ -- User Option: magit-blame-styles
+
+     This option defines a list of styles used to visualize blame
+     information.  For now see its doc-string to learn more.
+
+ -- User Option: magit-blame-echo-style
+
+     This option specifies the blame visualization style used by the
+     command ‘magit-blame-echo’.  This must be a symbol that is used as
+     the identifier for one of the styles defined in
+     ‘magit-blame-styles’.
 
  -- User Option: magit-blame-time-format
 
-     The format string used for time strings in blame headings.
+     This option specifies the format string used to display times when
+     showing blame information.
 
- -- User Option: magit-blame-show-headings
+ -- User Option: magit-blame-read-only
 
-     This option controls whether blame block headings are initially
-     shown.  The headings can also be toggled locally using the command
-     ‘magit-blame-toggle-headings’.
+     This option controls whether blaming a buffer also makes
+     temporarily read-only.
+
+ -- User Option: magit-blame-disable-modes
+
+     This option lists incompatible minor-modes that should be disabled
+     temporarily when a buffer contains blame information.  They are
+     enabled again when the buffer no longer shows blame information.
 
  -- User Option: magit-blame-goto-chunk-hook
 
-     This hook is run by ‘magit-blame-next-chunk’ and
-     ‘magit-blame-previous-chunk’.
+     This hook is run when moving between chunks.
 
 
 File: magit.info,  Node: Manipulating,  Next: Transferring,  Prev: Inspecting,  Up: Top
@@ -4931,7 +5029,7 @@ features are available from separate popups.
      branch.  If FROM is not reachable from ‘HEAD’ or is reachable from
      the source branch’s upstream, then an error is raised.
 
-‘b R’     (‘magit-branch-pull-request’)
+‘b Y’     (‘magit-branch-pull-request’)
 
      This command creates and configures a new branch from a Github
      pull-request, creating and configuring a new remote if necessary.
@@ -4947,6 +5045,13 @@ features are available from separate popups.
      These variables are always set by this command:
 
         • ‘branch.<name>.pullRequest’ is set to the pull-request number.
+
+        • ‘branch.<name>.pullRequestRemote’ is set to the remote on
+          which the pull-request branch is located.
+
+        • ‘branch.<name>.pushRemote’ is set to the same remote as
+          ‘branch.<name>.pullRequestRemote’ if that is possible,
+          otherwise it is set to the upstream remote.
 
         • ‘branch.<name>.description’ is set to the pull-request title.
 
@@ -4975,17 +5080,13 @@ features are available from separate popups.
      fork/new-feature".
 
         • If the pull-request branch is located in the upstream
-          repository, then it is not necessary to configure the
-          push-target.
-
-          (If you have push access to the upstream repository, then it
-          is usually a good idea to configure that as the push-remote
-          using ‘remote.pushDefault’.  However even if you are not using
-          that recommended setting, then it is still easy enough to set
-          ‘branch.<name>.pushRemote’ while pushing using ‘P p’.)
+          repository, then you probably have set ‘remote.pushDefault’ to
+          that repository.  However some users like to set that variable
+          to their personal fork, even if they have push access to the
+          upstream, so ‘branch.<name>.pushRemote’ is set anyway.
 
         • If the pull-request branch is located inside a fork, then you
-          usually are able to push to that branch, because Github by
+          are usually able to push to that branch, because Github by
           default allows the recipient of a pull-request to push to the
           remote pull-request branch even if it is located in a fork.
           The contributor has to explicitly disable this.
@@ -5002,8 +5103,8 @@ features are available from separate popups.
                merge something like "fork/master" into "origin/master".
                The special push permission mentioned above is never
                granted for the branch that is the repository’s default
-               branch, and that is almost certainly be the case in this
-               scenario.
+               branch, and that would almost certainly be the case in
+               this scenario.
 
                To enable you to easily push somewhere anyway, the local
                branch is named "pr-N" (where ‘N’ is the pull-request
@@ -5019,8 +5120,8 @@ features are available from separate popups.
           ‘branch.<name>.pushRemote’, even if the used value is
           identical to that of ‘remote.pushDefault’, just in case you
           change the value of the latter later on.  Additionally the
-          variable ‘branch.<name>.pullRequestRemote’ is set to the fork
-          remote.
+          variable ‘branch.<name>.pullRequestRemote’ is set to the
+          remote on which the pull-request branch is located.
 
      When you later delete the local pull-request branch, then you are
      offered to also delete the corresponding remote, provided it is not
@@ -5033,7 +5134,7 @@ features are available from separate popups.
      cleanup mentioned in the previous paragraph is not performed if you
      do that.
 
-‘b r’     (‘magit-checkout-pull-request’)
+‘b y’     (‘magit-checkout-pull-request’)
 
      This command creates and configures a new branch from a pull
      request, the same way ‘magit-branch-pull-request’ does.
@@ -5137,10 +5238,10 @@ features are available from separate popups.
      element is used, the following elements are ignored.
 
      UPSTREAM is the branch to be used as the upstream for branches
-     specified by RULE. It can be a local or a remote branch.
+     specified by RULE.  It can be a local or a remote branch.
 
      RULE can either be a regular expression, matching branches whose
-     upstream should be the one specified by UPSTREAM. Or it can be a
+     upstream should be the one specified by UPSTREAM.  Or it can be a
      list of the only branches that should *not* use UPSTREAM; all other
      branches will.  Matching is done after stripping the remote part of
      the name of the branch that is being branched from.
@@ -5213,13 +5314,13 @@ prefix argument.
  -- Variable: branch.NAME.merge
 
      Together with ‘branch.NAME.remote’ this variable defines the
-     upstream branch of the local branch named NAME. The value of this
+     upstream branch of the local branch named NAME.  The value of this
      variable is the full reference of the upstream _branch_.
 
  -- Variable: branch.NAME.remote
 
      Together with ‘branch.NAME.merge’ this variable defines the
-     upstream branch of the local branch named NAME. The value of this
+     upstream branch of the local branch named NAME.  The value of this
      variable is the name of the upstream _remote_.
 
  -- Variable: branch.NAME.rebase
@@ -5250,7 +5351,7 @@ prefix argument.
 
  -- Variable: branch.NAME.description
 
-     This variable can be used to describe the branch named NAME. That
+     This variable can be used to describe the branch named NAME.  That
      description is used e.g.  when turning the branch into a series of
      patches.
 
@@ -5614,8 +5715,8 @@ See *note Information About In-Progress Rebase::.
 ‘r s’     (‘magit-rebase-subset’)
 
      Start a non-interactive rebase sequence with commits from START to
-     ‘HEAD’ onto NEWBASE. START has to be selected from a list of recent
-     commits.
+     ‘HEAD’ onto NEWBASE.  START has to be selected from a list of
+     recent commits.
 
    By default Magit uses the ‘--autostash’ argument, which causes
 uncommitted changes to be stored in a stash before the rebase begins.
@@ -5827,7 +5928,7 @@ shown in different colors to indicate the status of the commits.
    • The green commit is the commit the rebase sequence stopped at.  If
      this is the same commit as ‘HEAD’ (e.g.  because you haven’t done
      anything yet after rebase stopped at the commit, then this commit
-     is shown in blue, not green.  There can only be a green *and* a
+     is shown in blue, not green).  There can only be a green *and* a
      blue commit at the same time, if you create one or more new commits
      after rebase stops at a commit.
 
@@ -6246,7 +6347,7 @@ Also see *note (gitman)git-stash::.
 
 ‘z b’     (‘magit-stash-branch’)
 
-     Create and checkout a new BRANCH from STASH. The branch starts at
+     Create and checkout a new BRANCH from STASH.  The branch starts at
      the commit that was current when the stash was created.
 
 ‘z B’     (‘magit-stash-branch-here’)
@@ -6430,24 +6531,24 @@ branch.  To change the value for another remote invoke
 
  -- Variable: remote.NAME.url
 
-     This variable specifies the url of the remote named NAME. It can
+     This variable specifies the url of the remote named NAME.  It can
      have multiple values.
 
  -- Variable: remote.NAME.fetch
 
-     The refspec used when fetching from the remote named NAME. It can
+     The refspec used when fetching from the remote named NAME.  It can
      have multiple values.
 
  -- Variable: remote.NAME.pushurl
 
      This variable specifies the url used for fetching from the remote
-     named NAME. If it is not specified, then ‘remote.NAME.url’ is used
+     named NAME.  If it is not specified, then ‘remote.NAME.url’ is used
      instead.  It can have multiple values.
 
  -- Variable: remote.NAME.push
 
-     The refspec used when pushing to the remote named NAME. It can have
-     multiple values.
+     The refspec used when pushing to the remote named NAME.  It can
+     have multiple values.
 
  -- Variable: remote.NAME.tagOpts
 
@@ -6746,6 +6847,7 @@ File: magit.info,  Node: Miscellaneous,  Next: Customizing,  Prev: Transferring,
 * Notes::
 * Submodules::
 * Subtree::
+* Worktree::
 * Common Commands::
 * Wip Modes::
 * Minor Mode for Buffers Visiting Files::
@@ -6766,8 +6868,8 @@ Also see *note (gitman)git-tag::.
 
 ‘t t’     (‘magit-tag’)
 
-     Create a new tag with the given NAME at REV. With a prefix argument
-     annotate the tag.
+     Create a new tag with the given NAME at REV.  With a prefix
+     argument annotate the tag.
 
 ‘t k’     (‘magit-tag-delete’)
 
@@ -6778,6 +6880,20 @@ Also see *note (gitman)git-tag::.
 ‘t p’     (‘magit-tag-prune’)
 
      Offer to delete tags missing locally from REMOTE, and vice versa.
+
+ -- Command: magit-tag-release
+
+     Create an opinionated release tag.
+
+     Assume version tags that match "\\‘v?[0-9]\*\\’".  Prompt for the
+     name of the new tag using the highest existing tag as initial input
+     and call "git tag –annotate –sign -m MSG" TAG, regardless of
+     whether these arguments are enabled in the popup.  Given a TAG
+     "v1.2.3" and a repository "/path/to/foo-bar", the MESSAGE would be
+     "Foo-Bar 1.2.3".
+
+     Because it is so opinionated, this command is not available from
+     the tag popup by default.
 
 
 File: magit.info,  Node: Notes,  Next: Submodules,  Prev: Tagging,  Up: Miscellaneous
@@ -6976,7 +7092,7 @@ modules.
      argument fetch all remotes.
 
 
-File: magit.info,  Node: Subtree,  Next: Common Commands,  Prev: Submodules,  Up: Miscellaneous
+File: magit.info,  Node: Subtree,  Next: Worktree,  Prev: Submodules,  Up: Miscellaneous
 
 8.4 Subtree
 ===========
@@ -7021,9 +7137,50 @@ used.  Otherwise the prefix is read in the minibuffer.
      Extract the history of the subtree PREFIX.
 
 
-File: magit.info,  Node: Common Commands,  Next: Wip Modes,  Prev: Subtree,  Up: Miscellaneous
+File: magit.info,  Node: Worktree,  Next: Common Commands,  Prev: Subtree,  Up: Miscellaneous
 
-8.5 Common Commands
+8.5 Worktree
+============
+
+Also see *note (gitman)git-worktree::.
+
+‘%’     (‘magit-worktree-popup’)
+
+     This prefix command shows the following suffix commands in a popup
+     buffer.
+
+‘% b’     (‘magit-worktree-checkout’)
+
+     Checkout BRANCH in a new worktree at PATH.
+
+‘% c’     (‘magit-worktree-branch’)
+
+     Create a new BRANCH and check it out in a new worktree at PATH.
+
+‘% p’     (‘magit-worktree-checkout-pull-request’)
+
+     Create, configure and checkout a new worktree from a pull-request.
+
+     This is like ‘magit-checkout-pull-request’ (which see) except that
+     it also creates a new worktree.
+
+‘% k’     (‘magit-worktree-delete’)
+
+     Delete a worktree, defaulting to the worktree at point.  The
+     primary worktree cannot be deleted.
+
+‘% g’     (‘magit-worktree-status’)
+
+     Show the status for the worktree at point.
+
+     If there is no worktree at point, then read one in the minibuffer.
+     If the worktree at point is the one whose status is already being
+     displayed in the current buffer, then show it in Dired instead.
+
+
+File: magit.info,  Node: Common Commands,  Next: Wip Modes,  Prev: Worktree,  Up: Miscellaneous
+
+8.6 Common Commands
 ===================
 
 These are some of the commands that can be used in all buffers whose
@@ -7063,7 +7220,7 @@ above.
 
 File: magit.info,  Node: Wip Modes,  Next: Minor Mode for Buffers Visiting Files,  Prev: Common Commands,  Up: Miscellaneous
 
-8.6 Wip Modes
+8.7 Wip Modes
 =============
 
 Git keeps *committed* changes around long enough for users to recover
@@ -7220,7 +7377,7 @@ files are being committed.
 
 File: magit.info,  Node: Minor Mode for Buffers Visiting Files,  Next: Minor Mode for Buffers Visiting Blobs,  Prev: Wip Modes,  Up: Miscellaneous
 
-8.7 Minor Mode for Buffers Visiting Files
+8.8 Minor Mode for Buffers Visiting Files
 =========================================
 
 The ‘magit-file-mode’ enables certain Magit features in file-visiting
@@ -7288,16 +7445,46 @@ few key bindings, but this might be extended in the future.
      or when ‘--follow’ is part of ‘magit-log-arguments’.  When the
      region is active, the log is restricted to the selected line range.
 
+‘C-c M-g t’     (‘magit-log-trace-definition’)
+
+     This command shows the log for the definition at point.
+
  -- User Option: magit-log-buffer-file-locked
 
      This option controls whether ‘magit-log-buffer-file’ uses a
      dedicated buffer.  See *note Modes and Buffers::.
 
-‘C-c M-g b’     (‘magit-blame-popup’)
+‘C-c M-g B’     (‘magit-blame-popup’)
 
-     This prefix command shows the ‘magit-blame’ suffix command along
-     with the appropriate infix arguments in a popup buffer.  See *note
-     Initiating a Commit::.
+     This prefix command shows all blaming suffix command along with the
+     appropriate infix arguments in a popup buffer.  See *note
+     Blaming::.
+
+‘C-c M-g b’     (‘magit-blame’)
+
+     This command shows for each line the revision in which it was
+     added.
+
+‘C-c M-g r’     (‘magit-blame-removal’)
+
+     This command shows for each line the revision in which it was
+     removed.  This command is only available in blob-visiting buffers.
+
+‘C-c M-g f’     (‘magit-blame-reverse’)
+
+     This command shows for each line the last revision in which it
+     still exists.  This command is only available in blob-visiting
+     buffers.
+
+‘C-c M-g e’     (‘magit-edit-line-commit’)
+
+     This command makes the commit editable that added the current line.
+
+     With a prefix argument it makes the commit editable that removes
+     the line, if any.  The commit is determined using ‘git blame’ and
+     made editable using ‘git rebase --interactive’ if it is reachable
+     from ‘HEAD’, or by checking out the commit (or a branch that points
+     at it) otherwise.
 
 ‘C-c M-g p’     (‘magit-blob-previous’)
 
@@ -7306,7 +7493,7 @@ few key bindings, but this might be extended in the future.
 
 File: magit.info,  Node: Minor Mode for Buffers Visiting Blobs,  Prev: Minor Mode for Buffers Visiting Files,  Up: Miscellaneous
 
-8.8 Minor Mode for Buffers Visiting Blobs
+8.9 Minor Mode for Buffers Visiting Blobs
 =========================================
 
 The ‘magit-blob-mode’ enables certain Magit features in blob-visiting
@@ -7387,7 +7574,7 @@ file-visiting buffers in just one huge repository use this:
 
    • ‘/path/to/huge/repo/.dir-locals.el’
 
-          ((nil . ((magit-refresh-buffers . nil))
+          ((nil . ((magit-refresh-buffers . nil))))
 
    If you want to apply the same settings to several, but not all,
 repositories then keeping the repository-local config files in sync
@@ -7503,7 +7690,7 @@ current repository when the visited file changes on disk.  That is
 implemented on top of ‘auto-revert-mode’ from the built-in library
 ‘autorevert’.  To figure out whether that impacts performance, check
 whether performance is significantly worse, when many buffers exist
-and/or when some buffers visit files using TRAMP. If so, then this
+and/or when some buffers visit files using TRAMP.  If so, then this
 should help.
 
      (setq auto-revert-buffer-list-filter
@@ -7888,8 +8075,8 @@ refresh because that also automatically moves to the next change.
 
  -- Function: magit-run-git-with-logfile file &rest args
 
-     Calls git synchronously with ARGS. The process’ output is saved in
-     FILE. This is rarely useful and so this function might be removed
+     Calls git synchronously with ARGS.  The process’ output is saved in
+     FILE.  This is rarely useful and so this function might be removed
      in the future.
 
      This function actually runs git asynchronously.  But then it waits
@@ -8077,7 +8264,7 @@ File: magit.info,  Node: Creating Sections,  Next: Section Selection,  Up: Secti
 
  -- Function: magit-define-section-jumper sym title &optional value
 
-     Define an interactive function to go to section SYM. TITLE is the
+     Define an interactive function to go to section SYM.  TITLE is the
      displayed title of the section.
 
 
@@ -8133,17 +8320,17 @@ File: magit.info,  Node: Matching Sections,  Prev: Section Selection,  Up: Secti
 
  -- Function: magit-section-ident
 
-     Return an unique identifier for SECTION. The return value has the
+     Return an unique identifier for SECTION.  The return value has the
      form ‘((TYPE . VALUE)...)’.
 
  -- Function: magit-get-section
 
-     Return the section identified by IDENT. IDENT has to be a list as
+     Return the section identified by IDENT.  IDENT has to be a list as
      returned by ‘magit-section-ident’.
 
  -- Function: magit-section-match condition &optional section
 
-     Return ‘t’ if SECTION matches CONDITION. SECTION defaults to the
+     Return ‘t’ if SECTION matches CONDITION.  SECTION defaults to the
      section at point.  If SECTION is not specified and there also is no
      section at point, then return ‘nil’.
 
@@ -8279,8 +8466,9 @@ where ‘*’ may be something like ‘diff’) with the value of
      ‘magit-mode-display-buffer’ with BUFFER, MODE and SWITCH-FUNC as
      arguments.  Then it sets the local value of
      ‘magit-refresh-function’ to REFRESH-FUNC and that of
-     ‘magit-refresh-args’ to REFRESH-ARGS. Finally it creates the buffer
-     content by calling REFRESH-FUNC with REFRESH-ARGS as arguments.
+     ‘magit-refresh-args’ to REFRESH-ARGS.  Finally it creates the
+     buffer content by calling REFRESH-FUNC with REFRESH-ARGS as
+     arguments.
 
      All arguments are evaluated before switching to BUFFER.
 
@@ -8295,10 +8483,10 @@ where ‘*’ may be something like ‘diff’) with the value of
      previous window configuration as a buffer local value, so that it
      can later be restored by ‘magit-mode-bury-buffer’.
 
-     The buffer is displayed and selected using SWITCH-FUNCTION. If that
-     is ‘nil’ then ‘pop-to-buffer’ is used if the current buffer’s major
-     mode derives from ‘magit-mode’.  Otherwise ‘switch-to-buffer’ is
-     used.
+     The buffer is displayed and selected using SWITCH-FUNCTION.  If
+     that is ‘nil’ then ‘pop-to-buffer’ is used if the current buffer’s
+     major mode derives from ‘magit-mode’.  Otherwise ‘switch-to-buffer’
+     is used.
 
  -- Variable: magit-refresh-function
 
@@ -8621,6 +8809,7 @@ A.2 FAQ - Issues and Errors
 * The mode-line information isn't always up-to-date::
 * Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
 * A branch and tag sharing the same name breaks SOMETHING::
+* My Git hooks work on the command line but not in Magit::
 
 
 File: magit.info,  Node: Magit is slow,  Next: I changed several thousand files at once and now Magit is unusable,  Up: FAQ - Issues and Errors
@@ -8777,7 +8966,7 @@ can work around the problem by setting
 Google’s ‘8.8.8.8’) may also be sufficient to work around the issue.
 
 
-File: magit.info,  Node: A branch and tag sharing the same name breaks SOMETHING,  Prev: Emacs 245 hangs when loading Magit,  Up: FAQ - Issues and Errors
+File: magit.info,  Node: A branch and tag sharing the same name breaks SOMETHING,  Next: My Git hooks work on the command line but not in Magit,  Prev: Emacs 245 hangs when loading Magit,  Up: FAQ - Issues and Errors
 
 A.2.11 A branch and tag sharing the same name breaks SOMETHING
 --------------------------------------------------------------
@@ -8791,6 +8980,17 @@ ambiguous refnames unsupported and recommend that you use a
 non-ambiguous naming scheme.  However, if you do work with a repository
 that has ambiguous refnames, please report any issues you encounter so
 that we can investigate whether there is a simple fix.
+
+
+File: magit.info,  Node: My Git hooks work on the command line but not in Magit,  Prev: A branch and tag sharing the same name breaks SOMETHING,  Up: FAQ - Issues and Errors
+
+A.2.12 My Git hooks work on the command line but not in Magit
+-------------------------------------------------------------
+
+When Magit calls ‘git’ it adds a few global arguments including
+‘--literal-pathspecs’ and the ‘git’ process started by Magit then passes
+that setting on to other ‘git’ process it starts itself.  This setting
+can be reverted in hook scripts using ‘unset GIT_LITERAL_PATHSPECS’.
 
 
 File: magit.info,  Node: Debugging Tools,  Next: Keystroke Index,  Prev: FAQ,  Up: Top
@@ -8869,6 +9069,12 @@ Appendix C Keystroke Index
 * ! S:                                   Running Git Manually.
                                                               (line  39)
 * $:                                     Viewing Git Output.  (line  16)
+* %:                                     Worktree.            (line   8)
+* % b:                                   Worktree.            (line  13)
+* % c:                                   Worktree.            (line  17)
+* % g:                                   Worktree.            (line  33)
+* % k:                                   Worktree.            (line  28)
+* % p:                                   Worktree.            (line  21)
 * +:                                     Log Buffer.          (line  59)
 * + <1>:                                 Refreshing Diffs.    (line  68)
 * -:                                     Log Buffer.          (line  63)
@@ -8892,7 +9098,8 @@ Appendix C Keystroke Index
 * A s:                                   Cherry Picking.      (line  75)
 * A s <1>:                               Cherry Picking.      (line  93)
 * B:                                     Bisecting.           (line   8)
-* b:                                     The Branch Popup.    (line  12)
+* b:                                     Blaming.             (line  86)
+* b <1>:                                 The Branch Popup.    (line  12)
 * B B:                                   Bisecting.           (line  16)
 * B b:                                   Bisecting.           (line  31)
 * b b:                                   The Branch Popup.    (line  37)
@@ -8900,18 +9107,19 @@ Appendix C Keystroke Index
 * b c:                                   The Branch Popup.    (line  55)
 * B g:                                   Bisecting.           (line  36)
 * B k:                                   Bisecting.           (line  41)
-* b k:                                   The Branch Popup.    (line 237)
+* b k:                                   The Branch Popup.    (line 240)
 * b l:                                   The Branch Popup.    (line  62)
 * b n:                                   The Branch Popup.    (line  45)
 * B r:                                   Bisecting.           (line  47)
-* b R:                                   The Branch Popup.    (line 113)
-* b r:                                   The Branch Popup.    (line 215)
-* b r <1>:                               The Branch Popup.    (line 243)
+* b r:                                   The Branch Popup.    (line 246)
 * B s:                                   Bisecting.           (line  24)
 * b s:                                   The Branch Popup.    (line  85)
-* b x:                                   The Branch Popup.    (line 221)
-* c:                                     Initiating a Commit. (line   8)
-* c <1>:                                 Editing Rebase Sequences.
+* b x:                                   The Branch Popup.    (line 224)
+* b Y:                                   The Branch Popup.    (line 113)
+* b y:                                   The Branch Popup.    (line 218)
+* c:                                     Blaming.             (line 120)
+* c <1>:                                 Initiating a Commit. (line   8)
+* c <2>:                                 Editing Rebase Sequences.
                                                               (line  72)
 * c a:                                   Initiating a Commit. (line  18)
 * c A:                                   Initiating a Commit. (line  66)
@@ -8922,7 +9130,7 @@ Appendix C Keystroke Index
 * c s:                                   Initiating a Commit. (line  54)
 * c S:                                   Initiating a Commit. (line  62)
 * c w:                                   Initiating a Commit. (line  32)
-* C-<return>:                            Diff Buffer.         (line  36)
+* C-<return>:                            Diff Buffer.         (line  48)
 * C-<tab>:                               Section Visibility.  (line  13)
 * C-c C-a:                               Editing Commit Messages.
                                                               (line 128)
@@ -8938,6 +9146,7 @@ Appendix C Keystroke Index
 * C-c C-d:                               Refreshing Diffs.    (line  80)
 * C-c C-d <1>:                           Editing Commit Messages.
                                                               (line  57)
+* C-c C-e:                               Diff Buffer.         (line  74)
 * C-c C-f:                               Log Buffer.          (line  23)
 * C-c C-f <1>:                           Refreshing Diffs.    (line  94)
 * C-c C-i:                               Editing Commit Messages.
@@ -8956,28 +9165,39 @@ Appendix C Keystroke Index
                                                               (line 132)
 * C-c C-s:                               Editing Commit Messages.
                                                               (line 136)
-* C-c C-t:                               Editing Commit Messages.
+* C-c C-t:                               Diff Buffer.         (line  70)
+* C-c C-t <1>:                           Editing Commit Messages.
                                                               (line 140)
 * C-c C-w:                               Editing Commit Messages.
                                                               (line  63)
 * C-c M-g:                               Minor Mode for Buffers Visiting Files.
                                                               (line  19)
+* C-c M-g B:                             Minor Mode for Buffers Visiting Files.
+                                                              (line  80)
 * C-c M-g b:                             Minor Mode for Buffers Visiting Files.
-                                                              (line  76)
+                                                              (line  86)
 * C-c M-g c:                             Minor Mode for Buffers Visiting Files.
                                                               (line  33)
 * C-c M-g D:                             Minor Mode for Buffers Visiting Files.
                                                               (line  39)
 * C-c M-g d:                             Minor Mode for Buffers Visiting Files.
                                                               (line  47)
+* C-c M-g e:                             Minor Mode for Buffers Visiting Files.
+                                                              (line 102)
+* C-c M-g f:                             Minor Mode for Buffers Visiting Files.
+                                                              (line  96)
 * C-c M-g L:                             Minor Mode for Buffers Visiting Files.
                                                               (line  57)
 * C-c M-g l:                             Minor Mode for Buffers Visiting Files.
                                                               (line  64)
 * C-c M-g p:                             Minor Mode for Buffers Visiting Files.
-                                                              (line  82)
+                                                              (line 112)
+* C-c M-g r:                             Minor Mode for Buffers Visiting Files.
+                                                              (line  91)
 * C-c M-g s:                             Minor Mode for Buffers Visiting Files.
                                                               (line  24)
+* C-c M-g t:                             Minor Mode for Buffers Visiting Files.
+                                                              (line  71)
 * C-c M-g u:                             Minor Mode for Buffers Visiting Files.
                                                               (line  28)
 * C-c M-s:                               Editing Commit Messages.
@@ -9004,8 +9224,8 @@ Appendix C Keystroke Index
 * d w:                                   Diffing.             (line  43)
 * D w:                                   Refreshing Diffs.    (line  28)
 * DEL:                                   Log Buffer.          (line  43)
-* DEL <1>:                               Diff Buffer.         (line  68)
-* DEL <2>:                               Blaming.             (line  69)
+* DEL <1>:                               Diff Buffer.         (line 103)
+* DEL <2>:                               Blaming.             (line  73)
 * DEL <3>:                               Editing Rebase Sequences.
                                                               (line  28)
 * e:                                     Ediffing.            (line   9)
@@ -9038,7 +9258,7 @@ Appendix C Keystroke Index
                                                               (line  22)
 * G:                                     Automatic Refreshing of Magit Buffers.
                                                               (line  31)
-* j:                                     Diff Buffer.         (line  58)
+* j:                                     Diff Buffer.         (line  93)
 * k:                                     Viewing Git Output.  (line  24)
 * k <1>:                                 Applying.            (line  40)
 * k <2>:                                 Editing Rebase Sequences.
@@ -9097,11 +9317,8 @@ Appendix C Keystroke Index
                                                               (line  39)
 * M-p <2>:                               Editing Rebase Sequences.
                                                               (line  43)
-* M-w:                                   Blaming.             (line 100)
+* M-w:                                   Blaming.             (line 112)
 * M-w <1>:                               Common Commands.     (line  10)
-* M-x magit-blame:                       Blaming.             (line  14)
-* M-x magit-blame-popup:                 Blaming.             (line  37)
-* M-x magit-blame-reverse:               Blaming.             (line  29)
 * M-x magit-clone:                       Repository Setup.    (line  16)
 * M-x magit-debug-git-executable:        Git Executable.      (line  45)
 * M-x magit-debug-git-executable <1>:    Debugging Tools.     (line  30)
@@ -9126,8 +9343,8 @@ Appendix C Keystroke Index
 * M-x magit-wip-commit:                  Wip Modes.           (line 129)
 * M-x with-editor-debug:                 Debugging Tools.     (line  38)
 * n:                                     Section Movement.    (line  16)
-* n <1>:                                 Blaming.             (line  79)
-* N:                                     Blaming.             (line  83)
+* n <1>:                                 Blaming.             (line  91)
+* N:                                     Blaming.             (line  95)
 * n <2>:                                 Editing Rebase Sequences.
                                                               (line  39)
 * n <3>:                                 Minor Mode for Buffers Visiting Blobs.
@@ -9149,8 +9366,8 @@ Appendix C Keystroke Index
 * O s:                                   Subtree.             (line  41)
 * o u:                                   Submodule Popup.     (line  38)
 * p:                                     Section Movement.    (line  10)
-* p <1>:                                 Blaming.             (line  87)
-* P:                                     Blaming.             (line  91)
+* p <1>:                                 Blaming.             (line  99)
+* P:                                     Blaming.             (line 103)
 * p <2>:                                 Editing Rebase Sequences.
                                                               (line  35)
 * P <1>:                                 Pushing.             (line  11)
@@ -9166,7 +9383,7 @@ Appendix C Keystroke Index
 * P u:                                   Pushing.             (line  26)
 * q:                                     Quitting Windows.    (line   6)
 * q <1>:                                 Log Buffer.          (line  12)
-* q <2>:                                 Blaming.             (line  95)
+* q <2>:                                 Blaming.             (line 107)
 * q <3>:                                 Minor Mode for Buffers Visiting Blobs.
                                                               (line  20)
 * r:                                     Rebasing.            (line   9)
@@ -9185,9 +9402,9 @@ Appendix C Keystroke Index
 * r s <1>:                               Rebasing.            (line  99)
 * r u:                                   Rebasing.            (line  29)
 * r w:                                   Rebasing.            (line  81)
-* RET:                                   Diff Buffer.         (line   6)
+* RET:                                   Diff Buffer.         (line   8)
 * RET <1>:                               References Buffer.   (line 166)
-* RET <2>:                               Blaming.             (line  55)
+* RET <2>:                               Blaming.             (line  59)
 * RET <3>:                               Editing Rebase Sequences.
                                                               (line  16)
 * s:                                     Staging and Unstaging.
@@ -9198,12 +9415,11 @@ Appendix C Keystroke Index
                                                               (line  59)
 * S-<tab>:                               Section Visibility.  (line  22)
 * SPC:                                   Log Buffer.          (line  33)
-* SPC <1>:                               Diff Buffer.         (line  64)
-* SPC <2>:                               Blaming.             (line  59)
+* SPC <1>:                               Diff Buffer.         (line  99)
+* SPC <2>:                               Blaming.             (line  63)
 * SPC <3>:                               Editing Rebase Sequences.
                                                               (line  21)
-* t:                                     Blaming.             (line 108)
-* t <1>:                                 Tagging.             (line   8)
+* t:                                     Tagging.             (line   8)
 * T:                                     Notes.               (line   8)
 * T a:                                   Notes.               (line  51)
 * T c:                                   Notes.               (line  46)
@@ -9350,22 +9566,30 @@ Appendix D Command Index
 * magit-bisect-run:                      Bisecting.           (line  24)
 * magit-bisect-skip:                     Bisecting.           (line  41)
 * magit-bisect-start:                    Bisecting.           (line  16)
-* magit-blame:                           Blaming.             (line  14)
-* magit-blame-copy-hash:                 Blaming.             (line 100)
-* magit-blame-next-chunk:                Blaming.             (line  79)
-* magit-blame-next-chunk-same-commit:    Blaming.             (line  83)
-* magit-blame-popup:                     Blaming.             (line  37)
+* magit-blame:                           Blaming.             (line  17)
+* magit-blame <1>:                       Minor Mode for Buffers Visiting Files.
+                                                              (line  86)
+* magit-blame-copy-hash:                 Blaming.             (line 112)
+* magit-blame-cycle-style:               Blaming.             (line 120)
+* magit-blame-echo:                      Blaming.             (line  32)
+* magit-blame-next-chunk:                Blaming.             (line  91)
+* magit-blame-next-chunk-same-commit:    Blaming.             (line  95)
+* magit-blame-popup:                     Blaming.             (line  86)
 * magit-blame-popup <1>:                 Minor Mode for Buffers Visiting Files.
-                                                              (line  76)
-* magit-blame-previous-chunk:            Blaming.             (line  87)
-* magit-blame-previous-chunk-same-commit: Blaming.            (line  91)
-* magit-blame-quit:                      Blaming.             (line  95)
-* magit-blame-reverse:                   Blaming.             (line  29)
-* magit-blame-toggle-headings:           Blaming.             (line 108)
+                                                              (line  80)
+* magit-blame-previous-chunk:            Blaming.             (line  99)
+* magit-blame-previous-chunk-same-commit: Blaming.            (line 103)
+* magit-blame-quit:                      Blaming.             (line 107)
+* magit-blame-removal:                   Blaming.             (line  38)
+* magit-blame-removal <1>:               Minor Mode for Buffers Visiting Files.
+                                                              (line  91)
+* magit-blame-reverse:                   Blaming.             (line  46)
+* magit-blame-reverse <1>:               Minor Mode for Buffers Visiting Files.
+                                                              (line  96)
 * magit-blob-next:                       Minor Mode for Buffers Visiting Blobs.
                                                               (line  16)
 * magit-blob-previous:                   Minor Mode for Buffers Visiting Files.
-                                                              (line  82)
+                                                              (line 112)
 * magit-blob-previous <1>:               Minor Mode for Buffers Visiting Blobs.
                                                               (line  12)
 * magit-branch:                          The Branch Popup.    (line  45)
@@ -9374,20 +9598,20 @@ Appendix D Command Index
 * magit-branch-config-popup:             The Branch Popup.    (line  29)
 * magit-branch-config-popup <1>:         The Branch Config Popup.
                                                               (line   6)
-* magit-branch-delete:                   The Branch Popup.    (line 237)
-* magit-branch-or-checkout:              The Branch Popup.    (line 347)
-* magit-branch-orphan:                   The Branch Popup.    (line 342)
+* magit-branch-delete:                   The Branch Popup.    (line 240)
+* magit-branch-or-checkout:              The Branch Popup.    (line 350)
+* magit-branch-orphan:                   The Branch Popup.    (line 345)
 * magit-branch-popup:                    The Branch Popup.    (line  12)
 * magit-branch-pull-request:             The Branch Popup.    (line 113)
-* magit-branch-rename:                   The Branch Popup.    (line 243)
-* magit-branch-reset:                    The Branch Popup.    (line 221)
+* magit-branch-rename:                   The Branch Popup.    (line 246)
+* magit-branch-reset:                    The Branch Popup.    (line 224)
 * magit-branch-shelve:                   Auxillary Branch Commands.
                                                               (line   8)
 * magit-branch-spinoff:                  The Branch Popup.    (line  85)
 * magit-branch-unshelve:                 Auxillary Branch Commands.
                                                               (line  19)
 * magit-checkout:                        The Branch Popup.    (line  37)
-* magit-checkout-pull-request:           The Branch Popup.    (line 215)
+* magit-checkout-pull-request:           The Branch Popup.    (line 218)
 * magit-cherry:                          Cherries.            (line  17)
 * magit-cherry-apply:                    Cherry Picking.      (line  23)
 * magit-cherry-donate:                   Cherry Picking.      (line  53)
@@ -9424,6 +9648,7 @@ Appendix D Command Index
                                                               (line  39)
 * magit-diff-default-context:            Refreshing Diffs.    (line  72)
 * magit-diff-dwim:                       Diffing.             (line  25)
+* magit-diff-edit-hunk-commit:           Diff Buffer.         (line  74)
 * magit-diff-flip-revs:                  Refreshing Diffs.    (line  45)
 * magit-diff-less-context:               Refreshing Diffs.    (line  64)
 * magit-diff-more-context:               Refreshing Diffs.    (line  68)
@@ -9434,17 +9659,18 @@ Appendix D Command Index
 * magit-diff-save-default-arguments:     Refreshing Diffs.    (line  28)
 * magit-diff-set-default-arguments:      Refreshing Diffs.    (line  21)
 * magit-diff-show-or-scroll-down:        Log Buffer.          (line  43)
-* magit-diff-show-or-scroll-down <1>:    Blaming.             (line  69)
+* magit-diff-show-or-scroll-down <1>:    Blaming.             (line  73)
 * magit-diff-show-or-scroll-up:          Log Buffer.          (line  33)
-* magit-diff-show-or-scroll-up <1>:      Blaming.             (line  59)
+* magit-diff-show-or-scroll-up <1>:      Blaming.             (line  63)
 * magit-diff-staged:                     Diffing.             (line  49)
 * magit-diff-switch-range-type:          Refreshing Diffs.    (line  40)
 * magit-diff-toggle-file-filter:         Refreshing Diffs.    (line  50)
 * magit-diff-toggle-refine-hunk:         Refreshing Diffs.    (line  36)
+* magit-diff-trace-definition:           Diff Buffer.         (line  70)
 * magit-diff-unstaged:                   Diffing.             (line  55)
-* magit-diff-visit-file:                 Diff Buffer.         (line   6)
-* magit-diff-visit-file-other-window:    Diff Buffer.         (line  53)
-* magit-diff-visit-file-worktree:        Diff Buffer.         (line  36)
+* magit-diff-visit-file:                 Diff Buffer.         (line   8)
+* magit-diff-visit-file-other-window:    Diff Buffer.         (line  65)
+* magit-diff-visit-file-worktree:        Diff Buffer.         (line  48)
 * magit-diff-while-committing:           Refreshing Diffs.    (line  80)
 * magit-diff-while-committing <1>:       Editing Commit Messages.
                                                               (line  57)
@@ -9462,6 +9688,8 @@ Appendix D Command Index
 * magit-ediff-show-unstaged:             Ediffing.            (line  53)
 * magit-ediff-show-working-tree:         Ediffing.            (line  61)
 * magit-ediff-stage:                     Ediffing.            (line  48)
+* magit-edit-line-commit:                Minor Mode for Buffers Visiting Files.
+                                                              (line 102)
 * magit-emacs-Q-command:                 Debugging Tools.     (line  16)
 * magit-fetch:                           Fetching.            (line  24)
 * magit-fetch-all:                       Fetching.            (line  38)
@@ -9487,7 +9715,7 @@ Appendix D Command Index
 * magit-go-forward:                      Log Buffer.          (line  23)
 * magit-go-forward <1>:                  Refreshing Diffs.    (line  94)
 * magit-init:                            Repository Setup.    (line   6)
-* magit-jump-to-diffstat-or-diff:        Diff Buffer.         (line  58)
+* magit-jump-to-diffstat-or-diff:        Diff Buffer.         (line  93)
 * magit-kill-this-buffer:                Minor Mode for Buffers Visiting Blobs.
                                                               (line  20)
 * magit-list-repositories:               Repository List.     (line   6)
@@ -9516,6 +9744,8 @@ Appendix D Command Index
 * magit-log-select-quit:                 Select from Log.     (line  26)
 * magit-log-set-default-arguments:       Refreshing Logs.     (line  21)
 * magit-log-toggle-commit-limit:         Log Buffer.          (line  53)
+* magit-log-trace-definition:            Minor Mode for Buffers Visiting Files.
+                                                              (line  71)
 * magit-margin-popup:                    Log Margin.          (line  47)
 * magit-merge:                           Merging.             (line  17)
 * magit-merge <1>:                       Merging.             (line  88)
@@ -9648,7 +9878,7 @@ Appendix D Command Index
 * magit-shell-command-topdir:            Running Git Manually.
                                                               (line  34)
 * magit-show-commit:                     Diffing.             (line  67)
-* magit-show-commit <1>:                 Blaming.             (line  55)
+* magit-show-commit <1>:                 Blaming.             (line  59)
 * magit-show-refs:                       References Buffer.   (line  24)
 * magit-show-refs-current:               References Buffer.   (line  19)
 * magit-show-refs-head:                  References Buffer.   (line  14)
@@ -9698,6 +9928,7 @@ Appendix D Command Index
 * magit-tag-delete:                      Tagging.             (line  18)
 * magit-tag-popup:                       Tagging.             (line   8)
 * magit-tag-prune:                       Tagging.             (line  24)
+* magit-tag-release:                     Tagging.             (line  28)
 * magit-toggle-buffer-lock:              Modes and Buffers.   (line  17)
 * magit-toggle-margin:                   Refreshing Logs.     (line  36)
 * magit-toggle-margin <1>:               Log Margin.          (line  56)
@@ -9717,8 +9948,14 @@ Appendix D Command Index
 * magit-wip-commit:                      Wip Modes.           (line 129)
 * magit-wip-log:                         Wip Modes.           (line  69)
 * magit-wip-log-current:                 Wip Modes.           (line  77)
-* scroll-down:                           Diff Buffer.         (line  68)
-* scroll-up:                             Diff Buffer.         (line  64)
+* magit-worktree-branch:                 Worktree.            (line  17)
+* magit-worktree-checkout:               Worktree.            (line  13)
+* magit-worktree-checkout-pull-request:  Worktree.            (line  21)
+* magit-worktree-delete:                 Worktree.            (line  28)
+* magit-worktree-popup:                  Worktree.            (line   8)
+* magit-worktree-status:                 Worktree.            (line  33)
+* scroll-down:                           Diff Buffer.         (line 103)
+* scroll-up:                             Diff Buffer.         (line  99)
 * with-editor-cancel:                    Editing Commit Messages.
                                                               (line  24)
 * with-editor-cancel <1>:                Editing Rebase Sequences.
@@ -9756,10 +9993,14 @@ Appendix E Function Index
 * magit-add-section-hook:                Section Hooks.       (line  18)
 * magit-after-save-refresh-status:       Automatic Refreshing of Magit Buffers.
                                                               (line  56)
+* magit-blame:                           Blaming.             (line  17)
+* magit-blame-echo:                      Blaming.             (line  32)
+* magit-blame-removal:                   Blaming.             (line  38)
+* magit-blame-reverse:                   Blaming.             (line  46)
 * magit-branch-config-popup:             The Branch Config Popup.
                                                               (line   6)
-* magit-branch-or-checkout:              The Branch Popup.    (line 347)
-* magit-branch-orphan:                   The Branch Popup.    (line 342)
+* magit-branch-or-checkout:              The Branch Popup.    (line 350)
+* magit-branch-orphan:                   The Branch Popup.    (line 345)
 * magit-branch-shelve:                   Auxillary Branch Commands.
                                                               (line   8)
 * magit-branch-unshelve:                 Auxillary Branch Commands.
@@ -9777,7 +10018,7 @@ Appendix E Function Index
 * magit-define-section-jumper:           Creating Sections.   (line  77)
 * magit-diff-scope:                      Matching Sections.   (line 111)
 * magit-diff-type:                       Matching Sections.   (line  88)
-* magit-diff-visit-file-other-window:    Diff Buffer.         (line  53)
+* magit-diff-visit-file-other-window:    Diff Buffer.         (line  65)
 * magit-display-buffer:                  Switching Buffers.   (line   6)
 * magit-display-buffer-fullcolumn-most-v1: Switching Buffers. (line  72)
 * magit-display-buffer-fullframe-status-topleft-v1: Switching Buffers.
@@ -9828,6 +10069,7 @@ Appendix E Function Index
 * magit-insert-head-branch-header:       Status Header Sections.
                                                               (line  42)
 * magit-insert-heading:                  Creating Sections.   (line  42)
+* magit-insert-ignored-files:            Status Sections.     (line 100)
 * magit-insert-local-branches:           References Sections. (line  17)
 * magit-insert-merge-log:                Status Sections.     (line  18)
 * magit-insert-modules:                  Status Module Sections.
@@ -9845,7 +10087,7 @@ Appendix E Function Index
 * magit-insert-push-branch-header:       Status Header Sections.
                                                               (line  51)
 * magit-insert-rebase-sequence:          Status Sections.     (line  23)
-* magit-insert-recent-commits:           Status Sections.     (line 107)
+* magit-insert-recent-commits:           Status Sections.     (line 115)
 * magit-insert-remote-branches:          References Sections. (line  21)
 * magit-insert-remote-header:            Status Header Sections.
                                                               (line  67)
@@ -9862,11 +10104,11 @@ Appendix E Function Index
 * magit-insert-tags-header:              Status Header Sections.
                                                               (line  56)
 * magit-insert-tracked-files:            Status Sections.     (line  96)
-* magit-insert-unpulled-cherries:        Status Sections.     (line 118)
+* magit-insert-unpulled-cherries:        Status Sections.     (line 126)
 * magit-insert-unpulled-from-pushremote: Status Sections.     (line  79)
 * magit-insert-unpulled-from-upstream:   Status Sections.     (line  74)
-* magit-insert-unpulled-or-recent-commits: Status Sections.   (line 100)
-* magit-insert-unpushed-cherries:        Status Sections.     (line 125)
+* magit-insert-unpulled-or-recent-commits: Status Sections.   (line 108)
+* magit-insert-unpushed-cherries:        Status Sections.     (line 133)
 * magit-insert-unpushed-to-pushremote:   Status Sections.     (line  89)
 * magit-insert-unpushed-to-upstream:     Status Sections.     (line  84)
 * magit-insert-unstaged-changes:         Status Sections.     (line  59)
@@ -9881,7 +10123,7 @@ Appendix E Function Index
 * magit-log-maybe-update-blob-buffer:    Section Movement.    (line  71)
 * magit-log-maybe-update-revision-buffer: Section Movement.   (line  64)
 * magit-maybe-set-dedicated:             Switching Buffers.   (line  97)
-* magit-mode-display-buffer:             Refreshing Buffers.  (line  32)
+* magit-mode-display-buffer:             Refreshing Buffers.  (line  33)
 * magit-mode-quit-window:                Quitting Windows.    (line  31)
 * magit-mode-setup:                      Refreshing Buffers.  (line  17)
 * magit-push-implicitly:                 Pushing.             (line  73)
@@ -9933,6 +10175,7 @@ Appendix E Function Index
 * magit-status-maybe-update-blob-buffer: Section Movement.    (line  83)
 * magit-status-maybe-update-revision-buffer: Section Movement.
                                                               (line  77)
+* magit-tag-release:                     Tagging.             (line  28)
 * magit-wip-log:                         Wip Modes.           (line  69)
 * magit-wip-log-current:                 Wip Modes.           (line  77)
 * with-editor-usage-message:             Editing Commit Messages.
@@ -9999,15 +10242,17 @@ Appendix F Variable Index
 * magit-auto-revert-tracked-only:        Automatic Reverting of File-Visiting Buffers.
                                                               (line  55)
 * magit-bisect-show-graph:               Bisecting.           (line  55)
-* magit-blame-goto-chunk-hook:           Blaming.             (line 126)
-* magit-blame-heading-format:            Blaming.             (line 112)
-* magit-blame-show-headings:             Blaming.             (line 120)
-* magit-blame-time-format:               Blaming.             (line 116)
+* magit-blame-disable-modes:             Blaming.             (line 150)
+* magit-blame-echo-style:                Blaming.             (line 133)
+* magit-blame-goto-chunk-hook:           Blaming.             (line 156)
+* magit-blame-read-only:                 Blaming.             (line 145)
+* magit-blame-styles:                    Blaming.             (line 128)
+* magit-blame-time-format:               Blaming.             (line 140)
 * magit-branch-adjust-remote-upstream-alist: The Branch Popup.
-                                                              (line 300)
+                                                              (line 303)
 * magit-branch-popup-show-variables:     The Branch Popup.    (line  21)
-* magit-branch-prefer-remote-upstream:   The Branch Popup.    (line 255)
-* magit-branch-read-upstream-first:      The Branch Popup.    (line 249)
+* magit-branch-prefer-remote-upstream:   The Branch Popup.    (line 258)
+* magit-branch-read-upstream-first:      The Branch Popup.    (line 252)
 * magit-buffer-name-format:              Naming Buffers.      (line  27)
 * magit-bury-buffer-function:            Quitting Windows.    (line  11)
 * magit-cherry-margin:                   Cherries.            (line  22)
@@ -10028,7 +10273,7 @@ Appendix F Variable Index
 * magit-diff-paint-whitespace:           Diff Options.        (line  38)
 * magit-diff-refine-hunk:                Diff Options.        (line   6)
 * magit-diff-unmarked-lines-keep-foreground: Diff Options.    (line  97)
-* magit-diff-visit-previous-blob:        Diff Buffer.         (line  25)
+* magit-diff-visit-previous-blob:        Diff Buffer.         (line  37)
 * magit-display-buffer-function:         Switching Buffers.   (line  23)
 * magit-display-buffer-noselect:         Switching Buffers.   (line  14)
 * magit-dwim-selection:                  Completion and Confirmation.
@@ -10050,10 +10295,10 @@ Appendix F Variable Index
                                                               (line   6)
 * magit-log-auto-more:                   Log Buffer.          (line  67)
 * magit-log-buffer-file-locked:          Minor Mode for Buffers Visiting Files.
-                                                              (line  71)
+                                                              (line  75)
 * magit-log-margin:                      Log Margin.          (line  12)
 * magit-log-section-args:                Status Options.      (line  36)
-* magit-log-section-commit-count:        Status Sections.     (line 112)
+* magit-log-section-commit-count:        Status Sections.     (line 120)
 * magit-log-select-margin:               Select from Log.     (line  30)
 * magit-log-show-refname-after-summary:  Log Buffer.          (line  73)
 * magit-module-sections-hook:            Status Module Sections.
@@ -10071,10 +10316,10 @@ Appendix F Variable Index
                                                               (line 151)
 * magit-push-current-set-remote-if-missing: Pushing.          (line  96)
 * magit-reflog-margin:                   Reflog.              (line  23)
-* magit-refresh-args:                    Refreshing Buffers.  (line  54)
+* magit-refresh-args:                    Refreshing Buffers.  (line  55)
 * magit-refresh-buffer-hook:             Automatic Refreshing of Magit Buffers.
                                                               (line  40)
-* magit-refresh-function:                Refreshing Buffers.  (line  48)
+* magit-refresh-function:                Refreshing Buffers.  (line  49)
 * magit-refresh-status-buffer:           Automatic Refreshing of Magit Buffers.
                                                               (line  46)
 * magit-refs-filter-alist:               References Buffer.   (line 149)
@@ -10146,155 +10391,157 @@ Appendix F Variable Index
 
 
 Tag Table:
-Node: Top752
-Node: Introduction6095
-Node: Installation10818
-Node: Installing from an Elpa Archive11158
-Node: Installing from the Git Repository12261
-Node: Post-Installation Tasks15014
-Node: Getting Started16299
-Node: Interface Concepts21646
-Node: Modes and Buffers21978
-Node: Switching Buffers23723
-Node: Naming Buffers28264
-Node: Quitting Windows31571
-Node: Automatic Refreshing of Magit Buffers33203
-Node: Automatic Saving of File-Visiting Buffers35971
-Node: Automatic Reverting of File-Visiting Buffers37156
-Node: Risk of Reverting Automatically42152
-Node: Sections44535
-Node: Section Movement45476
-Node: Section Visibility49567
-Node: Section Hooks54419
-Node: Section Types and Values56700
-Node: Section Options57970
-Node: Popup Buffers and Prefix Commands58442
-Node: Completion Confirmation and the Selection60823
-Node: Action Confirmation61260
-Node: Completion and Confirmation67500
-Node: The Selection70686
-Node: The hunk-internal region73585
-Node: Support for Completion Frameworks74674
-Node: Additional Completion Options79490
-Node: Running Git80089
-Node: Viewing Git Output80362
-Node: Git Process Status81495
-Node: Running Git Manually82460
-Node: Git Executable84862
-Node: Global Git Arguments87144
-Node: Inspecting87950
-Node: Status Buffer89097
-Node: Status Sections92010
-Node: Status Header Sections96525
-Node: Status Module Sections99155
-Node: Status Options101660
-Node: Repository List103414
-Node: Logging105572
-Node: Refreshing Logs108019
-Node: Log Buffer109404
-Node: Log Margin113199
-Node: Select from Log115839
-Node: Reflog117943
-Node: Cherries119460
-Node: Diffing121187
-Node: Refreshing Diffs124134
-Node: Diff Buffer127625
-Node: Diff Options130359
-Node: Revision Buffer134634
-Node: Ediffing137172
-Node: References Buffer140768
-Node: References Sections150533
-Node: Bisecting151394
-Node: Visiting Blobs153132
-Node: Blaming153641
-Node: Manipulating158429
-Node: Repository Setup158745
-Node: Staging and Unstaging159785
-Node: Staging from File-Visiting Buffers163866
-Node: Applying165034
-Node: Committing166927
-Node: Initiating a Commit167510
-Node: Editing Commit Messages170821
-Node: Branching181217
-Node: The Two Remotes181447
-Node: The Branch Popup184064
-Node: The Branch Config Popup200911
-Node: Auxillary Branch Commands206849
-Node: Merging207952
-Node: Resolving Conflicts211877
-Node: Rebasing216878
-Node: Editing Rebase Sequences221034
-Node: Information About In-Progress Rebase224064
-Ref: Information About In-Progress Rebase-Footnote-1232812
-Node: Cherry Picking233408
-Node: Reverting237660
-Node: Resetting239023
-Node: Stashing240440
-Node: Transferring244952
-Node: Remotes245190
-Node: The Remote Popup245346
-Node: The Remote Config Popup248814
-Node: Fetching250466
-Node: Pulling251822
-Node: Pushing252658
-Node: Creating and Sending Patches257393
-Node: Applying Patches258230
-Node: Miscellaneous259816
-Node: Tagging260119
-Node: Notes260903
-Node: Submodules263214
-Node: Listing Submodules263428
-Node: Submodule Popup265352
-Node: Subtree267805
-Node: Common Commands269052
-Node: Wip Modes270798
-Node: Minor Mode for Buffers Visiting Files277595
-Node: Minor Mode for Buffers Visiting Blobs280944
-Node: Customizing281757
-Node: Per-Repository Configuration283425
-Node: Essential Settings285072
-Node: Safety285396
-Node: Performance287161
-Node: Microsoft Windows Performance294009
-Node: MacOS Performance295200
-Ref: MacOS Performance-Footnote-1296436
-Ref: MacOS Performance-Footnote-2296518
-Ref: MacOS Performance-Footnote-3296578
-Node: Plumbing296744
-Node: Calling Git297567
-Node: Getting a Value from Git299092
-Node: Calling Git for Effect302178
-Node: Section Plumbing308696
-Node: Creating Sections308924
-Node: Section Selection312823
-Node: Matching Sections314503
-Node: Refreshing Buffers319936
-Node: Conventions323071
-Node: Theming Faces323263
-Node: FAQ331378
-Node: FAQ - How to ...?331820
-Node: How to show git's output?332180
-Node: How to install the gitman info manual?332934
-Node: How to show diffs for gpg-encrypted files?333904
-Node: How does branching and pushing work?334500
-Node: Can Magit be used as ediff-version-control-package?334863
-Node: FAQ - Issues and Errors336852
-Node: Magit is slow337650
-Node: I changed several thousand files at once and now Magit is unusable337864
-Node: I am having problems committing338593
-Node: I am using MS Windows and cannot push with Magit339074
-Node: I am using OS X and SOMETHING works in shell but not in Magit339691
-Node: Diffs contain control sequences340497
-Node: Expanding a file to show the diff causes it to disappear341571
-Node: Point is wrong in the COMMIT_EDITMSG buffer342122
-Node: The mode-line information isn't always up-to-date343168
-Node: Emacs 245 hangs when loading Magit344229
-Node: A branch and tag sharing the same name breaks SOMETHING344843
-Node: Debugging Tools345649
-Node: Keystroke Index347526
-Node: Command Index378190
-Node: Function Index410737
-Node: Variable Index425068
+Node: Top753
+Node: Introduction6169
+Node: Installation10892
+Node: Installing from an Elpa Archive11232
+Node: Installing from the Git Repository12335
+Node: Post-Installation Tasks15088
+Node: Getting Started16373
+Node: Interface Concepts21720
+Node: Modes and Buffers22052
+Node: Switching Buffers23797
+Node: Naming Buffers28340
+Node: Quitting Windows31647
+Node: Automatic Refreshing of Magit Buffers33279
+Node: Automatic Saving of File-Visiting Buffers36047
+Node: Automatic Reverting of File-Visiting Buffers37232
+Node: Risk of Reverting Automatically42228
+Node: Sections44611
+Node: Section Movement45552
+Node: Section Visibility49649
+Node: Section Hooks54501
+Node: Section Types and Values56786
+Node: Section Options58056
+Node: Popup Buffers and Prefix Commands58528
+Node: Completion Confirmation and the Selection60909
+Node: Action Confirmation61346
+Node: Completion and Confirmation68692
+Node: The Selection71878
+Node: The hunk-internal region74777
+Node: Support for Completion Frameworks75866
+Node: Additional Completion Options80682
+Node: Running Git81281
+Node: Viewing Git Output81554
+Node: Git Process Status82687
+Node: Running Git Manually83652
+Node: Git Executable86054
+Node: Global Git Arguments88336
+Node: Inspecting89142
+Node: Status Buffer90289
+Node: Status Sections93203
+Node: Status Header Sections98006
+Node: Status Module Sections100636
+Node: Status Options103141
+Node: Repository List104895
+Node: Logging107053
+Node: Refreshing Logs109500
+Node: Log Buffer110885
+Node: Log Margin114680
+Node: Select from Log117320
+Node: Reflog119424
+Node: Cherries120941
+Node: Diffing122668
+Node: Refreshing Diffs125615
+Node: Diff Buffer129106
+Node: Diff Options133444
+Node: Revision Buffer137719
+Node: Ediffing140257
+Node: References Buffer143853
+Node: References Sections153618
+Node: Bisecting154479
+Node: Visiting Blobs156217
+Node: Blaming156727
+Node: Manipulating162502
+Node: Repository Setup162818
+Node: Staging and Unstaging163858
+Node: Staging from File-Visiting Buffers167939
+Node: Applying169107
+Node: Committing171000
+Node: Initiating a Commit171583
+Node: Editing Commit Messages174894
+Node: Branching185290
+Node: The Two Remotes185520
+Node: The Branch Popup188137
+Node: The Branch Config Popup205190
+Node: Auxillary Branch Commands211131
+Node: Merging212234
+Node: Resolving Conflicts216159
+Node: Rebasing221160
+Node: Editing Rebase Sequences225317
+Node: Information About In-Progress Rebase228347
+Ref: Information About In-Progress Rebase-Footnote-1237096
+Node: Cherry Picking237692
+Node: Reverting241944
+Node: Resetting243307
+Node: Stashing244724
+Node: Transferring249237
+Node: Remotes249475
+Node: The Remote Popup249631
+Node: The Remote Config Popup253099
+Node: Fetching254755
+Node: Pulling256111
+Node: Pushing256947
+Node: Creating and Sending Patches261682
+Node: Applying Patches262519
+Node: Miscellaneous264105
+Node: Tagging264421
+Node: Notes265762
+Node: Submodules268073
+Node: Listing Submodules268287
+Node: Submodule Popup270211
+Node: Subtree272664
+Node: Worktree273904
+Node: Common Commands275114
+Node: Wip Modes276861
+Node: Minor Mode for Buffers Visiting Files283658
+Node: Minor Mode for Buffers Visiting Blobs288060
+Node: Customizing288873
+Node: Per-Repository Configuration290541
+Node: Essential Settings292190
+Node: Safety292514
+Node: Performance294279
+Node: Microsoft Windows Performance301128
+Node: MacOS Performance302319
+Ref: MacOS Performance-Footnote-1303555
+Ref: MacOS Performance-Footnote-2303637
+Ref: MacOS Performance-Footnote-3303697
+Node: Plumbing303863
+Node: Calling Git304686
+Node: Getting a Value from Git306211
+Node: Calling Git for Effect309297
+Node: Section Plumbing315817
+Node: Creating Sections316045
+Node: Section Selection319945
+Node: Matching Sections321625
+Node: Refreshing Buffers327061
+Node: Conventions330203
+Node: Theming Faces330395
+Node: FAQ338510
+Node: FAQ - How to ...?338952
+Node: How to show git's output?339312
+Node: How to install the gitman info manual?340066
+Node: How to show diffs for gpg-encrypted files?341036
+Node: How does branching and pushing work?341632
+Node: Can Magit be used as ediff-version-control-package?341995
+Node: FAQ - Issues and Errors343984
+Node: Magit is slow344841
+Node: I changed several thousand files at once and now Magit is unusable345055
+Node: I am having problems committing345784
+Node: I am using MS Windows and cannot push with Magit346265
+Node: I am using OS X and SOMETHING works in shell but not in Magit346882
+Node: Diffs contain control sequences347688
+Node: Expanding a file to show the diff causes it to disappear348762
+Node: Point is wrong in the COMMIT_EDITMSG buffer349313
+Node: The mode-line information isn't always up-to-date350359
+Node: Emacs 245 hangs when loading Magit351420
+Node: A branch and tag sharing the same name breaks SOMETHING352034
+Node: My Git hooks work on the command line but not in Magit352903
+Node: Debugging Tools353503
+Node: Keystroke Index355380
+Node: Command Index387247
+Node: Function Index421362
+Node: Variable Index436131
 
 End Tag Table
 

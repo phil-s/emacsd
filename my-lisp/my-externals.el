@@ -178,8 +178,8 @@
      (:name magit
             :type git
             :url "git://github.com/magit/magit.git"
-            :branch "master" ;; bleeding edge
-            ;; :branch "2.6.2" ;; install a specific release
+            ;; :branch "master" ;; bleeding edge
+            :branch "2.13.0" ;; install a specific release
             :load-path ("lisp")
             :build ("make") ;; builds documentation.
             ;; :build ("make lisp") ;; just the code; fewer dependencies.
