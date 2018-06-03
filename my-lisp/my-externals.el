@@ -59,6 +59,7 @@
 
      (:name dash
             :type git
+            :branch "2.14.1"
             :url "git://github.com/magnars/dash.el.git")
 
      (:name deft

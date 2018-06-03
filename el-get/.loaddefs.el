@@ -566,6 +566,21 @@ The window scope is determined by `avy-all-windows' (ARG negates it).
 
 ;;;***
 
+;;;### (autoloads nil "dash/dash" "dash/dash.el" (0 0 0 0))
+;;; Generated autoloads from dash/dash.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dash/dash" '("dash-" "-keep" "-butlast" "-non" "-only-some" "-zip" "-e" "->" "-a" "-gr" "-when-let" "-d" "-l" "-s" "-p" "-r" "-m" "-i" "-f" "-u" "-value-to-list" "-t" "--" "-c" "!cons" "!cdr")))
+
+;;;***
+
+;;;### (autoloads nil "dash/dash-functional" "dash/dash-functional.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from dash/dash-functional.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dash/dash-functional" '("-rpartial" "-juxt" "-not" "-o" "-a" "-iteratefn" "-c" "-f" "-p")))
+
+;;;***
+
 ;;;### (autoloads nil "delight/delight" "delight/delight.el" (22694
 ;;;;;;  39803 0 0))
 ;;; Generated autoloads from delight/delight.el
