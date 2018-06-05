@@ -562,6 +562,10 @@ See also: `my-copy-buffer-file-name'."
 ;; Use Firefox as the default web browser
 (setq browse-url-browser-function 'browse-url-firefox)
 
+;; Do not expose certain information in HTTP request headers
+(setq url-privacy-level '(emacs email lastloc))
+(url-setup-privacy-info)
+
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hook 'goto-address-prog-mode)
 ;; But not email addresses. This is a hack to never match anything.
