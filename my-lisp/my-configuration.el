@@ -292,6 +292,19 @@ when `auto-save-mode' is invoked manually.")
 (add-hook 'find-file-hook 'auto-insert)
 ;; (setq auto-insert-query nil)
 
+;; If SIGUSR1 is received, start a server.
+(define-key special-event-map [sigusr1] 'sigusr1-handler)
+(defun sigusr1-handler ()
+  "Handler for SIGUSR1 signal.
+
+Can be tested with (signal-process (emacs-pid) 'sigusr1)"
+  (interactive)
+  (when (server-running-p)
+    (setq server-name "sigusr1")
+    (message "Changed `server-name' to %s" server-name))
+  (server-force-delete)
+  (server-start))
+
 ;; ibuffer config.
 (eval-when-compile
   (defvar ibuffer-filtering-qualifiers)
