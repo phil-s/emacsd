@@ -650,6 +650,10 @@ If the current search is successful, then only delete the last char."
 ;; Guess the target directory (as prompt) when one is needed.
 (setq dired-dwim-target t)
 
+;; Make dired commands like `dired-mark-files-containing-regexp'
+;; search the saved file content rather than unsaved buffer text.
+(setq dired-always-read-filesystem t)
+
 ;; Do not omit .. in dired -- it's useful.
 (setq dired-omit-files "^\\.?#\\|^\\.$")
 ;;
@@ -901,6 +905,14 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 
 ;; Don't intersperse stderr output with stdout
 (setq shell-command-default-error-buffer "*stderr*")
+
+;; Do not show the `async-shell-command' output buffer unless/until
+;; there is output to show.
+(setq async-shell-command-display-buffer nil)
+
+;; Do not erase the output buffer between shell commands.
+;; Always set point to the start of the most-recent output.
+(setq shell-command-dont-erase-buffer '(beg-last-out))
 
 ;; Also, emacs doesn't deal with my usual cygwin prompt, so put:
 ;; export PS1="\n\u@\h \w\n\$ "
