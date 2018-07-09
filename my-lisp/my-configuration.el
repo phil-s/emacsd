@@ -1044,16 +1044,17 @@ when the file path is too long to show on one line."
   (local-set-key (kbd "<f5>") 'toggle-truncate-lines))
 
 ;; Don't rgrep/lgrep within certain file types. Will I regret this? :\
-(eval-after-load "grep"
-  '(setq grep-find-ignored-files
-         ;; List of file names which `rgrep' and `lgrep' shall exclude.
-         ;; If an element is a cons cell, the car is called on the search
-         ;; directory to determine whether cdr should not be excluded.
-         (nconc grep-find-ignored-files
-                '("*.vmdk" "*.box") ;; Virtual Machine disks
-                '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff") ;; Images
-                '("*.pdf" "*.doc") ;; Binary documents
-                )))
+(with-eval-after-load "grep"
+  (unless (member "*.vmdk" grep-find-ignored-files)
+    (setq grep-find-ignored-files
+          ;; List of file names which `rgrep' and `lgrep' shall exclude.
+          ;; If an element is a cons cell, the car is called on the search
+          ;; directory to determine whether cdr should not be excluded.
+          (nconc grep-find-ignored-files
+                 '("*.vmdk" "*.box") ;; Virtual Machine disks
+                 '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff") ;; Images
+                 '("*.pdf" "*.doc") ;; Binary documents
+                 ))))
 
 ;; ;; www / web / eww
 ;; (add-hook 'eww-mode-hook 'my-eww-mode-hook)
