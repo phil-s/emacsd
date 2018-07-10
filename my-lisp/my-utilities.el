@@ -662,6 +662,26 @@ within the current buffer-file-name."
                           (shell-quote-argument regexp) " "
                           (shell-quote-argument "{}") " "
                           (shell-quote-argument ";"))))
+
+(defvar my-shell-command-to-dired-history '("ls -al"))
+(defun my-shell-command-to-dired (cmd)
+  "Invoke `dired-virtual-mode' on the output of shell command CMD.
+
+The shell command's output format must be equivalent to that of \"ls -al\"."
+  (interactive
+   (list (read-from-minibuffer
+          (format "Shell command (%s): "
+                  (car my-shell-command-to-dired-history))
+          nil nil nil 'my-shell-command-to-dired-history)))
+  (when (string= "" cmd)
+    (setq cmd (or (car my-shell-command-to-dired-history)
+                  "ls -al")))
+  (let ((buf (get-buffer-create (format "*Dired: %S*" cmd))))
+    (shell-command cmd buf)
+    (with-current-buffer buf
+      (dired-virtual-mode)
+      (pop-to-buffer buf))))
+
 
 ;; Add a non-regexp `dired-do-query-replace-regexp' equivalent.
 (eval-after-load 'dired
