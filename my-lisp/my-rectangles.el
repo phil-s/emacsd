@@ -168,4 +168,17 @@ If `case-replace' is nil, do not alter case of replacement text."
      start end from-string to-string search-function t)))
 
 
+;; When `rectangle-mark-mode' is enabled, enable `self-insert-command'
+;; to automatically initiate `string-rectangle'.
+;; https://emacs.stackexchange.com/a/42597
+(defun string-rectangle-with-initial (char)
+  (interactive (list last-input-event))
+  (push char unread-command-events)
+  (let ((string-rectangle-history (cons "" string-rectangle-history)))
+    (call-interactively 'string-rectangle)))
+
+(define-key rectangle-mark-mode-map
+  [remap self-insert-command] 'string-rectangle-with-initial)
+
+
 (provide 'my-rectangles)
