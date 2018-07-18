@@ -1165,7 +1165,7 @@ With C-u prefix arg, always creates a new buffer."
           (setq sql-buffer sqlibuf)
           (run-hooks 'sql-set-sqli-hook))))))
 
-(defun my-drush-console (retain-window-layout)
+(defun my-drush-console (single-window-layout)
   (interactive "P")
   (require 'drush-php)
   (unless (get-buffer-process (get-buffer "*Drush-PHP*"))
@@ -1173,17 +1173,8 @@ With C-u prefix arg, always creates a new buffer."
   (pop-to-buffer "*Drush-PHP*" '((display-buffer-reuse-window
                                   display-buffer-same-window)
                                  . ((reusable-frames . visible))))
-  (unless retain-window-layout
+  (when single-window-layout
     (delete-other-windows)))
-;; (defun my-drush-console (retain-window-layout)
-;;   (interactive "P")
-;;   (unless (get-buffer-process (get-buffer "*drush console*"))
-;;     (call-interactively 'drush-console))
-;;   (pop-to-buffer "*drush console*" '((display-buffer-reuse-window
-;;                                       display-buffer-same-window)
-;;                                      . ((reusable-frames . visible))))
-;;   (unless retain-window-layout
-;;     (delete-other-windows)))
 
 (defvar my-terminal-run-history nil)
 (defun my-terminal-run (command &optional name)

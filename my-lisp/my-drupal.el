@@ -14,11 +14,14 @@
   (declare-function term-mode "term")
   )
 
-(eval-after-load "drush-php"
+(eval-after-load "psysh"
   '(progn
-     (define-key drush-php-mode-map
+     (define-key psysh-mode-map
        [remap my-beginning-of-line-or-indentation]
-       'drush-php-beginning-of-line-or-indentation)))
+       'psysh-beginning-of-line-or-indentation)
+     ;; Save the drush shell command history.
+     (setq psysh-history-file (locate-user-emacs-file
+                               ".psysh-history"))))
 
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
@@ -122,35 +125,6 @@ Used in `grep-find-ignored-directories'."
 ;;     (and root
 ;;          (string-prefix-p (concat root "sites/")
 ;;                           dir))))
-
-
-;;; Drush
-
-(defvar drush-cmd "drush" "Name of (or path to) Drush executable.")
-(defvar drush-args "-u 1"
-  "Default arguments to pass to Drush for all commands.
-
-You may wish to specify a drush @alias, or hard-code something similar to
-the following:
-
--l http://site.example.com -r /var/www/drupal/site -u 1")
-
-(defun drush-console ()
-  "Runs the drush console in a `term' buffer.
-See http://drupal.org/project/phpsh"
-  (interactive)
-  (require 'term)
-  (let* ((drush-args (concat drush-args " php"))
-         (switches (split-string-and-unquote drush-args))
-         (buf (apply 'make-term "drush console" drush-cmd nil switches)))
-    ;; Enable term mode for the process buffer.
-    (set-buffer buf)
-    (term-mode)
-    (term-char-mode)
-    ;; Don't highlight trailing whitespace.
-    (setq show-trailing-whitespace nil)
-    ;; Select the buffer.
-    (switch-to-buffer buf)))
 
 
 ;; SQL support
