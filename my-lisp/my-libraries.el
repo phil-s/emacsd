@@ -101,12 +101,28 @@ unhides lines again"
      (defun geben-dbgp-response-eval (session cmd msg)
        "A response message handler for \`eval\' command."
        (with-output-to-temp-buffer "*GEBEN: eval*"
-         (when (string< "0.24" geben-version)
-           (print "GEBEN has been upgraded since geben-dbgp-response-eval was redefined."))
-         (print
+         (when (string< "1.1.1" geben-version)
+           (princ "GEBEN has been upgraded since you clobbered some of its \
+functions.\n\n"))
+         (princ
           (geben-dbgp-decode-value (car-safe (xml-get-children msg 'property)))))
        ;; (select-window (display-buffer "*GEBEN: eval*"))
-       )))
+       )
+
+     (defun geben-eval-expression (expr)
+       "Evaluate a given string EXPR within the current execution context.
+
+If the region is active, evaluate the region."
+       (interactive
+        (list (if (use-region-p)
+                  (buffer-substring-no-properties (region-beginning) (region-end))
+                (read-from-minibuffer
+                 "Eval: " nil geben-minibuffer-map nil 'geben-eval-history))))
+       (geben-with-current-session session
+         (geben-dbgp-command-eval session expr))
+       (run-hooks 'geben-after-eval-expression))
+
+     ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

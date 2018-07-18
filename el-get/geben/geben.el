@@ -3633,11 +3633,14 @@ breakpoint and the value speficies the line number."
   "Minibuffer keymap used for reading expressions.")
 
 (defun geben-eval-expression (expr)
-  "Evaluate a given string EXPR within the current execution context."
+  "Evaluate a given string EXPR within the current execution context.
+
+If the region is active, evaluate the region."
   (interactive
-   (progn
-     (list (read-from-minibuffer "Eval: "
-                                 nil geben-minibuffer-map nil 'geben-eval-history))))
+   (list (if (use-region-p)
+             (buffer-substring-no-properties (region-beginning) (region-end))
+           (read-from-minibuffer
+            "Eval: " nil geben-minibuffer-map nil 'geben-eval-history))))
   (geben-with-current-session session
     (geben-dbgp-command-eval session expr))
   (run-hooks 'geben-after-eval-expression))
