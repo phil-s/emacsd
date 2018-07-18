@@ -230,6 +230,10 @@ when `auto-save-mode' is invoked manually.")
 ;; Increase maximum length of history lists
 (setq history-length 100)
 
+;; Default to spaces for indentation, and a tab width of 4 spaces.
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
 ;; Make scripts executable
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 

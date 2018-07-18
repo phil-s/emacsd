@@ -2,6 +2,11 @@
 ;; Whitespace
 ;;
 
+;; Notes:
+;; visual-line-mode
+;; adaptive-wrap-prefix-mode
+;; redshift-indent-mode
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar whitespace-display-mappings)
@@ -74,6 +79,7 @@
       '(calendar
         erc
         eww
+        geben-context
         help
         image-dired-display
         image-dired-thumbnail

@@ -778,8 +778,7 @@
 (require 'my-utilities)
 (require 'my-rectangles)
 
-;; Indentation and white space
-(require 'my-indentation)
+;; White space
 (require 'my-whitespace)
 
 ;; Programming language support
