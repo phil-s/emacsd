@@ -3,39 +3,70 @@
 (define-derived-mode my-edit-rectangle-mode nil "Rectangle-Edit"
   ;; The rectangle buffer contents will likely be invalid for the
   ;; major mode of the source buffer, so we derive from fundamental-mode
-  ;; to avoid problems.
+  ;; to avoid problems. We do copy the source buffer's syntax table,
+  ;; though, which provides a small level of editing consistency.
   "Major mode for *edit rectangle* buffers.
 
 \\{my-edit-rectangle-mode-map}")
 
-(define-key my-edit-rectangle-mode-map (kbd "C-c C-c") 'my-edit-rectangle-submit)
+(define-key my-edit-rectangle-mode-map
+  (kbd "C-c C-c") 'my-edit-rectangle-submit)
 
 (defvar my-edit-rectangle-data)
+(defvar my-edit-rectangle-buffer)
 
 (defun my-edit-rectangle (start end)
   "Edit the rectangle in a temporary buffer. C-c C-c applies the changes."
   (interactive "*r")
-  (let* ((content (extract-rectangle start end))
-         (width (length (car content)))
-         (height (length content))
-         (source-buffer (current-buffer))
-         (source-syntax (syntax-table))
-         (coords-point (list (line-number-at-pos) (current-column)))
-         (coords-mark (save-excursion
-                        (goto-char (mark))
-                        (list (line-number-at-pos) (current-column)))))
-    (switch-to-buffer (generate-new-buffer " *edit rectangle*"))
-    (insert-rectangle content)
-    (my-edit-rectangle-mode) ;; mode change kills local variables.
-    (set-syntax-table source-syntax)
-    (setq fill-column width)
-    (buffer-enable-undo)
-    ;; Store the rectangle details in a buffer-local structure.
-    (set (make-local-variable 'my-edit-rectangle-data)
-         (list start end width height source-buffer coords-point coords-mark))
-    (message (substitute-command-keys
-              "Editing rectangle. Type \\[my-edit-rectangle-submit] to confirm \
-the changes, or \\[kill-buffer] RET to cancel."))))
+  (let ((content (extract-rectangle start end)))
+    (let ((width (length (car content)))
+          (height (length content))
+          (source-buffer (current-buffer))
+          (source-syntax (syntax-table))
+          (coords-point (list (line-number-at-pos) (current-column)))
+          (coords-mark (save-excursion
+                         (goto-char (mark))
+                         (list (line-number-at-pos) (current-column))))
+          ;; TODO: use existing buffer where one exists, otherwise
+          ;; generate a new one.
+          (edit-rectangle-buffer (if (bound-and-true-p my-edit-rectangle-buffer)
+                                     my-edit-rectangle-buffer
+                                   (generate-new-buffer " *edit rectangle*"))))
+      (switch-to-buffer edit-rectangle-buffer)
+      (insert-rectangle content)
+      (my-edit-rectangle-mode) ;; mode change kills local variables.
+      (set-syntax-table source-syntax)
+      (setq fill-column width)
+      (buffer-enable-undo)
+      ;; Store the rectangle details in a buffer-local structure.
+      (setq-local my-edit-rectangle-data
+                  (list start end width height source-buffer
+                        coords-point coords-mark))
+      (setq-local my-edit-rectangle-buffer edit-rectangle-buffer)
+      (message (substitute-command-keys
+                "Editing rectangle. Type \\[my-edit-rectangle-submit] \
+to confirm the changes, or \\[kill-buffer] RET to cancel.")))))
+
+(add-hook 'after-change-functions 'my-edit-rectangle--after-change nil :local)
+
+;; What the heck was this intended to be for?
+;; Comments below say:
+;; - remove hook, maybe.
+;; - delete buffer, maybe.
+(defun my-edit-rectangle--after-change (beginning end old-len)
+  " DO THINGS ...
+
+This function is called via `after-change-functions'.
+
+BEGINNING and END are the start and end of the changed text. OLD-LEN is the
+pre-change length. (For an insertion, the pre-change length is zero; for a
+deletion, that length is the number of chars deleted, and the post-change
+beginning and end are at the same place.)"
+
+  ;; remove hook, maybe.
+  ;; delete buffer, maybe.
+  )
+
 
 (defun my-edit-rectangle-submit ()
   "Confirm changes to the rectangle, writing them back to the original buffer."
@@ -45,12 +76,14 @@ the changes, or \\[kill-buffer] RET to cancel."))))
       my-edit-rectangle-data
     (let ((edit-rectangle-buffer (current-buffer)))
       ;; Account for possible changes in the dimensions of the
-      ;; edit-buffer's contents by explicitly using the original
-      ;; rectangle's height and width to establish the replacement
-      ;; rectangle.
+      ;; *edit rectangle* buffer's contents by explicitly using the
+      ;; original rectangle's height and width to establish the
+      ;; replacement rectangle.
       (goto-char (point-min))
       (let ((remaining (forward-line (1- height))))
-        (insert-char ?\n (if (looking-back "^") remaining (1+ remaining))))
+        (insert-char ?\n (if (looking-back "^" (point))
+                             remaining
+                           (1+ remaining))))
       (move-to-column width t)
       ;; Replace the original rectangle with the edited version.
       (let ((content (extract-rectangle (point-min) (point))))

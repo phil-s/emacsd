@@ -2,6 +2,39 @@
 ;;
 ;; Copyright (C) 2015, 2016 Free Software Foundation, Inc.
 
+
+;; TODO:
+;; Deal with compressed files somehow.  Long lines in *.el.gz is
+;; not the same thing as long lines in the decompressed version :/
+;; Actually, this is usually fine.  What happened on that occasion?!
+
+
+;; TODO:
+;; Add framework for setting and restoring variables.
+;; (e.g. line-move-visual, buffer-read-only, bidi-display-reordering,
+;; major-mode(?))
+;;
+;; It is very cumbersome to have to write functions to set and revert
+;; these via `so-long-hook' and `so-long-revert-hook' and to remember
+;; the values in `so-long-change-major-mode'.
+;;
+;; It would be nicer if users could simply list the variables they
+;; want to be cached/overridden/reverted.  Would need to define
+;; (customize) pairs of (cons 'VARNAME 'VALUE) for the value which
+;; so-long should set.  Then we can *automatically* `so-long-remember'
+;; those variables, and restore the remembered values during the
+;; revert hook.  Would perhaps need to specify whether to use a
+;; buffer-local value in cases when the variable is not automatically
+;; buffer-local?  Or do we just use `setq-local' as standard?  We
+;; should `kill-local-variable' in cases when the var was not
+;; previously buffer-local.  We can establish that via the
+;; `buffer-local-variables' function.
+;;
+;; (Still, using hook functions is less work for me...)
+
+
+
+
 ;; Author: Phil Sainty <psainty@orcon.net.nz>
 ;; Maintainer: Phil Sainty <psainty@orcon.net.nz>
 ;; URL: https://savannah.nongnu.org/projects/so-long
@@ -67,7 +100,7 @@
 ;; symbol to the `so-long-minor-modes' list.  Several modes are targeted by
 ;; default, and it is a good idea to customize this variable to add any
 ;; additional buffer-local minor modes that you use which you know to have
-;; performance implications. For example:
+;; performance implications.  For example:
 ;;
 ;; (when (require 'so-long nil :noerror)
 ;;   (mapc (apply-partially 'add-to-list 'so-long-minor-modes)
@@ -88,8 +121,6 @@
 
 ;; Hooks
 ;; -----
-;; Two custom hooks are available for custom behaviours.
-;;
 ;; `so-long-mode-hook' is the standard major mode hook, which runs between
 ;; `change-major-mode-after-body-hook' and `after-change-major-mode-hook'.
 ;;
@@ -97,6 +128,10 @@
 ;; globalized minor modes have acted (because we call `add-hook' with the
 ;; APPEND argument, and globalized modes do not).  This hook runs immediately
 ;; after `so-long-minor-modes' has been processed.
+;;
+;; Lastly, if the `so-long-revert' command is used to restore the original
+;; major mode then, once that has happened, `so-long-revert-hook' is run.
+;; This could be used to undo the effects of the previous hooks.
 
 ;; Implementation notes
 ;; --------------------
@@ -182,20 +217,48 @@ See also `so-long-mode-hook'."
   :type '(repeat symbol) ;; not function, as may be unknown => mismatch.
   :group 'so-long)
 
-(defcustom so-long-hook '(so-long-make-buffer-read-only) ;; n.b. do this last.
+(defcustom so-long-hook
+  '(so-long-disable-bidi-display-reordering
+    so-long-enable-line-move-visual
+    so-long-make-buffer-read-only) ;; n.b. do this last.
   "List of functions to call after `so-long-mode'.
 
 This hook runs during `after-change-major-mode-hook', and after any globalized
 minor modes have acted.
 
 See also `so-long-mode-hook' and `so-long-minor-modes'."
-  :type '(repeat function)
+  :type 'hook
   :group 'so-long)
 
-(defcustom so-long-revert-hook '(so-long-revert-buffer-read-only)
+;; 'Frequent values' are listed in the customize UI in the reverse
+;; order to which they were defined, and we want the read-only item to
+;; be shown last by default (to visually tie in with the fact that we
+;; need it to happen last in the hook).
+(custom-add-frequent-value ;; n.b. define this one first.
+ 'so-long-hook 'so-long-make-buffer-read-only)
+
+(custom-add-frequent-value
+ 'so-long-hook 'so-long-enable-line-move-visual)
+
+(custom-add-frequent-value
+ 'so-long-hook 'so-long-disable-bidi-display-reordering)
+
+(defcustom so-long-revert-hook
+  '(so-long-revert-buffer-read-only ;; n.b. do this first
+    so-long-revert-line-move-visual
+    so-long-revert-bidi-display-reordering)
   "List of functions to call after `so-long-mode-revert'."
-  :type '(repeat function)
+  :type 'hook
   :group 'so-long)
+
+(custom-add-frequent-value
+ 'so-long-revert-hook 'so-long-revert-bidi-display-reordering)
+
+(custom-add-frequent-value
+ 'so-long-revert-hook 'so-long-revert-line-move-visual)
+
+(custom-add-frequent-value ;; n.b. define this one last.
+ 'so-long-revert-hook 'so-long-revert-buffer-read-only)
 
 (defvar so-long-mode-enabled t
   "Set to nil to prevent `so-long-mode' from being triggered.")
@@ -217,7 +280,7 @@ See also `so-long-remember' and `so-long-original'.")
   "Return the current value for KEY in `so-long-original-values'.
 
 If you need to differentiate between a stored value of nil and no stored value
-at all, make EXISTS non-nil. This then returns the result of `assq' directly:
+at all, make EXISTS non-nil.  This then returns the result of `assq' directly:
 nil if no value was set, and a cons cell otherwise."
   (if exists
       (assq key so-long-original-values)
@@ -228,8 +291,6 @@ nil if no value was set, and a cons cell otherwise."
   (push (cons variable (symbol-value variable))
         so-long-original-values))
 
-(add-hook 'change-major-mode-hook 'so-long-change-major-mode)
-
 (defun so-long-change-major-mode ()
   "Ensures that `so-long-mode' knows the original `major-mode'
 even when invoked interactively.
@@ -237,6 +298,8 @@ even when invoked interactively.
 Called by default during `change-major-mode-hook'."
   (unless (eq major-mode 'so-long-mode)
     (so-long-remember 'major-mode)
+    (so-long-remember 'bidi-display-reordering)
+    (so-long-remember 'line-move-visual)
     (so-long-remember 'buffer-read-only)))
 
 ;; When the line's long
@@ -264,13 +327,46 @@ Returns non-nil if any such excessive-length line is detected."
             (setq count (1+ count))))))))
 
 (defcustom so-long-mode-hook '(so-long-inhibit-global-hl-line-mode)
+;(defcustom so-long-mode-hook nil
   ;; This user option must be defined prior to `so-long-mode' to
   ;; prevent `define-derived-mode' setting its value to nil; however
   ;; the mode definition will clobber our docstring, so we will set
   ;; that after the mode has been defined.
   ""
-  :type '(repeat function)
+  :type 'hook
   :group 'so-long)
+
+(custom-add-frequent-value
+ 'so-long-mode-hook 'so-long-inhibit-global-hl-line-mode)
+
+;; (add-hook 'so-long-mode-hook 'so-long-inhibit-global-hl-line-mode)
+
+;; (put 'so-long-mode-hook 'standard-value
+;;      '((quote (so-long-inhibit-global-hl-line-mode))))
+
+
+;; load library first and then load custom.el loses the library's
+;; default settings IFF the user had customised the variable, but
+;; we can still see what the default value would have been (which
+;; is what we want, I think).
+
+;; load custom.el first and the library second, and we end up adding
+;; the defaults to the customized value, which isn't what the user
+;; wanted to happen.  They would need to use `remove-hook' in an
+;; additional `eval-after-load' or similar, which means they can't
+;; just use the customize interface.
+
+;; however, we can perhaps detect if `custom-set-variables' has
+;; been used to set a value?? Yes!:
+;;
+;; (if (get 'so-long-mode-hook 'saved-value)
+;;     (value-was-customized)
+;;   (value-was-not-customized))
+;;
+;; However... maybe the customizable value should be separate from the
+;; hook variable?  Something like `so-long-mode-hook-selections' which
+;; is then added to the (now-only-defvar'd) hook variable at runtime?
+
 
 (define-derived-mode so-long-mode nil "So long"
   "This mode is used if line lengths exceed `so-long-threshold'.
@@ -280,18 +376,18 @@ and may consequently cause unacceptable performance issues.
 
 This is commonly on account of 'minified' code (i.e. code has been compacted
 into the smallest file size possible, which often entails removing newlines
-should they not be strictly necessary). These kinds of files are typically
+should they not be strictly necessary).  These kinds of files are typically
 not intended to be edited, so not providing the usual editing mode in these
 cases will rarely be an issue.
 
-When such files are detected, we invoke this mode. This happens after
+When such files are detected, we invoke this mode.  This happens after
 `set-auto-mode' has set the major mode, should the selected major mode be
 a member (or derivative of a member) of `so-long-target-modes'.
 
 After changing modes, any active minor modes listed in `so-long-minor-modes'
 are disabled for the current buffer, and finally `so-long-hook' is run.
 These two steps occur as part of `after-change-major-mode-hook', so that
-modes controlled by globalized minor modes are also visible.
+modes controlled by globalized minor modes can also be disabled.
 
 Some globalized minor modes may be inhibited by acting in `so-long-mode-hook'.
 
@@ -306,7 +402,7 @@ type \\[so-long-mode-revert], or else re-invoke it manually."
   (add-hook 'after-change-major-mode-hook
             'so-long-after-change-major-mode :append :local)
   ;; Inform the user about our major mode hijacking.
-  (message "Changed to %s (from %s) on account of line length. %s to revert."
+  (message "Changed to %s (from %s) on account of line length.  %s to revert."
            major-mode
            (or (so-long-original 'major-mode) "<unknown>")
            (substitute-command-keys "\\[so-long-mode-revert]")))
@@ -366,6 +462,38 @@ Called by default in `so-long-revert-hook'."
   (let ((readonly (so-long-original 'buffer-read-only :exists)))
     (when readonly
       (setq buffer-read-only (cdr readonly)))))
+
+(defun so-long-enable-line-move-visual ()
+  "Enable `line-move-visual' for the buffer.
+
+Called by default via `so-long-hook'.
+
+This makes it less likely that the user will move point to the
+end of a very long line, which in turn avoids the potential
+slow-downs inherent in having the end of such a line visible."
+  (setq-local line-move-visual t))
+
+(defun so-long-revert-line-move-visual ()
+  "Restore `line-move-visual' to its original value.
+
+Called by default in `so-long-revert-hook'."
+  (let ((cached (so-long-original 'line-move-visual :exists)))
+    (when cached
+      (setq-local line-move-visual (cdr cached)))))
+
+(defun so-long-disable-bidi-display-reordering ()
+  "Disable `bidi-display-reordering' for the buffer.
+
+Called by default via `so-long-hook'."
+  (setq bidi-display-reordering nil))
+
+(defun so-long-revert-bidi-display-reordering ()
+  "Restore `bidi-display-reordering' to its original value.
+
+Called by default in `so-long-revert-hook'."
+  (let ((cached (so-long-original 'bidi-display-reordering :exists)))
+    (when cached
+      (setq bidi-display-reordering (cdr cached)))))
 
 (defun so-long-inhibit-global-hl-line-mode ()
   "Prevent `global-hl-line-mode' from activating.
@@ -439,7 +567,7 @@ This advice acts after any initial MODE-ONLY call to `hack-local-variables',
 and ensures that we do not change to `so-long-mode' in that scenario.
 
 File-local header comments are currently an exception (see the commentary
-for details). The file-local mode will ultimately still be used, however
+for details).  The file-local mode will ultimately still be used, however
 `so-long-mode' still runs first, thus displaying a misleading message.
 This issue will eventually be resolved in Emacs."
   (when (ad-get-arg 0) ; MODE-ONLY argument to `hack-local-variables'
@@ -475,6 +603,7 @@ again if `so-long-mode-revert' is called, however.)"
 (defun so-long-enable ()
   "Enable the so-long library's functionality."
   (interactive)
+  (add-hook 'change-major-mode-hook 'so-long-change-major-mode)
   (ad-enable-advice 'hack-local-variables 'after 'so-long--file-local-mode)
   (ad-enable-advice 'set-auto-mode 'around 'so-long--set-auto-mode)
   (ad-activate 'hack-local-variables)
@@ -484,6 +613,7 @@ again if `so-long-mode-revert' is called, however.)"
 (defun so-long-disable ()
   "Disable the so-long library's functionality."
   (interactive)
+  (remove-hook 'change-major-mode-hook 'so-long-change-major-mode)
   (ad-disable-advice 'hack-local-variables 'after 'so-long--file-local-mode)
   (ad-disable-advice 'set-auto-mode 'around 'so-long--set-auto-mode)
   (ad-activate 'hack-local-variables)

@@ -1,0 +1,56 @@
+C-c C-c on the following line to define the `my-example-with' macro:
+#+CALL: setup() :results silent
+
+C-c C-c on any of the emacs-lisp SRC blocks to evaluate the code and
+update its associated RESULTS block.
+
+#+BEGIN_SRC emacs-lisp
+  (my-example-with ((tab-width 4))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize "\t" 'display '(space :relative-width 2))))
+#+END_SRC
+
+#+RESULTS:
+:     	8
+
+#+BEGIN_SRC emacs-lisp
+  (my-example-with ((tab-width 16))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize " " 'display '(space :relative-width 2)))
+    (insert (propertize "\t" 'display '(space :relative-width 2))))
+#+END_SRC
+
+#+RESULTS:
+:     	16
+
+
+#+NAME: setup
+#+BEGIN_SRC emacs-lisp :results silent
+  (defmacro my-example-with (letforms &rest body)
+    (declare (indent defun))
+    `(with-temp-buffer
+       (let ((indent-tabs-mode t))
+         (let ,letforms
+           ,@body
+           (concat (buffer-string)
+                   (number-to-string (current-column)))))))
+#+END_SRC
+
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# indent-tabs-mode: t
+# tab-width: 8
+# eval: (whitespace-mode 1)
+# End:
+
+
+# eval: (whitespace-mode 1)
+
+# tab-stop-list: (8 16 24 32 40 48 56 64 72 80)
+# eval: (ruler-mode 1)
+# ruler-mode-show-tab-stops: t

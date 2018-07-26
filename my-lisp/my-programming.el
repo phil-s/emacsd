@@ -156,60 +156,8 @@
               'face 'font-lock-variable-name-face))
 (setq eldoc-argument-case 'frob-eldoc-argument-list)
 
-(define-minor-mode my-contextual-help-mode
-  "Show help for the elisp symbol at point in the current *Help* buffer.
-
-Advises `eldoc-print-current-symbol-info'."
-  :lighter " C-h"
-  :global t
-  (require 'help-mode) ;; for `help-xref-interned'
-  (when (eq this-command 'my-contextual-help-mode)
-    (message "Contextual help is %s" (if my-contextual-help-mode "on" "off")))
-  (and my-contextual-help-mode
-       (eldoc-mode 1)
-       (if (fboundp 'eldoc-current-symbol)
-           (eldoc-current-symbol)
-         (elisp--current-symbol))
-       (my-contextual-help :force)))
-
-(defadvice eldoc-print-current-symbol-info (before my-contextual-help activate)
-  "Triggers contextual elisp *Help*. Enabled by `my-contextual-help-mode'."
-  (and my-contextual-help-mode
-       (derived-mode-p 'emacs-lisp-mode)
-       (my-contextual-help)))
-
-(defvar-local my-contextual-help-last-symbol nil
-  ;; Using a buffer-local variable for this means that we can't
-  ;; trigger changes to the help buffer simply by switching windows,
-  ;; which seems generally preferable to the alternative.
-  "The last symbol processed by `my-contextual-help' in this buffer.")
-
-(defun my-contextual-help (&optional force)
-  "Describe function, variable, or face at point, if *Help* buffer is visible."
-  (let ((help-visible-p (get-buffer-window (help-buffer))))
-    (when (or help-visible-p force)
-      (let ((sym (if (fboundp 'eldoc-current-symbol)
-                     (eldoc-current-symbol)
-                   (elisp--current-symbol))))
-        ;; We ignore keyword symbols, as their help is redundant.
-        ;; If something else changes the help buffer contents, ensure we
-        ;; don't immediately revert back to the current symbol's help.
-        (and (not (keywordp sym))
-             (or (not (eq sym my-contextual-help-last-symbol))
-                 (and force (not help-visible-p)))
-             (setq my-contextual-help-last-symbol sym)
-             sym
-             (save-selected-window
-               (help-xref-interned sym)))))))
-
-(defun my-contextual-help-toggle ()
-  "Intelligently enable or disable `my-contextual-help-mode'."
-  (interactive)
-  (if (get-buffer-window (help-buffer))
-      (my-contextual-help-mode 'toggle)
-    (my-contextual-help-mode 1)))
-
-(my-contextual-help-mode 1)
+;; (when (require 'autodoc nil :noerror)
+;;   (autodoc-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compilation

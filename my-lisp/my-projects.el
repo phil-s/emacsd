@@ -38,11 +38,13 @@
                        (bug-reference-url-format . "http://debbugs.gnu.org/%s")
                        (mode . bug-reference)))
    (diff-mode . ((mode . whitespace)))
-   (emacs-lisp-mode . ((indent-tabs-mode . nil)))))
+   (emacs-lisp-mode . ((indent-tabs-mode . nil)))
+   (".git" . ((nil . ((buffer-read-only . nil)))))))
 
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/share/emacs" 'emacs)
+(dir-locals-set-directory-class "~/emacs" 'emacs)
 (dir-locals-set-directory-class "~/emacs/trunk/git-repository" 'emacs)
 (when (file-directory-p "~/emacs")
   (mapc (lambda (dir) ; Apply to every ~/emacs/XX.X/emacs-XX.X directory
@@ -85,7 +87,8 @@
                           (drupal-mode)
                           (hack-local-variables))) ;; Oooh.
                 (flymake-phpcs-standard . "Drupal")
-                (c-basic-offset . 2)))
+                (c-basic-offset . 2)
+                (psysh-buffer-name . "*Drush-PHP*")))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
    (js-mode . ((js-indent-level . 2)))
@@ -137,6 +140,7 @@
   (let ((ido-mode t))
     ad-do-it))
 (ad-activate 'ffip-completing-read)
+;; (ad-remove-advice 'ffip-completing-read 'around 'my-ido-ffip-completing-read)
 
 (eval-when-compile
   (declare-function ffip-project-root "find-file-in-project"))

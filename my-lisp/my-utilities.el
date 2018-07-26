@@ -9,10 +9,10 @@
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
-  (declare-function browse-url-encode-url "browse-url")
-  (declare-function browse-url-interactive-arg "browse-url")
-  (declare-function browse-url-maybe-new-window "browse-url")
-  (declare-function browse-url-process-environment "browse-url")
+  ;; (declare-function browse-url-encode-url "browse-url")
+  ;; (declare-function browse-url-interactive-arg "browse-url")
+  ;; (declare-function browse-url-maybe-new-window "browse-url")
+  ;; (declare-function browse-url-process-environment "browse-url")
   (declare-function dired-add-file "dired-aux")
   (declare-function dired-create-directory "dired-aux")
   (declare-function dired-current-directory "dired")
@@ -127,7 +127,7 @@ using the specified hippie-expand function."
 
 
 ;; @see https://gist.github.com/1415844
-(require 'cl)
+(eval-when-compile (require 'cl))
 (defun my-rotate-left (l) (append (cdr l) (list (car l))))
 (defun my-rotate-windows ()
   (let ((start-positions (my-rotate-left (mapcar 'window-start (window-list))))
@@ -1020,6 +1020,7 @@ point. This function returns a list (string) for use in `interactive'."
 (defcustom my-www-search-url
   "http://google.com/search?num=100&q=%s"
   "URL for WWW search, with %s placeholder for search string"
+  :type 'string
   :group 'www)
 
 (defalias 'my-render-url 'my-eww)
@@ -1062,6 +1063,9 @@ If non-nil, then open the URL in a new tab rather than a new window if
   :type 'boolean
   :group 'browse-url)
 
+;; `browse-url-maybe-new-window' is a macro.
+(eval-when-compile (require 'browse-url))
+
 (defun browse-url-palemoon (url &optional new-window)
   "Ask the Palemoon WWW browser to load URL.
 Defaults to the URL around or before point.  Passes the strings
@@ -1103,6 +1107,42 @@ instead of `browse-url-new-window-flag'."
   (let* ((switches (split-string-and-unquote args))
          (name (concat "ssh " args))
          (termbuf (apply 'make-term name "ssh" nil switches)))
+    (set-buffer termbuf)
+    (term-mode)
+    (term-char-mode)
+    (switch-to-buffer termbuf)))
+
+
+(defun my-term (command &optional name)
+  "Runs COMMAND in a `term' buffer."
+  (interactive
+   (let ((shell (or explicit-shell-file-name
+                    (getenv "ESHELL")
+                    (getenv "SHELL")
+                    "/bin/sh"))
+         suggestion
+         name)
+     (if (tramp-tramp-file-p default-directory)
+         (let ((tstruct (tramp-dissect-file-name default-directory)))
+           (when (string= (tramp-file-name-method tstruct) "ssh")
+             (setq suggestion
+                   (apply #'format "ssh -t %s@%s -p %s cd %s; exec %s"
+                          (mapcar #'shell-quote-argument
+                                  (list (tramp-file-name-user tstruct)
+                                        (tramp-file-name-host tstruct)
+                                        (number-to-string
+                                         (tramp-file-name-port tstruct))
+                                        (tramp-file-name-localname tstruct)
+                                        shell))))
+             (setq name (concat "ansi-term: " default-directory))))
+       (setq suggestion shell
+             name "ansi-term"))
+     (list (read-from-minibuffer "Run program: " suggestion)
+           name)))
+  (let* ((name (or name command))
+         (switches (split-string-and-unquote command))
+         (command (pop switches))
+         (termbuf (apply 'make-term name command nil switches)))
     (set-buffer termbuf)
     (term-mode)
     (term-char-mode)
@@ -1187,9 +1227,9 @@ With C-u prefix arg, always creates a new buffer."
 
 (defun my-drush-console (single-window-layout)
   (interactive "P")
-  (require 'drush-php)
+  (require 'psysh-drush-php)
   (unless (get-buffer-process (get-buffer "*Drush-PHP*"))
-    (call-interactively 'run-drush-php))
+    (call-interactively 'run-psysh-drush-php))
   (pop-to-buffer "*Drush-PHP*" '((display-buffer-reuse-window
                                   display-buffer-same-window)
                                  . ((reusable-frames . visible))))

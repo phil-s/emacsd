@@ -1,4 +1,53 @@
+;; * Added new command `magit-branch-or-checkout' as a potential
+;;   substitute for `magit-checkout'.  Setup instructions can be found in
+;;   the manual.  #3104
+
+;; * Added new command `magit-blame-reverse'.  See the updated manual
+;;   for information on how to best use this and other blaming commands.
+;;   #3055
+
+;; * Added new command `magit-dired-log' intended to be bound in
+;;   `dired-mode-map'.  #3011
+
+;; * The documentation regarding completion, confirmation, the selection,
+;;   and the hunk-internal region was significantly extended.  It might
+;;   be worth reading that.
+
+;; * Added new option `magit-dwim-selection', which allows configuring
+;;   commands that would otherwise ask the user to select among possible
+;;   candidates to use the default instead, with or without confirmation.
+;;   #3232
+
+;; * The popup `magit-notes-popup' now shows the values of the relevant
+;;   variables and allows changing them.  #2857
+;;
+;; * The command `magit-show-commit' now also shows notes specified using
+;;   `notes.displayRef', not just those specified using `core.notesRef'.
+;;   #2857
+;;
+;; How can I add a note to a stash?
+;;
+;; * When a stash has a note attached to it, then show it in the
+;;   `magit-stash-mode' buffer.  aff2fba8f
+
+;; * Added argument `--subject-prefix' to the patch popup.  24ce90832
+
+;; * Added new option `magit-refs-filter-alist', which allows omitting
+;;   some references from being displayed in `magit-refs-mode' buffers.
+
+
 ;;;; * Bug reports:
+
+
+;; Suggest submitting `my-shell-command-to-dired'.
+
+
+;; Enhance directory-files:
+;; (directory-files DIRECTORY &optional FULL MATCH NOSORT)
+;; If MATCH is non-nil, mention only file names that match the regexp MATCH.
+;; If MATCH is a function, mention only files for which that function
+;; returns non-nil, when passed the absolute file name as an argument.
+
 
 ;; Suggest the addition of loop-collect:
 ;; https://www.reddit.com/r/emacs/comments/6ndc80/list_comprehensions_in_elisp/dk9n6ka/
@@ -16,6 +65,18 @@
 ;;               for b being the buffers
 ;;               if (buffer-file-name b))
 
+
+;; In `define-minor-mode', store any ":variable" value for the mode as
+;; a symbol property so that `define-globalized-minor-mode' can access
+;; it and utilise it.  e.g. The following fails at present, because
+;; the ":variable buffer-read-only" value in the buffer-local minor
+;; mode definition for `read-only-mode' conflicts with the (when ,mode
+;; ...)  and (if ,mode ...) conditionals generated for the global mode:
+;;
+;; (define-globalized-minor-mode global-read-only-mode read-only-mode
+;;  (lambda () (when buffer-file-name (read-only-mode 1))))
+
+
 ;; Emacs mode docstrings should indicate local/global/globalized-ness
 ;; The manual should also describe the differences.
 ;; Adapt my SO/ES answers on the subject.
@@ -24,9 +85,12 @@
 ;; http://emacs.stackexchange.com/a/24785
 ;; http://emacs.stackexchange.com/a/22511
 
+
 ;; dired '% R' binding doesn't allow \,(...) interactive replacements.
 
+
 ;;; http://stackoverflow.com/questions/2592095/how-do-i-create-an-empty-file-in-emacs/18885461#18885461
+
 
 ;; + Add new variable `standard-error' with value 'external-debugging-output
 ;; Re: bug#17390: 24.4.50; Doc bug: Batch Mode
@@ -39,6 +103,7 @@
 ;; + s/standard error/standard output/
 ;; + Add new variable `standard-error' with value 'external-debugging-output
 ;; + Update documentation to indicate the new `standard-error' facility.
+
 
 ;; Should there be any difference between `set-variable' and
 ;; `customize-set-value' ?! Could one become an alias for the other?
@@ -54,6 +119,7 @@
 ;; should be calling it non-interactively, and for interactive calls you
 ;; would invariably(?!) want the `customize-set-value' behaviour?
 
+
 ;; my-rectangles.el
 ;; rectangle editing
 ;; http://stackoverflow.com/a/11130708
@@ -62,14 +128,6 @@
 ;; in order to get line-wrapping behaviours?
 ;; (i.e. via replace-regexp-lax-whitespace. but maybe that's daft.)
 ;; etc...
-
-;; Indirect clone enhancements:
-;; Provide some way to establish the parent buffer from
-;; the indirect buffer.
-;; Use-case: Allow diff-buffer-with-file to work from an
-;; indirect buffer, by actually running the diff for the
-;; parent buffer.
-;; (Or more generically? Not sure if that's feasible!)
 
 
 ;; Absolutely crazy that "Only useful in lexical-binding mode" is
@@ -151,7 +209,7 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev make ncurses-term ttf-ancient-fonts
+;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev make ncurses-term texinfo ttf-ancient-fonts
 
 ;; # PDF-tools packages: libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
 

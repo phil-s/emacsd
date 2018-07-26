@@ -6,6 +6,9 @@
   (declare-function sudo-quoting "sudo")
   (declare-function sudo-kill-password-timeout "sudo")
   (declare-function xml-get-children "xml")
+  (declare-function mc/fake-cursor-at-point "multiple-cursors-core")
+  (declare-function mc/remove-fake-cursor "multiple-cursors-core")
+  (declare-function mc/create-fake-cursor-at-point "multiple-cursors-core")
   )
 
 ;; Local occur minor mode
@@ -123,6 +126,25 @@ If the region is active, evaluate the region."
        (run-hooks 'geben-after-eval-expression))
 
      ))
+
+;; multiple-cursors.el
+
+(defun mc/toggle-cursor-at-point ()
+  "Add or remove a cursor at point."
+  (interactive)
+  (if multiple-cursors-mode
+      (message "Cannot toggle cursor at point while `multiple-cursors-mode' is active.")
+    (let ((existing (mc/fake-cursor-at-point)))
+      (if existing
+          (mc/remove-fake-cursor existing)
+        (mc/create-fake-cursor-at-point)))))
+
+(eval-after-load "multiple-cursors"
+  '(progn
+     (add-to-list 'mc/cmds-to-run-once 'mc/toggle-cursor-at-point)
+     (add-to-list 'mc/cmds-to-run-once 'multiple-cursors-mode)
+     (global-set-key (kbd "C-S-SPC") 'mc/toggle-cursor-at-point)
+     (global-set-key (kbd "<C-S-return>") 'multiple-cursors-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

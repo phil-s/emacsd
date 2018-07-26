@@ -3,6 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(browse-url-browser-function (quote browse-url-palemoon))
  '(custom-safe-themes
    (quote
     ("4e89c70455cea42887121c649f53c475442b30d4607d5035ff7b7b46c66c868b" "00db6503bcfb4b91e9a5eefcc1d06b30fd30b65174ca35bd66bb35ceef26ca2a" default)))
@@ -39,12 +40,36 @@
         (mode . java-mode)
         (mode . idl-mode)
         (mode . lisp-mode)))))))
+ '(magit-branch-adjust-remote-upstream-alist (quote (("origin/master" . "/"))))
+ '(magit-branch-read-upstream-first (quote fallback))
+ '(magit-diff-expansion-threshold 5.0)
+ '(magit-diff-highlight-hunk-region-functions
+   (quote
+    (magit-diff-highlight-hunk-region-dim-outside magit-diff-highlight-hunk-region-using-face)))
+ '(magit-diff-refine-hunk t)
+ '(magit-revert-buffers (quote silent) t)
  '(package-selected-packages
    (quote
-    (minibuffer-line project-local-variables pdf-tools etags-select)))
+    (haskell-mode minibuffer-line find-file-in-project fill-column-indicator wtf project-local-variables pdf-tools etags-select debbugs adaptive-wrap)))
  '(safe-local-variable-values
    (quote
-    ((eval when
+    ((drupal-tags-autoupdate-enabled)
+     (psysh-buffer-name . "*Drush-PHP*")
+     (psysh-buffer-name "*Drush-PHP*")
+     (bug-reference-bug-regexp . "#\\(?2:[0-9]+\\)")
+     (my-sql-db-user-getter . my-drupal-db-user)
+     (my-sql-db-name-getter . my-drupal-db-name)
+     (web-mode-code-indent-offset . 2)
+     (flymake-phpcs-standard . "Drupal")
+     (eval when buffer-file-name
+           (setq-local view-no-disable-on-exit t)
+           (view-mode-enter))
+     (view-mode . 1)
+     (eval grep-apply-setting
+           (quote grep-command)
+           "git --no-pager grep -H -n --no-color -I -e ")
+     (my-inhibit-whitespace-mode . t)
+     (eval when
            (fboundp
             (quote rainbow-mode))
            (rainbow-mode 1))
@@ -113,7 +138,7 @@
         (conf-mode))))))
  '(tramp-remote-path
    (quote
-    (tramp-default-remote-path "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin" "/usr/bin"))))
+    (tramp-default-remote-path "/usr/sbin" "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin" "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin" "/usr/bin")) nil (tramp)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -121,6 +146,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:slant normal :weight normal :height 122 :width normal :foundry "unknown" :family "Droid Sans Mono Dotted"))))
+ '(Info-quoted ((t (:foreground "lightblue1" :family "monospace"))))
  '(diff-hl-change ((t (:background "#4f4f7f" :foreground "#5f5fff"))))
  '(diff-hl-delete ((t (:background "#7f4f4f" :foreground "#964f6f"))))
  '(diff-hl-insert ((t (:background "#4f664f" :foreground "#4f7f4f"))))

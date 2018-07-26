@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads nil "ace-jump-mode/ace-jump-mode" "ace-jump-mode/ace-jump-mode.el"
-;;;;;;  (21349 56931 539320 380000))
+;;;;;;  (21910 33729 668993 333000))
 ;;; Generated autoloads from ace-jump-mode/ace-jump-mode.el
 
 (autoload 'ace-jump-mode-pop-mark "ace-jump-mode/ace-jump-mode" "\
@@ -56,7 +56,7 @@ You can constrol whether use the case sensitive via
 ;;;***
 
 ;;;### (autoloads nil "ace-link/ace-link" "ace-link/ace-link.el"
-;;;;;;  (21349 57592 396410 124000))
+;;;;;;  (21910 33729 668993 333000))
 ;;; Generated autoloads from ace-link/ace-link.el
 
 (autoload 'ace-link-info "ace-link/ace-link" "\
@@ -144,7 +144,7 @@ returns nil.  It can still be useful, however, as an argument to
 
 \(fn START-FUNC &optional FINISH-FUNC)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/async" '(#("async-" 0 6 (fontified t face font-lock-function-name-face)))))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "async/async" '(#("async-" 0 6 (fontified nil face font-lock-function-name-face)))))
 
 ;;;***
 
@@ -239,7 +239,7 @@ Run ‘dired-do-rename’ asynchronously.
 ;;;***
 
 ;;;### (autoloads nil "auto-compile/auto-compile" "auto-compile/auto-compile.el"
-;;;;;;  (21128 51479 921843 213000))
+;;;;;;  (21994 50055 427326 410000))
 ;;; Generated autoloads from auto-compile/auto-compile.el
 
 (autoload 'auto-compile-mode "auto-compile/auto-compile" "\
@@ -330,8 +330,8 @@ multiple files is toggled as follows:
 
 ;;;***
 
-;;;### (autoloads nil "avy/avy" "avy/avy.el" (23151 44809 247533
-;;;;;;  55000))
+;;;### (autoloads nil "avy/avy" "avy/avy.el" (23166 56511 630386
+;;;;;;  914000))
 ;;; Generated autoloads from avy/avy.el
 
 (autoload 'avy-goto-char "avy/avy" "\
@@ -614,8 +614,8 @@ to prevent the mode being treated as a minor mode.
 
 ;;;***
 
-;;;### (autoloads nil "diff-hl/diff-hl" "diff-hl/diff-hl.el" (22334
-;;;;;;  17133 710064 76000))
+;;;### (autoloads nil "diff-hl/diff-hl" "diff-hl/diff-hl.el" (22363
+;;;;;;  37200 580387 5000))
 ;;; Generated autoloads from diff-hl/diff-hl.el
 
 (autoload 'diff-hl-mode "diff-hl/diff-hl" "\
@@ -687,7 +687,7 @@ See `diff-hl-amend-mode' for more information on Diff-Hl-Amend mode.
 ;;;***
 
 ;;;### (autoloads nil "diff-hl/diff-hl-dired" "diff-hl/diff-hl-dired.el"
-;;;;;;  (22334 17133 710064 76000))
+;;;;;;  (22363 37200 580387 5000))
 ;;; Generated autoloads from diff-hl/diff-hl-dired.el
 
 (autoload 'diff-hl-dired-mode "diff-hl/diff-hl-dired" "\
@@ -703,7 +703,7 @@ Toggle VC diff highlighting on the side of a Dired window.
 ;;;***
 
 ;;;### (autoloads nil "diff-hl/diff-hl-flydiff" "diff-hl/diff-hl-flydiff.el"
-;;;;;;  (22334 17133 710064 76000))
+;;;;;;  (22363 37513 472970 170000))
 ;;; Generated autoloads from diff-hl/diff-hl-flydiff.el
 
 (defvar diff-hl-flydiff-mode nil "\
@@ -742,8 +742,8 @@ Toggle displaying `diff-hl-mode' highlights on the margin.
 
 ;;;***
 
-;;;### (autoloads (dtrt-indent-mode dtrt-indent-mode) "dtrt-indent/dtrt-indent"
-;;;;;;  "dtrt-indent/dtrt-indent.el" (20935 32282 720228 681000))
+;;;### (autoloads nil "dtrt-indent/dtrt-indent" "dtrt-indent/dtrt-indent.el"
+;;;;;;  (21910 33729 672993 239000))
 ;;; Generated autoloads from dtrt-indent/dtrt-indent.el
 
 (defvar dtrt-indent-mode nil "\
@@ -773,8 +773,8 @@ use either \\[customize] or the function `dtrt-indent-mode'.")
 
 ;;;***
 
-;;;### (autoloads (ediff-trees) "ediff-trees/ediff-trees" "ediff-trees/ediff-trees.el"
-;;;;;;  (20935 32281 984228 683000))
+;;;### (autoloads nil "ediff-trees/ediff-trees" "ediff-trees/ediff-trees.el"
+;;;;;;  (21910 33729 672993 239000))
 ;;; Generated autoloads from ediff-trees/ediff-trees.el
 
 (autoload 'ediff-trees "ediff-trees/ediff-trees" "\
@@ -823,8 +823,8 @@ Argument SYM-NAME is the thing to find.
 
 ;;;***
 
-;;;### (autoloads (fic-mode) "fic-mode/fic-mode" "fic-mode/fic-mode.el"
-;;;;;;  (21346 60917 583825 761000))
+;;;### (autoloads nil "fic-mode/fic-mode" "fic-mode/fic-mode.el"
+;;;;;;  (22068 11712 302870 623000))
 ;;; Generated autoloads from fic-mode/fic-mode.el
 
 (autoload 'fic-mode "fic-mode/fic-mode" "\
@@ -834,9 +834,8 @@ Fic mode -- minor mode for highlighting FIXME/TODO in comments
 
 ;;;***
 
-;;;### (autoloads (find-file-in-tags ffit-determine-dir-for-current-file)
-;;;;;;  "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
-;;;;;;  (20587 44126))
+;;;### (autoloads nil "find-file-in-tags/find-file-in-tags" "find-file-in-tags/find-file-in-tags.el"
+;;;;;;  (21910 33729 724992 21000))
 ;;; Generated autoloads from find-file-in-tags/find-file-in-tags.el
 
 (autoload 'ffit-determine-dir-for-current-file "find-file-in-tags/find-file-in-tags" "\
@@ -861,7 +860,7 @@ with prefix argument, all files matching what was typed will be loaded.
 ;;;***
 
 ;;;### (autoloads nil "font-lock-studio/font-lock-studio" "font-lock-studio/font-lock-studio.el"
-;;;;;;  (22016 54676 363245 330000))
+;;;;;;  (22017 17772 293350 25000))
 ;;; Generated autoloads from font-lock-studio/font-lock-studio.el
 
 (autoload 'font-lock-studio "font-lock-studio/font-lock-studio" "\
@@ -880,7 +879,8 @@ With \\[universal-argument] prefix, create a new, unique, interface buffer.
 
 ;;;***
 
-;;;### (autoloads nil "deft/deft" "deft/deft.el" (22694 39803 0 0))
+;;;### (autoloads nil "deft/deft" "deft/deft.el" (21910 33729 672993
+;;;;;;  239000))
 ;;; Generated autoloads from deft/deft.el
 
 (autoload 'deft "deft/deft" "\
@@ -891,7 +891,7 @@ Switch to *Deft* buffer and load files.
 ;;;***
 
 ;;;### (autoloads nil "ediff-binary-hexl/ediff-binary-hexl" "ediff-binary-hexl/ediff-binary-hexl.el"
-;;;;;;  (20289 32888))
+;;;;;;  (21910 33729 672993 239000))
 ;;; Generated autoloads from ediff-binary-hexl/ediff-binary-hexl.el
 
 (defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate) "\
@@ -908,29 +908,189 @@ When binary files differ, set the trigger variable." (condition-case err (progn 
 ;;;***
 
 ;;;### (autoloads nil "ffip/find-file-in-project" "ffip/find-file-in-project.el"
-;;;;;;  (22799 6188 644457 880000))
+;;;;;;  (22799 12870 899275 791000))
 ;;; Generated autoloads from ffip/find-file-in-project.el
+
+(autoload 'ffip-diff-backend-git-show-commit "ffip/find-file-in-project" "\
+
+
+\(fn)" nil nil)
+
+(autoload 'ffip-diff-backend-hg-show-commit "ffip/find-file-in-project" "\
+
+
+\(fn)" nil nil)
+
+(autoload 'ffip-copy-without-change "ffip/find-file-in-project" "\
+
+
+\(fn P)" nil nil)
+
+(autoload 'ffip-copy-reactjs-import "ffip/find-file-in-project" "\
+
+
+\(fn P)" nil nil)
+
+(autoload 'ffip-copy-org-file-link "ffip/find-file-in-project" "\
+
+
+\(fn P)" nil nil)
+
+(defvar ffip-find-relative-path-callback 'ffip-copy-without-change)
+
+(autoload 'ffip-project-root "ffip/find-file-in-project" "\
+Return the root of the project.
+
+\(fn)" nil nil)
+
+(autoload 'ffip-save-ivy-last "ffip/find-file-in-project" "\
+Save `ivy-last' into `ffip-ivy-last-saved'.  Requires `ivy-mode'.
+
+\(fn)" t nil)
+
+(autoload 'ffip-get-project-root-directory "ffip/find-file-in-project" "\
+Get the full path of project root directory.
+
+\(fn)" nil nil)
+
+(autoload 'ffip-ivy-resume "ffip/find-file-in-project" "\
+Wrapper of `ivy-resume'.  Resume the search saved at `ffip-ivy-last-saved'.
+
+\(fn)" t nil)
+
+(autoload 'ffip-filename-identity "ffip/find-file-in-project" "\
+Return identical KEYWORD.
+
+\(fn KEYWORD)" nil nil)
+
+(autoload 'ffip-filename-camelcase-to-dashes "ffip/find-file-in-project" "\
+Convert KEYWORD from camel cased to dash seperated.
+If CHECK-ONLY is true, only do the check.
+
+\(fn KEYWORD &optional CHECK-ONLY)" nil nil)
+
+(autoload 'ffip-filename-dashes-to-camelcase "ffip/find-file-in-project" "\
+Convert KEYWORD from dash seperated to camel cased.
+If CHECK-ONLY is true, only do the check.
+
+\(fn KEYWORD &optional CHECK-ONLY)" nil nil)
+
+(autoload 'ffip-completing-read "ffip/find-file-in-project" "\
+
+
+\(fn PROMPT COLLECTION ACTION)" nil nil)
+
+(autoload 'ffip-project-search "ffip/find-file-in-project" "\
+Return an alist of all filenames in the project and their path.
+
+Files with duplicate filenames are suffixed with the name of the
+directory they are found in so that they are unique.
+
+If KEYWORD is string, it's the file name or file path to find file.
+If KEYWORD is list, it's the list of file names.
+
+\(fn KEYWORD FIND-DIRECTORY)" nil nil)
+
+(autoload 'ffip-find-files "ffip/find-file-in-project" "\
+The API to find files.
+
+\(fn KEYWORD OPEN-ANOTHER-WINDOW &optional FIND-DIRECTORY FN)" nil nil)
+
+(autoload 'ffip-create-project-file "ffip/find-file-in-project" "\
+Create or Append .dir-locals.el to set up per directory.
+You can move .dir-locals.el to root directory.
+See (info \"(Emacs) Directory Variables\") for details.
+
+\(fn)" t nil)
+
+(autoload 'ffip-current-full-filename-match-pattern-p "ffip/find-file-in-project" "\
+Is current full file name (including directory) match the REGEX?
+
+\(fn REGEX)" nil nil)
 
 (autoload 'find-file-in-project "ffip/find-file-in-project" "\
 Prompt with a completing list of all files in the project to find one.
 
-The project's scope is defined as the first directory containing
-an `.emacs-project' file.  You can override this by locally
-setting the variable `ffip-project-root'.
+If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window.
 
-\(fn)" t nil)
+The project's scope is defined as the first directory containing
+a `ffip-project-file' whose value is \".git\" by default.
+
+You can override this by setting the variable `ffip-project-root'.
+
+\(fn &optional OPEN-ANOTHER-WINDOW)" t nil)
+
+(autoload 'find-file-in-current-directory "ffip/find-file-in-project" "\
+Like `find-file-in-project'.  But search only in current directory.
+
+\(fn &optional OPEN-ANOTHER-WINDOW)" t nil)
+
+(autoload 'find-file-in-project-by-selected "ffip/find-file-in-project" "\
+Similar to `find-file-in-project'.
+But use string from selected region to search files in the project.
+If no region is selected, you need provide keyword.
+
+Keyword could be ANY part of the file's full path and support wildcard.
+For example, to find /home/john/proj1/test.js, below keywords are valid:
+- test.js
+- roj1/tes
+- john*test
+
+If keyword contains line number like \"hello.txt:32\" or \"hello.txt:32:\",
+we will move to that line in opened file.
+
+If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window.
+
+\(fn &optional OPEN-ANOTHER-WINDOW)" t nil)
+
+(autoload 'find-file-in-current-directory-by-selected "ffip/find-file-in-project" "\
+Like `find-file-in-project-by-selected'.  But search only in current directory.
+
+\(fn &optional OPEN-ANOTHER-WINDOW)" t nil)
+
+(autoload 'find-relative-path "ffip/find-file-in-project" "\
+Find file/directory and copy its relative path into `kill-ring'.
+Optional prefix FIND-DIRECTORY copy the directory path; file path by default.
+
+You can set `ffip-find-relative-path-callback' to format the string before copying,
+  (setq ffip-find-relative-path-callback 'ffip-copy-reactjs-import)
+  (setq ffip-find-relative-path-callback 'ffip-copy-org-file-link)
+
+\(fn &optional FIND-DIRECTORY)" t nil)
+
+(autoload 'find-directory-in-project-by-selected "ffip/find-file-in-project" "\
+Similar to `find-file-in-project-by-selected'.
+Use string from selected region to find directory in the project.
+If no region is selected, you need provide keyword.
+
+Keyword could be directory's base-name only or parent-directoy+base-name
+For example, to find /home/john/proj1/test, below keywords are valid:
+- test
+- roj1/test
+- john*test
+
+If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window.
+
+\(fn &optional OPEN-ANOTHER-WINDOW)" t nil)
 
 (defalias 'ffip 'find-file-in-project)
 
-(put 'ffip-patterns 'safe-local-variable 'listp)
+(autoload 'ffip-diff-quit "ffip/find-file-in-project" "\
 
-(put 'ffip-find-options 'safe-local-variable 'stringp)
 
-(put 'ffip-project-file 'safe-local-variable 'stringp)
+\(fn)" t nil)
 
-(put 'ffip-project-root 'safe-local-variable 'stringp)
+(autoload 'ffip-diff-find-file "ffip/find-file-in-project" "\
+File file(s) in current hunk.
 
-(put 'ffip-project-root-function 'safe-local-variable 'functionp)
+\(fn &optional OPEN-ANOTHER-WINDOW)" t nil)
+
+(autoload 'ffip-show-diff "ffip/find-file-in-project" "\
+Show the diff output by excuting selected `ffip-diff-backends'.
+NUM is the index selected backend from `ffip-diff-backends'.
+NUM is zero based whose default value is zero.
+
+\(fn &optional NUM)" t nil)
 
 (put 'ffip-limit 'safe-local-variable 'integerp)
 
@@ -1091,7 +1251,7 @@ has to provide several values including their password.
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitattributes-mode" "git-modes/gitattributes-mode.el"
-;;;;;;  (22966 5434 663872 724000))
+;;;;;;  (22970 32184 513265 17000))
 ;;; Generated autoloads from git-modes/gitattributes-mode.el
 
 (autoload 'gitattributes-mode "git-modes/gitattributes-mode" "\
@@ -1105,7 +1265,7 @@ A major mode for editing .gitattributes files.
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitconfig-mode" "git-modes/gitconfig-mode.el"
-;;;;;;  (22966 5434 663872 724000))
+;;;;;;  (22970 32184 517265 17000))
 ;;; Generated autoloads from git-modes/gitconfig-mode.el
 
 (autoload 'gitconfig-mode "git-modes/gitconfig-mode" "\
@@ -1118,7 +1278,7 @@ A major mode for editing .gitconfig files.
 ;;;***
 
 ;;;### (autoloads nil "git-modes/gitignore-mode" "git-modes/gitignore-mode.el"
-;;;;;;  (22966 5434 663872 724000))
+;;;;;;  (22970 32184 517265 17000))
 ;;; Generated autoloads from git-modes/gitignore-mode.el
 
 (autoload 'gitignore-mode "git-modes/gitignore-mode" "\
@@ -1130,13 +1290,12 @@ A major mode for editing .gitignore files.
 
 ;;;***
 
-;;;### (autoloads (ibuffer-vc-set-filter-groups-by-vc-root ibuffer-vc-generate-filter-groups-by-vc-root)
-;;;;;;  "ibuffer-vc/ibuffer-vc" "ibuffer-vc/ibuffer-vc.el" (20919
-;;;;;;  55399 986117 205000))
+;;;### (autoloads nil "ibuffer-vc/ibuffer-vc" "ibuffer-vc/ibuffer-vc.el"
+;;;;;;  (22126 49213 625871 603000))
 ;;; Generated autoloads from ibuffer-vc/ibuffer-vc.el
 
 (autoload 'ibuffer-vc-generate-filter-groups-by-vc-root "ibuffer-vc/ibuffer-vc" "\
-Create a set of ibuffer filter groups based on the vc root dirs of buffers
+Create a set of ibuffer filter groups based on the vc root dirs of buffers.
 
 \(fn)" nil nil)
 
@@ -1151,7 +1310,7 @@ Set the current filter groups to filter by vc root dir.
 ;;;***
 
 ;;;### (autoloads nil "idle-highlight-mode/idle-highlight-mode" "idle-highlight-mode/idle-highlight-mode.el"
-;;;;;;  (22341 9026 345036 427000))
+;;;;;;  (22363 37200 580387 5000))
 ;;; Generated autoloads from idle-highlight-mode/idle-highlight-mode.el
 
 (autoload 'idle-highlight-mode "idle-highlight-mode/idle-highlight-mode" "\
@@ -1195,7 +1354,7 @@ Commands:
 
 ;;;### (autoloads nil "image-dimensions-minor-mode/image-dimensions-minor-mode"
 ;;;;;;  "image-dimensions-minor-mode/image-dimensions-minor-mode.el"
-;;;;;;  (21140 36471 866143 792000))
+;;;;;;  (21910 33729 728991 928000))
 ;;; Generated autoloads from image-dimensions-minor-mode/image-dimensions-minor-mode.el
 
 (autoload 'image-dimensions-minor-mode "image-dimensions-minor-mode/image-dimensions-minor-mode" "\
@@ -1205,8 +1364,8 @@ Displays the image dimensions in the mode line.
 
 ;;;***
 
-;;;### (autoloads (jump-char-backward jump-char-forward) "jump-char/jump-char"
-;;;;;;  "jump-char/jump-char.el" (20935 42616 504202 907000))
+;;;### (autoloads nil "jump-char/jump-char" "jump-char/jump-char.el"
+;;;;;;  (21910 33729 732991 835000))
 ;;; Generated autoloads from jump-char/jump-char.el
 
 (autoload 'jump-char-forward "jump-char/jump-char" "\
@@ -1231,9 +1390,8 @@ backward movement version of `jump-char-forward'
 
 ;;;***
 
-;;;### (autoloads (lexbind-mode lexbind-modeline-content lexbind-lexscratch
-;;;;;;  lexbind-toggle-lexical-binding) "lexbind-mode/lexbind-mode"
-;;;;;;  "lexbind-mode/lexbind-mode.el" (20935 32281 984228 683000))
+;;;### (autoloads nil "lexbind-mode/lexbind-mode" "lexbind-mode/lexbind-mode.el"
+;;;;;;  (21910 33729 732991 835000))
 ;;; Generated autoloads from lexbind-mode/lexbind-mode.el
 
 (autoload 'lexbind-toggle-lexical-binding "lexbind-mode/lexbind-mode" "\
@@ -1273,9 +1431,8 @@ that buffer.
 
 ;;;***
 
-;;;### (autoloads (key-chord-define key-chord-define-global key-chord-mode)
-;;;;;;  "key-chord/key-chord" "key-chord/key-chord.el" (20935 32281
-;;;;;;  984228 683000))
+;;;### (autoloads nil "key-chord/key-chord" "key-chord/key-chord.el"
+;;;;;;  (21910 33729 732991 835000))
 ;;; Generated autoloads from key-chord/key-chord.el
 
 (autoload 'key-chord-mode "key-chord/key-chord" "\
@@ -1312,8 +1469,8 @@ If COMMAND is nil, the key-chord is removed.
 
 ;;;***
 
-;;;### (autoloads (macrostep-expand macrostep-mode) "macrostep/macrostep"
-;;;;;;  "macrostep/macrostep.el" (21620 4491 312635 949000))
+;;;### (autoloads nil "macrostep/macrostep" "macrostep/macrostep.el"
+;;;;;;  (21994 50055 439326 120000))
 ;;; Generated autoloads from macrostep/macrostep.el
 
 (autoload 'macrostep-mode "macrostep/macrostep" "\
@@ -1341,7 +1498,7 @@ buffer and expand the next macro form found, if any.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-autorevert" "magit/lisp/magit-autorevert.el"
-;;;;;;  (23228 52899 571430 146000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-autorevert.el
 
 (defvar magit-revert-buffers t)
@@ -1368,10 +1525,862 @@ See `auto-revert-mode' for more information on Auto-Revert mode.
 
 \(fn &optional ARG)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-autorevert" '("auto-revert-buffer" "magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-bookmark" "magit/lisp/magit-bookmark.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-bookmark.el
+
+(autoload 'magit-bookmark--status-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit status BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--status-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit status bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--refs-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit refs BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--refs-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit refs bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--log-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit log BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--log-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit log bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--reflog-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit reflog BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--reflog-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit reflog bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--stashes-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit stash list BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--stashes-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit stash list bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--cherry-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit cherry BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--cherry-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit cherry bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--diff-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit diff BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--diff-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit diff bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--revision-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit revision BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--revision-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit revision bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--stash-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit stash BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--stash-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit stash bookmark.
+
+\(fn)" nil nil)
+
+(autoload 'magit-bookmark--submodules-jump "magit/lisp/magit-bookmark" "\
+Handle a Magit submodule list BOOKMARK.
+
+\(fn BOOKMARK)" nil nil)
+
+(autoload 'magit-bookmark--submodules-make-record "magit/lisp/magit-bookmark" "\
+Create a Magit submodule list bookmark.
+
+\(fn)" nil nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-bookmark" '("magit-bookmark--")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-branch" "magit/lisp/magit-branch.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-branch.el
+ (autoload 'magit-branch-popup "magit" nil t)
+
+(autoload 'magit-checkout "magit/lisp/magit-branch" "\
+Checkout REVISION, updating the index and the working tree.
+If REVISION is a local branch, then that becomes the current
+branch.  If it is something else, then `HEAD' becomes detached.
+Checkout fails if the working tree or the staging area contain
+changes.
+
+\(git checkout REVISION).
+
+\(fn REVISION)" t nil)
+
+(autoload 'magit-branch "magit/lisp/magit-branch" "\
+Create BRANCH at branch or revision START-POINT.
+
+\(git branch [ARGS] BRANCH START-POINT).
+
+\(fn BRANCH START-POINT &optional ARGS)" t nil)
+
+(autoload 'magit-branch-and-checkout "magit/lisp/magit-branch" "\
+Create and checkout BRANCH at branch or revision START-POINT.
+
+\(git checkout [ARGS] -b BRANCH START-POINT).
+
+\(fn BRANCH START-POINT &optional ARGS)" t nil)
+
+(autoload 'magit-branch-or-checkout "magit/lisp/magit-branch" "\
+Hybrid between `magit-checkout' and `magit-branch-and-checkout'.
+
+Ask the user for an existing branch or revision.  If the user
+input actually can be resolved as a branch or revision, then
+check that out, just like `magit-checkout' would.
+
+Otherwise create and checkout a new branch using the input as
+its name.  Before doing so read the starting-point for the new
+branch.  This is similar to what `magit-branch-and-checkout'
+does.
+
+\(fn ARG &optional START-POINT)" t nil)
+
+(autoload 'magit-branch-checkout "magit/lisp/magit-branch" "\
+Checkout an existing or new local branch.
+
+Read a branch name from the user offering all local branches and
+a subset of remote branches as candidates.  Omit remote branches
+for which a local branch by the same name exists from the list
+of candidates.  The user can also enter a completely new branch
+name.
+
+- If the user selects an existing local branch, then check that
+  out.
+
+- If the user selects a remote branch, then create and checkout
+  a new local branch with the same name.  Configure the selected
+  remote branch as push target.
+
+- If the user enters a new branch name, then create and check
+  that out, after also reading the starting-point from the user.
+
+In the latter two cases the upstream is also set.  Whether it is
+set to the chosen START-POINT or something else depends on the
+value of `magit-branch-adjust-remote-upstream-alist', just like
+when using `magit-branch-and-checkout'.
+
+\(fn BRANCH &optional START-POINT)" t nil)
+
+(autoload 'magit-branch-orphan "magit/lisp/magit-branch" "\
+Create and checkout an orphan BRANCH with contents from revision START-POINT.
+
+\(git checkout --orphan [ARGS] BRANCH START-POINT).
+
+\(fn BRANCH START-POINT &optional ARGS)" t nil)
+
+(autoload 'magit-branch-pull-request "magit/lisp/magit-branch" "\
+Create and configure a new branch from a pull-request.
+Please see the manual for more information.
+
+\(fn PR)" t nil)
+
+(autoload 'magit-branch-spinoff "magit/lisp/magit-branch" "\
+Create new branch from the unpushed commits.
+
+Create and checkout a new branch starting at and tracking the
+current branch.  That branch in turn is reset to the last commit
+it shares with its upstream.  If the current branch has no
+upstream or no unpushed commits, then the new branch is created
+anyway and the previously current branch is not touched.
+
+This is useful to create a feature branch after work has already
+began on the old branch (likely but not necessarily \"master\").
+
+If the current branch is a member of the value of option
+`magit-branch-prefer-remote-upstream' (which see), then the
+current branch will be used as the starting point as usual, but
+the upstream of the starting-point may be used as the upstream
+of the new branch, instead of the starting-point itself.
+
+If optional FROM is non-nil, then the source branch is reset
+to `FROM~', instead of to the last commit it shares with its
+upstream.  Interactively, FROM is only ever non-nil, if the
+region selects some commits, and among those commits, FROM is
+the commit that is the fewest commits ahead of the source
+branch.
+
+The commit at the other end of the selection actually does not
+matter, all commits between FROM and `HEAD' are moved to the new
+branch.  If FROM is not reachable from `HEAD' or is reachable
+from the source branch's upstream, then an error is raised.
+
+\(fn BRANCH &optional FROM &rest ARGS)" t nil)
+
+(autoload 'magit-branch-reset "magit/lisp/magit-branch" "\
+Reset a branch to the tip of another branch or any other commit.
+
+When the branch being reset is the current branch, then do a
+hard reset.  If there are any uncommitted changes, then the user
+has to confirm the reset because those changes would be lost.
+
+This is useful when you have started work on a feature branch but
+realize it's all crap and want to start over.
+
+When resetting to another branch and a prefix argument is used,
+then also set the target branch as the upstream of the branch
+that is being reset.
+
+\(fn BRANCH TO &optional ARGS SET-UPSTREAM)" t nil)
+
+(autoload 'magit-branch-delete "magit/lisp/magit-branch" "\
+Delete one or multiple branches.
+If the region marks multiple branches, then offer to delete
+those, otherwise prompt for a single branch to be deleted,
+defaulting to the branch at point.
+
+\(fn BRANCHES &optional FORCE)" t nil)
+
+(autoload 'magit-branch-rename "magit/lisp/magit-branch" "\
+Rename the branch named OLD to NEW.
+
+With a prefix argument FORCE, rename even if a branch named NEW
+already exists.
+
+If `branch.OLD.pushRemote' is set, then unset it.  Depending on
+the value of `magit-branch-rename-push-target' (which see) maybe
+set `branch.NEW.pushRemote' and maybe rename the push-target on
+the remote.
+
+\(fn OLD NEW &optional FORCE)" t nil)
+
+(autoload 'magit-branch-shelve "magit/lisp/magit-branch" "\
+Shelve a BRANCH.
+Rename \"refs/heads/BRANCH\" to \"refs/shelved/BRANCH\",
+and also rename the respective reflog file.
+
+\(fn BRANCH)" t nil)
+
+(autoload 'magit-branch-unshelve "magit/lisp/magit-branch" "\
+Unshelve a BRANCH
+Rename \"refs/shelved/BRANCH\" to \"refs/heads/BRANCH\",
+and also rename the respective reflog file.
+
+\(fn BRANCH)" t nil)
+
+(autoload 'magit-branch-config-popup "magit/lisp/magit-branch" "\
+Popup console for setting branch variables.
+
+\(fn BRANCH)" t nil)
+
+(autoload 'magit-edit-branch*description "magit/lisp/magit-branch" "\
+Edit the description of the current branch.
+With a prefix argument edit the description of another branch.
+
+The description for the branch named NAME is stored in the Git
+variable `branch.<name>.description'.
+
+\(fn BRANCH)" t nil)
+
+(autoload 'magit-set-branch*merge/remote "magit/lisp/magit-branch" "\
+Set or unset the upstream of the current branch.
+With a prefix argument do so for another branch.
+
+When the branch in question already has an upstream then simply
+unsets it.  Invoke this command again to set another upstream.
+
+Together the Git variables `branch.<name>.remote' and
+`branch.<name>.merge' define the upstream branch of the local
+branch named NAME.  The value of `branch.<name>.remote' is the
+name of the upstream remote.  The value of `branch.<name>.merge'
+is the full reference of the upstream branch, on the remote.
+
+Non-interactively, when UPSTREAM is non-nil, then always set it
+as the new upstream, regardless of whether another upstream was
+already set.  When nil, then always unset.
+
+\(fn BRANCH UPSTREAM)" t nil)
+
+(autoload 'magit-cycle-branch*rebase "magit/lisp/magit-branch" "\
+Cycle the value of `branch.<name>.rebase' for the current branch.
+With a prefix argument cycle the value for another branch.
+
+The Git variables `branch.<name>.rebase' controls whether pulling
+into the branch named NAME is done by rebasing that branch onto
+the fetched branch or by merging that branch.
+
+When `true' then pulling is done by rebasing.
+When `false' then pulling is done by merging.
+
+When that variable is undefined then the value of `pull.rebase'
+is used instead.  It defaults to `false'.
+
+\(fn BRANCH)" t nil)
+
+(autoload 'magit-cycle-branch*pushRemote "magit/lisp/magit-branch" "\
+Cycle the value of `branch.<name>.pushRemote' for the current branch.
+With a prefix argument cycle the value for another branch.
+
+The Git variable `branch.<name>.pushRemote' specifies the remote
+that the branch named NAME is usually pushed to.  The value has
+to be the name of an existing remote.
+
+If that variable is undefined, then the value of the Git variable
+`remote.pushDefault' is used instead, provided that it is defined,
+which by default it is not.
+
+\(fn BRANCH)" t nil)
+
+(autoload 'magit-cycle-pull\.rebase "magit/lisp/magit-branch" "\
+Cycle the repository-local value of `pull.rebase'.
+
+The Git variable `pull.rebase' specifies whether pulling is done
+by rebasing or by merging.  It can be overwritten using the Git
+variable `branch.<name>.rebase'.
+
+When `true' then pulling is done by rebasing.
+When `false' (the default) then pulling is done by merging.
+
+\(fn)" t nil)
+
+(autoload 'magit-cycle-remote\.pushDefault "magit/lisp/magit-branch" "\
+Cycle the repository-local value of `remote.pushDefault'.
+
+The Git variable `remote.pushDefault' specifies the remote that
+local branches are usually pushed to.  It can be overwritten
+using the Git variable `branch.<name>.pushRemote'.
+
+\(fn)" t nil)
+
+(autoload 'magit-cycle-branch*autoSetupMerge "magit/lisp/magit-branch" "\
+Cycle the repository-local value of `branch.autoSetupMerge'.
+
+The Git variable `branch.autoSetupMerge' under what circumstances
+creating a branch (named NAME) should result in the variables
+`branch.<name>.merge' and `branch.<name>.remote' being set
+according to the starting point used to create the branch.  If
+the starting point isn't a branch, then these variables are never
+set.
+
+When `always' then the variables are set regardless of whether
+the starting point is a local or a remote branch.
+
+When `true' (the default) then the variable are set when the
+starting point is a remote branch, but not when it is a local
+branch.
+
+When `false' then the variables are never set.
+
+\(fn)" t nil)
+
+(autoload 'magit-cycle-branch*autoSetupRebase "magit/lisp/magit-branch" "\
+Cycle the repository-local value of `branch.autoSetupRebase'.
+
+The Git variable `branch.autoSetupRebase' specifies whether
+creating a branch (named NAME) should result in the variable
+`branch.<name>.rebase' being set to `true'.
+
+When `always' then the variable is set regardless of whether the
+starting point is a local or a remote branch.
+
+When `local' then the variable are set when the starting point
+is a local branch, but not when it is a remote branch.
+
+When `remote' then the variable are set when the starting point
+is a remote branch, but not when it is a local branch.
+
+When `never' (the default) then the variable is never set.
+
+\(fn)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-branch" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-collab" "magit/lisp/magit-collab.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-collab.el
+
+(autoload 'magit-browse-pull-request "magit/lisp/magit-collab" "\
+Visit pull-request PR using `browse-url'.
+
+Currently this only supports Github, but that restriction will
+be lifted eventually to support other Git forges.
+
+\(fn PR)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-collab" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-files" "magit/lisp/magit-files.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-files.el
+
+(autoload 'magit-find-file "magit/lisp/magit-files" "\
+View FILE from REV.
+Switch to a buffer visiting blob REV:FILE,
+creating one if none already exists.
+
+\(fn REV FILE)" t nil)
+
+(autoload 'magit-find-file-other-window "magit/lisp/magit-files" "\
+View FILE from REV, in another window.
+Like `magit-find-file', but create a new window or reuse an
+existing one.
+
+\(fn REV FILE)" t nil)
+ (autoload 'magit-file-popup "magit" nil t)
+
+(defvar global-magit-file-mode t "\
+Non-nil if Global Magit-File mode is enabled.
+See the `global-magit-file-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-magit-file-mode'.")
+
+(custom-autoload 'global-magit-file-mode "magit/lisp/magit-files" nil)
+
+(autoload 'global-magit-file-mode "magit/lisp/magit-files" "\
+Toggle Magit-File mode in all buffers.
+With prefix ARG, enable Global Magit-File mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Magit-File mode is enabled in all buffers where
+`magit-file-mode-turn-on' would do it.
+See `magit-file-mode' for more information on Magit-File mode.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'magit-file-checkout "magit/lisp/magit-files" "\
+Checkout FILE from REV.
+
+\(fn REV FILE)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-files" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-git" "magit/lisp/magit-git.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-git.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-git" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-imenu" "magit/lisp/magit-imenu.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-imenu.el
+
+(autoload 'magit-imenu--log-prev-index-position-function "magit/lisp/magit-imenu" "\
+Move point to previous line in current buffer.
+This function is used as a value for
+`imenu-prev-index-position-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--log-extract-index-name-function "magit/lisp/magit-imenu" "\
+Return imenu name for line at point.
+This function is used as a value for
+`imenu-extract-index-name-function'.  Point should be at the
+beginning of the line.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--diff-prev-index-position-function "magit/lisp/magit-imenu" "\
+Move point to previous file line in current buffer.
+This function is used as a value for
+`imenu-prev-index-position-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--diff-extract-index-name-function "magit/lisp/magit-imenu" "\
+Return imenu name for line at point.
+This function is used as a value for
+`imenu-extract-index-name-function'.  Point should be at the
+beginning of the line.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--status-create-index-function "magit/lisp/magit-imenu" "\
+Return an alist of all imenu entries in current buffer.
+This function is used as a value for
+`imenu-create-index-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--refs-create-index-function "magit/lisp/magit-imenu" "\
+Return an alist of all imenu entries in current buffer.
+This function is used as a value for
+`imenu-create-index-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--cherry-create-index-function "magit/lisp/magit-imenu" "\
+Return an alist of all imenu entries in current buffer.
+This function is used as a value for
+`imenu-create-index-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--submodule-prev-index-position-function "magit/lisp/magit-imenu" "\
+Move point to previous line in magit-submodule-list buffer.
+This function is used as a value for
+`imenu-prev-index-position-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--submodule-extract-index-name-function "magit/lisp/magit-imenu" "\
+Return imenu name for line at point.
+This function is used as a value for
+`imenu-extract-index-name-function'.  Point should be at the
+beginning of the line.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--repolist-prev-index-position-function "magit/lisp/magit-imenu" "\
+Move point to previous line in magit-repolist buffer.
+This function is used as a value for
+`imenu-prev-index-position-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--repolist-extract-index-name-function "magit/lisp/magit-imenu" "\
+Return imenu name for line at point.
+This function is used as a value for
+`imenu-extract-index-name-function'.  Point should be at the
+beginning of the line.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--process-prev-index-position-function "magit/lisp/magit-imenu" "\
+Move point to previous process in magit-process buffer.
+This function is used as a value for
+`imenu-prev-index-position-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--process-extract-index-name-function "magit/lisp/magit-imenu" "\
+Return imenu name for line at point.
+This function is used as a value for
+`imenu-extract-index-name-function'.  Point should be at the
+beginning of the line.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--rebase-prev-index-position-function "magit/lisp/magit-imenu" "\
+Move point to previous commit in git-rebase buffer.
+This function is used as a value for
+`imenu-prev-index-position-function'.
+
+\(fn)" nil nil)
+
+(autoload 'magit-imenu--rebase-extract-index-name-function "magit/lisp/magit-imenu" "\
+Return imenu name for line at point.
+This function is used as a value for
+`imenu-extract-index-name-function'.  Point should be at the
+beginning of the line.
+
+\(fn)" nil nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-imenu" '("magit-imenu--index-function")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-margin" "magit/lisp/magit-margin.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-margin.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-margin" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-merge" "magit/lisp/magit-merge.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-merge.el
+ (autoload 'magit-merge-popup "magit" nil t)
+
+(autoload 'magit-merge "magit/lisp/magit-merge" "\
+Merge commit REV into the current branch; using default message.
+
+Unless there are conflicts or a prefix argument is used create a
+merge commit using a generic commit message and without letting
+the user inspect the result.  With a prefix argument pretend the
+merge failed to give the user the opportunity to inspect the
+merge.
+
+\(git merge --no-edit|--no-commit [ARGS] REV)
+
+\(fn REV &optional ARGS NOCOMMIT)" t nil)
+
+(autoload 'magit-merge-editmsg "magit/lisp/magit-merge" "\
+Merge commit REV into the current branch; and edit message.
+Perform the merge and prepare a commit message but let the user
+edit it.
+
+\(git merge --edit --no-ff [ARGS] REV)
+
+\(fn REV &optional ARGS)" t nil)
+
+(autoload 'magit-merge-nocommit "magit/lisp/magit-merge" "\
+Merge commit REV into the current branch; pretending it failed.
+Pretend the merge failed to give the user the opportunity to
+inspect the merge and change the commit message.
+
+\(git merge --no-commit --no-ff [ARGS] REV)
+
+\(fn REV &optional ARGS)" t nil)
+
+(autoload 'magit-merge-into "magit/lisp/magit-merge" "\
+Merge the current branch into BRANCH and remove the former.
+
+Before merging, force push the source branch to its push-remote,
+provided the respective remote branch already exists, ensuring
+that the respective pull-request (if any) won't get stuck on some
+obsolete version of the commits that are being merged.  Finally
+if `magit-branch-pull-request' was used to create the merged
+branch, then also remove the respective remote branch.
+
+\(fn BRANCH &optional ARGS)" t nil)
+
+(autoload 'magit-merge-absorb "magit/lisp/magit-merge" "\
+Merge BRANCH into the current branch and remove the former.
+
+Before merging, force push the source branch to its push-remote,
+provided the respective remote branch already exists, ensuring
+that the respective pull-request (if any) won't get stuck on some
+obsolete version of the commits that are being merged.  Finally
+if `magit-branch-pull-request' was used to create the merged
+branch, then also remove the respective remote branch.
+
+\(fn BRANCH &optional ARGS)" t nil)
+
+(autoload 'magit-merge-squash "magit/lisp/magit-merge" "\
+Squash commit REV into the current branch; don't create a commit.
+
+\(git merge --squash REV)
+
+\(fn REV)" t nil)
+
+(autoload 'magit-merge-preview "magit/lisp/magit-merge" "\
+Preview result of merging REV into the current branch.
+
+\(fn REV)" t nil)
+
+(autoload 'magit-merge-abort "magit/lisp/magit-merge" "\
+Abort the current merge operation.
+
+\(git merge --abort)
+
+\(fn)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-merge" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-mode" "magit/lisp/magit-mode.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-mode.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-mode" '("magit-" "disable-magit-save-buffers" "inhibit-magit-refresh")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-notes" "magit/lisp/magit-notes.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-notes.el
+ (autoload 'magit-notes-popup "magit" nil t)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-notes" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-process" "magit/lisp/magit-process.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-process.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-process" '("magit-" "tramp-sh-handle-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-refs" "magit/lisp/magit-refs.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-refs.el
+
+(autoload 'magit-show-refs-popup "magit/lisp/magit-refs" "\
+Popup console for `magit-show-refs'.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'magit-show-refs-head "magit/lisp/magit-refs" "\
+List and compare references in a dedicated buffer.
+Refs are compared with `HEAD'.
+
+\(fn &optional ARGS)" t nil)
+
+(autoload 'magit-show-refs-current "magit/lisp/magit-refs" "\
+List and compare references in a dedicated buffer.
+Refs are compared with the current branch or `HEAD' if
+it is detached.
+
+\(fn &optional ARGS)" t nil)
+
+(autoload 'magit-show-refs "magit/lisp/magit-refs" "\
+List and compare references in a dedicated buffer.
+Refs are compared with a branch read from the user.
+
+\(fn &optional REF ARGS)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-refs" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-repos" "magit/lisp/magit-repos.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-repos.el
+
+(autoload 'magit-list-repositories "magit/lisp/magit-repos" "\
+Display a list of repositories.
+
+Use the options `magit-repository-directories'
+and `magit-repository-directories-depth' to
+control which repositories are displayed.
+
+\(fn)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-repos" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-reset" "magit/lisp/magit-reset.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-reset.el
+ (autoload 'magit-reset-popup "magit" nil t)
+
+(autoload 'magit-reset-index "magit/lisp/magit-reset" "\
+Reset the index to COMMIT.
+Keep the head and working tree as-is, so if COMMIT refers to the
+head this effectively unstages all changes.
+
+\(git reset COMMIT .)
+
+\(fn COMMIT)" t nil)
+
+(autoload 'magit-reset "magit/lisp/magit-reset" "\
+Reset the head and index to COMMIT, but not the working tree.
+With a prefix argument also reset the working tree.
+
+\(git reset --mixed|--hard COMMIT)
+
+\(fn COMMIT &optional HARD)" t nil)
+
+(autoload 'magit-reset-head "magit/lisp/magit-reset" "\
+Reset the head and index to COMMIT, but not the working tree.
+
+\(git reset --mixed COMMIT)
+
+\(fn COMMIT)" t nil)
+
+(autoload 'magit-reset-soft "magit/lisp/magit-reset" "\
+Reset the head to COMMIT, but not the index and working tree.
+
+\(git reset --soft REVISION)
+
+\(fn COMMIT)" t nil)
+
+(autoload 'magit-reset-hard "magit/lisp/magit-reset" "\
+Reset the head, index, and working tree to COMMIT.
+
+\(git reset --hard REVISION)
+
+\(fn COMMIT)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-reset" '("magit-reset-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-section" "magit/lisp/magit-section.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-section.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-section" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-status" "magit/lisp/magit-status.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-status.el
+
+(autoload 'magit-init "magit/lisp/magit-status" "\
+Initialize a Git repository, then show its status.
+
+If the directory is below an existing repository, then the user
+has to confirm that a new one should be created inside.  If the
+directory is the root of the existing repository, then the user
+has to confirm that it should be reinitialized.
+
+Non-interactively DIRECTORY is (re-)initialized unconditionally.
+
+\(fn DIRECTORY)" t nil)
+
+(autoload 'magit-status "magit/lisp/magit-status" "\
+Show the status of the current Git repository in a buffer.
+With a prefix argument prompt for a repository to be shown.
+With two prefix arguments prompt for an arbitrary directory.
+If that directory isn't the root of an existing repository,
+then offer to initialize it as a new repository.
+
+\(fn &optional DIRECTORY CACHE)" t nil)
+
+(autoload 'magit-status-internal "magit/lisp/magit-status" "\
+
+
+\(fn DIRECTORY)" nil nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-status" '("magit")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-submodule" "magit/lisp/magit-submodule.el"
-;;;;;;  (23229 34413 577907 292000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-submodule.el
  (autoload 'magit-submodule-popup "magit-submodule" nil t)
 
@@ -1484,10 +2493,12 @@ Display a list of the current repository's submodules.
 
 \(fn)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-submodule" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-subtree" "magit/lisp/magit-subtree.el"
-;;;;;;  (23228 52899 579429 930000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-subtree.el
  (autoload 'magit-subtree-popup "magit-subtree" nil t)
 
@@ -1521,10 +2532,104 @@ Extract the history of the subtree PREFIX.
 
 \(fn PREFIX COMMIT ARGS)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-subtree" '("magit-")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-tag" "magit/lisp/magit-tag.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-tag.el
+ (autoload 'magit-tag-popup "magit" nil t)
+
+(autoload 'magit-tag "magit/lisp/magit-tag" "\
+Create a new tag with the given NAME at REV.
+With a prefix argument annotate the tag.
+
+\(git tag [--annotate] NAME REV)
+
+\(fn NAME REV &optional ARGS)" t nil)
+
+(autoload 'magit-tag-delete "magit/lisp/magit-tag" "\
+Delete one or more tags.
+If the region marks multiple tags (and nothing else), then offer
+to delete those, otherwise prompt for a single tag to be deleted,
+defaulting to the tag at point.
+
+\(git tag -d TAGS)
+
+\(fn TAGS)" t nil)
+
+(autoload 'magit-tag-prune "magit/lisp/magit-tag" "\
+Offer to delete tags missing locally from REMOTE, and vice versa.
+
+\(fn TAGS REMOTE-TAGS REMOTE)" t nil)
+
+(autoload 'magit-tag-release "magit/lisp/magit-tag" "\
+Create an opinionated release tag.
+
+Assume version tags that match \"\\\\`v?[0-9]\\\\(\\\\.[0-9]\\\\)*\\\\'\".
+Prompt for the name of the new tag using the highest existing tag
+as initial input and call \"git tag --annotate --sign -m MSG\" TAG,
+regardless of whether these arguments are enabled in the popup.
+Given a TAG \"v1.2.3\" and a repository \"/path/to/foo-bar\", the
+MESSAGE would be \"Foo-Bar 1.2.3\".
+
+Because it is so opinionated, this command is not available from
+the tag popup by default.
+
+\(fn TAG)" t nil)
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-utils" "magit/lisp/magit-utils.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-utils.el
+
+(autoload 'magit-emacs-Q-command "magit/lisp/magit-utils" "\
+Show a shell command that runs an uncustomized Emacs with only Magit loaded.
+See info node `(magit)Debugging Tools' for more information.
+
+\(fn)" t nil)
+
+(autoload 'Info-follow-nearest-node--magit-gitman "magit/lisp/magit-utils" "\
+
+
+\(fn FN &optional FORK)" nil nil)
+
+(advice-add 'Info-follow-nearest-node :around 'Info-follow-nearest-node--magit-gitman)
+
+(autoload 'org-man-export--magit-gitman "magit/lisp/magit-utils" "\
+
+
+\(fn FN LINK DESCRIPTION FORMAT)" nil nil)
+
+(advice-add 'org-man-export :around 'org-man-export--magit-gitman)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-utils" '("magit-" "whitespace-dont-turn-on-in-magit-mode")))
+
+;;;***
+
+;;;### (autoloads nil "magit/lisp/magit-worktree" "magit/lisp/magit-worktree.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from magit/lisp/magit-worktree.el
+ (autoload 'magit-worktree-popup "magit-worktree" nil t)
+
+(autoload 'magit-worktree-checkout "magit/lisp/magit-worktree" "\
+Checkout BRANCH in a new worktree at PATH.
+
+\(fn PATH BRANCH)" t nil)
+
+(autoload 'magit-worktree-branch "magit/lisp/magit-worktree" "\
+Create a new BRANCH and check it out in a new worktree at PATH.
+
+\(fn PATH BRANCH START-POINT &optional FORCE)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-worktree" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "multiple-cursors/mc-edit-lines" "multiple-cursors/mc-edit-lines.el"
-;;;;;;  (22168 21846 811932 629000))
+;;;;;;  (22727 57909 202748 801000))
 ;;; Generated autoloads from multiple-cursors/mc-edit-lines.el
 
 (autoload 'mc/edit-lines "multiple-cursors/mc-edit-lines" "\
@@ -1546,16 +2651,8 @@ Add one cursor to the beginning of each line in the active region.
 
 ;;;***
 
-;;;### (autoloads (mc/mark-sgml-tag-pair mc/add-cursor-on-click mc/mark-all-symbols-like-this-in-defun
-;;;;;;  mc/mark-all-words-like-this-in-defun mc/mark-all-like-this-in-defun
-;;;;;;  mc/mark-all-like-this-dwim mc/mark-more-like-this-extended
-;;;;;;  mc/mark-all-in-region mc/mark-all-symbols-like-this mc/mark-all-words-like-this
-;;;;;;  mc/mark-all-like-this mc/skip-to-previous-like-this mc/skip-to-next-like-this
-;;;;;;  mc/unmark-previous-like-this mc/unmark-next-like-this mc/mark-previous-lines
-;;;;;;  mc/mark-next-lines mc/mark-previous-symbol-like-this mc/mark-previous-word-like-this
-;;;;;;  mc/mark-previous-like-this mc/mark-next-symbol-like-this
-;;;;;;  mc/mark-next-word-like-this mc/mark-next-like-this) "multiple-cursors/mc-mark-more"
-;;;;;;  "multiple-cursors/mc-mark-more.el" (20935 34277 528223 706000))
+;;;### (autoloads nil "multiple-cursors/mc-mark-more" "multiple-cursors/mc-mark-more.el"
+;;;;;;  (22727 57910 706710 921000))
 ;;; Generated autoloads from multiple-cursors/mc-mark-more.el
 
 (autoload 'mc/mark-next-like-this "multiple-cursors/mc-mark-more" "\
@@ -1698,9 +2795,9 @@ Mark the tag we're in and its pair for renaming.
 
 ;;;***
 
-;;;### (autoloads (set-rectangular-region-anchor) "multiple-cursors/rectangular-region-mode"
-;;;;;;  "multiple-cursors/rectangular-region-mode.el" (20802 24771
-;;;;;;  412829 899000))
+;;;### (autoloads nil "multiple-cursors/rectangular-region-mode"
+;;;;;;  "multiple-cursors/rectangular-region-mode.el" (22799 12870
+;;;;;;  527284 769000))
 ;;; Generated autoloads from multiple-cursors/rectangular-region-mode.el
 
 (autoload 'set-rectangular-region-anchor "multiple-cursors/rectangular-region-mode" "\
@@ -1713,8 +2810,8 @@ an exceedingly quick way of adding multiple cursors to multiple lines.
 
 ;;;***
 
-;;;### (autoloads (php-eldoc-function) "php-eldoc/php-eldoc" "php-eldoc/php-eldoc.el"
-;;;;;;  (20935 32282 20228 681000))
+;;;### (autoloads nil "php-eldoc/php-eldoc" "php-eldoc/php-eldoc.el"
+;;;;;;  (21910 33729 740991 646000))
 ;;; Generated autoloads from php-eldoc/php-eldoc.el
 
 (autoload 'php-eldoc-function "php-eldoc/php-eldoc" "\
@@ -1728,8 +2825,8 @@ Get function arguments for PHP function at point.
 
 ;;;***
 
-;;;### (autoloads (php-extras-generate-eldoc) "php-eldoc/php-extras-gen-eldoc"
-;;;;;;  "php-eldoc/php-extras-gen-eldoc.el" (20935 32282 24228 681000))
+;;;### (autoloads nil "php-eldoc/php-extras-gen-eldoc" "php-eldoc/php-extras-gen-eldoc.el"
+;;;;;;  (21910 33729 744991 553000))
 ;;; Generated autoloads from php-eldoc/php-extras-gen-eldoc.el
 
 (autoload 'php-extras-generate-eldoc "php-eldoc/php-extras-gen-eldoc" "\
@@ -1751,7 +2848,7 @@ The query function that disable deletion of buffers we protect.
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-commit" "magit/lisp/git-commit.el"
-;;;;;;  (23229 34413 565907 585000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/git-commit.el
 
 (defvar global-git-commit-mode t "\
@@ -1775,15 +2872,22 @@ provide such a commit message.
 
 (defconst git-commit-filename-regexp "/\\(\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\\|\\(BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'")
 
+(autoload 'git-commit-setup-check-buffer "magit/lisp/git-commit" "\
+
+
+\(fn)" nil nil)
+
 (autoload 'git-commit-setup "magit/lisp/git-commit" "\
 
 
 \(fn)" nil nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/git-commit" '("git-commit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/git-rebase" "magit/lisp/git-rebase.el"
-;;;;;;  (23229 34413 569907 487000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/git-rebase.el
 
 (autoload 'git-rebase-mode "magit/lisp/git-rebase" "\
@@ -1800,10 +2904,12 @@ running 'man git-rebase' at the command line) for details.
 
 (add-to-list 'auto-mode-alist (cons git-rebase-filename-regexp 'git-rebase-mode))
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/git-rebase" '("git-rebase-")))
+
 ;;;***
 
-;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (23229
-;;;;;;  34413 577907 292000))
+;;;### (autoloads nil "magit/lisp/magit" "magit/lisp/magit.el" (0
+;;;;;;  0 0 0))
 ;;; Generated autoloads from magit/lisp/magit.el
  (autoload 'magit-dispatch-popup "magit" nil t)
  (autoload 'magit-run-popup "magit" nil t)
@@ -1856,10 +2962,12 @@ and Emacs to it.
 
 \(fn &optional PRINT-DEST)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit" '(#("magit-" 0 6 (fontified nil face font-lock-function-name-face)))))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-apply" "magit/lisp/magit-apply.el"
-;;;;;;  (23229 34413 569907 487000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-apply.el
 
 (autoload 'magit-stage-file "magit/lisp/magit-apply" "\
@@ -1892,10 +3000,12 @@ Remove all changes from the staging area.
 
 \(fn)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-apply" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-bisect" "magit/lisp/magit-bisect.el"
-;;;;;;  (23229 34413 569907 487000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-bisect.el
  (autoload 'magit-bisect-popup "magit-bisect" nil t)
 
@@ -1944,40 +3054,44 @@ bisect run'.
 
 \(fn CMDLINE &optional BAD GOOD)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-bisect" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-blame" "magit/lisp/magit-blame.el"
-;;;;;;  (23229 34374 162869 660000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-blame.el
- (autoload 'magit-blame-popup "magit-blame" nil t)
 
-(autoload 'magit-blame-reverse "magit/lisp/magit-blame" "\
-For each line show the last revision in which a line still existed.
+(autoload 'magit-blame-echo "magit/lisp/magit-blame" "\
+For each line show the revision in which it was added.
+Show the information about the chunk at point in the echo area
+when moving between chunks.  Unlike other blaming commands, do
+not turn on `read-only-mode'.
 
-\(fn REVISION FILE &optional ARGS)" t nil)
+\(fn)" t nil)
 
 (autoload 'magit-blame "magit/lisp/magit-blame" "\
-For each line show the revision that last touched it.
+For each line show the revision in which it was added.
 
-Interactively blame the file being visited in the current buffer.
-If the buffer visits a revision of that file, then blame up to
-that revision, otherwise blame the file's full history, including
-uncommitted changes.
+\(fn)" t nil)
 
-If Magit-Blame mode is already turned on then blame recursively, by
-visiting REVISION:FILE (using `magit-find-file'), where revision
-is the revision before the revision that added the lines at
-point.
+(autoload 'magit-blame-removal "magit/lisp/magit-blame" "\
+For each line show the revision in which it was removed.
 
-ARGS is a list of additional arguments to pass to `git blame';
-only arguments available from `magit-blame-popup' should be used.
+\(fn)" t nil)
 
-\(fn REVISION FILE &optional ARGS)" t nil)
+(autoload 'magit-blame-reverse "magit/lisp/magit-blame" "\
+For each line show the last revision in which it still exists.
+
+\(fn)" t nil)
+ (autoload 'magit-blame-popup "magit-blame" nil t)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-blame" '("magit-")))
 
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-commit" "magit/lisp/magit-commit.el"
-;;;;;;  (23229 34413 569907 487000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-commit.el
 
 (autoload 'magit-commit "magit/lisp/magit-commit" "\
@@ -2068,10 +3182,12 @@ history element.
 
 \(fn DATE)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-commit" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-diff" "magit/lisp/magit-diff.el"
-;;;;;;  (23229 34413 569907 487000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-diff.el
 
 (autoload 'magit-diff-popup "magit/lisp/magit-diff" "\
@@ -2158,10 +3274,12 @@ for a revision.
 
 \(fn REV &optional ARGS FILES MODULE)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-diff" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-ediff" "magit/lisp/magit-ediff.el"
-;;;;;;  (23229 34413 569907 487000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-ediff.el
  (autoload 'magit-ediff-popup "magit-ediff" nil t)
 
@@ -2247,10 +3365,12 @@ stash that were staged.
 
 \(fn STASH)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-ediff" '("magit-ediff-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-extras" "magit/lisp/magit-extras.el"
-;;;;;;  (23229 34413 573907 389000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-extras.el
 
 (autoload 'magit-run-git-gui "magit/lisp/magit-extras" "\
@@ -2297,7 +3417,7 @@ instead of every time Ido is invoked, so now you can modify it
 like pretty much every other keymap:
 
   (define-key ido-common-completion-map
-    (kbd \"C-x g\") 'ido-enter-magit-status)
+    (kbd \"C-x g\") \\='ido-enter-magit-status)
 
 \(fn)" t nil)
 
@@ -2385,6 +3505,17 @@ on a position in a file-visiting buffer.
 
 \(fn &optional WHOAMI FILE-NAME)" t nil)
 
+(autoload 'magit-edit-line-commit "magit/lisp/magit-extras" "\
+Edit the commit that added the current line.
+
+With a prefix argument edit the commit that removes the line,
+if any.  The commit is determined using `git blame' and made
+editable using `git rebase --interactive' if it is reachable
+from `HEAD', or by checking out the commit (or a branch that
+points at it) otherwise.
+
+\(fn &optional TYPE)" t nil)
+
 (autoload 'magit-reshelve-since "magit/lisp/magit-extras" "\
 Change the author and committer dates of the commits since REV.
 
@@ -2448,10 +3579,12 @@ patch application, a cherry-pick, a revert, or a bisect.
 
 \(fn)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-extras" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-log" "magit/lisp/magit-log.el"
-;;;;;;  (23229 34413 573907 389000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-log.el
 
 (autoload 'magit-log-buffer-file-popup "magit/lisp/magit-log" "\
@@ -2507,6 +3640,11 @@ active, restrict the log to the lines that the region touches.
 
 \(fn &optional FOLLOW BEG END)" t nil)
 
+(autoload 'magit-log-trace-definition "magit/lisp/magit-log" "\
+Show log for the definition at point.
+
+\(fn FILE FN REV)" t nil)
+
 (autoload 'magit-reflog-current "magit/lisp/magit-log" "\
 Display the reflog of the current branch.
 
@@ -2532,10 +3670,12 @@ Show commits in a branch that are not merged in the upstream branch.
 
 \(fn HEAD UPSTREAM)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-log" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-remote" "magit/lisp/magit-remote.el"
-;;;;;;  (23229 34413 577907 292000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-remote.el
 
 (autoload 'magit-clone "magit/lisp/magit-remote" "\
@@ -2796,10 +3936,12 @@ is asked to pull.  START has to be reachable from that commit.
 
 \(fn URL START END)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-remote" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-sequence" "magit/lisp/magit-sequence.el"
-;;;;;;  (23229 34413 577907 292000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-sequence.el
 
 (autoload 'magit-sequencer-continue "magit/lisp/magit-sequence" "\
@@ -2984,10 +4126,12 @@ Abort the current rebase operation, restoring the original branch.
 
 \(fn)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-sequence" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-stash" "magit/lisp/magit-stash.el"
-;;;;;;  (23229 34413 577907 292000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-stash.el
  (autoload 'magit-stash-popup "magit-stash" nil t)
 
@@ -3091,10 +4235,12 @@ Show all diffs of a stash in a buffer.
 
 \(fn STASH &optional ARGS FILES)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-stash" '("magit-")))
+
 ;;;***
 
 ;;;### (autoloads nil "magit/lisp/magit-wip" "magit/lisp/magit-wip.el"
-;;;;;;  (23229 34413 577907 292000))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from magit/lisp/magit-wip.el
 
 (defvar magit-wip-after-save-mode nil "\
@@ -3160,13 +4306,15 @@ command which is about to be called are committed.
 
 \(fn &optional ARG)" t nil)
 
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "magit/lisp/magit-wip" '("magit-wip-")))
+
 ;;;***
 
 
 ;;;***
 
-;;;### (autoloads (mo-git-blame-current mo-git-blame-file) "mo-git-blame/mo-git-blame"
-;;;;;;  "mo-git-blame/mo-git-blame.el" (20289 32888))
+;;;### (autoloads nil "mo-git-blame/mo-git-blame" "mo-git-blame/mo-git-blame.el"
+;;;;;;  (21910 33729 740991 646000))
 ;;; Generated autoloads from mo-git-blame/mo-git-blame.el
 
 (autoload 'mo-git-blame-file "mo-git-blame/mo-git-blame" "\
@@ -3195,8 +4343,8 @@ Calls `mo-git-blame-file' for HEAD for the current buffer.
 
 ;;;***
 
-;;;### (autoloads (notify) "notify/notify" "notify/notify.el" (20289
-;;;;;;  32888))
+;;;### (autoloads nil "notify/notify" "notify/notify.el" (21910 33729
+;;;;;;  740991 646000))
 ;;; Generated autoloads from notify/notify.el
 
 (autoload 'notify "notify/notify" "\
@@ -3324,8 +4472,8 @@ Return path to current PHP project.
 
 ;;;***
 
-;;;### (autoloads (svn-status svn-checkout) "psvn/psvn" "psvn/psvn.el"
-;;;;;;  (20289 32888))
+;;;### (autoloads nil "psvn/psvn" "psvn/psvn.el" (21910 33729 748991
+;;;;;;  459000))
 ;;; Generated autoloads from psvn/psvn.el
 
 (autoload 'svn-checkout "psvn/psvn" "\
@@ -3349,8 +4497,8 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;***
 
-;;;### (autoloads (rainbow-mode) "rainbow-mode/rainbow-mode" "rainbow-mode/rainbow-mode.el"
-;;;;;;  (20289 32888))
+;;;### (autoloads nil "rainbow-mode/rainbow-mode" "rainbow-mode/rainbow-mode.el"
+;;;;;;  (21910 33729 748991 459000))
 ;;; Generated autoloads from rainbow-mode/rainbow-mode.el
 
 (autoload 'rainbow-mode "rainbow-mode/rainbow-mode" "\
@@ -3361,8 +4509,8 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 
 ;;;***
 
-;;;### (autoloads (sauron-start-hidden sauron-start) "sauron/sauron"
-;;;;;;  "sauron/sauron.el" (20935 33430 820225 816000))
+;;;### (autoloads nil "sauron/sauron" "sauron/sauron.el" (21910 33729
+;;;;;;  748991 459000))
 ;;; Generated autoloads from sauron/sauron.el
 
 (autoload 'sauron-start "sauron/sauron" "\
@@ -3379,7 +4527,7 @@ Start sauron, but don't show the window.
 ;;;***
 
 ;;;### (autoloads nil "scss-mode/scss-mode" "scss-mode/scss-mode.el"
-;;;;;;  (22011 32640 857840 0))
+;;;;;;  (22017 17772 297349 956000))
 ;;; Generated autoloads from scss-mode/scss-mode.el
 
 (autoload 'scss-mode "scss-mode/scss-mode" "\
@@ -3393,13 +4541,8 @@ Special commands:
 
 ;;;***
 
-;;;### (autoloads (mouse-secondary-save-then-kill rotate-secondary-selection-yank-pointer
-;;;;;;  yank-pop-secondary yank-pop-commands secondary-to-primary
-;;;;;;  secondary-swap-region primary-to-secondary isearch-yank-secondary
-;;;;;;  yank-secondary secondary-dwim secondary-selection-yank-secondary-commands
-;;;;;;  secondary-selection-yank-commands secondary-selection-ring-max)
-;;;;;;  "second-sel/second-sel" "second-sel/second-sel.el" (20289
-;;;;;;  32888))
+;;;### (autoloads nil "second-sel/second-sel" "second-sel/second-sel.el"
+;;;;;;  (21910 33729 748991 459000))
 ;;; Generated autoloads from second-sel/second-sel.el
 
 (defvar secondary-selection-ring-max 60 "\
@@ -3529,7 +4672,7 @@ If you do this twice in the same position, it kills the selection.
 ;;;***
 
 ;;;### (autoloads nil "smart-tabs-mode/smart-tabs-mode" "smart-tabs-mode/smart-tabs-mode.el"
-;;;;;;  (22068 11333 319860 662000))
+;;;;;;  (22068 11712 450867 101000))
 ;;; Generated autoloads from smart-tabs-mode/smart-tabs-mode.el
 
 (autoload 'smart-tabs-when "smart-tabs-mode/smart-tabs-mode" "\
@@ -3599,8 +4742,8 @@ Keys are sorted by their complexity; `key-complexity' determines it.
 
 ;;;***
 
-;;;### (autoloads ((quote vcl-mode) vcl) "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
-;;;;;;  (20802 24771 420829 903000))
+;;;### (autoloads nil "vcl-mode/vcl-mode" "vcl-mode/vcl-mode.el"
+;;;;;;  (21910 33729 752991 365000))
 ;;; Generated autoloads from vcl-mode/vcl-mode.el
 
 (let ((loads (get 'vcl 'custom-loads))) (if (member '"vcl-mode/vcl-mode" loads) nil (put 'vcl 'custom-loads (cons '"vcl-mode/vcl-mode" loads))))
@@ -3612,8 +4755,8 @@ Mode for Varnish Command Language
 
 ;;;***
 
-;;;### (autoloads (web-mode) "web-mode/web-mode" "web-mode/web-mode.el"
-;;;;;;  (20935 34456 976223 257000))
+;;;### (autoloads nil "web-mode/web-mode" "web-mode/web-mode.el"
+;;;;;;  (22126 49203 734108 423000))
 ;;; Generated autoloads from web-mode/web-mode.el
 
 (autoload 'web-mode "web-mode/web-mode" "\
@@ -3623,8 +4766,8 @@ Major mode for editing web templates.
 
 ;;;***
 
-;;;### (autoloads (wgrep-setup) "wgrep/wgrep" "wgrep/wgrep.el" (20802
-;;;;;;  24771 420829 903000))
+;;;### (autoloads nil "wgrep/wgrep" "wgrep/wgrep.el" (21910 33729
+;;;;;;  752991 365000))
 ;;; Generated autoloads from wgrep/wgrep.el
 
 (autoload 'wgrep-setup "wgrep/wgrep" "\
@@ -3798,8 +4941,8 @@ is selected interactively by mode in `minor-mode-map-alist'.
 
 ;;;***
 
-;;;### (autoloads nil "winnow/winnow" "winnow/winnow.el" (22956 41943
-;;;;;;  68615 59000))
+;;;### (autoloads nil "winnow/winnow" "winnow/winnow.el" (23005 53170
+;;;;;;  60126 770000))
 ;;; Generated autoloads from winnow/winnow.el
 
 (autoload 'winnow-mode "winnow/winnow" "\
@@ -4079,7 +5222,7 @@ controlled by the `ws-trim-global-modes' variable.
 ;;;***
 
 ;;;### (autoloads nil "ztree-diff/ztree-diff" "ztree-diff/ztree-diff.el"
-;;;;;;  (21423 24092 470872 188000))
+;;;;;;  (21910 33729 756991 272000))
 ;;; Generated autoloads from ztree-diff/ztree-diff.el
 
 (autoload 'ztreediff-mode "ztree-diff/ztree-diff" "\
@@ -4095,7 +5238,7 @@ Creates an interactive buffer with the directory tree of the path given
 ;;;***
 
 ;;;### (autoloads nil "ztree-diff/ztree-dir" "ztree-diff/ztree-dir.el"
-;;;;;;  (21423 24092 470872 188000))
+;;;;;;  (21910 33729 756991 272000))
 ;;; Generated autoloads from ztree-diff/ztree-dir.el
 
 (autoload 'ztree-dir "ztree-diff/ztree-dir" "\
@@ -4106,7 +5249,7 @@ Creates an interactive buffer with the directory tree of the path given
 ;;;***
 
 ;;;### (autoloads nil "ztree-diff/ztree-view" "ztree-diff/ztree-view.el"
-;;;;;;  (21423 24092 470872 188000))
+;;;;;;  (21910 33729 756991 272000))
 ;;; Generated autoloads from ztree-diff/ztree-view.el
 
 (autoload 'ztree-mode "ztree-diff/ztree-view" "\
@@ -4116,8 +5259,9 @@ A major mode for displaying the directory tree in text mode.
 
 ;;;***
 
-;;;### (autoloads nil nil ("magit-popup/magit-popup.el" "php-mode/php-mode-test.el")
-;;;;;;  (23229 36373 103651 687000))
+;;;### (autoloads nil nil ("async/async-pkg.el" "magit/lisp/magit-autoloads.el"
+;;;;;;  "magit/lisp/magit-core.el" "magit/lisp/magit-obsolete.el"
+;;;;;;  "magit/lisp/magit-pkg.el") (0 0 0 0))
 
 ;;;***
 

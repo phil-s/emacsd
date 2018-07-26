@@ -11,6 +11,15 @@
 ;; Do things after other initialisation.
 (add-hook 'after-init-hook 'my-local-after-init-hook)
 (defun my-local-after-init-hook ()
+
+  ;; (dir-locals-set-directory-class "~/projects/drupal" 'drupal)
+  ;; (dir-locals-set-directory-class "~/projects/d6" 'drupal)
+  ;; (dir-locals-set-directory-class "~/projects/d7" 'drupal)
+  ;; (dir-locals-set-directory-class "~/projects/d8" 'drupal)
+
+  (dir-locals-set-directory-class "/ssh:work|ssh:vagrant@mts3:/var/www/mts" 'drupal)
+  (dir-locals-set-directory-class "/ssh:work|ssh:vagrant@mts3:/home/vagrant/web" 'drupal)
+  (dir-locals-set-directory-class "/ssh:work|ssh:phil@totaralms-drupal:/var/www/totaralms-drupal" 'drupal)
   ;; ...
   )
 

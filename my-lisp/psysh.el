@@ -613,7 +613,7 @@ evaluate (setq-local comint-input-sender 'comint-simple-send) in
             (goto-char (point-min))
             (while (forward-comment 1))
             (delete-region (point-min) (point))
-            ;; (message "%s" (buffer-string))
+            (message "%s" (buffer-string))
             (buffer-string))))))
 
 (defun psysh-comint-preoutput-filter (output)

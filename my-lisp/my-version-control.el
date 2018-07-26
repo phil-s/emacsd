@@ -82,6 +82,7 @@ When called interactively with a prefix argument, prompts for LIMIT also."
          )
     (vc-print-log-internal backend files working-revision t limit)))
 
+;; Performance problems. It always starts out well, but...
 ;; ;; diff-hl library
 ;; (global-diff-hl-mode 1)
 ;; (diff-hl-flydiff-mode 1)
