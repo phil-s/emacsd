@@ -1109,6 +1109,7 @@ instead of `browse-url-new-window-flag'."
     (switch-to-buffer termbuf)))
 
 (defun my-terminal (retain-window-layout)
+  "Switch to a `term' buffer (creating it if necessary)."
   (interactive "P")
   (require 'term)
   (unless (and term-ansi-buffer-name
@@ -1124,7 +1125,7 @@ instead of `browse-url-new-window-flag'."
 
 (defalias 'my-shell 'my-terminal)
 
-(defun my-sql-console (retain-window-layout)
+(defun my-sql-console (delete-other-windows)
   "Switch to an interactive SQLi buffer (creating it if necessary)."
   (interactive "P")
   (require 'sql)
@@ -1151,7 +1152,7 @@ instead of `browse-url-new-window-flag'."
                          (funcall my-sql-db-name-getter))
                     sql-database)))
           (call-interactively 'sql-postgres)))))
-  (unless retain-window-layout
+  (when delete-other-windows
     (delete-other-windows)))
 
 (defvar my-sql-query-buffer)
@@ -1185,7 +1186,7 @@ With C-u prefix arg, always creates a new buffer."
           (setq sql-buffer sqlibuf)
           (run-hooks 'sql-set-sqli-hook))))))
 
-(defun my-drush-console (single-window-layout)
+(defun my-drush-console (delete-other-windows)
   (interactive "P")
   (require 'drush-php)
   (unless (get-buffer-process (get-buffer "*Drush-PHP*"))
@@ -1193,7 +1194,7 @@ With C-u prefix arg, always creates a new buffer."
   (pop-to-buffer "*Drush-PHP*" '((display-buffer-reuse-window
                                   display-buffer-same-window)
                                  . ((reusable-frames . visible))))
-  (when single-window-layout
+  (when delete-other-windows
     (delete-other-windows)))
 
 (defvar my-terminal-run-history nil)
@@ -1210,13 +1211,13 @@ With C-u prefix arg, always creates a new buffer."
     (term-char-mode)
     (switch-to-buffer termbuf)))
 
-(defun my-pop-to-buffer (buf &optional maximise)
+(defun my-pop-to-buffer (buf &optional delete-other-windows)
   "Switch to buffer BUF, and optionally maximise the window in its frame.
 Re-use an existing window containing BUF (in a visible frame) by preference,
 otherwise use the current selected window."
   (pop-to-buffer buf '(display-buffer-reuse-window
                        . ((reusable-frames . visible))))
-  (when maximise
+  (when delete-other-windows
     (delete-other-windows)))
 
 (defun my-ibuffer (arg)
