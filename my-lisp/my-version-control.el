@@ -207,6 +207,59 @@ static char * data[] = {
   '(progn
      (global-magit-file-mode 1))) ;; per-file popup on C-c M-g
 
+(with-eval-after-load "magit-refs"
+  ;; Do not insert Tags into the refs buffer by default. (Slow!)
+  (setq magit-refs-sections-hook
+        (delq 'magit-insert-tags magit-refs-sections-hook))
+  ;; ...but add a new Tags option to the popup, which does so. (y t)
+  (magit-define-popup-action 'magit-show-refs-popup ?t
+    "Insert tags section" 'my-magit-insert-tags))
+
+(defun my-magit-insert-tags ()
+  "Insert the Tags section at the end of the current buffer."
+  (interactive)
+  (unless (derived-mode-p 'magit-refs-mode)
+    (magit-show-refs-head))
+  (widen)
+  ;; Use the following to discover the identifier for a section:
+  ;; M-: (magit-section-ident (magit-current-section))
+  (let ((tags (magit-get-section '((tags) (branchbuf)))))
+    (if tags
+        (progn
+          (goto-char (oref tags start))
+          (recenter 0))
+      (let ((inhibit-read-only t))
+        ;; Calling `magit-insert-tags' directly causes problems with
+        ;; the other sections (e.g. they are no longer collapsible)
+        ;; and so I'm refreshing all the contents, which is going to
+        ;; be slower; but not by too much -- Tags is by far the
+        ;; slowest section to insert, so this seems ok in practice.
+        (erase-buffer)
+        (let ((magit-refs-sections-hook
+               (if (memq 'magit-insert-tags magit-refs-sections-hook)
+                   magit-refs-sections-hook
+                 (append magit-refs-sections-hook '(magit-insert-tags)))))
+          (magit-refs-refresh-buffer nil)
+          (setq tags (magit-get-section '((tags) (branchbuf))))
+          (if (not tags)
+              (message "No tags found")
+            (goto-char (oref tags start))
+            (recenter 0)))))))
+
+;; Jump to *my* branches in the refs buffer.  Jump to the end of the
+;; list, on the basis that I'll be using issue numbers in the branch
+;; names, and therefore the end of the list has the most-recent issue.
+(add-hook 'magit-refresh-buffer-hook 'my-magit-refresh-buffer-hook)
+(defun my-magit-refresh-buffer-hook ()
+  "Custom `magit-refresh-buffer' behaviours."
+  (when (derived-mode-p 'magit-refs-mode)
+    (let ((pos (save-excursion
+                 (goto-char (oref (magit-current-section) end))
+                 (re-search-backward "^\\*? *phil/" nil :noerror))))
+      (when pos
+        (goto-char pos)
+        (recenter -1)))))
+
 ;; Protect against accidental pushes to upstream
 (defadvice magit-push-current-to-upstream
     (around my-protect-accidental-magit-push-current-to-upstream)

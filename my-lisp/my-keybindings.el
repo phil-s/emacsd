@@ -49,8 +49,12 @@
 (eval-after-load "iedit"
   '(define-key isearch-mode-map (kbd "C-;") 'iedit-mode))
 
+;; In Magit, make TAB cycle sections by default.
 (eval-after-load "magit"
   '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
+;; ...but avoid expanding all branches in the refs buffer!
+(eval-after-load "magit-refs"
+  '(define-key magit-refs-mode-map (kbd "TAB") 'magit-section-toggle))
 
 (eval-after-load "magit-diff"
   '(progn
