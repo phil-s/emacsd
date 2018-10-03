@@ -160,6 +160,9 @@ return array(
   'startupMessage' => '<fg=blue>Emacs:</> M-x customize-group RET psysh RET',
   'errorLoggingLevel' => E_ALL,
   'warnOnMultipleConfigs' => true,
+  // We use a pipe rather than a pty to talk to the process, and so psysh
+  // does not know that colour support is available; but we can enable it.
+  'colorMode' => \\Psy\\Configuration::COLOR_MODE_FORCED,
   // 'colorMode' => \\Psy\\Configuration::COLOR_MODE_DISABLED,
 );"
   "PHP code for the PsySH config file.
@@ -347,7 +350,25 @@ can be used to enforce a local file."
   (let ((buffer (get-buffer psysh-buffer-name)))
     (unless (and buffer (comint-check-proc buffer))
       (let* ((command (split-string-and-unquote psysh-command)))
-        (let ((inhibit-read-only t))
+        (let ((inhibit-read-only t)
+              (process-connection-type nil) ; Use a pipe, not a pty.
+              ;; A pty will be in canonical / line-editing mode by
+              ;; default ("stty -F <device> -icanon" to disable that).
+              ;; That provides support for special line-editing key
+              ;; sequences, and also imposes a maximum input size for
+              ;; any line (4096 bytes in my tests), discarding the
+              ;; overflow, which which means that PHP won't receive
+              ;; all the input.  Using a pipe instead of a pty avoids
+              ;; this 4K buffer issue, as well as any other unwanted
+              ;; terminal-oriented weirdness which might occur.
+              ;;
+              ;; If psysh's 'useReadline' option is enabled and one of
+              ;; the supported implementations is available, then this
+              ;; issue shouldn't crop up (as they will not be using
+              ;; canonical mode); however we need our default behavior
+              ;; to cope with the fallback readline implementation
+              ;; provided by psysh (Psy\Readline\Transient).
+              )
           (setq buffer (apply 'make-comint-in-buffer
                               psysh-process-name psysh-buffer-name
                               "env"
