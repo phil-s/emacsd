@@ -557,11 +557,12 @@ does not send the input, but instead just inserts a literal newline."
 (defun psysh-comint-input-sender (proc string)
   "This is a hack, due to https://github.com/bobthecow/psysh/issues/490
 
-It replaces all newlines in the input, so that no PsySH command
+It replaces newlines in the input, so that no PsySH command
 can ever be executed unless it appears at the very start of the
 input.
 
-Newlines in strings are replaced with the \n escape sequence.
+Newlines in strings are left alone, as that case has been fixed
+upstream.
 
 Comments are deleted entirely, so newlines at the end of line
 comments (i.e. //... and #...) will not cause the subsequent
@@ -610,17 +611,18 @@ If you wish to disable this functionality, you can customize the
                   (save-excursion
                     (goto-char (match-beginning 0))
                     (let ((ppss (syntax-ppss)))
-                      (cond ;; Newlines in strings.
-                            ;; Substitute the escape sequence.
-                            ((nth 3 ppss) ;; string
-                             (replace-match
-                              ;; n.b. This isn't actually correct, as
-                              ;; the newline escape sequence is for
-                              ;; double-quoted strings only!
-                              (mapconcat 'identity (make-list
-                                                    (length (match-string 2)) "\\n")
-                                         "")
-                              t t nil 2))
+                      (cond ;; ;; Newlines in strings.
+                            ;; ;; Substitute the escape sequence.
+                            ;; ((nth 3 ppss) ;; string
+                            ;;  (replace-match
+                            ;;   ;; n.b. This isn't actually correct, as
+                            ;;   ;; the newline escape sequence is for
+                            ;;   ;; double-quoted strings only!
+                            ;;   (mapconcat 'identity (make-list
+                            ;;                         (length (match-string 2)) "\\n")
+                            ;;              "")
+                            ;;   t t nil 2))
+                            ;;
                             ;; Newlines in comments.
                             ;; We delete the entire comment.
                             ((nth 4 ppss) ;; comment
