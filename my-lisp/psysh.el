@@ -219,12 +219,14 @@ A function symbol means use that function as the sender.
 Any other non-nil value means use the custom PsySH sender.
 
 The custom PsySH sender manipulates all the input into a single
-line of PHP, which circumvents some PsySH bugs, but unfortunately
-also makes it more likely that you will trigger others.  In
-particular, PHP input exceeding 1024 characters may (or may not)
-produce bugs/errors.
+line of PHP, which circumvents bugs, including one whereby parts
+of the PHP input are inadvertently treated as PsySH commands.
+Refer to URL `https://github.com/bobthecow/psysh/issues/490'.
 
-Refer to URL `https://github.com/bobthecow/psysh/issues/496'
+Unfortunately the creation of much longer input lines might also
+cause problems in older versions of PsySH.  In particular, PHP
+input exceeding 1024 characters may produce bugs/errors.  Refer
+to URL `https://github.com/bobthecow/psysh/issues/496'
 
 If you use the default comint sender then you may also wish to
 set 'requireSemicolons' => true, in `psysh-config'."
@@ -441,7 +443,8 @@ can be used to enforce a local file."
   (setq-local comint-input-ring-file-name psysh-history-file)
   (comint-read-input-ring :silent)
 
-  ;; Use custom input sender function.
+  ;; Use custom input sender function (which will hand off to another
+  ;; function if necessary, in accordance with the user option).
   (setq-local comint-input-sender 'psysh-comint-input-sender)
 
   ;; Paragraph delimiters??
@@ -564,11 +567,13 @@ Comments are deleted entirely, so newlines at the end of line
 comments (i.e. //... and #...) will not cause the subsequent
 lines to be commented out as well.
 
-Note that this also prevents the use of certain PsySH commands
-which are intended to be usable in positions other than the start
-of the input.  If you wish to disable this functionality, you can
-evaluate (setq-local comint-input-sender 'comint-simple-send) in
-`psysh-mode-hook'."
+Note that certain PsySH commands are intended to be usable in
+positions other than the start of the input, and this sender
+function inhibits that ability in favour of guaranteeing that
+PsySH commands will not be executed inadvertantly.
+
+If you wish to disable this functionality, you can customize the
+`psysh-comint-input-sender' user option."
   (cond
    ;; user-defined
    ((functionp psysh-comint-input-sender)
@@ -605,7 +610,9 @@ evaluate (setq-local comint-input-sender 'comint-simple-send) in
                   (save-excursion
                     (goto-char (match-beginning 0))
                     (let ((ppss (syntax-ppss)))
-                      (cond ((nth 3 ppss) ;; string
+                      (cond ;; Newlines in strings.
+                            ;; Substitute the escape sequence.
+                            ((nth 3 ppss) ;; string
                              (replace-match
                               ;; n.b. This isn't actually correct, as
                               ;; the newline escape sequence is for
@@ -614,6 +621,8 @@ evaluate (setq-local comint-input-sender 'comint-simple-send) in
                                                     (length (match-string 2)) "\\n")
                                          "")
                               t t nil 2))
+                            ;; Newlines in comments.
+                            ;; We delete the entire comment.
                             ((nth 4 ppss) ;; comment
                              (let* ((start (comment-search-backward pos :noerror))
                                     (end (and start
@@ -625,8 +634,13 @@ evaluate (setq-local comint-input-sender 'comint-simple-send) in
                                  (goto-char start)
                                  (unless (or (bobp) (eobp))
                                    (insert " ")))))
+                            ;; Newlines following a semicolon.
+                            ;; We retain a newline, but make it 'safe' by ensuring
+                            ;; that the following line cannot be interpreted as a
+                            ;; PsySH command.
                             ((eq (char-after) ?\;)
                              (replace-match "\n;"))
+                            ;; Other newlines are replaced by a space.
                             (t
                              (replace-match " ")))))
                   (setq pos (point)))))
