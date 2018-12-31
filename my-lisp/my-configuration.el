@@ -580,7 +580,7 @@ See also: `my-copy-buffer-file-name'."
   (shell-command-to-string "printf @%s \"$(hostname)\"")
   "Local hostname")
 
-(add-to-list 'mode-line-misc-info 'my-hostname :append)
+(add-to-list 'mode-line-misc-info (list "" 'my-hostname) :append)
 
 ;; Display the hostname and time in the minibuffer window.
 (defun my-minibuffer-line-justify-right (text)
