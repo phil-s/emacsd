@@ -892,10 +892,13 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   (defvar term-raw-map)
   (declare-function term-send-raw-string "term"))
 
-;; Do not break lines with newlines.
-;; This means text can automatically reflow if the window is resized.
-;; (n.b. GNU screen apparently does not like this being non-nil.)
-(setq term-suppress-hard-newline t)
+;; ;; Do not break lines with newlines.
+;; ;; This means text can automatically reflow if the window is resized.
+;; ;; (n.b. GNU screen apparently does not like this being non-nil.)
+;; (setq term-suppress-hard-newline t)
+;; Unfortunately my custom shell prompt also does not play nicely with
+;; this being non-nil when editing wrapped lines, so I've set this
+;; out again for now.
 
 (eval-after-load "term"
   '(progn
