@@ -613,11 +613,14 @@ See also: `my-copy-buffer-file-name'."
 (setq url-privacy-level '(emacs email lastloc))
 (url-setup-privacy-info)
 
+(defvar my-non-matching-regexp "\\`\\b\\B"
+  "A regexp which will efficiently never match any text.")
+
 ;; Make URLs in comments/strings clickable
 (add-hook 'find-file-hook 'goto-address-prog-mode)
 ;; But not email addresses. This is a hack to never match anything.
 ;; (submit patch to enable email addresses to be disabled separately?)
-(setq goto-address-mail-regexp "$^")
+(setq goto-address-mail-regexp my-non-matching-regexp)
 
 ;; Enable visiting URLs with C-x C-f
 (url-handler-mode 1)
