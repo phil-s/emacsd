@@ -450,10 +450,11 @@ See also: `my-copy-buffer-file-name'."
          (:eval (concat (buffer-name) " (Emacs) " dired-directory))
          ("%b (Emacs)"))))
 
-;; Don't display which-function in the mode line.
-(eval-after-load "which-func"
-  '(setq mode-line-misc-info
-         (assq-delete-all 'which-func-mode mode-line-misc-info)))
+;; This is no longer helpful, as I don't have window titles any more.
+;; ;; Don't display which-function in the mode line.
+;; (eval-after-load "which-func"
+;;   '(setq mode-line-misc-info
+;;          (assq-delete-all 'which-func-mode mode-line-misc-info)))
 
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
