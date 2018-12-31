@@ -84,8 +84,8 @@
       backup-by-copying      t  ; Don't de-link hard links
       version-control        t  ; Use version numbers on backups
       delete-old-versions    t  ; Automatically delete excess backups:
-      kept-new-versions      20 ; How many of the newest versions to keep...
-      kept-old-versions      5  ; ...and how many of the old.
+      kept-new-versions      50 ; How many of the newest versions to keep...
+      kept-old-versions      10 ; ...and how many of the old.
       vc-make-backup-files   t) ; Make backups even for files under VCS.
 
 (defvar my-non-file-buffer-auto-save-dir (file-name-directory user-init-file)
