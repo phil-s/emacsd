@@ -175,7 +175,7 @@ when `auto-save-mode' is invoked manually.")
 ;; minor in most cases; but the likes of bug #23801, when combined
 ;; with being fairly confident that this is a feature I will never
 ;; need, makes a strong case for disabling it by default.
-(setq bidi-display-reordering nil)
+(setq-default bidi-display-reordering nil)
 
 ;; Ignore case when searching and matching, and when reading
 ;; buffer names and file names
