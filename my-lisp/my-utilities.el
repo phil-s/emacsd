@@ -171,17 +171,44 @@ using the specified hippie-expand function."
       (goto-char (point-min))
       (forward-line (1- line)))))
 
-(defun scroll-one-line-ahead ()
+(defun my-scroll-one-line-ahead ()
   "Scroll ahead one line"
   (interactive)
   (scroll-up 1)
   (forward-line 1))
 
-(defun scroll-one-line-back ()
+(defun my-scroll-one-line-back ()
   "Scroll back one line"
   (interactive)
   (scroll-down 1)
   (forward-line -1))
+
+(defun my-transient-repeat-map ()
+  "Cause the last command key to repeat the current command."
+  (set-transient-map
+   (let ((map (make-sparse-keymap)))
+     (define-key map last-command-event this-command))))
+
+(defun my-scroll-one-line-transient-repeat-map ()
+  "Cause the last command key to repeat the current command."
+  (set-transient-map
+   (let ((map (make-sparse-keymap)))
+     (define-key map (kbd "n") #'my-scroll-one-line-ahead-repeatable)
+     (define-key map (kbd "p") #'my-scroll-one-line-back-repeatable)
+     (define-key map (kbd "SPC") #'ignore)
+     map)))
+
+(defun my-scroll-one-line-ahead-repeatable ()
+  "Scroll ahead one line; repeat with last command key."
+  (interactive)
+  (my-scroll-one-line-ahead)
+  (my-scroll-one-line-transient-repeat-map))
+
+(defun my-scroll-one-line-back-repeatable ()
+  "Scroll back one line; repeat with last command key."
+  (interactive)
+  (my-scroll-one-line-back)
+  (my-scroll-one-line-transient-repeat-map))
 
 ;; (defun my-multi-occur-in-matching-buffers (regexp &optional allbufs)
 ;;   "Show all lines matching REGEXP in all buffers.
