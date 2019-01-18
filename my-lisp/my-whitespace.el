@@ -88,6 +88,7 @@
         magit
         magit-popup
         messages-buffer
+        org-agenda
         python
         sauron
         shell
@@ -110,8 +111,9 @@
   (when (boundp 'whitespace-style)
     (set (make-local-variable 'whitespace-style)
          (remq 'lines-tail (remq 'lines whitespace-style)))
-    (whitespace-mode 0)
-    (whitespace-mode 1)))
+    (when (fboundp 'whitespace-mode)
+      (whitespace-mode 0)
+      (whitespace-mode 1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

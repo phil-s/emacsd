@@ -75,6 +75,8 @@
 ;; (ad-remove-advice 'org-capture-destroy 'after 'my-delete-capture-frame)
 ;; (ad-activate 'org-capture-destroy)
 
+(add-hook 'org-agenda-finalize-hook 'hide-trailing-whitespace)
+
 
 ;;; Babel
 
