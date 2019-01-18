@@ -1223,6 +1223,38 @@ With C-u prefix arg, always creates a new buffer."
     (term-char-mode)
     (switch-to-buffer termbuf)))
 
+(defvar watch-history nil)
+(defun watch (command &optional name)
+  "Runs \"watch COMMAND\" in a `term' buffer.  \"q\" to exit."
+  (interactive
+   (list (read-from-minibuffer "watch " nil nil nil 'watch-history)))
+  (let* ((name (or name (concat "watch " command)))
+         (switches (split-string-and-unquote command))
+         (termbuf (apply 'make-term name "watch" nil switches))
+         (proc (get-buffer-process termbuf)))
+    (set-buffer termbuf)
+    (term-mode)
+    (term-char-mode)
+    (setq show-trailing-whitespace nil)
+    ;; Kill the process interactively with "q".
+    (set-process-query-on-exit-flag proc nil)
+    (let ((map (make-sparse-keymap))
+          (cmdquit (make-symbol "watch-quit")))
+      (put cmdquit 'function-documentation "Kill the `watch' buffer.")
+      (put cmdquit 'interactive-form '(interactive))
+      (fset cmdquit (apply-partially 'kill-process proc))
+      (set-keymap-parent map (current-local-map))
+      (define-key map (kbd "q") cmdquit)
+      (use-local-map map))
+    ;; Kill the buffer automatically when the process is killed.
+    (set-process-sentinel
+     proc (lambda (process signal)
+            (and (memq (process-status process) '(exit signal))
+                 (buffer-live-p (process-buffer process))
+                 (kill-buffer (process-buffer process)))))
+    ;; Display the buffer.
+    (switch-to-buffer termbuf)))
+
 (defun my-pop-to-buffer (buf &optional delete-other-windows)
   "Switch to buffer BUF, and optionally maximise the window in its frame.
 Re-use an existing window containing BUF (in a visible frame) by preference,
