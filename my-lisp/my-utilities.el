@@ -444,6 +444,19 @@ Also see the following:
          tmp-message
          backup-message)))))
 
+(defun reminder (what when)
+  "Remind me about something later."
+  (interactive "sRemind me about: \nsRemind me at: ")
+  (let ((buf (get-buffer-create "*reminder*")))
+    (with-current-buffer buf
+      (erase-buffer))
+    (shell-command
+     (format "echo 'DISPLAY=:0.0 zenity --info --title=\"Reminder\" --text=%s' \
+| at %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
+             (shell-quote-argument what)
+             (shell-quote-argument when))
+     buf "*reminder-errors*")))
+
 (defun my-interactive-ding ()
   (interactive)
   (ding))
