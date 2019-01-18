@@ -1530,6 +1530,21 @@ For example, to trace all ELP functions, do the following:
        (fboundp fun)
        (not (keymapp fun))))
 
+(defun password-composer (domain)
+  "Run password-composer."
+  (interactive "sDomain: ")
+  (let ((buf (make-comint-in-buffer
+              "password-composer" nil "password-composer" nil domain)))
+    (set-buffer buf)
+    (setq comint-process-echoes nil)
+    (pop-to-buffer buf)
+    (send-invisible "Password: ")
+    (use-local-map
+     (let ((map (make-sparse-keymap)))
+       (set-keymap-parent map (current-local-map))
+       (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
+       map))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
