@@ -1545,6 +1545,169 @@ For example, to trace all ELP functions, do the following:
        (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
        map))))
 
+;; https://fuco1.github.io/2017-05-06-Enhanced-beginning--and-end-of-buffer-in-special-mode-buffers-%28dired-etc.%29.html
+
+(defmacro my-special-buffer-pos (library fname doc pos remap mode &rest forms)
+  "Helper for `my-define-bob' and `my-define-eob'."
+  (let ((modename (symbol-name mode)))
+    (let (;;(fname (intern (concat "my-" modename "-" (symbol-name remap))))
+          (mode-map (intern (concat modename "-map")))
+          (mode-hook (intern (concat modename "-hook"))))
+      `(progn
+         (defalias ',fname
+           (lambda ()
+             (interactive)
+             (let ((p (point)))
+               (goto-char (,pos))
+               ,@forms
+               (when (= p (point))
+                 (goto-char (,pos)))))
+           ,doc)
+         (eval-after-load ,library
+           '(define-key ,mode-map [remap ,remap] ',fname))))))
+
+(defmacro my-define-bob (fname mode library &rest forms)
+  "Define a special version of `beginning-of-buffer' in MODE.
+
+The special function is defined such that the point first moves
+to `point-min' and then FORMS are evaluated.  If the point did
+not change because of the evaluation of FORMS, jump
+unconditionally to `point-min'.  This way repeated invocations
+toggle between real beginning and logical beginning of the
+buffer."
+  (declare (indent 3))
+  (let ((doc "Toggle between the logical and real beginning of the buffer."))
+    `(my-special-buffer-pos
+      ,library ,fname ,doc point-min beginning-of-buffer ,mode ,@forms)))
+
+(defmacro my-define-eob (fname mode library &rest forms)
+  "Define a special version of `end-of-buffer' in MODE.
+
+The special function is defined such that the point first moves
+to `point-max' and then FORMS are evaluated.  If the point did
+not change because of the evaluation of FORMS, jump
+unconditionally to `point-max'.  This way repeated invocations
+toggle between real end and logical end of the buffer."
+  (declare (indent 3))
+  (let ((doc "Toggle between the logical and real end of the buffer."))
+    `(my-special-buffer-pos
+      ,library ,fname ,doc point-max end-of-buffer ,mode ,@forms)))
+
+;; Awkwardly, `find-function' will find these definitions only when
+;; the regexp "^([^ ]+ FUNCTION-NAME" can be found, which places
+;; several constraints upon how we define these functions (including
+;; being needing to pass the library name, as we are not able to wrap
+;; the definitions themselves in eval-after-load due to indentation).
+;; See `find-function-search-for-symbol'.
+;;
+;; `find-function-regexp-alist' can solve this, I suspect? Argh,
+;; except `find-function-noselect' passes `nil' for TYPE which means
+;; that `find-function-regexp' is always used, so I would need to
+;; modify that. (Can't we have a symbol property to specify the type?)
+;;
+;; diff -u lisp/emacs-lisp/find-func.el.gz
+;; --- /usr/local/share/emacs/25.2/lisp/emacs-lisp/find-func.el.gz
+;; +++ #<buffer find-func.el.gz>
+;; @@ -301,6 +301,8 @@
+;;  The search is done in the source for library LIBRARY."
+;;    (if (null library)
+;;        (error "Don't know where `%s' is defined" symbol))
+;; +  (unless type
+;; +    (setq type (get symbol 'find-function-type)))
+;;    ;; Some functions are defined as part of the construct
+;;    ;; that defines something else.
+;;    (while (and (symbolp symbol) (get symbol 'definition-name))
+;;
+;; Diff finished.  Tue May  9 18:09:11 2017
+
+;; Alternatively (additionally?) `elisp-xref-find-def-functions' can
+;; presumably make these findable without such constraints.  I would
+;; need to ensure that I actually use xref, though.
+
+(defvar my-find-special-buffer-pos-regexp
+  "^\\s-*(my-define-[be]ob %s\\_>"
+  "Used in `find-function-regexp-alist' for finding definitions.")
+
+(eval-after-load "find-func"
+  '(add-to-list 'find-function-regexp-alist
+                '(my-special-buffer-pos . my-find-special-buffer-pos-regexp)
+                :append))
+
+;; Dired (M-x dired)
+(with-eval-after-load "dired"
+  (my-define-bob my-dired-beginning-of-buffer
+      dired-mode "dired"
+    (while (not (ignore-errors (dired-get-filename)))
+      (dired-next-line 1)))
+  (my-define-eob my-dired-end-of-buffer
+      dired-mode "dired"
+    (dired-previous-line 1)))
+
+;; Occur (M-x occur)
+(my-define-bob my-occur-beginning-of-buffer
+    occur-mode "replace"
+  (occur-next 1))
+(my-define-eob my-occur-end-of-buffer
+    occur-mode "replace"
+  (occur-prev 1))
+
+;; Ibuffer (M-x ibuffer)
+(my-define-bob my-ibuffer-beginning-of-buffer
+    ibuffer-mode "ibuffer"
+  (ibuffer-forward-line 1))
+(my-define-eob my-ibuffer-end-of-buffer
+    ibuffer-mode "ibuffer"
+  (ibuffer-backward-line 1))
+
+;; Org Agenda (M-x org-agenda)
+(my-define-bob my-org-agenda-beginning-of-buffer
+    org-agenda-mode "org-agenda"
+  (org-agenda-next-item 1))
+(my-define-eob my-org-agenda-end-of-buffer
+    org-agenda-mode "org-agenda"
+  (org-agenda-previous-item 1))
+
+;; grep, rgrep, etc...
+(my-define-bob my-grep-beginning-of-buffer
+    grep-mode "grep"
+  (compilation-next-error 1))
+(my-define-eob my-grep-end-of-buffer
+    grep-mode "grep"
+  (compilation-previous-error 1))
+
+;; vc directory view (M-x vc-dir or C-x v d)
+(my-define-bob my-vc-dir-beginning-of-buffer
+    vc-dir-mode "vc-dir"
+  (vc-dir-next-line 1))
+(my-define-eob my-vc-dir-end-of-buffer
+    vc-dir-mode "vc-dir"
+  (vc-dir-previous-line 1))
+
+;; bs (M-x bs-show)
+(my-define-bob my-bs-beginning-of-buffer
+    bs-mode "bs"
+  (bs-down 2))
+(my-define-eob my-bs-end-of-buffer
+    bs-mode "bs"
+  (bs-up 1)
+  (bs-down 1))
+
+;; Recentf (M-x recentf-open-files)
+(my-define-bob my-recentf-dialog-beginning-of-buffer
+    recentf-dialog-mode "recentf"
+  (when (re-search-forward "^  \\[" nil t)
+    (goto-char (match-beginning 0))))
+(my-define-eob my-recentf-dialog-end-of-buffer
+    recentf-dialog-mode "recentf"
+  (re-search-backward "^  \\[" nil t))
+
+(defmacro loop-collect (item &rest loop)
+  "Emulate list comprehension syntax/order for `cl-loop'.
+
+\(loop-collect x for x in ...) => (cl-loop for x in ... collect x)"
+  (require 'cl-macs)
+  `(cl-loop ,@loop collect ,item))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-utilities)
