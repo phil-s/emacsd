@@ -224,6 +224,17 @@ when `auto-save-mode' is invoked manually.")
 ;; Ask for confirmation when exiting
 (setq confirm-kill-emacs 'y-or-n-p)
 
+;; Enable M-x kill-process (to kill the current buffer's process).
+;; (This is not normally a command, but it is useful as one.)
+(put 'kill-process 'interactive-form
+     '(interactive
+       (let ((proc (get-buffer-process (current-buffer))))
+         (if (process-live-p proc)
+             (unless (yes-or-no-p (format "Kill %S? " proc))
+               (error "Process not killed"))
+           (error (format "Buffer %s has no process" (buffer-name))))
+         nil)))
+
 ;; A much larger message history
 (setq message-log-max 10000)
 
