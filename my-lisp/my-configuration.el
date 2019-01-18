@@ -550,7 +550,11 @@ See also: `my-copy-buffer-file-name'."
                      (format "Switch to %s binding"
                              (if lexical-binding "dynamic" "lexical")))))
       ;; Mode name for `re-builder', including a syntax indicator.
-      (reb-mode-name '("Regexp[" (:eval (symbol-name reb-re-syntax)) "]")))
+      (reb-mode-name
+       '("Regexp[" (:eval (symbol-name reb-re-syntax)) "]"))
+      (reb-lisp-mode-name
+       '("Regexp[" (:eval (cond ((eq reb-re-syntax 'rx) "rx-to-string")
+                                (t (symbol-name reb-re-syntax))) "]"))))
   (delight `(;; Override specified mode names in the mode line.
              (abbrev-mode " Abv" abbrev)
              (auto-revert-mode " Rvt" autorevert)
@@ -567,7 +571,7 @@ See also: `my-copy-buffer-file-name'."
              (emacs-lisp-mode ("Elisp" ,my-lexbind-indicator) :major)
              (lisp-interaction-mode ("iElisp" ,my-lexbind-indicator) :major)
              (reb-mode ,reb-mode-name :major)
-             (reb-lisp-mode ,reb-mode-name :major)
+             (reb-lisp-mode ,reb-lisp-mode-name :major)
              )))
 
 ;; Display the hostname in the mode-line
