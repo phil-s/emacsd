@@ -161,8 +161,13 @@ static char * data[] = {
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-summary-max-length)
+  (defvar magit-branch-read-upstream-first)
+  (defvar magit-diff-paint-whitespace-lines)
+  (defvar magit-diff-refine-ignore-whitespace)
   (defvar magit-log-buffer-file-locked)
-  (defvar magit-mode-map))
+  (defvar magit-mode-map)
+  (defvar magit-save-repository-buffers)
+  )
 
 ;; No, I really don't want Emacs to complain that my summary line is
 ;; long enough to be useful (no matter what the git book recommends).
@@ -199,6 +204,10 @@ static char * data[] = {
 
 ;; Make the refs buffer show the remote name for remote branches.
 (setq magit-refs-show-remote-prefix t)
+
+;; Ensure that whitespace additions and removals are highlighted.
+(setq magit-diff-paint-whitespace-lines 'all)
+(setq magit-diff-refine-ignore-whitespace nil)
 
 ;; FIXME. (el-get is messing this up? Why?)
 (load "magit-autoloads")
