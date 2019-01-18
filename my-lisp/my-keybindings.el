@@ -272,6 +272,10 @@
   (define-key keymap (kbd "<menu> z")  'repeat)
   (when (fboundp 'cycle-spacing) ;; replace just-one-space in Emacs 24.4
     (define-key keymap (kbd "M-SPC")   'cycle-spacing))
+  (define-key keymap (kbd "<s-insert>") 'org-capture)
+  (define-key keymap (kbd "<s-home>") 'org-agenda)
+  (define-key keymap (kbd "<XF86Calculator>") 'calc)
+  (define-key keymap (kbd "<menu> z") 'repeat)
   ) ; end of key definitions
 
 ;; I found that the :global minor mode was getting disabled by
