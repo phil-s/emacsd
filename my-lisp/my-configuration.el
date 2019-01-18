@@ -389,6 +389,21 @@ Can be tested with (signal-process (emacs-pid) 'sigusr1)"
   (unless (y-or-n-p "Print buffer(s)? ")
     (error "Cancelled")))
 
+;; ;; ibuffer auto-revert support.
+;; ;; http://emacs.stackexchange.com/a/2179/454
+;; ;; n.b. ibuffer already sets `revert-buffer-function' to `ibuffer-update'.
+;; (defun my-ibuffer-stale-p (&optional noconfirm)
+;;   "Re-use the variable that's used for `ibuffer-auto-mode'."
+;;   (frame-or-buffer-changed-p 'ibuffer-auto-buffers-changed))
+;;
+;; (defun my-ibuffer-auto-revert-setup ()
+;;   (require 'ibuf-ext)
+;;   (setq-local buffer-stale-function 'my-ibuffer-stale-p)
+;;   (setq-local auto-revert-verbose nil)
+;;   (auto-revert-mode 1))
+;;
+;; (add-hook 'ibuffer-mode-hook 'my-ibuffer-auto-revert-setup)
+
 ;; Enable find-file-at-point key-bindings.
 (ffap-bindings) ; see variable `ffap-bindings'
 (setq ffap-url-regexp nil) ; disable URL features in ffap
