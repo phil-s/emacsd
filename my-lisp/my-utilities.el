@@ -712,9 +712,8 @@ with the command \\[tags-loop-continue]."
      (list (nth 0 common) (nth 1 common) (nth 2 common))))
   (require 'dired-aux)
   (dolist (file (dired-get-marked-files nil nil 'dired-nondirectory-p))
-    (let ((buffer (get-file-buffer file)))
-      (if (and buffer (with-current-buffer buffer
-                        buffer-read-only))
+    (let ((buf (get-file-buffer file)))
+      (if (and buf (buffer-local-value 'buffer-read-only buf))
           (error "File `%s' is visited read-only" file))))
   (my-tags-query-replace
    from to delimited '(dired-get-marked-files nil nil 'dired-nondirectory-p)))
@@ -1440,17 +1439,17 @@ that frame."
                         0)
                        (display-buffer-reuse-frames 0)
                        (t (last-nonminibuffer-frame))))
-         (window (let ((mode (with-current-buffer buffer major-mode)))
-                   (if (and (eq mode (with-current-buffer (window-buffer)
-                                       major-mode))
+         (window (let ((mode (buffer-local-value 'major-mode buffer)))
+                   (if (and (eq mode (buffer-local-value 'major-mode
+                                                         (window-buffer)))
                             (not (cdr (assq 'inhibit-same-window alist))))
                        (selected-window)
                      (catch 'window
                        (walk-windows
                         (lambda (w)
                           (and (window-live-p w)
-                               (eq mode (with-current-buffer (window-buffer w)
-                                          major-mode))
+                               (eq mode (buffer-local-value 'major-mode
+                                                            (window-buffer w)))
                                (not (eq w (selected-window)))
                                (throw 'window w)))
                         'nomini frames))))))
