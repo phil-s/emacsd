@@ -88,6 +88,7 @@
                 (c-basic-offset . 2)))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
+   (scss-mode . ((css-indent-offset . 2)))
    (js-mode . ((js-indent-level . 2)))
    (javascript-mode . ((js-indent-level . 2)))
    (javascript-generic-mode . ((eval . (progn
