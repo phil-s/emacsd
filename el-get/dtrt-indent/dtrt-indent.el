@@ -159,7 +159,16 @@ mode.
 When dtrt-indent mode is enabled, the proper indentation
 offset will be guessed for newly opened files and adjusted
 transparently."
-  :global t :group 'dtrt-indent)
+  :global t :group 'dtrt-indent
+  (if dtrt-indent-mode
+      (progn
+        (ad-enable-advice 'hack-one-local-variable 'before
+                          'dtrt-indent-advise-hack-one-local-variable)
+        (ad-activate 'hack-one-local-variable))
+    ;; Disable mode.
+    (ad-disable-advice 'hack-one-local-variable 'before
+                       'dtrt-indent-advise-hack-one-local-variable)
+    (ad-activate 'hack-one-local-variable)))
 
 (defvar dtrt-indent-language-syntax-table
   '((c/c++/java ("\""                    0   "\""       nil "\\\\.")
@@ -929,7 +938,7 @@ Note: killed buffer-local value for %s, restoring to default %d"
 (add-hook 'dtrt-indent-unload-hook 'dtrt-indent-unload-hook)
 
 (defadvice hack-one-local-variable
-  (before dtrt-indent-advise-hack-one-local-variable activate)
+  (before dtrt-indent-advise-hack-one-local-variable disable)
   "Adviced by dtrt-indent.
 
 Disable dtrt-indent if offset explicitly set."
