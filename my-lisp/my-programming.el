@@ -405,14 +405,19 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 (add-to-list 'auto-mode-alist '("\\.vcl\\'" . vcl-mode))
 
 ;; SQL
-
-;; Within SQLi buffer, open a sql-mode buffer (from which you can edit
-;; queries and send them to SQLi; see C-h f sql-mode RET).
-(eval-after-load "sql"
-  '(progn
-     (define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer)
-     (define-key sql-mode-map (kbd "C-c C-r") 'my-sql-send-region)
-     (require 'sql-upcase)))
+(with-eval-after-load "sql"
+  (require 'sql-upcase)
+  (define-key sql-mode-map (kbd "C-c C-r") 'my-sql-send-region)
+  ;; Within SQLi buffer, open a sql-mode buffer (from which you can
+  ;; edit queries and send them to SQLi; see C-h f sql-mode RET).
+  (define-key sql-interactive-mode-map (kbd "C-c q") 'my-sql-query-buffer)
+  ;; Make "g" restart the SQLi connection, if no process is running.
+  ;; With a prefix argument, prompt for new connection details.
+  (define-key sql-interactive-mode-map "g"
+    `(menu-item "" my-sqli-restart
+                :filter ,(lambda (cmd)
+                           (unless (get-buffer-process (current-buffer))
+                             cmd)))))
 
 (add-hook 'sql-mode-hook 'my-sql-mode-hook)
 (defun my-sql-mode-hook ()
@@ -520,6 +525,16 @@ custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
       ;; But actually :L is much easier to type, and a mnemonic for "long"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
+
+(defun my-sqli-restart (&optional arg)
+  "Restart `sql-product-interactive' using existing settings.
+
+With a prefix argument, prompt for the connection settings."
+  (interactive "P")
+  (if arg
+      (call-interactively 'sql-product-interactive)
+    (cl-letf (((symbol-function 'sql-get-login) #'ignore))
+      (call-interactively 'sql-product-interactive))))
 
 (defun my-sql-send-region (start end &optional arg)
   "Send a region to the SQL process."
