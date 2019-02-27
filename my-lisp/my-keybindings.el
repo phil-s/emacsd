@@ -278,17 +278,6 @@
   (define-key keymap (kbd "<menu> z") 'repeat)
   ) ; end of key definitions
 
-;; I found that the :global minor mode was getting disabled by
-;; minibuffer-setup-hook (despite the local variable trick),
-;; so a globalized minor mode seems to make more sense.
-(define-globalized-minor-mode my-keys-minor-mode
-  my-keys-local-minor-mode my-keys-turn-on)
-
-(defun my-keys-turn-on ()
-  "Used by `my-keys-minor-mode' to enable `my-keys-local-minor-mode'."
-  (unless (minibufferp)
-    (my-keys-local-minor-mode 1)))
-
 (define-minor-mode my-keys-local-minor-mode
   "A minor mode so that my key bindings take precedence over other modes.
 
@@ -299,11 +288,25 @@ will still over-ride us.
 
 TODO: Switch to using `emulation-mode-map-alists' ?
 
+We set :init-value t, as this turns out to be the only reliable way to ensure
+that the mode is enabled by default in all buffers save for the minibuffer.
+
+With a :global minor mode, `minibuffer-setup-hook' was causing it to be
+disabled everywhere (despite the local variable trick).  With a globalized
+minor mode to selectively enable the mode everywhere other than the
+minibuffer, new buffers in `fundamental-mode' are not processed (because
+fundamental-mode is not actually called, so `after-change-major-mode-hook'
+does not run, and therefore no globalized modes take effect).
+
 \\{my-keys-local-minor-mode-map}"
+  :init-value t
   :keymap my-keys-local-minor-mode-map)
 
-;; Enable my keys by default.
-(my-keys-minor-mode 1)
+(defun my-keys-minibuffer-setup-hook ()
+  "Used in `minibuffer-setup-hook'."
+  (my-keys-local-minor-mode -1))
+
+(add-hook 'minibuffer-setup-hook 'my-keys-minibuffer-setup-hook)
 
 ;; An alternative would be to use `emulation-mode-map-alists' (which has
 ;; a higher priority than `minor-mode-map-alist').
