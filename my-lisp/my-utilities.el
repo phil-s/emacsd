@@ -9,10 +9,6 @@
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
-  (declare-function browse-url-encode-url "browse-url")
-  (declare-function browse-url-interactive-arg "browse-url")
-  (declare-function browse-url-maybe-new-window "browse-url")
-  (declare-function browse-url-process-environment "browse-url")
   (declare-function dired-add-file "dired-aux")
   (declare-function dired-create-directory "dired-aux")
   (declare-function dired-current-directory "dired")
@@ -1117,6 +1113,8 @@ is loaded in a new tab in an existing window instead.
 Non-interactively, this uses the optional second argument NEW-WINDOW
 instead of `browse-url-new-window-flag'."
   (interactive (browse-url-interactive-arg "URL: "))
+  ;; `browse-url-maybe-new-window' is a macro.
+  (eval-when-compile (require 'browse-url))
   (setq url (browse-url-encode-url url))
   (let* ((process-environment (browse-url-process-environment)))
     (apply 'start-process
