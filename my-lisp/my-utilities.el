@@ -1602,6 +1602,12 @@ For example, to trace all ELP functions, do the following:
        (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
        map))))
 
+(defun my-crontab-edit ()
+  "Edit crontab."
+  (interactive)
+  (require 'with-editor)
+  (with-editor-async-shell-command "crontab -e"))
+
 ;; https://fuco1.github.io/2017-05-06-Enhanced-beginning--and-end-of-buffer-in-special-mode-buffers-%28dired-etc.%29.html
 
 (defmacro my-special-buffer-pos (library fname doc pos remap mode &rest forms)
