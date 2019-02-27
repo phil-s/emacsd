@@ -313,7 +313,9 @@ Advice to `magit-push-current-to-upstream' triggers this query."
   ;; cause `window-splittable-p' to return nil for horizontal splits even
   ;; in a full-width widescreen window.  Reduce `split-width-threshold'
   ;; from its usual value of 160, as a workaround.
-  (setq-local split-width-threshold 120))
+  (setq-local split-width-threshold 120)
+  ;; Magit uses fringe bitmaps which don't fit nicely in the default fringe.
+  (setq left-fringe-width 20))
 
 ;; Always open magit windows in the current frame.
 (add-to-list 'display-buffer-alist
