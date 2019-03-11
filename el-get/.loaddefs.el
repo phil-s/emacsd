@@ -3393,13 +3393,41 @@ Special commands:
 
 ;;;***
 
-;;;### (autoloads (mouse-secondary-save-then-kill rotate-secondary-selection-yank-pointer
-;;;;;;  yank-pop-secondary yank-pop-commands secondary-to-primary
-;;;;;;  secondary-swap-region primary-to-secondary isearch-yank-secondary
-;;;;;;  yank-secondary secondary-dwim secondary-selection-yank-secondary-commands
-;;;;;;  secondary-selection-yank-commands secondary-selection-ring-max)
-;;;;;;  "second-sel/second-sel" "second-sel/second-sel.el" (20289
-;;;;;;  32888))
+;;;### (autoloads nil "sdcv-mode/sdcv-mode" "sdcv-mode/sdcv-mode.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from sdcv-mode/sdcv-mode.el
+
+(autoload 'sdcv-search "sdcv-mode/sdcv-mode" "\
+Search WORD through the command-line tool sdcv.
+The result will be displayed in buffer named with
+`sdcv-buffer-name' with `sdcv-mode' if called interactively.
+
+When provided with DICT-LIST-NAME, query `sdcv-dictionary-alist'
+to get the new dictionary list before search.
+Alternatively, dictionary list can be specified directly
+by DICT-LIST.  Any non-list value of it means using all dictionaries.
+
+When called interactively, prompt for the word.
+Prefix argument have the following meaning:
+If `sdcv-dictionary-alist' is defined, 
+use prefix argument to select a new DICT-LIST-NAME.
+Otherwise, prefix argument means using all dictionaries.
+
+Word may contain some special characters:
+    *       match zero or more characters
+    ?       match zero or one character
+    /       used at the beginning, for fuzzy search
+    |       used at the beginning, for data search
+          escape the character right after
+
+\(fn WORD &optional DICT-LIST-NAME DICT-LIST INTERACTIVE-P)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "sdcv-mode/sdcv-mode" '("sdcv-")))
+
+;;;***
+
+;;;### (autoloads nil "second-sel/second-sel" "second-sel/second-sel.el"
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from second-sel/second-sel.el
 
 (defvar secondary-selection-ring-max 60 "\

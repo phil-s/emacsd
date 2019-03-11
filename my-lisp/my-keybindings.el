@@ -226,6 +226,7 @@
   (define-key keymap (kbd "s-/")       'avy-goto-char-timer)
   (define-key keymap (kbd "<menu> s")  'avy-goto-char-timer)
   (define-key keymap (kbd "<f9>")      'avy-goto-char-timer)
+  (define-key keymap (kbd "<menu> d")  'sdcv-search)
   (define-key keymap (kbd "C-c v")     'my-copy-buffer-file-name)
   (define-key keymap (kbd "C-c r")     'rename-file-and-buffer)
   (define-key keymap (kbd "C-c W")     'my-write-copy-to-file)

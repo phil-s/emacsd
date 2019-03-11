@@ -61,4 +61,5 @@
 :avy "installed"
 :ghub "installed"
 :magit-popup "installed"
+:sdcv-mode "installed"
 )

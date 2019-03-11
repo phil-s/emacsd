@@ -235,6 +235,11 @@
             :url "http://github.com/ieure/scratch-el.git"
             :post-init (lambda () (autoload 'scratch "scratch" nil t)))
 
+     (:name sdcv-mode
+            :type git
+            :url "https://github.com/gucong/emacs-sdcv.git"
+            :features sdcv-mode)
+
      (:name second-sel
             :type emacswiki)
 
