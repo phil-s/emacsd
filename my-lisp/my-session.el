@@ -60,6 +60,7 @@
 ;; as individual features are utilised.
 (setq savehist-additional-variables
       '(kill-ring
+        Info-history-list
         ;; You don't need to add minibuffer history variables to this
         ;; list, all minibuffer histories will be saved automatically
         ;; as long as `savehist-save-minibuffer-history' is non-nil.
