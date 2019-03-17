@@ -22,18 +22,48 @@
 (eval-after-load "org"
   '(progn
      (my-org-babel-do-load-languages)
-     (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)))
+     (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
+     (my-org-configuration)))
 
 ;;; General configuration
 
-;; ;; Set maximum indentation for description lists.
-;; (setq org-list-description-max-indent 5)
+(defun my-org-configuration ()
+  "General configuration for `org-mode'."
 
-;; Prevent the demoting of a heading also shifting text within its sections.
-(setq org-adapt-indentation nil)
+  ;; Prevent the demoting of a heading also shifting text within its sections.
+  (setq org-adapt-indentation nil)
 
-;; Use a real ellipsis character.
-(setq org-ellipsis "…")
+  ;; ;; Set maximum indentation for description lists.
+  ;; (setq org-list-description-max-indent 5)
+
+  ;; Default notes file.
+  (setq org-default-notes-file "~/notes.org")
+
+  ;; Default agenda files.
+  (setq org-agenda-files '("~/todo.org"))
+
+  ;; Prevent the demoting of a heading also shifting text within its sections.
+  (setq org-adapt-indentation nil)
+
+  ;; Use a real ellipsis character.
+  (setq org-ellipsis "…")
+
+  ;; Use the `org-headline-done' face for completed todo items.
+  (setq org-fontify-done-headline t)
+
+  ;; Make the `org-headline-done' less noticeable.
+  (set-face-attribute
+   'org-headline-done nil :foreground nil :inherit 'shadow)
+
+  ;; Use the `org-headline-done' face for checked checkboxes.
+  ;; https://fuco1.github.io/2017-05-25-Fontify-done-checkbox-items-in-org-mode.html
+  (let ((pattern "^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"))
+    (font-lock-add-keywords
+     'org-mode
+     `((,pattern 1 'org-headline-done prepend))
+     'append))
+
+  ) ;; `my-org-configuration'
 
 
 ;;; Agenda / Capture
