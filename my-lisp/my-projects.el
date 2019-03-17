@@ -38,11 +38,13 @@
                        (bug-reference-url-format . "http://debbugs.gnu.org/%s")
                        (mode . bug-reference)))
    (diff-mode . ((mode . whitespace)))
-   (emacs-lisp-mode . ((indent-tabs-mode . nil)))))
+   (emacs-lisp-mode . ((indent-tabs-mode . nil)))
+   (".git" . ((nil . ((buffer-read-only . nil)))))))
 
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/share/emacs" 'emacs)
+(dir-locals-set-directory-class "~/emacs" 'emacs)
 (dir-locals-set-directory-class "~/emacs/trunk/git-repository" 'emacs)
 (when (file-directory-p "~/emacs")
   (mapc (lambda (dir) ; Apply to every ~/emacs/XX.X/emacs-XX.X directory
