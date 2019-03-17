@@ -224,6 +224,17 @@ static char * data[] = {
   (magit-define-popup-action 'magit-show-refs-popup ?t
     "Insert tags section" 'my-magit-insert-tags))
 
+(defun my-magit-push-timestamp-tag-to-origin ()
+  (interactive)
+  (let ((ts (format-time-string "%s")))
+    (magit-run-git "tag" ts)
+    (magit-push-tag ts "origin")))
+
+(with-eval-after-load "magit-remote"
+  (magit-define-popup-action 'magit-push-popup
+    ?s "timestamp tag to origin"
+    'my-magit-push-timestamp-tag-to-origin))
+
 (defun my-magit-insert-tags ()
   "Insert the Tags section at the end of the current buffer."
   (interactive)
