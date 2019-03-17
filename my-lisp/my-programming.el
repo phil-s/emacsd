@@ -245,6 +245,8 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 
 ;; Emacs Lisp (elisp)
 
+(setq debugger-stack-frame-as-list t)
+
 (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
   (add-hook hook 'turn-on-elisp-slime-nav-mode))
 
