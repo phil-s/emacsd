@@ -3,7 +3,9 @@
   (defvar dired-mode-map)
   (defvar find-grep-options)
   (defvar sql-buffer)
+  (defvar sql-database)
   (defvar sql-product)
+  (defvar sql-user)
   (defvar tags-loop-operate)
   (defvar tags-loop-scan)
   (defvar term-ansi-buffer-name)
@@ -123,17 +125,16 @@ using the specified hippie-expand function."
 
 
 ;; @see https://gist.github.com/1415844
-(require 'cl)
 (defun my-rotate-left (l) (append (cdr l) (list (car l))))
 (defun my-rotate-windows ()
   (let ((start-positions (my-rotate-left (mapcar 'window-start (window-list))))
         (buffers (my-rotate-left (mapcar 'window-buffer (window-list)))))
-    (mapcar* (lambda (window buffer pos)
-               (set-window-buffer window buffer)
-               (set-window-start window pos))
-             (window-list)
-             buffers
-             start-positions)))
+    (cl-mapcar (lambda (window buffer pos)
+                 (set-window-buffer window buffer)
+                 (set-window-start window pos))
+               (window-list)
+               buffers
+               start-positions)))
 
 (defun kill-other-buffer ()
   "Kill the next buffer, and expand the current one"
@@ -1055,6 +1056,7 @@ point. This function returns a list (string) for use in `interactive'."
 (defcustom my-www-search-url
   "http://google.com/search?num=100&q=%s"
   "URL for WWW search, with %s placeholder for search string"
+  :type 'string
   :group 'www)
 
 (defalias 'my-render-url 'my-eww)
@@ -1406,8 +1408,8 @@ or \"user@example.com\""
                         (apply 'append
                                (mapcar
                                 (lambda (x)
-                                  (remove-if-not 'identity
-                                                 (apply (car x) (cdr x))))
+                                  (cl-remove-if-not 'identity
+                                                    (apply (car x) (cdr x))))
                                 (tramp-get-completion-function "ssh"))))))
      (list (completing-read "Hostname: " hosts nil 'confirm nil nil hosts nil))))
   (let ((destdir (format "/ssh:%s:~/.terminfo/e/" hostspec)))
@@ -1627,7 +1629,9 @@ For example, to trace all ELP functions, do the following:
                  (goto-char (,pos)))))
            ,doc)
          (eval-after-load ,library
-           '(define-key ,mode-map [remap ,remap] ',fname))))))
+           '(progn
+              (defvar ,mode-map) ;; Silence compiler warnings.
+              (define-key ,mode-map [remap ,remap] #',fname)))))))
 
 (defmacro my-define-bob (fname mode library &rest forms)
   "Define a special version of `beginning-of-buffer' in MODE.
@@ -1695,6 +1699,24 @@ toggle between real end and logical end of the buffer."
   '(add-to-list 'find-function-regexp-alist
                 '(my-special-buffer-pos . my-find-special-buffer-pos-regexp)
                 :append))
+
+;; Silence compiler warnings
+(eval-when-compile
+  (declare-function bs-down "bs")
+  (declare-function bs-up "bs")
+  (declare-function compilation-next-error "compile")
+  (declare-function compilation-previous-error "compile")
+  (declare-function dired-next-line "dired")
+  (declare-function dired-previous-line "dired")
+  (declare-function ibuffer-backward-line "ibuffer")
+  (declare-function ibuffer-forward-line "ibuffer")
+  (declare-function occur-next "replace")
+  (declare-function occur-prev "replace")
+  (declare-function org-agenda-next-item "org-agenda")
+  (declare-function org-agenda-previous-item "org-agenda")
+  (declare-function vc-dir-next-line "vc-dir")
+  (declare-function vc-dir-previous-line "vc-dir")
+  )
 
 ;; Dired (M-x dired)
 (with-eval-after-load "dired"
