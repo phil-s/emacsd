@@ -94,6 +94,14 @@
 ;; Possibly better would be to send a custom escape sequence from the
 ;; terminal and handle that in `input-decode-map', but I don't know
 ;; whether there are any escape sequence ranges reserved for end users?
+;;
+;; ~/.xmonad/xmonad-session-rc
+;; # Make <menu> send <f8> for terminal Emacs (see also my-keybindings.el).
+;; # I would rather this *only* affect Emacs rather than be system-wide,
+;; # but <menu> is more useful to me in Emacs than anywhere else, so this
+;; # is acceptable.  Run xev to find out keycode for <menu>
+;; # http://askubuntu.com/questions/54157/how-do-i-set-xmodmap-on-login
+;; xmodmap -e "keycode 135 = F8"
 
 ;;;; * Help and documentation bindings
 
