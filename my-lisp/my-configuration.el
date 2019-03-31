@@ -50,6 +50,7 @@
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function my-isearch-delete "my-configuration")
   (declare-function notify "notify")
+  (declare-function outline-show-all "outline")
   (declare-function which-key-mode "which-key")
   )
 
@@ -973,10 +974,18 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; very well with my current config & window manager.
 ;; See also `ediff-setup-control-frame' and my full-screen by default
 ;; config above, which modifies `default-frame-alist'.
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq ediff-window-setup-function #'ediff-setup-windows-plain)
 
 ;; Default to side-by-side comparisons in ediff.
-(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-split-window-function #'split-window-horizontally)
+
+;; Expand any collapsed text sections in ediff buffers.
+(add-hook 'ediff-prepare-buffer-hook #'my-outline-show-all)
+
+(defun my-outline-show-all ()
+  "Call `outline-show-all' if the function has been defined."
+  (when (fboundp 'outline-show-all)
+    (outline-show-all)))
 
 ;; Use ediff instead of diff when typing 'd' in `save-some-buffers'
 ;; See variable `save-some-buffers-action-alist'
