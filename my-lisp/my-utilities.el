@@ -1604,6 +1604,57 @@ For example, to trace all ELP functions, do the following:
        (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
        map))))
 
+(defvar domain-hash-history nil
+  "Domain history for `domain-hash-arguments'.")
+(defvar domain-hash-algorithm 'sha256
+  "Any valid `secure-hash' algorithm.")
+(defvar domain-hash-length nil
+  "The length of substring returned by `domain-hash'.
+nil to return the complete hash.")
+
+(defun domain-hash-arguments (&optional algorithm)
+  "Obtain interactive arguments for `domain-hash' and friends."
+  (let ((args
+         (list (let ((default (car domain-hash-history)))
+                 (read-string (if default
+                                  (format "Domain (%s): " default)
+                                "Domain: ")
+                              nil 'domain-hash-history default))
+               (read-passwd "Passphrase: ")
+               current-prefix-arg)))
+    (if algorithm
+        (append args (list (intern (completing-read
+                                    (if domain-hash-algorithm
+                                        (format "Algorithm (%s): "
+                                                domain-hash-algorithm)
+                                      "Algorithm: ")
+                                    (secure-hash-algorithms)
+                                    nil t nil nil (symbol-name
+                                                   domain-hash-algorithm)))))
+      args)))
+
+(defun domain-hash (domain passphrase &optional kill algorithm)
+  "Hash a PASSPHRASE:DOMAIN combination.
+
+With prefix-arg copies hash to kill-ring, otherwise inserts it."
+  (interactive (domain-hash-arguments t))
+  (let* ((hash (substring-no-properties
+                (secure-hash (or algorithm domain-hash-algorithm)
+                             (concat passphrase ":" domain))
+                0 domain-hash-length))
+         (dots (propertize
+                hash 'display (make-string (length hash) ?.))))
+    (if kill
+        (kill-new dots)
+      (insert dots))))
+
+(defun domain-hash-md5 (domain passphrase &optional kill)
+  "`domain-hash' using the md5 algorithm."
+  (interactive (domain-hash-arguments))
+  (let ((domain-hash-algorithm 'md5)
+        (domain-hash-length 8))
+    (domain-hash domain passphrase kill)))
+
 (defun my-crontab-edit ()
   "Edit crontab."
   (interactive)
