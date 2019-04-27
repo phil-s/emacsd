@@ -5,7 +5,7 @@
 ;; Author: Justin Burkett <justin@burkett.cc>
 ;; Maintainer: Justin Burkett <justin@burkett.cc>
 ;; URL: https://github.com/justbur/emacs-which-key
-;; Version: 3.3.0
+;; Version: 3.3.2
 ;; Keywords:
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -56,8 +56,11 @@
   :prefix "which-key-")
 
 (defcustom which-key-idle-delay 1.0
-  "Delay (in seconds) for which-key buffer to popup. A value of zero
-might lead to issues, so a non-zero value is recommended
+  "Delay (in seconds) for which-key buffer to popup. This
+ variable should be set before activating `which-key-mode'.
+
+A value of zero might lead to issues, so a non-zero value is
+recommended
 (see https://github.com/justbur/emacs-which-key/issues/134)."
   :group 'which-key
   :type 'float)
@@ -640,12 +643,13 @@ used.")
 (defvar which-key--automatic-display nil
   "Internal: Non-nil if popup was triggered with automatic
 update.")
+(defvar which-key--debug-buffer-name nil
+  "If non-nil, use this buffer for debug messages.")
 (defvar which-key--multiple-locations nil)
 (defvar which-key--inhibit-next-operator-popup nil)
 (defvar which-key--prior-show-keymap-args nil)
 (defvar which-key--previous-frame-size nil)
 (defvar which-key--prefix-title-alist nil)
-(defvar which-key--debug nil)
 (defvar which-key--evil-keys-regexp (eval-when-compile
                                       (regexp-opt '("-state"))))
 (defvar which-key--ignore-non-evil-keys-regexp
@@ -700,6 +704,14 @@ update.")
 (defsubst which-key--current-prefix ()
   (when which-key--pages-obj
     (which-key--pages-prefix which-key--pages-obj)))
+
+(defmacro which-key--debug-message (&rest msg)
+  `(when which-key--debug-buffer-name
+     (let ((buf (get-buffer-create which-key--debug-buffer-name))
+           (fmt-msg (format ,@msg)))
+       (with-current-buffer buf
+         (goto-char (point-max))
+         (insert "\n" fmt-msg "\n")))))
 
 ;;; Third-party library support
 ;;;; Evil
@@ -1401,29 +1413,19 @@ local bindings coming first. Within these categories order using
 (defsubst which-key--butlast-string (str)
   (mapconcat #'identity (butlast (split-string str)) " "))
 
-(defun which-key--get-replacements (key-binding &optional use-major-mode)
-  (let ((alist (or (and use-major-mode
-                        (cdr-safe
-                         (assq major-mode which-key-replacement-alist)))
-                   which-key-replacement-alist))
-        res case-fold-search)
-    (catch 'res
-      (dolist (replacement alist)
-        ;; these are mode specific ones to ignore. The mode specific case is
-        ;; handled in the selection of alist
-        (unless (symbolp (car replacement))
-          (let ((key-regexp (caar replacement))
-                (binding-regexp (cdar replacement)))
-            (when (and (or (null key-regexp)
-                           (string-match-p key-regexp
-                                           (car key-binding)))
-                       (or (null binding-regexp)
-                           (string-match-p binding-regexp
-                                           (cdr key-binding))))
-              (push replacement res)
-              (when (not which-key-allow-multiple-replacements)
-                (throw 'res res)))))))
-    (nreverse res)))
+(defun which-key--match-replacement (key-binding replacement)
+  ;; these are mode specific ones to ignore. The mode specific case is
+  ;; handled in the selection of alist
+  (when (and (consp key-binding) (not (symbolp (car replacement))))
+    (let ((key-regexp (caar replacement))
+          (binding-regexp (cdar replacement))
+          case-fold-search)
+      (and (or (null key-regexp)
+               (string-match-p key-regexp
+                               (car key-binding)))
+           (or (null binding-regexp)
+               (string-match-p binding-regexp
+                               (cdr key-binding)))))))
 
 (defun which-key--get-pseudo-binding (key-binding &optional prefix)
   (let* ((pseudo-binding
@@ -1444,30 +1446,35 @@ local bindings coming first. Within these categories order using
   "Use `which-key--replacement-alist' to maybe replace KEY-BINDING.
 KEY-BINDING is a cons cell of the form \(KEY . BINDING\) each of
 which are strings. KEY is of the form produced by `key-binding'."
-  (let* ((pseudo-binding (which-key--get-pseudo-binding key-binding prefix)))
+  (let* ((pseudo-binding (which-key--get-pseudo-binding key-binding prefix))
+         one-match)
     (if pseudo-binding
         pseudo-binding
-      (let* ((mode-res (which-key--get-replacements key-binding t))
-             (all-repls (or mode-res
-                            (which-key--get-replacements key-binding))))
+      (let* ((all-repls
+              (append (cdr-safe (assq major-mode which-key-replacement-alist))
+                      which-key-replacement-alist)))
         (dolist (repl all-repls key-binding)
-          (setq key-binding
-                (cond ((or (not (consp repl)) (null (cdr repl)))
-                       key-binding)
-                      ((functionp (cdr repl))
-                       (funcall (cdr repl) key-binding))
-                      ((consp (cdr repl))
-                       (cons
-                        (cond ((and (caar repl) (cadr repl))
-                               (replace-regexp-in-string
-                                (caar repl) (cadr repl) (car key-binding) t))
-                              ((cadr repl) (cadr repl))
-                              (t (car key-binding)))
-                        (cond ((and (cdar repl) (cddr repl))
-                               (replace-regexp-in-string
-                                (cdar repl) (cddr repl) (cdr key-binding) t))
-                              ((cddr repl) (cddr repl))
-                              (t (cdr key-binding))))))))))))
+          (when (and (or which-key-allow-multiple-replacements
+                         (not one-match))
+                     (which-key--match-replacement key-binding repl))
+            (setq one-match t)
+            (setq key-binding
+                  (cond ((or (not (consp repl)) (null (cdr repl)))
+                         key-binding)
+                        ((functionp (cdr repl))
+                         (funcall (cdr repl) key-binding))
+                        ((consp (cdr repl))
+                         (cons
+                          (cond ((and (caar repl) (cadr repl))
+                                 (replace-regexp-in-string
+                                  (caar repl) (cadr repl) (car key-binding) t))
+                                ((cadr repl) (cadr repl))
+                                (t (car key-binding)))
+                          (cond ((and (cdar repl) (cddr repl))
+                                 (replace-regexp-in-string
+                                  (cdar repl) (cddr repl) (cdr key-binding) t))
+                                ((cddr repl) (cddr repl))
+                                (t (cdr key-binding)))))))))))))
 
 (defsubst which-key--current-key-list (&optional key-str)
   (append (listify-key-sequence (which-key--current-prefix))
@@ -1924,7 +1931,7 @@ as well as metadata."
         (push page-width page-widths))
       (make-which-key--pages
        :pages (nreverse pages)
-       :height avl-lines
+       :height (if (> n-pages 1) avl-lines (min avl-lines n-keys))
        :widths (nreverse page-widths)
        :keys/page (reverse keys/page)
        :page-nums (number-sequence 1 n-pages)
@@ -1986,6 +1993,12 @@ is the width of the live window."
             (or prefix-title
                 (which-key--maybe-get-prefix-title
                  (key-description prefix-keys))))
+      (which-key--debug-message "Frame height: %s
+Minibuffer height: %s
+Max dimensions: (%s,%s)
+Available for bindings: (%s,%s)
+Actual lines: %s" (frame-height) (window-text-height (minibuffer-window))
+max-lines max-width avl-lines avl-width (which-key--pages-height result))
       result)))
 
 (defun which-key--lighter-status ()
@@ -2193,13 +2206,18 @@ used are reapplied to the new key sequence."
   "Call the command in `which-key--prefix-help-cmd-backup'.
 Usually this is `describe-prefix-bindings'."
   (interactive)
-  (let ((which-key-inhibit t))
+  (let ((which-key-inhibit t)
+        (popup-showing (which-key--popup-showing-p)))
     (which-key--hide-popup-ignore-command)
-    (cond ((eq which-key--prefix-help-cmd-backup
-               'describe-prefix-bindings)
-           ;; This is essentially what `describe-prefix-bindings' does
-           (describe-bindings
-            (kbd (which-key--current-key-string))))
+    (cond ((and (eq which-key--prefix-help-cmd-backup
+                    'describe-prefix-bindings)
+                ;; If the popup is not showing, we call
+                ;; `describe-prefix-bindings' directly.
+                popup-showing)
+           ;; This is essentially what `describe-prefix-bindings' does. We can't
+           ;; use this function directly, because the prefix will not be correct
+           ;; when we enter using `which-key-C-h-dispatch'.
+           (describe-bindings (kbd (which-key--current-key-string))))
           ((functionp which-key--prefix-help-cmd-backup)
            (funcall which-key--prefix-help-cmd-backup)))))
 
@@ -2495,7 +2513,7 @@ is selected interactively by mode in `minor-mode-map-alist'."
     (&optional prefix-keys from-keymap filter prefix-title)
   "Fill `which-key--buffer' with key descriptions and reformat.
 Finally, show the buffer."
-  (let ((start-time (when which-key--debug (current-time)))
+  (let ((start-time (current-time))
         (formatted-keys (which-key--get-bindings
                          prefix-keys from-keymap filter))
         (prefix-desc (key-description prefix-keys)))
@@ -2510,9 +2528,9 @@ Finally, show the buffer."
                    (which-key--create-pages
                     formatted-keys prefix-keys prefix-title))
              (which-key--show-page)))
-    (when which-key--debug
-      (message "On prefix \"%s\" which-key took %.0f ms." prefix-desc
-               (* 1000 (float-time (time-since start-time)))))))
+    (which-key--debug-message
+     "On prefix \"%s\" which-key took %.0f ms." prefix-desc
+     (* 1000 (float-time (time-since start-time))))))
 
 (defun which-key--this-command-keys ()
   "Version of `this-single-command-keys' corrected for key-chords and god-mode."
