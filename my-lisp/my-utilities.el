@@ -893,6 +893,32 @@ Otherwise call `ediff-buffers' interactively."
               (ediff-files filea fileb))))
       (call-interactively 'ediff-buffers))))
 
+(defun my-compare-windows-complete (&optional ignore-whitespace)
+  "Highlight all differences between two windows.
+
+With a prefix argument, do not highlight whitespace-only differences.
+\(This does not prevent the highlighting of whitespace that is part of
+a difference which includes non-whitespace characters.)
+
+To remove the highlighting, use \\[compare-windows-dehighlight]."
+  (interactive "P")
+  (require 'cl-lib)
+  (require 'compare-w)
+  (compare-windows-dehighlight)
+  (let ((w1 (get-buffer-window))
+        (w2 (funcall compare-windows-get-window-function)))
+    (cl-letf ((w1p (point))
+              (w2p (window-point w2))
+              (compare-windows-highlight 'persistent)
+              ((symbol-function 'compare-windows-dehighlight) #'ignore)
+              ((symbol-function 'ding) (lambda () (error "done"))))
+      (goto-char (point-min))
+      (with-selected-window w2
+        (goto-char (point-min)))
+      (ignore-errors
+        (while (compare-windows ignore-whitespace)))
+      (set-window-point w1 w1p)
+      (set-window-point w2 w2p))))
 
 ;; (defadvice kill-buffer (around my-kill-buffer-check activate)
 ;;   "Prompt when a buffer is about to be killed."
