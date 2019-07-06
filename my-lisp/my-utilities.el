@@ -471,7 +471,7 @@ Also see the following:
 (defun reminder (what when)
   "Remind me about something later."
   (interactive "sRemind me about: \nsRemind me at: ")
-  (let ((buf (get-buffer-create "*reminder*")))
+  (let ((buf (get-buffer-create " *reminder*")))
     (with-current-buffer buf
       (erase-buffer))
     (shell-command
@@ -479,7 +479,7 @@ Also see the following:
 | at %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
              (shell-quote-argument what)
              (shell-quote-argument when))
-     buf "*reminder-errors*")))
+     buf " *reminder-errors*")))
 
 (defun my-interactive-ding ()
   (interactive)
