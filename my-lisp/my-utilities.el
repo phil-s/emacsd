@@ -1190,6 +1190,8 @@ instead of `browse-url-new-window-flag'."
             (list url)))))
 
 (defvar my-ssh-history nil)
+(defvar-local my-ssh-switches nil)
+(put 'my-ssh-switches 'permanent-local t)
 (defun my-ssh (args)
   "Connect to a remote host by SSH."
   ;; The following makes typing SPC a problem :/
@@ -1202,6 +1204,7 @@ instead of `browse-url-new-window-flag'."
          (name (concat "ssh " args))
          (termbuf (apply 'make-term name "ssh" nil switches)))
     (set-buffer termbuf)
+    (setq-local my-ssh-switches switches)
     (term-mode)
     (term-char-mode)
     (switch-to-buffer termbuf)))
