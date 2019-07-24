@@ -78,12 +78,13 @@
            (my-sql-db-user-getter . my-drupal-db-user)
            (eval . (when (and buffer-file-name
                               (string-match "\\.make\\'" buffer-file-name))
-                     (conf-mode)))
+                     (unless (derived-mode-p 'conf-mode)
+                       (conf-mode))))
            (eval . (grep-apply-setting ; Make M-x grep use git-grep:
                     'grep-command
                     "git --no-pager grep -H -n --no-color -I -e "))
            ))
-   (php-mode . ((eval . (unless (eq major-mode 'drupal-mode)
+   (php-mode . ((eval . (unless (derived-mode-p 'drupal-mode)
                           (drupal-mode)
                           (hack-local-variables))) ;; Oooh.
                 (flymake-phpcs-standard . "Drupal")
@@ -92,10 +93,6 @@
    (css-mode . ((css-indent-offset . 2)))
    (scss-mode . ((css-indent-offset . 2)))
    (js-mode . ((js-indent-level . 2)))
-   (javascript-mode . ((js-indent-level . 2)))
-   (javascript-generic-mode . ((eval . (progn
-                                         (js-mode)
-                                         (hack-local-variables))))) ;; Oooh.
    (web-mode . ((web-mode-code-indent-offset . 2)
                 (web-mode-code-indent-offset . 2)
                 (web-mode-css-indent-offset . 2)
