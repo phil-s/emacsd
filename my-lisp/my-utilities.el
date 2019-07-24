@@ -1209,7 +1209,7 @@ instead of `browse-url-new-window-flag'."
     (term-char-mode)
     (switch-to-buffer termbuf)))
 
-(defun my-terminal (retain-window-layout)
+(defun my-terminal (delete-other-windows)
   "Switch to a `term' buffer (creating it if necessary)."
   (interactive "P")
   (require 'term)
@@ -1220,7 +1220,7 @@ instead of `browse-url-new-window-flag'."
   (pop-to-buffer term-ansi-buffer-name '((display-buffer-reuse-window
                                           display-buffer-same-window)
                                          . ((reusable-frames . visible))))
-  (unless retain-window-layout
+  (when delete-other-windows
     (delete-other-windows))
   (setq-local term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
