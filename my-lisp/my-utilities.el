@@ -1093,6 +1093,14 @@ text by that amount."
           (setq indent (- indent (prefix-numeric-value pad))))
         (indent-rigidly (point-min) (point-max) (- indent))
         (copy-region-as-kill (point-min) (point-max))))))
+
+(defun my-copy-region-as-kill (pad beginning end)
+  "Like `copy-region-as-kill' or, with prefix arg, `my-copy-region-unindented'."
+  (interactive "P\nr")
+  (if pad
+      (my-copy-region-unindented (if (consp pad) nil pad)
+                                 beginning end)
+    (copy-region-as-kill beginning end)))
 
 (defun my-region-or-word (prompt)
   "Read a string from the minibuffer, prompting with PROMPT.

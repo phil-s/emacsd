@@ -19,10 +19,11 @@
 (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
-(eval-after-load "my-utilities"
-  '(when (fboundp 'jp/yank)
-     (global-set-key (kbd "C-y") 'jp/yank)
-     (global-set-key (kbd "M-y") 'jp/yank-pop)))
+(with-eval-after-load "my-utilities"
+  (global-set-key (kbd "M-w") 'my-copy-region-as-kill)
+  (when (fboundp 'jp/yank)
+    (global-set-key (kbd "C-y") 'jp/yank)
+    (global-set-key (kbd "M-y") 'jp/yank-pop)))
 
 ;; Global bindings that I want to over-ride in some modes.
 (global-set-key (kbd "C-c o") 'ff-find-other-file)
