@@ -1101,6 +1101,16 @@ text by that amount."
       (my-copy-region-unindented (if (consp pad) nil pad)
                                  beginning end)
     (copy-region-as-kill beginning end)))
+
+(defun my-kill-region (pad beginning end)
+  "Like `kill-region'.  With prefix arg, use `my-copy-region-unindented'."
+  (interactive "P\nr")
+  (if pad
+      (progn
+        (my-copy-region-unindented (if (consp pad) nil pad)
+                                   beginning end)
+        (delete-region beginning end))
+    (kill-region beginning end)))
 
 (defun my-region-or-word (prompt)
   "Read a string from the minibuffer, prompting with PROMPT.

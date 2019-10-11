@@ -21,6 +21,7 @@
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 (with-eval-after-load "my-utilities"
   (global-set-key (kbd "M-w") 'my-copy-region-as-kill)
+  (global-set-key (kbd "C-w") 'my-kill-region)
   (when (fboundp 'jp/yank)
     (global-set-key (kbd "C-y") 'jp/yank)
     (global-set-key (kbd "M-y") 'jp/yank-pop)))
