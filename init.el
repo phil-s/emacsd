@@ -63,14 +63,6 @@
 ;; (i.e. via replace-regexp-lax-whitespace. but maybe that's daft.)
 ;; etc...
 
-;; Indirect clone enhancements:
-;; Provide some way to establish the parent buffer from
-;; the indirect buffer.
-;; Use-case: Allow diff-buffer-with-file to work from an
-;; indirect buffer, by actually running the diff for the
-;; parent buffer.
-;; (Or more generically? Not sure if that's feasible!)
-
 
 ;; Absolutely crazy that "Only useful in lexical-binding mode" is
 ;; relegated to a comment in the definition of `letrec` rather than
@@ -151,9 +143,12 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev make ncurses-term ttf-ancient-fonts
-
+;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev make ncurses-term texinfo ttf-ancient-fonts sdcv fortune-mod
+;; # ^ Includes...
+;; # Terminfo: ncurses-term
 ;; # PDF-tools packages: libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
+;; # Fonts I use: ttf-ancient-fonts
+;; # The 1913 + 1828 Webster’s Revised Unabridged Dictionary: sdcv
 
 ;; Truetype font support packages: libxft-dev libfreetype6-dev
 ;; My preferred font is a variant of Droid Sans Mono (droid-fonts package)
@@ -201,6 +196,66 @@
 ;; On Debian-based systems you administer, you can apt-get install
 ;; ncurses-term, which includes /usr/share/terminfo/e/eterm-color.
 
+;; .bashrc code for:
+;; # Emacs term.el directory tracking support.
+;; : ${HOSTNAME=$(uname -n)}
+;; USER=$(whoami)
+;; case $TERM in
+;;     eterm*)
+;;         cd()    { command cd    "$@"; printf '\033AnSiTc %s\n' "$PWD"; }
+;;         pushd() { command pushd "$@"; printf '\033AnSiTc %s\n' "$PWD"; }
+;;         popd()  { command popd  "$@"; printf '\033AnSiTc %s\n' "$PWD"; }
+;;         printf '\033AnSiTc %s\n' "$PWD"
+;;         printf '\033AnSiTh %s\n' "$HOSTNAME"
+;;         printf '\033AnSiTu %s\n' "$USER"
+;; esac
+
+;;;; * Processes, sentinels, and filters
+;;
+;; Refer to:
+;;  - (info "(elisp) Processes")
+;;  - (info "(elisp) Sentinels")
+;;  - (info "(elisp) Filter Functions")
+;;
+;; `term' has sentinel `term-sentinel' and process filter
+;; `term-emulate-terminal'.  Each process has only a single sentinel
+;; and a single filter; so if you set a custom function, you may need
+;; it to take care of calling the standard function.
+;;
+;; In the case of `shell', it only calls `shell-mode' when (and after)
+;; starting the inferior process, so we can use `shell-mode-hook' to
+;; add a sentinel.
+;;
+;; `set-process-sentinel' will clobber any existing sentinel for that
+;; process.  shell will always have a sentinel (exactly what it is can
+;; vary), and we can call the original sentinel function within our
+;; replacement sentinel, in order to piggy-back our new behaviour on
+;; top of that.  e.g.:
+;;
+;; (add-hook 'shell-mode-hook 'my-shell-mode-hook)
+;;
+;; (defun my-shell-mode-hook ()
+;;   "Custom `shell-mode' behaviours."
+;;   ;; Kill the buffer when the shell process exits.
+;;   (let* ((proc (get-buffer-process (current-buffer)))
+;;          (original-sentinel (process-sentinel proc))
+;;          (new-sentinel (apply-partially
+;;                         (lambda (original-sentinel process signal)
+;;                           ;; Call the original process sentinel first.
+;;                           (funcall original-sentinel process signal)
+;;                           ;; Kill the buffer on an exit signal.
+;;                           (and (memq (process-status process) '(exit signal))
+;;                                (buffer-live-p (process-buffer process))
+;;                                (kill-buffer (process-buffer process))))
+;;                         original-sentinel))
+;;          (sym (make-symbol "my-shell-mode-sentinel")))
+;;     (defalias sym new-sentinel
+;;       "Call the original shell sentinel, and kill the buffer upon exit.")
+;;     (set-process-sentinel proc sym)))
+;;
+;; (defun my-shell-mode-sentinel ()
+;;   "This exists only to say:  See `my-shell-mode-hook' for the real code.")
+
 ;;;; * Keybinding reference
 ;; http://www.nongnu.org/emacs-tiny-tools/keybindings/
 ;; http://www.gnu.org/software/emacs/elisp/html_node/Key-Binding-Conventions.html
@@ -221,6 +276,22 @@
 ;; http://endlessparentheses.com/define-context-aware-keys-in-emacs.html
 ;; http://stackoverflow.com/questions/16090517/elisp-conditionally-change-keybinding
 ;; http://stackoverflow.com/questions/2494096/emacs-key-binding-fallback
+
+;; Emacs does have a way of almost completely ignoring an event, via
+;; the `special-event-map' keymap.
+;; M-: (info "(elisp) Special Events") RET
+;;
+;; (define-key special-event-map (kbd "<f2>") 'ignore)
+;;
+;; This can potentially also be used for things like transparent key
+;; translations (i.e. no "X (translated from Y)" processing); but
+;; that's probably a bad idea.
+;;
+;; (define-key special-event-map (kbd "<return>") 'my-ret-event)
+;; (defun my-ret-event ()
+;;   "Push `RET' onto `unread-command-events'."
+;;   (interactive)
+;;   (push '(t . ?\C-m) unread-command-events))
 
 ;; Query bindings for keys:
 ;; (lookup-key KEYMAP KEY &optional ACCEPT-DEFAULT)
@@ -489,7 +560,7 @@
 ;; Don't ever do this without good reason. But if you *really* need to...
 
 ;; There is an excellent overview at:
-;; http://www.lunaryorn.com/2014/08/12/emacs-script-pitfalls.html
+;; https://swsnr.de/blog/2014/08/12/emacs-script-pitfalls/
 
 ;; "n.b. secure text input by reading directly from the TTY is
 ;; currently impossible in any released version from Emacs:
