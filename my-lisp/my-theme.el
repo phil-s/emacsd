@@ -23,6 +23,10 @@
   ;; Make errors slightly less red for a nicer zenburn contrast.
   (set-face-foreground 'error "orangered")
 
+  ;; `display-fill-column-indicator-mode' (27+).
+  (when (facep 'fill-column-indicator)
+    (set-face-attribute 'fill-column-indicator nil :foreground "grey27"))
+
   (eval-after-load "hl-sexp"
     '(set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
 
