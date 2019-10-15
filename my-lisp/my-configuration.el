@@ -147,6 +147,8 @@ when `auto-save-mode' is invoked manually.")
 ;; Enable disabled commands
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'downcase-region           'disabled nil)
+(put 'erase-buffer              'disabled nil)
+(put 'list-timers               'disabled nil)
 (put 'narrow-to-page            'disabled nil)
 (put 'narrow-to-region          'disabled nil)
 (put 'scroll-left               'disabled nil)
