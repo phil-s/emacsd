@@ -251,6 +251,8 @@
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
   (define-key keymap (kbd "C-z C-f")   'my-find-file-in-project)
   (define-key keymap (kbd "C-c m m")   'magit-status)
+  (define-key keymap (kbd "C-c m M")   'magit-dispatch-popup)
+  (define-key keymap (kbd "C-c m ?")   'magit-dispatch-popup)
   (define-key keymap (kbd "C-c m b")   'mo-git-blame-current)
   (define-key keymap (kbd "C-c m d")   'magit-diff-popup)
   (define-key keymap (kbd "C-c m l")   'magit-log-popup)
