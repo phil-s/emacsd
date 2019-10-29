@@ -169,6 +169,11 @@ static char * data[] = {
   (defvar magit-save-repository-buffers)
   )
 
+;; Refer to: (info "(magit) Wip Modes")
+(magit-wip-after-save-mode 1)
+(magit-wip-after-apply-mode 1)
+(magit-wip-before-change-mode 1)
+
 ;; No, I really don't want Emacs to complain that my summary line is
 ;; long enough to be useful (no matter what the git book recommends).
 (eval-after-load "git-commit"
