@@ -907,16 +907,25 @@ To remove the highlighting, use \\[compare-windows-dehighlight]."
   (compare-windows-dehighlight)
   (let ((w1 (get-buffer-window))
         (w2 (funcall compare-windows-get-window-function)))
-    (cl-letf ((w1p (point))
+    (cl-letf ((w1p (window-point w1))
               (w2p (window-point w2))
               (compare-windows-highlight 'persistent)
               ((symbol-function 'compare-windows-dehighlight) #'ignore)
               ((symbol-function 'ding) (lambda () (error "done"))))
-      (goto-char (point-min))
+      (with-selected-window w1
+        (goto-char (point-min)))
       (with-selected-window w2
         (goto-char (point-min)))
       (ignore-errors
         (while (compare-windows ignore-whitespace)))
+      ;; Highlight any non-matching remainder in both buffers.
+      (let ((b1 (window-buffer w1))
+            (b2 (window-buffer w2))
+            (p1 (window-point w1))
+            (p2 (window-point w2))
+            (max1 (with-selected-window w1 (point-max)))
+            (max2 (with-selected-window w2 (point-max))))
+        (compare-windows-highlight p1 max1 b1 w1 p2 max2 b2 w2))
       (set-window-point w1 w1p)
       (set-window-point w2 w2p))))
 
