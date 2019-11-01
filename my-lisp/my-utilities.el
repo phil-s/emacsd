@@ -476,7 +476,7 @@ Also see the following:
       (erase-buffer))
     (shell-command
      (format "echo 'DISPLAY=:0.0 zenity --info --title=\"Reminder\" --text=%s' \
-| at %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
+| at -M %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
              (shell-quote-argument what)
              (shell-quote-argument when))
      buf " *reminder-errors*")))
