@@ -1,5 +1,6 @@
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar compare-windows-get-window-function)
   (defvar dired-mode-map)
   (defvar find-grep-options)
   (defvar sql-buffer)
@@ -11,6 +12,8 @@
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
+  (declare-function compare-windows-dehighlight "compare-w")
+  (declare-function compare-windows-highlight "compare-w")
   (declare-function dired-add-file "dired-aux")
   (declare-function dired-create-directory "dired-aux")
   (declare-function dired-current-directory "dired")
