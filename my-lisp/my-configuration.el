@@ -617,8 +617,8 @@ See also: `my-copy-buffer-file-name'."
 ;; Assume `minibuffer-line' is installed as an ELPA package.
 (add-hook 'after-init-hook 'my-minibuffer-line-config)
 
-;; Use Firefox as the default web browser
-(setq browse-url-browser-function 'browse-url-firefox)
+;; Use Pale Moon as the default web browser.
+(setq browse-url-browser-function 'browse-url-palemoon)
 
 ;; Do not expose certain information in HTTP request headers
 (setq url-privacy-level '(emacs email lastloc))
