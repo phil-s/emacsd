@@ -236,7 +236,7 @@ when `auto-save-mode' is invoked manually.")
              (unless (yes-or-no-p (format "Kill %S? " proc))
                (error "Process not killed"))
            (error (format "Buffer %s has no process" (buffer-name))))
-         nil)))
+         (list proc))))
 
 ;; A much larger message history
 (setq message-log-max 10000)
