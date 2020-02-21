@@ -1105,7 +1105,13 @@ text by that amount."
         (copy-region-as-kill (point-min) (point-max))))))
 
 (defun my-copy-region-as-kill (pad beginning end)
-  "Like `copy-region-as-kill' or, with prefix arg, `my-copy-region-unindented'."
+  "Like `copy-region-as-kill' or, with prefix arg, `my-copy-region-unindented'.
+
+\\[universal-argument] causes minimal indentation for the copied region.
+
+A numeric prefix argument pads the minimal indent by PAD columns.
+
+See also `my-kill-region'."
   (interactive "P\nr")
   (if pad
       (my-copy-region-unindented (if (consp pad) nil pad)
@@ -1113,7 +1119,13 @@ text by that amount."
     (copy-region-as-kill beginning end)))
 
 (defun my-kill-region (pad beginning end)
-  "Like `kill-region'.  With prefix arg, use `my-copy-region-unindented'."
+  "Like `kill-region'.  With prefix arg, also `my-copy-region-unindented'.
+
+\\[universal-argument] causes minimal indentation for the copied region.
+
+A numeric prefix argument pads the minimal indent by PAD columns.
+
+See also `my-copy-region-as-kill'."
   (interactive "P\nr")
   (if pad
       (progn
