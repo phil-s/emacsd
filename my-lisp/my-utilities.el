@@ -51,9 +51,8 @@
 Use `set-region-writeable' to remove this property."
   ;; See http://stackoverflow.com/questions/7410125
   (interactive "r")
-  (let ((modified (buffer-modified-p)))
-    (add-text-properties begin end '(read-only t))
-    (set-buffer-modified-p modified)))
+  (with-silent-modifications
+    (add-text-properties begin end '(read-only t))))
 
 (defun set-region-writeable (begin end)
   "Removes the read-only text property from the marked region.
@@ -61,10 +60,8 @@ Use `set-region-writeable' to remove this property."
 Use `set-region-read-only' to set this property."
   ;; See http://stackoverflow.com/questions/7410125
   (interactive "r")
-  (let ((modified (buffer-modified-p))
-        (inhibit-read-only t))
-    (remove-text-properties begin end '(read-only t))
-    (set-buffer-modified-p modified)))
+  (with-silent-modifications
+    (remove-text-properties begin end '(read-only t))))
 
 (eval-when-compile
   (defvar he-num)
@@ -78,17 +75,16 @@ The optional argument can be generated with `make-hippie-expand-function'."
   (require 'cl)
   (let ((this-command 'my-hippie-expand-completions)
         (last-command last-command)
-        (buffer-modified (buffer-modified-p))
         (hippie-expand-function (or hippie-expand-function 'hippie-expand)))
     ;; avoid the (ding) when hippie-expand exhausts its options.
     (cl-letf (((symbol-function 'ding) 'ignore))
-      (while (progn
-               (funcall hippie-expand-function nil)
-               (setq last-command 'my-hippie-expand-completions)
-               (not (equal he-num -1)))))
-    ;; Evaluating the completions modifies the buffer, however we will finish
-    ;; up in the same state that we began.
-    (set-buffer-modified-p buffer-modified)
+      ;; Evaluating the completions modifies the buffer, however we
+      ;; will finish up in the same state that we began.
+      (with-silent-modifications
+        (while (progn
+                 (funcall hippie-expand-function nil)
+                 (setq last-command 'my-hippie-expand-completions)
+                 (not (equal he-num -1))))))
     ;; Provide the options in the order in which they are normally generated.
     (delete he-search-string (reverse he-tried-table))))
 
