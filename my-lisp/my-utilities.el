@@ -98,7 +98,9 @@ using the specified hippie-expand function."
         (when options
           (list (ido-completing-read "Completions: " options)))))
      (if selection
-         (he-substitute-string selection t)
+         (progn
+           (undo-boundary)
+           (he-substitute-string selection t))
        (message "No expansion found"))))
 
 (defun my-ido-hippie-expand ()
