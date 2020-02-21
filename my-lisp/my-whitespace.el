@@ -77,6 +77,7 @@
         (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
                   'hide-trailing-whitespace))
       '(calendar
+        ediff-meta
         erc
         eww
         geben-context
