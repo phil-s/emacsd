@@ -2618,9 +2618,18 @@ which defaults to installed, required and removed.  Example:
   (let ((p (el-get-package-symbol package))
 	(s (el-get-read-all-packages-status)))
     (with-temp-file el-get-status-file
-      (insert
-       (format "%S" (if s (plist-put s p status)
-		      `(,p ,status)))))))
+      (save-excursion
+	(insert
+	 (format "%S" (if s (plist-put s p status)
+			`(,p ,status)))))
+      (search-forward "(:")
+      (replace-match "(\n:")
+      (while (search-forward " :" nil :noerror)
+	(replace-match "\n:"))
+      (goto-char (1- (point-max)))
+      (when (eql (char-after) ?\))
+	(insert "\n"))
+      (sort-lines nil 3 (1- (point-max))))))
 
 (defun el-get-list-package-names-with-status (&rest status)
   "Return package names that are currently in given status"
