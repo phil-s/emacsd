@@ -22,6 +22,16 @@
 
 (require 'posix-manual-data)
 
+(defgroup posix-manual nil
+  "Browse POSIX man pages."
+  :prefix "posix-manual"
+  :group 'convenience)
+
+(defcustom posix-manual-url-browser-function nil
+  "Override for `browse-url-browser-function'."
+  :type '(choice (const :tag "Default" nil)
+                 (function :tag "Custom function")))
+
 (defun posix-manual--pages ()
   "Get list of all POSIX manual pages."
   (save-match-data
@@ -49,8 +59,10 @@ completion. The `browse-url' function is used to open the page."
   (interactive
    (list (completing-read "POSIX manual entry: " (posix-manual--pages)
                           nil t (word-at-point))))
-  (browse-url (or (posix-manual--page-url page)
-                  (error "No such POSIX manual page"))))
+  (let ((browse-url-browser-function (or posix-manual-url-browser-function
+                                         browse-url-browser-function)))
+    (browse-url (or (posix-manual--page-url page)
+                    (error "No such POSIX manual page")))))
 
 (provide 'posix-manual)
 

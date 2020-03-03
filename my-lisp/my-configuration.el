@@ -1134,6 +1134,9 @@ when the file path is too long to show on one line."
                          '((inhibit-same-window . nil)
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
+
+;; Use `eww' for `posix-manual-entry'.
+(setq posix-manual-url-browser-function 'eww-browse-url)
 
 ;; Workaround for security problem.  See the release announcement:
 ;; https://lists.gnu.org/archive/html/emacs-devel/2017-09/msg00211.html
