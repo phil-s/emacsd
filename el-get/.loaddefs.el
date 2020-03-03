@@ -3423,6 +3423,30 @@ Return path to current PHP project.
 
 ;;;***
 
+;;;### (autoloads nil "posix-manual/posix-manual" "posix-manual/posix-manual.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from posix-manual/posix-manual.el
+
+(autoload 'posix-manual-entry "posix-manual/posix-manual" "\
+Visit the given POSIX manual page in a web browser.
+
+Interactively, ask which PAGE to visit in the minibuffer with tab
+completion. The `browse-url' function is used to open the page.
+
+\(fn PAGE)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "posix-manual/posix-manual" '("posix-manual--page")))
+
+;;;***
+
+;;;### (autoloads nil "posix-manual/posix-manual-data" "posix-manual/posix-manual-data.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from posix-manual/posix-manual-data.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "posix-manual/posix-manual-data" '("posix-manual-data-")))
+
+;;;***
+
 ;;;### (autoloads nil "psvn/psvn" "psvn/psvn.el" (0 0 0 0))
 ;;; Generated autoloads from psvn/psvn.el
 

@@ -96,6 +96,10 @@
             :type git
             :url "https://github.com/purcell/elisp-slime-nav.git")
 
+     (:name posix-manual
+            :type git
+            :url "https://github.com/lassik/emacs-posix-manual.git")
+
      (:name escreen)
 
      ;; (:name espect

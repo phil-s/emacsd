@@ -42,6 +42,7 @@
 :packed "installed"
 :php-eldoc "installed"
 :php-mode "installed"
+:posix-manual "installed"
 :psvn "installed"
 :rainbow-mode "installed"
 :sauron "installed"
