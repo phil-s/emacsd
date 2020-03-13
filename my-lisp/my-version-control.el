@@ -11,6 +11,10 @@
   (declare-function vc-read-revision "vc")
   )
 
+;; Use `read-only-mode' in `diff-mode' buffers by default, as this provides
+;; more convenient key bindings, and actually editing a diff is uncommon.
+(add-hook 'diff-mode-hook 'read-only-mode)
+
 (defadvice log-view-diff (around my-advice-log-view-diff)
   "Don't switch from the log window to the diff window."
   (let ((log-view-buffer (current-buffer)))
