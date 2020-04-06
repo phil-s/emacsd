@@ -162,8 +162,11 @@ return array(
   'warnOnMultipleConfigs' => true,
   // We use a pipe rather than a pty to talk to the process, and so psysh
   // does not know that colour support is available; but we can enable it.
-  'colorMode' => \\Psy\\Configuration::COLOR_MODE_FORCED,
-  // 'colorMode' => \\Psy\\Configuration::COLOR_MODE_DISABLED,
+  // 'colorMode' => 'disabled',
+  'colorMode' => 'forced',
+  // Similarly, prevent the pipe from causing psysh to drop into its
+  // non-interactive mode.
+  'interactiveMode' => 'forced',
 );"
   "PHP code for the PsySH config file.
 
