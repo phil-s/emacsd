@@ -882,7 +882,11 @@
 ;; Start server (but don't restart).
 (require 'server)
 (unless (server-running-p)
-  (server-start))
+  (server-start)
+  ;; Also start in this instance a server for the Edit With Emacs
+  ;; browser extension.
+  (when (require 'edit-server nil :noerror)
+    (edit-server-start)))
 
 ;; Log start and uptime to `my-emacs-uptime-log'.
 (my-log-emacs-start-time)
