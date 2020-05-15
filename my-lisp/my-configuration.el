@@ -315,15 +315,20 @@ when `auto-save-mode' is invoked manually.")
 ;; (setq auto-insert-query nil)
 
 ;; If SIGUSR1 is received, start a server.
+;; Connect to it with: "emacsclient -s server<PID>" for a given process ID.
+;; This socket will be visible in `server-socket-dir'.
 (define-key special-event-map [sigusr1] 'sigusr1-handler)
 (defun sigusr1-handler ()
   "Handler for SIGUSR1 signal.
 
 Can be tested with (signal-process (emacs-pid) 'sigusr1)"
   (interactive)
-  (when (server-running-p)
-    (setq server-name "sigusr1")
-    (message "Changed `server-name' to %s" server-name))
+  (require 'server)
+  (let ((newname (format "server%d" (emacs-pid))))
+    (unless (equal server-name newname)
+      (message "Changed `server-name' from %s to %s"
+               server-name
+               (setq server-name newname))))
   (server-force-delete)
   (server-start))
 
