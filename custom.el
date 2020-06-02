@@ -41,7 +41,7 @@
         (mode . lisp-mode)))))))
  '(package-selected-packages
    (quote
-    (edit-server minibuffer-line project-local-variables pdf-tools etags-select)))
+    (edit-server etags-select minibuffer-line pdf-tools project-local-variables)))
  '(safe-local-variable-values
    (quote
     ((eval when
