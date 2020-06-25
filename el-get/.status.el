@@ -49,7 +49,6 @@
 :sass-mode "installed"
 :sauron "installed"
 :scratch "installed"
-:scss-mode "installed"
 :sdcv-mode "installed"
 :second-sel "installed"
 :smart-tabs-mode "installed"

@@ -3539,23 +3539,6 @@ Start sauron, but don't show the window.
 
 ;;;***
 
-;;;### (autoloads nil "scss-mode/scss-mode" "scss-mode/scss-mode.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from scss-mode/scss-mode.el
-
-(autoload 'scss-mode "scss-mode/scss-mode" "\
-Major mode for editing SCSS files, http://sass-lang.com/
-Special commands:
-\\{scss-mode-map}
-
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "scss-mode/scss-mode" '("flymake-scss-init" "scss-")))
-
-;;;***
-
 ;;;### (autoloads nil "sdcv-mode/sdcv-mode" "sdcv-mode/sdcv-mode.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from sdcv-mode/sdcv-mode.el
