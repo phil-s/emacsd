@@ -354,6 +354,9 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
   (pop-mark)
   (match-string 0))
 
+;; SASS
+(add-to-list 'auto-mode-alist '("\\.scss\\'" . sass-mode))
+
 ;; C (and derived) modes.
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 (defun my-c-mode-common-hook ()
