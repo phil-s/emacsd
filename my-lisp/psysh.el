@@ -239,6 +239,23 @@ set 'requireSemicolons' => true, in `psysh-config'."
                            :value comint-simple-send))
   :group 'psysh)
 
+(defcustom psysh-doc-refill t
+  "Whether to automatically refill psysh `doc' output.
+
+This will wrap lines at the current `window-width' if it is
+smaller than 100 columns (being the hard-coded wrapping column
+used for this documentation).
+
+This occasionally causes unwanted indentations due to (rare)
+errors in the text of the `doc' database content.  At the time of
+writing, 'doc var_export' provides an example.  In practice, such
+wrongly-wrapped text is usually still easy to read, and so these
+minor disadvantages are vastly outweighed by the overall benefits.
+
+Refer to URL `https://github.com/bobthecow/psysh/issues/595'."
+  :type 'boolean
+  :group 'psysh)
+
 (defvar psysh-mode-map
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
     (define-key map "\t" 'completion-at-point)
@@ -438,6 +455,11 @@ can be used to enforce a local file."
   ;; M-x ansi-color-for-comint-mode-on
   ;; M-x ansi-color-for-comint-mode-off
   ;; M-x ansi-color-for-comint-mode-filter
+
+  ;; Re-format documentation AFTER converting the ansi colour escape
+  ;; characters -- otherwise the indentations will be all wrong.
+  (add-hook 'comint-output-filter-functions
+            'psysh-comint-output-filter-docs :append :local)
 
   ;; Don't highlight whitespace.
   (setq show-trailing-whitespace nil)
@@ -675,6 +697,72 @@ Called via `comint-output-filter-functions'."
             (comint-prompt-regexp psysh-duplicate-prompt-regexp))
         (while (comint-skip-prompt)
           (delete-region pos (point)))))))
+
+(defun psysh-comint-output-filter-docs (output)
+  "Re-fill the output from the psysh `doc' command.
+
+Wrap lines at the current `window-width'.
+
+Called via `comint-output-filter-functions'."
+  ;; The logic is essentially:
+  ;;
+  ;; - Find the 'most indented' column in the current line, where any
+  ;;   sequence of 2+ spaces indicates a new level of indentation.
+  ;;
+  ;; - Remember that position in the text as the start point for
+  ;;   reformatting.
+  ;;
+  ;; - Find all the immediately-following lines (if any) which are
+  ;;   indented directly (no intervening text) to that same column,
+  ;;   and which do not appear to be a list item (based on * prefix).
+  ;;
+  ;; - Remember the end of the final line in that group as the end
+  ;;   point for reformatting.
+  ;;
+  ;; - Generate an indentation/padding string of spaces matching the
+  ;;   indent level.
+  ;;
+  ;; - Set the wrapping column based on the window width.
+  ;;
+  ;; - Pass the text from the start point to the end point to the
+  ;;   re-formatter, along with the wrap column and the padding string
+  ;;   to prefix to each new line when wrapping.
+  ;;
+  ;; - Move to the next line, and loop until finished.
+  ;;
+  ;; The "2+ spaces" heuristic is a fragile one, but it works
+  ;; perfectly in most cases (and all the counter-examples I've seen
+  ;; appear to be errors in the documentation.  E.g. doc var_export).
+  ;; I find that the benefits outweigh these occasional disadvantages.
+  (unless (or (not psysh-doc-refill)
+              (>= (window-width) 100))
+    (save-excursion
+      (goto-char comint-last-input-start)
+      (when (looking-at " *doc ")
+        (save-restriction
+          (narrow-to-region comint-last-output-start
+                            (marker-position
+                             (process-mark (get-buffer-process
+                                            (current-buffer)))))
+          (while (let* ((linestart (point))
+                        (lineend (line-end-position))
+                        (start (progn
+                                 (while (re-search-forward
+                                         " \\{2,\\}" lineend t))
+                                 (point)))
+                        (indent (current-column)))
+                   (while (and (forward-line 1)
+                               (not (eobp))
+                               (not (looking-at " *\\* "))
+                               (progn (back-to-indentation)
+                                      (eql (current-column) indent))))
+                   (unless (eobp)
+                     (goto-char (1- (line-beginning-position)))
+                     (let ((fill-column (1- (window-width)))
+                           (fill-prefix (make-string indent ?\s)))
+                       (fill-region start (point))))
+                   ;; Outer `while' loop condition:
+                   (eql 0 (forward-line 1)))))))))
 
 (defun psysh-sentinel (process signal)
   "Process signals from the psysh process."
