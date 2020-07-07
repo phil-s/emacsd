@@ -3704,6 +3704,14 @@ If you do this twice in the same position, it kills the selection.
 
 ;;;***
 
+;;;### (autoloads nil "simple-wiki/simple-wiki" "simple-wiki/simple-wiki.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from simple-wiki/simple-wiki.el
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "simple-wiki/simple-wiki" '("simple-wiki-")))
+
+;;;***
+
 ;;;### (autoloads nil "smart-tabs-mode/smart-tabs-mode" "smart-tabs-mode/smart-tabs-mode.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from smart-tabs-mode/smart-tabs-mode.el

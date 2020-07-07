@@ -51,6 +51,7 @@
 :scratch "installed"
 :sdcv-mode "installed"
 :second-sel "installed"
+:simple-wiki "installed"
 :smart-tabs-mode "installed"
 :transpose-frame "installed"
 :unbound "installed"

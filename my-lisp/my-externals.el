@@ -256,6 +256,11 @@
      (:name second-sel
             :type emacswiki)
 
+     (:name simple-wiki
+            :type http
+            :url ,(my-local-repository-url-for "simple-wiki")
+            :features simple-wiki)
+
      (:name smart-tabs-mode
             :type git
             :url "git@github.com:jcsalomon/smarttabs.git")
