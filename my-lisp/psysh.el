@@ -484,6 +484,12 @@ can be used to enforce a local file."
   (setq-local comment-end "")
   (set-syntax-table psysh-syntax-table)
   (comment-normalize-vars)
+
+  ;; Use `php-eldoc' if available.
+  (when (require 'php-eldoc nil t)
+    (setq-local eldoc-documentation-function 'php-eldoc-function)
+    (eldoc-mode 1))
+
   ;; end of `psysh-mode' body
   )
 
