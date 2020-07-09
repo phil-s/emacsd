@@ -1,0 +1,2 @@
+This file exists only so that git will create the directory, which must
+already exist in order for `my-edit-server-start-hook' to work as intended.

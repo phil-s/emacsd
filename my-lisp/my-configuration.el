@@ -102,6 +102,17 @@ when `auto-save-mode' is invoked manually.")
     ad-do-it))
 (ad-activate 'auto-save-mode)
 
+;; Auto-save for edit-server.el buffers.
+(add-hook 'edit-server-start-hook 'my-edit-server-start-hook :append)
+;; We :append because we expect other hook functions to potentially
+;; change the major mode, and we want that to happen first.
+(defun my-edit-server-start-hook ()
+  "Enable auto-save for edit-server buffers."
+  ;; Determine the directory to which the auto-saves will be written.
+  (let ((default-directory (file-name-as-directory
+                            (concat user-emacs-directory "edit-server"))))
+    (auto-save-mode 1)))
+
 ;; No splash screen or start-up message.
 (setq inhibit-startup-screen t)
 (eval '(setq inhibit-startup-echo-area-message "phil"))
