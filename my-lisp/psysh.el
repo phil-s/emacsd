@@ -1,4 +1,4 @@
-;;; psysh.el --- Comint-based integration for the "PsySH" REPL for PHP.
+;;; psysh.el --- Comint-based integration for the "PsySH" REPL for PHP.  -*- lexical-binding: t; -*-
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
@@ -312,7 +312,7 @@ can be used to enforce a local file."
     (setq dir default-directory))
   (let ((filemap (gethash contents psysh-temp-file-hash-table))
         (isremote (tramp-tramp-file-p dir))
-        vec method user domain host port temp hop)
+        vec method user domain host port _localname hop)
     ;; Determine the user and host for the given DIR.
     (if isremote
         (setq vec (tramp-dissect-file-name dir)
@@ -691,7 +691,7 @@ If you wish to disable this functionality, you can customize the
 Called via `comint-preoutput-filter-functions'."
   (replace-regexp-in-string "  +$" "" output t t))
 
-(defun psysh-comint-output-filter (output)
+(defun psysh-comint-output-filter (_output)
   "Delete any duplicate prompts.
 
 Called via `comint-output-filter-functions'."
@@ -705,7 +705,7 @@ Called via `comint-output-filter-functions'."
         (while (comint-skip-prompt)
           (delete-region pos (point)))))))
 
-(defun psysh-comint-output-filter-docs (output)
+(defun psysh-comint-output-filter-docs (_output)
   "Re-fill the output from the psysh `doc' command.
 
 Wrap lines at the current `window-width'.
@@ -751,7 +751,7 @@ Called via `comint-output-filter-functions'."
                             (marker-position
                              (process-mark (get-buffer-process
                                             (current-buffer)))))
-          (while (let* ((linestart (point))
+          (while (let* (;;(linestart (point))
                         (lineend (line-end-position))
                         (start (progn
                                  (while (re-search-forward
@@ -771,8 +771,9 @@ Called via `comint-output-filter-functions'."
                    ;; Outer `while' loop condition:
                    (eql 0 (forward-line 1)))))))))
 
-(defun psysh-sentinel (process signal)
+(defun psysh-sentinel (process _str)
   "Process signals from the psysh process."
+  ;; Upon process exit, write `comint-input-ring' history file.
   (when (memq (process-status process) '(exit signal))
     (comint-write-input-ring)))
 
