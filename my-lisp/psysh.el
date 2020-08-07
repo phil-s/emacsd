@@ -168,6 +168,10 @@ return array(
   // Similarly, prevent the pipe from causing psysh to drop into its
   // non-interactive mode.
   'interactiveMode' => 'forced',
+  // Make the 'completions' command available.
+  'commands' => class_exists('\\Psy\\Command\\CompletionsCommand')
+    ? [ new \\Psy\\Command\\CompletionsCommand, ]
+    : [],
 );"
   "PHP code for the PsySH config file.
 
@@ -255,6 +259,14 @@ minor disadvantages are vastly outweighed by the overall benefits.
 
 Refer to URL `https://github.com/bobthecow/psysh/issues/595'."
   :type 'boolean
+  :group 'psysh)
+
+(defcustom psysh-completion-at-point-functions '(psysh-completion-at-point)
+  "What to set `completion-at-point-functions' to in the PsySH buffer.
+
+The default function `psysh-completion-at-point' requires a version
+of PsySH which includes the 'completions' command."
+  :type '(repeat function)
   :group 'psysh)
 
 (defvar psysh-mode-map
@@ -490,6 +502,10 @@ can be used to enforce a local file."
   (when (require 'php-eldoc nil t)
     (setq-local eldoc-documentation-function 'php-eldoc-function)
     (eldoc-mode 1))
+
+  ;; TAB completion.
+  (setq-local completion-at-point-functions
+              psysh-completion-at-point-functions)
 
   ;; end of `psysh-mode' body
   )
@@ -827,6 +843,51 @@ REPL and enter the semicolon manually."
         (error "No %s buffer or process was found" psysh-buffer-name)))))
 
 (psysh-remap-php-send-region-setter) ;; Arrange the initial remapping.
+
+(defun psysh-completion-at-point ()
+  "Ask PsySH to complete the current input.
+
+The default for `psysh-completion-at-point-functions'.
+
+Runs the PsySH command 'completions' for the current input."
+  ;; Not using `when-let*` here for Emacs 25 compatibility.
+  (when-let ((proc (get-buffer-process (current-buffer)))
+             (pmark (process-mark proc))
+             (pmarkpos (marker-position pmark))
+             (incomplete (when (>= (point) pmarkpos)
+                           (buffer-substring-no-properties pmarkpos (point))))
+             (command (format "completions %s" incomplete))
+             ;; `comint-redirect-results-list' here may result in the message
+             ;; "Blocking call to accept-process-output with quit inhibited!!",
+             ;; so make sure we're not doing that.
+             (table (completion-table-with-cache
+                     (lambda (_str)
+                       ;; (message "psysh debugging: (%s) %s" str command)
+                       (let ((inhibit-quit nil))
+                         (comint-redirect-results-list command ".+" 0))))))
+    ;; PHP's support for GNU readline provides no control over the
+    ;; variable for deciding which 'word' is being completed, so we
+    ;; must likewise use readline's default:
+    ;;
+    ;; rl_basic_word_break_characters
+    ;;   The basic list of characters that signal a break between
+    ;;   words for the completer routine. The default value of this
+    ;;   variable is the characters which break words for completion
+    ;;   in Bash: " \t\n\"\\’‘@$><=;|&{(".
+    ;;
+    ;; The 'word' to be completed will be based on these delimiters.
+    (let ((rl-wordbreak "[ \t\n\"\\’‘@$><=;|&{(]")
+          (beginning pmarkpos)
+          (end (point)))
+      (save-excursion
+        (save-restriction
+          (narrow-to-region beginning end)
+          (when (re-search-backward rl-wordbreak beginning :noerror)
+            (setq beginning (1+ (point))))))
+      ;; Refer to `completion-at-point-functions'.
+      ;; (message "psysh-completion-at-point: '%s'"
+      ;;          (buffer-substring-no-properties beginning end))
+      (list beginning end table))))
 
 (provide 'psysh)
 ;;; psysh.el ends here
