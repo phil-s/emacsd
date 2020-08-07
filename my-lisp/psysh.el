@@ -48,6 +48,7 @@
 ;; https://www.masteringemacs.org/article/comint-writing-command-interpreter
 
 (require 'comint)
+(require 'ansi-color)
 (require 'subr-x)
 (require 'tramp)
 (require 'cc-mode) ;; `c-mode-syntax-table' is guaranteed to be available.
