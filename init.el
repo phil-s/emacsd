@@ -865,6 +865,9 @@
 ;; Configure other miscellaneous libraries
 (require 'my-libraries)
 
+;; Email.
+(require 'my-mail)
+
 ;; Configure visual theme
 (require 'my-theme)
 

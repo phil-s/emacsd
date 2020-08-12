@@ -89,6 +89,8 @@
         magit
         magit-popup
         messages-buffer
+        mu4e-headers
+        mu4e-view
         org-agenda
         python
         sauron
