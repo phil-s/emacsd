@@ -171,15 +171,32 @@ when `auto-save-mode' is invoked manually.")
 (blink-cursor-mode -1)
 (setq x-stretch-cursor t)
 
-;; Hide the tool bar
-(tool-bar-mode -1)
+;; Things that I'm now doing in early-init.el in 27+.
+(when (< emacs-major-version 27)
+  ;; Hide the tool bar
+  (tool-bar-mode -1)
 
-;; Scroll-bar on the right-hand side
-(set-scroll-bar-mode 'right)
+  ;; Scroll-bar on the right-hand side
+  (set-scroll-bar-mode 'right)
 
-;; No horizontal scroll bars.
-(when (fboundp 'horizontal-scroll-bar-mode)
-  (horizontal-scroll-bar-mode 0))
+  ;; No horizontal scroll bars.
+  (when (fboundp 'horizontal-scroll-bar-mode)
+    (horizontal-scroll-bar-mode 0))
+
+  ;; Per-frame/terminal configuration.
+  (defun my-frame-behaviours (&optional frame)
+    "Make frame- and/or terminal-local changes."
+    (with-selected-frame (or frame (selected-frame))
+      ;; do things
+      (unless window-system
+        (set-frame-parameter frame 'menu-bar-lines 0)
+        (set-terminal-coding-system 'utf-8))
+      ))
+  ;; Run now, for non-daemon Emacs...
+  (my-frame-behaviours)
+  ;; ...and later, for new frames / emacsclient
+  (add-hook 'after-make-frame-functions 'my-frame-behaviours)
+  ) ;; End of early-init.el code for Emacs 26 and earlier.
 
 ;; Retain point when scrolling off-screen and back
 (setq scroll-preserve-screen-position t)
@@ -538,20 +555,6 @@ See also: `my-copy-buffer-file-name'."
 ;; (add-hook 'after-make-frame-functions 'my-configure-visible-bell)
 ;; ;; ...and whenever a frame gains input focus.
 ;; (add-hook 'focus-in-hook 'my-configure-visible-bell)
-
-;; Per-frame/terminal configuration.
-(defun my-frame-behaviours (&optional frame)
-  "Make frame- and/or terminal-local changes."
-  (with-selected-frame (or frame (selected-frame))
-    ;; do things
-    (unless window-system
-      (set-frame-parameter frame 'menu-bar-lines 0)
-      (set-terminal-coding-system 'utf-8))
-    ))
-;; Run now, for non-daemon Emacs...
-(my-frame-behaviours)
-;; ...and later, for new frames / emacsclient
-(add-hook 'after-make-frame-functions 'my-frame-behaviours)
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq-default indicate-empty-lines t)
