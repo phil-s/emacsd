@@ -252,6 +252,7 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 (defun my-emacs-lisp-mode-hook ()
+  (setq tab-width 8)
   ;; ;; Automated byte re-compilation.
   ;; ;; Now replaced by the auto-compile library.
   ;; (require 'bytecomp)
