@@ -320,6 +320,7 @@ characters are stripped.")
 			     sdcv-process-buffer-name
 			     sdcv-program-path
 			     (sdcv-generate-dictionary-argument)))
+	(set-process-query-on-exit-flag process nil)
 	;; kill the initial prompt
 	(let ((i 0))
 	  (message "starting sdcv...")
