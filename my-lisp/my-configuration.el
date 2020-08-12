@@ -165,6 +165,7 @@ when `auto-save-mode' is invoked manually.")
 (put 'scroll-left               'disabled nil)
 (put 'set-goal-column           'disabled nil)
 (put 'upcase-region             'disabled nil)
+(put 'magit-diff-edit-hunk-commit 'disabled nil)
 
 ;; Stop the cursor blinking
 ;; Cursor stretches to the current glyph's width
