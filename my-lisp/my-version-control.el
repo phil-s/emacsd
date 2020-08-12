@@ -43,21 +43,33 @@ If `F.~REV~' already exists, use it instead of checking it out again."
                                             (buffer-file-name)))
                    "File: ")))))
      (require 'vc)
-     (unless (vc-backend file)
-       (error "File %s is not under version control" file))
-     (list file (vc-read-revision
-                 "Revision to visit (default is working revision): "
-                 (list file)))))
+     (list file (if (vc-backend file)
+                    (vc-read-revision
+                     "Revision to visit (default is working revision): "
+                     (list file))
+                  (vc-read-revision "Revision to visit: " t
+                                    (or (vc-deduce-backend)
+                                        (vc-responsible-backend file)))))))
   (require 'vc)
-  (unless (vc-backend file)
-    (error "File %s is not under version control" file))
   (let ((revision (if (string-equal rev "")
-                      (vc-working-revision file)
+                      (if (vc-backend file)
+                          (vc-working-revision file)
+                        (error "No revision specified for unregistered file %s"
+                               file))
                     rev))
+        (backend (or (vc-backend file)
+                     (vc-deduce-backend)
+                     (vc-responsible-backend file)))
         (visit (if current-prefix-arg
                    'switch-to-buffer
                  'switch-to-buffer-other-window)))
-    (funcall visit (vc-find-revision file revision))))
+    (condition-case err
+        (funcall visit (vc-find-revision file revision backend))
+      ;; The errors which can result when we request an invalid combination of
+      ;; file and revision tend to be opaque side-effects of some unexpected
+      ;; failure within the backend; so we simply trap everything and signal a
+      ;; replacement error indicting the assumed cause.
+      (error (error "File not found at revision %s: %s" revision file)))))
 
 (defun my-vc-print-revision-log (working-revision &optional limit)
   ;; Derived from `vc-print-log'.
