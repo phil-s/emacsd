@@ -756,7 +756,8 @@ If the current search is successful, then only delete the last char."
 
 ;; Make the avy library use more keys.
 (setq avy-keys
-      (nconc (number-sequence ?a ?z)
+      (nconc '(?\r)
+             (number-sequence ?a ?z)
              (number-sequence ?1 ?9)
              '(?0)))
 
