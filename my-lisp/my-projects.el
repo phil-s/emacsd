@@ -99,7 +99,6 @@
    (scss-mode . ((css-indent-offset . 2)))
    (js-mode . ((js-indent-level . 2)))
    (web-mode . ((web-mode-code-indent-offset . 2)
-                (web-mode-code-indent-offset . 2)
                 (web-mode-css-indent-offset . 2)
                 (web-mode-markup-indent-offset . 2)
                 (web-mode-sql-indent-offset . 2)))
