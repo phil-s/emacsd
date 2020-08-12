@@ -4,7 +4,11 @@
 ;; cvs -d :pserver:anonymous@cvs.savannah.nongnu.org:/sources/http-emacs \
 ;;   co -d ./http-emacs http-emacs
 ;;
-;; I've only added the missing (require 'cl)
+;; * Originally I only added the missing (require 'cl)
+;; * I have now additionally used cl-libify to convert this to cl-lib.
+;;   (Apparently it was only the `first' .. `sixth' calls which needed
+;;   to be changed.)
+;; * Lastly I've cleaned up the byte-compilation warnings.
 
 ;; Copyright (C) 2002, 2003  Alex Schroeder
 
@@ -71,7 +75,7 @@
 ;;; Code:
 
 (require 'font-lock)
-(require 'cl)
+(require 'cl-lib)
 
 (defvar simple-wiki-version "1.0.9")
 
@@ -220,7 +224,8 @@ subexpression.")
 ;; custom groups
 
 (defgroup simple-wiki ()
-  "Edit raw wiki pages.")
+  "Edit raw wiki pages."
+  :group 'editing)
 
 (defgroup simple-wiki-faces ()
   "Faces simple-wiki-mode." :group 'simple-wiki)
@@ -511,16 +516,17 @@ Return nil otherwise."
     (insert ">")))
 
 (defun simple-wiki-get-tag ()
-  (let (prompt)
+  "Prompt the user for a tag."
+  (let (tag prompt)
     (if (and simple-wiki-tag-history (car simple-wiki-tag-history))
         (setq prompt (concat "Tag (" (car simple-wiki-tag-history) "): "))
       (setq prompt "Tag: "))
     (setq tag (completing-read prompt simple-wiki-tag-list nil nil ""
                                'simple-wiki-tag-history
-                               (car simple-wiki-tag-history))))
-  (unless (assoc tag simple-wiki-tag-list)
-    (add-to-list 'simple-wiki-tag-list (cons tag nil)))
-  tag)
+                               (car simple-wiki-tag-history)))
+    (unless (assoc tag simple-wiki-tag-list)
+      (add-to-list 'simple-wiki-tag-list (cons tag nil)))
+    tag))
 
 (defun simple-wiki-tag-region (min max &optional tag)
   "Insert opening and closing text at begin and end of the region."
@@ -714,11 +720,11 @@ face used for highlighting and overwrite may be 'prepend,
   ;; emphasis
   (let (em-re)
     (unless (equal simple-wiki-em-patterns 'none)
-      (when (setq em-re (first simple-wiki-em-patterns))
+      (when (setq em-re (cl-first simple-wiki-em-patterns))
         (simple-wiki-add-keyword em-re 'simple-wiki-emph-face 'append))
-      (when (setq em-re (second simple-wiki-em-patterns))
+      (when (setq em-re (cl-second simple-wiki-em-patterns))
         (simple-wiki-add-keyword em-re 'simple-wiki-strong-face 'append))
-      (when (setq em-re (third simple-wiki-em-patterns))
+      (when (setq em-re (cl-third simple-wiki-em-patterns))
         (simple-wiki-add-keyword em-re
                                  'simple-wiki-strong-emph-face
                                  'append))))
@@ -730,17 +736,17 @@ face used for highlighting and overwrite may be 'prepend,
   ;; head lines
   (let (head-re)
     (unless (equal simple-wiki-headline-patterns 'none)
-      (when (setq head-re (first simple-wiki-headline-patterns))
+      (when (setq head-re (cl-first simple-wiki-headline-patterns))
         (simple-wiki-add-keyword head-re 'simple-wiki-heading-1-face t))
-      (when (setq head-re (second simple-wiki-headline-patterns))
+      (when (setq head-re (cl-second simple-wiki-headline-patterns))
         (simple-wiki-add-keyword head-re 'simple-wiki-heading-2-face t))
-      (when (setq head-re (third simple-wiki-headline-patterns))
+      (when (setq head-re (cl-third simple-wiki-headline-patterns))
         (simple-wiki-add-keyword head-re 'simple-wiki-heading-3-face t))
-      (when (setq head-re (fourth simple-wiki-headline-patterns))
+      (when (setq head-re (cl-fourth simple-wiki-headline-patterns))
         (simple-wiki-add-keyword head-re 'simple-wiki-heading-4-face t))
-      (when (setq head-re (fifth simple-wiki-headline-patterns))
+      (when (setq head-re (cl-fifth simple-wiki-headline-patterns))
         (simple-wiki-add-keyword head-re 'simple-wiki-heading-5-face t))
-      (when (setq head-re (sixth simple-wiki-headline-patterns))
+      (when (setq head-re (cl-sixth simple-wiki-headline-patterns))
         (simple-wiki-add-keyword head-re 'simple-wiki-heading-6-face t)))))
 
 (defun simple-wiki-define-major-mode (mode name doc-string &rest properties)
