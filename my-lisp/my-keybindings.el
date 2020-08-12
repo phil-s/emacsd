@@ -268,6 +268,8 @@
   (define-key keymap (kbd "C-c x e")   'eval-and-replace)
   (define-key keymap (kbd "C-z C-M-%") 'my-replace-regexp-group)
   (define-key keymap (kbd "C-h u")     'describe-unbound-keys)
+  (define-key keymap (kbd "C-h M-k")   'my-describe-keymap)
+  (define-key keymap (kbd "C-h M-K")   'my-describe-all-keymaps)
   (define-key keymap (kbd "M-C")       'my-capitalize-word)
   (define-key keymap (kbd "s-j")       'ace-jump-mode)
   (define-key keymap (kbd "s-;")       'my-insert-kbd)
@@ -393,6 +395,23 @@ Called via `after-load-functions', as well as `after-init-hook'."
     (princ (substitute-command-keys (format "\\{%s}" keymap)))
     (with-current-buffer standard-output ;; temp buffer
       (setq help-xref-stack-item (list #'my-describe-keymap keymap)))))
+
+(defun my-describe-all-keymaps ()
+  "Describe all keymaps in currently-defined variables."
+  (interactive)
+  (with-output-to-temp-buffer "*keymaps*"
+    (let (symbs seen)
+      (mapatoms (lambda (s)
+                  (when (and (boundp s) (keymapp (symbol-value s)))
+                    (push (indirect-variable s) symbs))))
+      (dolist (keymap symbs)
+        (unless (memq keymap seen)
+          (princ (format "* %s\n\n" keymap))
+          (princ (substitute-command-keys (format "\\{%s}" keymap)))
+          (princ (format "\f\n%s\n\n" (make-string (min 80 (window-width)) ?-)))
+          (push keymap seen))))
+    (with-current-buffer standard-output ;; temp buffer
+      (setq help-xref-stack-item (list #'my-describe-all-keymaps)))))
 
 (defun my-buffer-local-set-key (key command)
   ;; Helper intended for use in local variables. e.g.:
