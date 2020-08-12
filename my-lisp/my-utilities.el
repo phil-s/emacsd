@@ -1705,6 +1705,12 @@ For example, to trace all ELP functions, do the following:
        (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
        map))))
 
+(defun my-passwd-read-insert-dots ()
+  "`read-passwd' and insert in buffer using dots for display replacement."
+  (interactive)
+  (let ((pass (read-passwd "password: ")))
+    (insert (propertize pass 'display (make-string (length pass) ?.)))))
+
 (defvar domain-hash-history nil
   "Domain history for `domain-hash-arguments'.")
 (defvar domain-hash-algorithm 'sha256
