@@ -113,6 +113,8 @@
 ;; http://emacs.stackexchange.com/a/2324/454
 ;; ;; How can i change the color of my cursor in gnome terminal?
 ;; http://askubuntu.com/questions/104609
+;; ;; How to make terminal and X clipboards/selections interact.
+;; https://elpa.gnu.org/packages/xclip.html
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
@@ -143,7 +145,7 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev libjansson-dev make ncurses-term texinfo ttf-ancient-fonts sdcv fortune-mod
+;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev libjansson-dev libgccjit-7-dev make ncurses-term texinfo ttf-ancient-fonts sdcv fortune-mod ispell ibritish wbritish
 ;; # ^ Includes...
 ;; # Terminfo: ncurses-term
 ;; # PDF-tools packages: libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
@@ -271,6 +273,24 @@
 ;; Remapping Commands:
 ;; E.g.: globally remap all key binds that point to kill-line to my-kill-line.
 ;; (define-key (current-global-map) [remap kill-line] 'my-kill-line)
+;;
+;; Also (but for existing bindings only):
+;; (substitute-key-definition OLDDEF NEWDEF KEYMAP &optional OLDMAP)
+;;
+;; Replace OLDDEF with NEWDEF for any keys in KEYMAP now defined as OLDDEF.
+;; In other words, OLDDEF is replaced with NEWDEF wherever it appears.
+;; Alternatively, if optional fourth argument OLDMAP is specified, we redefine
+;; in KEYMAP as NEWDEF those keys which are defined as OLDDEF in OLDMAP.
+;;
+;; If you don't specify OLDMAP, you can usually get the same results
+;; in a cleaner way with command remapping, like this:
+;;   (define-key KEYMAP [remap OLDDEF] NEWDEF)
+;;
+;; See also: (info "(elisp) Changing Key Bindings")
+;; > The function ‘substitute-key-definition’ scans a keymap for keys that
+;; > have a certain binding and rebinds them with a different binding.
+;; > Another feature which is cleaner and can often produce the same results
+;; > is to remap one command into another (*note Remapping Commands::).
 
 ;; Conditional definition/over-ride with fall-back:
 ;; http://endlessparentheses.com/define-context-aware-keys-in-emacs.html
@@ -560,7 +580,7 @@
 ;; Don't ever do this without good reason. But if you *really* need to...
 
 ;; There is an excellent overview at:
-;; https://swsnr.de/blog/2014/08/12/emacs-script-pitfalls/
+;; https://lunaryorn.com/blog/emacs-script-pitfalls/
 
 ;; "n.b. secure text input by reading directly from the TTY is
 ;; currently impossible in any released version from Emacs:
@@ -730,8 +750,12 @@
 ;;; Never forget that modifying a (quote)d argument == self-modifying code!
 ;;; http://stackoverflow.com/q/16670989/324105
 ;;;
+;;; hideshow.el seems really useful!  I ought to know how to use it.
+;;;
 ;;; Look into http://nullprogram.com/tags/elfeed/
 ;;; And Email solutions for Emacs. (mu4e? notmuch? wanderlust? gnus?? mew??)
+;;;
+;;; (set-)terminal-parameter is a thing.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; M-s w     : isearch-forward-word
 ;; M-s a C-s : (ibuffer) isearch across all marked buffers. (M-C-s for regexps)
