@@ -258,6 +258,8 @@
   (define-key keymap (kbd "C-c m d")   'magit-diff-popup)
   (define-key keymap (kbd "C-c m l")   'magit-log-popup)
   (define-key keymap (kbd "C-c m f")   'magit-file-popup)
+  (define-key keymap (kbd "C-c m C-f") 'magit-find-file)
+  (define-key keymap (kbd "C-c m ~")   'magit-find-file)
   (define-key keymap (kbd "<pause>")   'toggle-window-dedicated)
   (define-key keymap (kbd "C-c n")     'deft)
   (define-key keymap (kbd "S-M-SPC")   'my-extend-selection)
