@@ -182,7 +182,9 @@ static char * data[] = {
   (defvar magit-diff-refine-ignore-whitespace)
   (defvar magit-log-buffer-file-locked)
   (defvar magit-mode-map)
+  (defvar magit-refs-sections-hook)
   (defvar magit-save-repository-buffers)
+  (declare-function magit-refs-refresh-buffer "magit-refs")
   )
 
 ;; Refer to: (info "(magit) Wip Modes")

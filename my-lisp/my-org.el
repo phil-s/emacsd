@@ -6,9 +6,11 @@
   (defvar org-agenda-files)
   (defvar org-default-notes-file)
   (defvar org-ellipsis)
+  (defvar org-fontify-done-headline)
   (defvar org-mode-map)
   (defvar org-src-fontify-natively)
-  (defvar org-src-preserve-indentation))
+  (defvar org-src-preserve-indentation)
+  )
 
 ;;; Tutorials etc
 
