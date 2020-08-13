@@ -15,6 +15,7 @@
 /lisp/__nxhtml__
 /image-dired/
 /url
+/network-security.data
 
 session.*
 my-lisp/my-local.backup
