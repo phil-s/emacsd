@@ -28,7 +28,7 @@
 
 (require 'multiple-cursors-core)
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (defun mc/next-fake-cursor-after-point ()
   (let ((pos (point))
@@ -63,7 +63,7 @@
   :group 'multiple-cursors)
 
 (defun mc/handle-loop-condition (error-message)
-  (ecase mc/cycle-looping-behaviour
+  (cl-ecase mc/cycle-looping-behaviour
     (error (error error-message))
     (warn  (message error-message))
     (continue 'continue)
@@ -72,25 +72,25 @@
 (defun mc/first-fake-cursor-after (point)
   "Very similar to mc/furthest-cursor-before-point, but ignores (mark) and (point)."
   (let* ((cursors (mc/all-fake-cursors))
-         (cursors-after-point (remove-if (lambda (cursor)
+         (cursors-after-point (cl-remove-if (lambda (cursor)
                                            (< (mc/cursor-beg cursor) point))
                                          cursors))
-         (cursors-in-order (sort* cursors-after-point '< :key 'mc/cursor-beg)))
-    (first cursors-in-order)))
+         (cursors-in-order (cl-sort cursors-after-point '< :key 'mc/cursor-beg)))
+    (cl-first cursors-in-order)))
 
 (defun mc/last-fake-cursor-before (point)
   "Very similar to mc/furthest-cursor-before-point, but ignores (mark) and (point)."
   (let* ((cursors (mc/all-fake-cursors))
-         (cursors-before-point (remove-if (lambda (cursor)
+         (cursors-before-point (cl-remove-if (lambda (cursor)
                                             (> (mc/cursor-end cursor) point))
                                           cursors))
-         (cursors-in-order (sort* cursors-before-point '> :key 'mc/cursor-end)))
-    (first cursors-in-order)))
+         (cursors-in-order (cl-sort cursors-before-point '> :key 'mc/cursor-end)))
+    (cl-first cursors-in-order)))
 
-(defun* mc/cycle (next-cursor fallback-cursor loop-message)
+(cl-defun mc/cycle (next-cursor fallback-cursor loop-message)
   (when (null next-cursor)
     (when (eql 'stop (mc/handle-loop-condition loop-message))
-      (return-from mc/cycle nil))
+      (cl-return-from mc/cycle nil))
     (setf next-cursor fallback-cursor))
   (mc/create-fake-cursor-at-point)
   (mc/pop-state-from-overlay next-cursor)

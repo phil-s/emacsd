@@ -77,10 +77,10 @@
 
 (require 'edmacro)
 (eval-when-compile
-  (require 'cl))
+  (require 'cl-lib))
 
 
-(defstruct wrap-region-wrapper key left right modes)
+(cl-defstruct wrap-region-wrapper key left right modes)
 
 (defvar wrap-region-mode-map (make-sparse-keymap)
   "Keymap for `wrap-region-mode'.")
@@ -126,11 +126,11 @@
   "Find first wrapper with trigger KEY that should be active in MAJOR-MODE."
   (let ((wrappers (gethash key wrap-region-table)))
     (or
-     (find-if
+     (cl-find-if
       (lambda (wrapper)
         (member major-mode (wrap-region-wrapper-modes wrapper)))
       wrappers)
-     (find-if
+     (cl-find-if
       (lambda (wrapper)
         (not (wrap-region-wrapper-modes wrapper)))
       wrappers))))
@@ -204,7 +204,7 @@ mode or multiple modes that the wrapper should trigger in."
                (list mode-or-modes)))))
     (if wrappers
         (let ((wrapper-exactly-same
-               (find-if
+               (cl-find-if
                 (lambda (wrapper)
                   (and
                    (equal (wrap-region-wrapper-key wrapper) key)
@@ -216,19 +216,19 @@ mode or multiple modes that the wrapper should trigger in."
                 (if modes
                     (setf
                      (wrap-region-wrapper-modes wrapper-exactly-same)
-                     (union modes (wrap-region-wrapper-modes wrapper-exactly-same)))
+                     (cl-union modes (wrap-region-wrapper-modes wrapper-exactly-same)))
                   (let ((new-wrapper (make-wrap-region-wrapper :key key :left left :right right)))
                     (puthash key (cons new-wrapper wrappers) wrap-region-table))))
             (let* ((new-wrapper (make-wrap-region-wrapper :key key :left left :right right :modes modes))
                    (wrapper-same-trigger
-                    (find-if
+                    (cl-find-if
                      (lambda (wrapper)
                        (equal (wrap-region-wrapper-key wrapper) key))
                      wrappers))
                    (wrapper-same-trigger-modes
                     (wrap-region-wrapper-modes wrapper-same-trigger)))
               (when (and wrapper-same-trigger wrapper-same-trigger-modes)
-                (let ((new-modes (nset-difference (wrap-region-wrapper-modes wrapper-same-trigger) modes)))
+                (let ((new-modes (cl-nset-difference (wrap-region-wrapper-modes wrapper-same-trigger) modes)))
                   (if new-modes
                       (setf (wrap-region-wrapper-modes wrapper-same-trigger) new-modes)
                     (setq wrappers (delete wrapper-same-trigger wrappers)))))
@@ -251,7 +251,7 @@ If MODE-OR-MODES is not present, all wrappers for KEY are removed."
         (mapc
          (lambda (mode)
            (let ((wrapper-including-mode
-                  (find-if
+                  (cl-find-if
                    (lambda (wrapper)
                      (member mode (wrap-region-wrapper-modes wrapper)))
                    wrappers)))

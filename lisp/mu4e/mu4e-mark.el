@@ -96,7 +96,7 @@ where
 
 (defun mu4e~mark-find-headers-buffer ()
   "Find the headers buffer, if any."
-  (find-if
+  (cl-find-if
     (lambda (b)
       (with-current-buffer b
 	(eq major-mode 'mu4e-headers-mode)))
@@ -343,7 +343,7 @@ as well."
 		  mu4e-marks))
 	  (marks
 	    (if allow-something
-	      marks (remove-if (lambda (m) (eq 'something (cdr m))) marks)))
+	      marks (cl-remove-if (lambda (m) (eq 'something (cdr m))) marks)))
 	  (mark (mu4e-read-option prompt marks))
 	  (target (mu4e~mark-ask-target mark)))
     (cons mark target)))

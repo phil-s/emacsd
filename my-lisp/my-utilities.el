@@ -37,6 +37,8 @@
   (declare-function winner-undo "winner")
   )
 
+(require 'cl-lib)
+
 ;; (defun my-ido-filename ()
 ;;   "Return the filename selected with ido."
 ;;   (interactive)
@@ -984,10 +986,10 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
         (progn
           (skip-syntax-forward "^\"")
           (goto-char (1+ (point)))
-          (decf arg))
+          (cl-decf arg))
       (skip-syntax-backward "^\"")
       (goto-char (1- (point)))
-      (incf arg)))
+      (cl-incf arg)))
   (up-list arg))
 
 ;; Include any header comment when using narrow-to-defun

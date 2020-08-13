@@ -34,7 +34,7 @@
 
 ;;; Code:
 (eval-when-compile
-  (require 'cl nil t))
+  (require 'cl-lib nil t))
 
 ;;;###autoload
 (defun php-eldoc-function ()

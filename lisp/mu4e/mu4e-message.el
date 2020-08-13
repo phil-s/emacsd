@@ -30,7 +30,7 @@
 (require 'mu4e-vars)
 (require 'mu4e-utils)
 
-(require 'cl)
+(require 'cl-lib)
 (require 'html2text)
 
 
@@ -235,11 +235,11 @@ which case any of those are tried for a match."
     (when cfield
       (if (listp rx)
 	;; if rx is a list, try each one of them for a match
-	(find-if
+	(cl-find-if
 	  (lambda (a-rx) (mu4e-message-contact-field-matches msg cfield a-rx))
 	  rx)
 	;; not a list, check the rx
-	(find-if
+	(cl-find-if
 	  (lambda (ct)
 	    (let ((name (car ct)) (email (cdr ct)))
 	      (or
@@ -253,9 +253,9 @@ CFIELD (either :to, :from, :cc or :bcc) of msg MSG matches *me*,
 that is, any of the e-mail address in
 `mu4e-user-mail-address-list'. Returns the contact cell that
 matched, or nil."
-  (find-if
+  (cl-find-if
     (lambda (cc-cell)
-      (member-if
+      (cl-member-if
 	(lambda (addr)
 	  (string= (downcase addr) (downcase (cdr cc-cell))))
 	mu4e-user-mail-address-list))

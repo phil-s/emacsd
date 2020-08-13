@@ -35,7 +35,7 @@
 ;;; (autoload 'mo-git-blame-file "mo-git-blame" nil t)
 ;;; (autoload 'mo-git-blame-current "mo-git-blame" nil t)
 
-(require 'cl)
+(require 'cl-lib)
 (require 'easymenu)
 
 (defvar mo-git-blame-vars nil
@@ -468,7 +468,7 @@ option. Otherwise the whole file is blamed."
          (vars mo-git-blame-vars)
          (prior-revs (plist-get vars :prior-revisions))
          (prior-revs-str (if prior-revs
-                             (reduce (lambda (joined element) (concat (or joined "") (if joined " " "") element))
+                             (cl-reduce (lambda (joined element) (concat (or joined "") (if joined " " "") element))
                                      (mapcar (lambda (element) (plist-get element :revision))
                                              prior-revs))
                            "none")))

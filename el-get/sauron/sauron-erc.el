@@ -23,7 +23,7 @@
 
 ;;; Code:
 (require 'erc nil 'noerror)
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (defvar sauron-erc-interesting-events
   '(privmsg current-nick keyword)
@@ -74,7 +74,7 @@ The following events are erc-track
       'erc
       2
       (concat (propertize sender 'face 'sauron-highlight1-face) " has "
-	(case event
+	(cl-case event
 	  ('quit (concat "quit (" msg ")"))
 	  ('part (concat "left "
 		   (propertize channel 'face 'sauron-highlight2-face)

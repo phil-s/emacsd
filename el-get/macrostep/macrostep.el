@@ -191,7 +191,7 @@
 ;; `cl-macs' is needed at run-time to support `cl-macrolet'
 (require 'cl-macs)
 (eval-when-compile
-  (require 'cl)
+  (require 'cl-lib)
   (require 'pcase))
 
 
@@ -495,7 +495,7 @@ If no more macro expansions are visible after this, exit
    ;; Globally defined
    (let ((fun (indirect-function (car form))))
      (if (consp fun)
-         (case (car fun)
+         (cl-case (car fun)
            ((macro)
             (cdr fun))
 
@@ -671,7 +671,7 @@ fontified using the same face (modulo the number of faces; see
     `(let ((,start (point)))
        (prog1
            ,form
-         ,@(loop for (key value) on plist by #'cddr
+         ,@(cl-loop for (key value) on plist by #'cddr
                  collect `(put-text-property ,start (point)
                                              ,key ,value))))))
 

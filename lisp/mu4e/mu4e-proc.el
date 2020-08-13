@@ -26,7 +26,7 @@
 (require 'mu4e-vars)
 (require 'mu4e-utils)
 (require 'mu4e-meta)
-
+(eval-when-compile (require 'cl-lib))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; internal vars
@@ -464,7 +464,7 @@ mean:
              (:temp <path> :what <what> :param <param>)."
   (let ((cmd
 	  (concat "cmd:extract "
-	    (case action
+	    (cl-case action
 	      (save
 		(format "action:save docid:%d index:%d path:%s extract-encrypted:%s use-agent:true"
 		  docid partidx (mu4e~proc-escape path) (if decrypt "true" "false")))

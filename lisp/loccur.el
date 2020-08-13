@@ -55,7 +55,7 @@
 ;;
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (defconst loccur-overlay-property-name 'loccur-custom-buffer-grep)
 
@@ -155,7 +155,7 @@ if its size is 1 line"
 
 (defun loccur-create-highlighted-overlays(buffer-matches)
   (let ((overlays 
-		 (map 'list #'(lambda (match)
+		 (cl-map 'list #'(lambda (match)
 						(make-overlay
 						 (nth 1 match)
 						 (nth 2 match)
@@ -169,7 +169,7 @@ if its size is 1 line"
 
 (defun loccur-create-invisible-overlays (ovl-bounds)
   (let ((overlays 
-		 (map 'list #'(lambda (bnd)
+		 (cl-map 'list #'(lambda (bnd)
 						(make-overlay
 						 (car bnd)
 						 (cadr bnd)

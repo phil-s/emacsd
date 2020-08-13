@@ -201,7 +201,7 @@ the first column"
 (cond (html-helper-mode-uses-visual-basic (require 'visual-basic-mode)))
 (cond (html-helper-mode-uses-JDE (require 'jde)))
 (require 'cc-mode)
-(require 'cl)
+(require 'cl-lib)
 
 ;; Set this to be whatever signature you want on the bottom of your pages.
 (defvar html-helper-address-string ""
@@ -2070,7 +2070,7 @@ Mantained by lauri@eng.it, http:/www.gest.unipd.it/~saint/
 
 (defun html-helper-ticker ()
   "Returns the next prop image" 
-  (set 'html-helper-count (mod (incf html-helper-count) 8))
+  (set 'html-helper-count (mod (cl-incf html-helper-count) 8))
   (make-string html-helper-count 46))
 
 ;; Function to match an asp script (hopefully) without overflowing the

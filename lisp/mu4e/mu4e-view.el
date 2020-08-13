@@ -43,7 +43,7 @@
 (require 'calendar)
 
 (eval-when-compile (byte-compile-disable-warning 'cl-functions))
-(require 'cl)
+(require 'cl-lib)
 
 
 ;; the message view
@@ -209,7 +209,7 @@ found."
     (mapconcat
       (lambda (field)
 	(let ((fieldval (mu4e-message-field msg field)))
-	  (case field
+	  (cl-case field
 	    (:subject    (mu4e~view-construct-header field fieldval))
 	    (:path       (mu4e~view-construct-header field fieldval))
 	    (:maildir    (mu4e~view-construct-header field fieldval))
@@ -443,7 +443,7 @@ add text-properties to VAL."
   "Construct a Signature: header, if there are any signed parts."
   (let* ((parts (mu4e-message-field msg :parts))
 	  (verdicts
-	    (remove-if 'null
+	    (cl-remove-if 'null
 	      (mapcar (lambda (part) (mu4e-message-part-field part :signature))
 		parts)))
 	  (val (when verdicts
@@ -467,12 +467,12 @@ add text-properties to VAL."
   "Construct a Decryption: header, if there are any encrypted parts."
   (let* ((parts (mu4e-message-field msg :parts))
 	 (verdicts
-	  (remove-if 'null
+	  (cl-remove-if 'null
 	    (mapcar (lambda (part)
 		      (mu4e-message-part-field part :decryption))
 	      parts)))
-	 (succeeded (remove-if (lambda (v) (eq v 'failed)) verdicts))
-	 (failed (remove-if (lambda (v) (eq v 'succeeded)) verdicts))
+	 (succeeded (cl-remove-if (lambda (v) (eq v 'failed)) verdicts))
+	 (failed (cl-remove-if (lambda (v) (eq v 'succeeded)) verdicts))
 	 (succ (when succeeded
 		 (propertize
 		  (concat (number-to-string (length succeeded))
@@ -516,7 +516,7 @@ add text-properties to VAL."
 	    ;; we only list parts that look like attachments, ie. that have a
 	    ;; non-nil :attachment property; we record a mapping between
 	    ;; user-visible numbers and the part indices
-	    (remove-if-not
+	    (cl-remove-if-not
 	      (lambda (part)
 		(let* ((mtype (or (mu4e-message-part-field part :mime-type)
 				"application/octet-stream"))
@@ -545,7 +545,7 @@ add text-properties to VAL."
 		(let ((index (mu4e-message-part-field part :index))
 		       (name (mu4e-message-part-field part :name))
 		       (size (mu4e-message-part-field part :size)))
-		  (incf id)
+		  (cl-incf id)
 		  (puthash id index mu4e~view-attach-map)
 
 		  (concat
@@ -881,7 +881,7 @@ Also number them so they can be opened using `mu4e-view-go-to-url'."
 	  (when bounds
 	    (let* ((url (thing-at-point-url-at-point))
 		    (ov (make-overlay (car bounds) (cdr bounds))))
-	      (puthash (incf num) url mu4e~view-link-map)
+	      (puthash (cl-incf num) url mu4e~view-link-map)
 	      (add-text-properties
 		(car bounds)
 		(cdr bounds)
@@ -1113,7 +1113,7 @@ return the corresponding string."
 number ATTNUM."
   (let* ((partid (gethash attnum mu4e~view-attach-map))
 	 (attach
-	   (find-if
+	   (cl-find-if
 	     (lambda (part)
 	       (eq (mu4e-message-part-field part :index) partid))
 	     (mu4e-message-field msg :parts))))

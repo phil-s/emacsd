@@ -23,7 +23,7 @@
 
 ;;; Code:
 (require 'appt nil 'noerror)
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 ;; this is really about 'appt', not 'org', but anyway...
 

@@ -27,7 +27,7 @@
 ;; Code
 
 (eval-when-compile (byte-compile-disable-warning 'cl-functions))
-(require 'cl)
+(require 'cl-lib)
 
 (require 'mu4e-vars)
 (require 'mu4e-utils)
@@ -134,7 +134,7 @@ References. If both are empty, return nil."
 	  (refs (if (and msgid (not (string= msgid "")))
 		  (append refs (list msgid)) refs))
 	  ;; no doubles
-	  (refs (delete-duplicates refs :test #'equal))
+	  (refs (cl-delete-duplicates refs :test #'equal))
 	  (refnum (length refs))
 	  (cut 2))
     ;; remove some refs when there are too many
@@ -179,11 +179,11 @@ Special case: if we were the sender of the original, we simple copy
 the list form the original."
   (let ((reply-to
 	  (or (plist-get origmsg :reply-to) (plist-get origmsg :from))))
-    (delete-duplicates reply-to :test #'mu4e~draft-address-cell-equal)
+    (cl-delete-duplicates reply-to :test #'mu4e~draft-address-cell-equal)
     (if mu4e-compose-dont-reply-to-self
-      (delete-if
+      (cl-delete-if
 	(lambda (to-cell)
-	  (member-if
+	  (cl-member-if
 	    (lambda (addr)
 	      (string= (downcase addr) (downcase (cdr to-cell))))
 	    mu4e-user-mail-address-list))
@@ -196,7 +196,7 @@ the list form the original."
 the original message ORIGMSG, and whether it's a reply-all."
   (when reply-all
     (let* ((cc-lst ;; get the cc-field from the original, remove dups
-	     (delete-duplicates
+	     (cl-delete-duplicates
 	       (append
 		 (plist-get origmsg :to)
 		 (plist-get origmsg :cc))
@@ -204,9 +204,9 @@ the original message ORIGMSG, and whether it's a reply-all."
 	    ;; now we have the basic list, but we must remove
 	    ;; addresses also in the to list
 	    (cc-lst
-	      (delete-if
+	      (cl-delete-if
 		(lambda (cc-cell)
-		  (find-if
+		  (cl-find-if
 		    (lambda (to-cell)
 		      (mu4e~draft-address-cell-equal cc-cell to-cell))
 		    (mu4e~draft-create-to-lst origmsg)))
@@ -216,9 +216,9 @@ the original message ORIGMSG, and whether it's a reply-all."
 	    (cc-lst
 	      (if (or mu4e-compose-keep-self-cc (null user-mail-address))
 		cc-lst
-		(delete-if
+		(cl-delete-if
 		  (lambda (cc-cell)
-		    (member-if
+		    (cl-member-if
 		      (lambda (addr)
 			(string= (downcase addr) (downcase (cdr cc-cell))))
 		      mu4e-user-mail-address-list))
@@ -231,7 +231,7 @@ symbol, :to or :cc), based on the original message ORIGMSG,
 and (optionally) REPLY-ALL which indicates this is a reply-to-all
 message. Return nil if there are no recipients for the particular field."
   (mu4e~draft-recipients-list-to-string
-    (case field
+    (cl-case field
       (:to
 	(mu4e~draft-create-to-lst origmsg))
       (:cc
@@ -444,7 +444,7 @@ will be created from either `mu4e~draft-reply-construct', or
 `mu4e~draft-forward-construct' or `mu4e~draft-newmsg-construct'."
   (unless mu4e-maildir (mu4e-error "mu4e-maildir not set"))
   (let ((draft-dir nil))
-    (case compose-type
+    (cl-case compose-type
 
       (edit
 	;; case-1: re-editing a draft messages. in this case, we do know the
@@ -467,7 +467,7 @@ will be created from either `mu4e~draft-reply-construct', or
 	(setq draft-dir (mu4e-get-drafts-folder msg))
 	(let ((draft-path (mu4e~draft-determine-path draft-dir))
 	       (initial-contents
-		 (case compose-type
+		 (cl-case compose-type
 		   (reply   (mu4e~draft-reply-construct msg))
 		   (forward (mu4e~draft-forward-construct msg))
 		   (new     (mu4e~draft-newmsg-construct)))))

@@ -80,7 +80,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl))			; Some handy macros.
+  (require 'cl-lib))			; Some handy macros.
 
 ;;; WS Trim tools
 
@@ -337,8 +337,9 @@ See the variable docstring for details about this mode."
 (defun ws-trim-ask-method ()
   (let* ((alist (mapcar (lambda (fn) (cons (symbol-name fn) fn))
 			ws-trim-methods))
-	 (default (or (cdr-safe (assoc (find-if (lambda (item) (assoc item alist))
-						minibuffer-history)
+         (default (or (cdr-safe (assoc (cl-find-if (lambda (item)
+                                                     (assoc item alist))
+                                                   minibuffer-history)
 				       alist))
 		      (if (consp ws-trim-method-hook)
 			  (car ws-trim-method-hook)

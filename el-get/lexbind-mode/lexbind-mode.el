@@ -57,7 +57,7 @@
 ;; End:
 
 (eval-when-compile
-  (require 'cl))
+  (require 'cl-lib))
 
 (defvar lexbind-mode-keymap
   (let ((map (make-sparse-keymap)))
@@ -75,7 +75,7 @@ Optional argument ARG if nil toggles `lexical-binding', positive
 enables it, non-positive disables it."
   (interactive)
   (let ((state (if arg
-                   (plusp (prefix-numeric-value arg))
+                   (cl-plusp (prefix-numeric-value arg))
                  (not lexical-binding))))
     (setq lexical-binding state)
     (when (called-interactively-p 'any)
@@ -104,7 +104,7 @@ enables it, non-positive disables it."
   "Generate mode line content to indicate the value of `lexical-binding'.
 Optional argument ARGS if provided, the first argument is taken as the value
 of `lexical-binding'."
-  (let ((lexbind-p (if (plusp (length args))
+  (let ((lexbind-p (if (cl-plusp (length args))
                        (car args)
                      lexical-binding))
 

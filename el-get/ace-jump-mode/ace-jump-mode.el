@@ -92,7 +92,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 
 ;;;; ============================================
 ;;;; Utilities for ace-jump-mode
@@ -103,7 +103,7 @@
 ;; ---------------------
 
 ;; make a position in a visual area
-(defstruct aj-position offset visual-area)
+(cl-defstruct aj-position offset visual-area)
 
 (defmacro aj-position-buffer (aj-pos)
   "Get the buffer object from `aj-position'."
@@ -129,13 +129,13 @@
 
 ;; a record for all the possible visual area
 ;; a visual area is a window that showing some buffer in some frame.
-(defstruct aj-visual-area buffer window frame recover-buffer)
+(cl-defstruct aj-visual-area buffer window frame recover-buffer)
 
 
 ;; ---------------------
 ;; a FIFO queue implementation
 ;; ---------------------
-(defstruct aj-queue head tail)
+(cl-defstruct aj-queue head tail)
 
 (defun aj-queue-push (item q)
   "enqueue"
@@ -240,8 +240,8 @@ Currently, the valid submode is:
 ")
 
 (defvar ace-jump-mode-move-keys
-  (nconc (loop for i from ?a to ?z collect i)
-         (loop for i from ?A to ?Z collect i))
+  (nconc (cl-loop for i from ?a to ?z collect i)
+         (cl-loop for i from ?A to ?Z collect i))
   "*The keys that used to move when enter AceJump mode.
 Each key should only an printable character, whose name will
 fill each possible location.
@@ -363,7 +363,7 @@ You can control whether use the case sensitive or not by `ace-jump-mode-case-fol
 
 Every possible `match-beginning' will be collected.
 The returned value is a list of `aj-position' record."
-  (loop for va in visual-area-list
+  (cl-loop for va in visual-area-list
         append (let* ((current-window (aj-visual-area-window va))
                       (start-point (window-start current-window))
                       (end-point   (window-end   current-window t)))
@@ -371,7 +371,7 @@ The returned value is a list of `aj-position' record."
                    (save-excursion
                      (goto-char start-point)
                      (let ((case-fold-search ace-jump-mode-case-fold))
-                       (loop while (re-search-forward re-query-string nil t)
+                       (cl-loop while (re-search-forward re-query-string nil t)
                              until (or
                                     (> (point) end-point)
                                     (eobp))
@@ -412,7 +412,7 @@ while a child node list when type is 'branch"
           ;; current child can fill the left leaf
           (progn
             (setf (cdr node)
-                  (loop for i from 1 to left-leaf-node
+                  (cl-loop for i from 1 to left-leaf-node
                         collect (cons 'leaf nil)))
             ;; so this should be the last action for while
             (setq left-leaf-node 0))
@@ -421,7 +421,7 @@ while a child node list when type is 'branch"
           ;; fill as much as possible. Push them to queue, so it have
           ;; the oppotunity to become 'branch node if necessary
           (setf (cdr node)
-                (loop for i from 1 to max-child-node
+                (cl-loop for i from 1 to max-child-node
                       collect (let ((n (cons 'leaf nil)))
                                 (aj-queue-push n q)
                                 n)))
@@ -526,7 +526,7 @@ node and call LEAF-FUNC on each leaf node"
                                    ;; there are wide-width characters
                                    ;; so, we need paddings
                                    (make-string (max 0 (1- (string-width subs))) ? ))))))))))
-    (loop for k in keys
+    (cl-loop for k in keys
           for n in (cdr tree)
           do (progn
                ;; update "key" variable so that the function can use
@@ -543,13 +543,13 @@ node and call LEAF-FUNC on each leaf node"
   "Based on `ace-jump-mode-scope', search the possible buffers that is showing now."
   (cond
    ((eq ace-jump-mode-scope 'global)
-    (loop for f in (frame-list)
-          append (loop for w in (window-list f)
+    (cl-loop for f in (frame-list)
+          append (cl-loop for w in (window-list f)
                        collect (make-aj-visual-area :buffer (window-buffer w)
                                                     :window w
                                                     :frame f))))
    ((eq ace-jump-mode-scope 'frame)
-    (loop for w in (window-list (selected-frame))
+    (cl-loop for w in (window-list (selected-frame))
           collect (make-aj-visual-area :buffer (window-buffer w)
                                        :window w
                                        :frame (selected-frame))))
@@ -572,10 +572,10 @@ return the structure list for those make a indirect buffer.
 
 Side affect: All the created indirect buffer will show in its
 relevant window."
-  (loop for va in visual-area-list
+  (cl-loop for va in visual-area-list
         ;; check if the current visual-area (va) has the same buffer with
         ;; the previous ones (vai)
-        if (loop for vai in visual-area-list
+        if (cl-loop for vai in visual-area-list
                  ;; stop at itself, don't need to find the ones behind it (va)
                  until (eq vai va)
                  ;; if the buffer is same, return those(vai) before
@@ -612,7 +612,7 @@ You can constrol whether use the case sensitive via `ace-jump-mode-case-fold'.
   ;; we check the move key to make it valid, cause it can be customized by user
   (if (or (null ace-jump-mode-move-keys)
           (< (length ace-jump-mode-move-keys) 2)
-          (not (every #'characterp ace-jump-mode-move-keys)))
+          (not (cl-every #'characterp ace-jump-mode-move-keys)))
       (error "[AceJump] Invalid move keys: check ace-jump-mode-move-keys"))
   ;; search candidate position
   (let* ((visual-area-list (ace-jump-list-visual-area))
@@ -637,7 +637,7 @@ You can constrol whether use the case sensitive via `ace-jump-mode-case-fold'.
       ;; create background for each visual area
       (if ace-jump-mode-gray-background
           (setq ace-jump-background-overlay-list
-                (loop for va in visual-area-list
+                (cl-loop for va in visual-area-list
                       collect (let* ((w (aj-visual-area-window va))
                                      (b (aj-visual-area-buffer va))
                                      (ol (make-overlay (window-start w)
@@ -922,8 +922,8 @@ You can constrol whether use the case sensitive via
 (defun ace-jump-move ()
   "move cursor based on user input"
   (interactive)
-  (let* ((index (let ((ret (position (aref (this-command-keys) 0)
-                                     ace-jump-mode-move-keys)))
+  (let* ((index (let ((ret (cl-position (aref (this-command-keys) 0)
+                                        ace-jump-mode-move-keys)))
                   (if ret ret (length ace-jump-mode-move-keys))))
          (node (nth index (cdr ace-jump-search-tree))))
     (cond
@@ -974,13 +974,13 @@ You can constrol whether use the case sensitive via
   (force-mode-line-update)
 
   ;; delete background overlay
-  (loop for ol in ace-jump-background-overlay-list
+  (cl-loop for ol in ace-jump-background-overlay-list
         do (delete-overlay ol))
   (setq ace-jump-background-overlay-list nil)
 
 
   ;; we clean the indirect buffer
-  (loop for va in ace-jump-recover-visual-area-list
+  (cl-loop for va in ace-jump-recover-visual-area-list
         do (with-selected-window (aj-visual-area-window va)
              (let ((fake-buffer (aj-visual-area-buffer va))
                    (original-buffer (aj-visual-area-recover-buffer va)))
@@ -1023,7 +1023,7 @@ PRED is a function object which can pass to funcall and accept
 one argument, which will be every element in the list.
 Such as : (lambda (x) (equal x 1)) "
   (let (true-list false-list)
-    (loop for e in l
+    (cl-loop for e in l
           do (if (funcall pred e)
                  (setq true-list (cons e true-list))
                (setq false-list (cons e false-list))))

@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'rect)
 
@@ -51,7 +51,7 @@
               (cons (cons 'apply (cons 'activate-cursor-for-undo (list id))) buffer-undo-list))))))
 
 (defun mc/all-fake-cursors (&optional start end)
-  (remove-if-not 'mc/fake-cursor-p
+  (cl-remove-if-not 'mc/fake-cursor-p
                  (overlays-in (or start (point-min))
                               (or end   (point-max)))))
 
@@ -179,7 +179,7 @@ highlights the entire width of the window."
 
 (defun mc/create-cursor-id ()
   "Returns a unique cursor id"
-  (incf mc--current-cursor-id))
+  (cl-incf mc--current-cursor-id))
 
 (defun mc/create-fake-cursor-at-point (&optional id)
   "Add a fake cursor and possibly a fake active region overlay based on point and mark.
@@ -269,7 +269,7 @@ cursor with updated info."
 
 (defun mc/cursor-with-id (id)
   "Find the first cursor with the given id, or nil"
-  (find-if #'(lambda (o) (and (mc/fake-cursor-p o)
+  (cl-find-if #'(lambda (o) (and (mc/fake-cursor-p o)
                               (= id (overlay-get o 'mc-id))))
            (overlays-in (point-min) (point-max))))
 
@@ -302,7 +302,7 @@ cursor with updated info."
 
 (defun mc/num-cursors ()
   "The number of cursors (real and fake) in the buffer."
-  (1+ (count-if 'mc/fake-cursor-p
+  (1+ (cl-count-if 'mc/fake-cursor-p
                 (overlays-in (point-min) (point-max)))))
 
 (defvar mc--this-command nil
@@ -537,7 +537,7 @@ for running commands with multiple cursors.")
 
 (defun mc/dump-list (list-symbol)
   "Insert (setq 'LIST-SYMBOL LIST-VALUE) to current buffer."
-  (symbol-macrolet ((value (symbol-value list-symbol)))
+  (cl-symbol-macrolet ((value (symbol-value list-symbol)))
     (insert "(setq " (symbol-name list-symbol) "\n"
             "      '(")
     (newline-and-indent)

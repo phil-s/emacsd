@@ -35,7 +35,7 @@
 ;; internal stuff starts with 'sr-'
 
 ;;; Code:
-(require 'cl)
+(require 'cl-lib)
 
 (defvar sauron-modules
   '(sauron-erc sauron-dbus sauron-org sauron-notifications
@@ -235,7 +235,7 @@ e.g. when using ERC.")
   (setq header-line-format
     (cons
       (make-string (floor (fringe-columns 'left t)) ?\s)
-      (map 'list
+      (cl-map 'list
 	(lambda (elm)
 	  (let ((field (cdr (assoc (car elm) sr-column-name-alist)))
 		 (width (cdr elm)))
@@ -346,9 +346,9 @@ Returns the new priority."
         ;; https://github.com/djcb/sauron/issues/12#issuecomment-47056517
       (progn
 	(when (sr-pattern-matches msg sauron-watch-patterns 'string-match)
-	  (incf prio))
+	  (cl-incf prio))
 	(when (sr-pattern-matches nick sauron-watch-nicks 'string=)
-	  (incf prio))
+	  (cl-incf prio))
 	(when (> prio 5)
 	  (setq prio 5))))
       prio))
@@ -370,7 +370,7 @@ For debugging purposes."
     (lambda (f-w)
       (let* ((field (car f-w)) (width (cdr f-w))
 	      (str
-		(case field
+		(cl-case field
 		  ('timestamp
 		    (propertize (format-time-string sauron-timestamp-format
 				  (current-time)) 'face 'sauron-timestamp-face))

@@ -63,7 +63,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+;; (eval-when-compile (require 'cl-lib))
 
 (defgroup iedit nil
   "Edit multiple regions with the same content simultaneously."

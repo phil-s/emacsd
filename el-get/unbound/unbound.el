@@ -32,8 +32,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))       ; for `dotimes', `push' (Emacs 21)
-
 (defcustom unbound-modifiers '(control meta shift)
   "Modifiers to consider when searching for unbound keys."
   :type '(set (const control) (const meta) (const shift)

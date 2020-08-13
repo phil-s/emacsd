@@ -46,7 +46,7 @@
 ;;
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 (defgroup highlight-parentheses nil
   "Highlight surrounding parentheses"

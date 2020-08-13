@@ -22,7 +22,7 @@
 ;;  https://github.com/djcb/sauron/blob/master/README.org
 
 ;;; Code:
-(require 'cl)
+(require 'cl-lib)
 (require 'dbus nil 'noerror) ;; keep errors out if dbus is not there
 
 ;; keep the byte-compiler happy, even if dbus isn't there

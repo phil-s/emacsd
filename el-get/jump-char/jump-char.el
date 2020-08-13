@@ -75,7 +75,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 
 (provide 'jump-char)
@@ -139,7 +139,7 @@ Set this to nil if you don't need it."
   (dolist (v '(isearch-point-state isearch--state-point)
              (error "I don't understand this isearch."))
     (when (fboundp v)
-      (return v))))
+      (cl-return v))))
 
 
 (defsubst jump-char-equal (l r)

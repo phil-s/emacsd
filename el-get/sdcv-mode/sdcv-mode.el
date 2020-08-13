@@ -51,7 +51,7 @@
 
 (require 'outline)
 (eval-when-compile
-  (require 'cl))
+  (require 'cl-lib))
 
 ;;; ==================================================================
 ;;; Frontend, search word and display sdcv buffer
