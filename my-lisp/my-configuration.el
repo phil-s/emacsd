@@ -318,6 +318,9 @@ when `auto-save-mode' is invoked manually.")
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
 
+;; M-< in minibuffer initially moves only to the end-of-prompt.
+(setq minibuffer-beginning-of-buffer-movement t)
+
 ;; Do not use the new 'pretty' quoting that makes quotes unsearchable
 ;; and unusable in verbatim copy/paste scenarios.  The old style was
 ;; never a problem, so let's not introduce issues for the sake of
