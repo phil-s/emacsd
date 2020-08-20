@@ -349,7 +349,7 @@
    "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
    (lambda (s)
      (let ((el-get-install-branch "3.stable"))
-       (end-of-buffer)
+       (goto-char (point-max))
        (eval-print-last-sexp)
        ;; Now configure my custom sources. We need to do this here in the
        ;; lambda expression callback, because it is called asynchronously
