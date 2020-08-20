@@ -14,15 +14,6 @@
   (declare-function term-mode "term")
   )
 
-(eval-after-load "psysh"
-  '(progn
-     (define-key psysh-mode-map
-       [remap my-beginning-of-line-or-indentation]
-       'psysh-beginning-of-line-or-indentation)
-     ;; Save the drush shell command history.
-     (setq psysh-history-file (locate-user-emacs-file
-                               ".psysh-history"))))
-
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"

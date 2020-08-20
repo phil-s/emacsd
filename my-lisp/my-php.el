@@ -108,3 +108,12 @@
   ;; uncomment if you prefer speedbar:
   ;;(setq php-imenu-alist-postprocessor (function reverse))
   (imenu-add-menubar-index))
+
+;; PsySH.
+(with-eval-after-load "psysh"
+  (define-key psysh-mode-map
+    [remap my-beginning-of-line-or-indentation]
+    'psysh-move-beginning-of-line-or-indentation)
+  ;; Save the drush shell command history.
+  (setq psysh-history-file (locate-user-emacs-file
+                            ".psysh-history")))
