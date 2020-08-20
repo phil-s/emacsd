@@ -800,7 +800,7 @@ Called via `comint-output-filter-functions'."
   (beginning-of-line)
   (comint-skip-prompt))
 
-(defun psysh-beginning-of-line-or-indentation ()
+(defun psysh-move-beginning-of-line-or-indentation ()
   "Move to beginning of line, or indentation, respecting the prompt."
   (interactive)
   (if (not (bolp))
