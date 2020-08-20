@@ -12,6 +12,7 @@
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
+  (defvar url-http-target-url)
   (declare-function compare-windows-dehighlight "compare-w")
   (declare-function compare-windows-highlight "compare-w")
   (declare-function dired-add-file "dired-aux")
@@ -1172,6 +1173,28 @@ point. This function returns a list (string) for use in `interactive'."
        (delete-region (point-min) (1+ url-http-end-of-headers))
        (shr-render-buffer markup)
        (kill-buffer markup)))))
+
+(defun my-browse-url-emacs (url)
+  "Like `browse-url-emacs', but fast."
+  (interactive "sURL: ")
+  (url-retrieve
+   url
+   (lambda (&optional status cbargs)
+     (let ((error (plist-get status :error)))
+       (if error
+           (signal (car error) (cdr error))
+         (delete-region (point-min) (1+ url-http-end-of-headers))
+         (rename-buffer
+          (format "*%s*" (url-recreate-url url-http-target-url)) t)
+         (normal-mode)
+         ;; `url-http-generic-filter' is biting us by moving point
+         ;; *after* we've finished, so we need to defer displaying the
+         ;; buffer until *after* we have a change to rectify that :/
+         (run-with-timer 0 nil (lambda (buf)
+                                 (with-current-buffer buf
+                                   (goto-char (point-min)))
+                                 (pop-to-buffer buf))
+                         (current-buffer)))))))
 
 (defun my-www-search (string)
   "Ask a WWW browser to perform a web search for a given string.
