@@ -30,7 +30,7 @@
   (declare-function imenu--subalist-p "imenu")
   (declare-function lexbind-mode "lexbind-mode")
   (declare-function rainbow-mode "rainbow-mode")
-  (declare-function so-long-enable "so-long")
+  (declare-function global-so-long-mode "so-long")
   (declare-function sql-send-string "sql")
   (declare-function sql-upcase-mode "sql-upcase")
   )
@@ -84,14 +84,7 @@
 
 ;; Don't let minified files bring Emacs to its knees.
 (when (require 'so-long nil :noerror)
-  ;; Additional target major modes to trigger for.
-  (mapc (apply-partially 'add-to-list 'so-long-target-modes)
-        '(sgml-mode nxml-mode))
-  ;; Additional buffer-local minor modes to disable.
-  (mapc (apply-partially 'add-to-list 'so-long-minor-modes)
-        '(hl-sexp-mode diff-hl-mode diff-hl-amend-mode diff-hl-flydiff-mode
-                       idle-highlight-mode rainbow-delimiters-mode))
-  (so-long-enable))
+  (global-so-long-mode 1))
 
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
