@@ -52,6 +52,11 @@
             :type git
             :url "https://github.com/abo-abo/avy.git")
 
+     (:name browse-at-remote
+            :type git
+            :url "https://github.com/rmuslimov/browse-at-remote.git"
+            :features browse-at-remote)
+
      (:name browse-kill-ring
             :type http
             :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el"

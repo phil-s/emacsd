@@ -574,6 +574,36 @@ The window scope is determined by `avy-all-windows' (ARG negates it).
 
 ;;;***
 
+;;;### (autoloads nil "browse-at-remote/browse-at-remote" "browse-at-remote/browse-at-remote.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from browse-at-remote/browse-at-remote.el
+
+(autoload 'browse-at-remote "browse-at-remote/browse-at-remote" "\
+Browse the current file with `browse-url'.
+
+\(fn)" t nil)
+
+(autoload 'browse-at-remote-kill "browse-at-remote/browse-at-remote" "\
+Add the URL of the current file to the kill ring.
+
+Works like `browse-at-remote', but puts the address in the
+kill ring instead of opening it with `browse-url'.
+
+\(fn)" t nil)
+
+(defalias 'bar-browse 'browse-at-remote "\
+Browse the current file with `browse-url'.")
+
+(defalias 'bar-to-clipboard 'browse-at-remote-kill "\
+Add the URL of the current file to the kill ring.
+
+Works like `browse-at-remote', but puts the address in the
+kill ring instead of opening it with `browse-url'.")
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "browse-at-remote/browse-at-remote" '(#("browse-at-remote-" 0 17 (fontified t face font-lock-function-name-face)))))
+
+;;;***
+
 ;;;### (autoloads nil "dash/dash" "dash/dash.el" (0 0 0 0))
 ;;; Generated autoloads from dash/dash.el
 

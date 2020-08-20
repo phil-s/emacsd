@@ -4,6 +4,7 @@
 :async "installed"
 :auto-compile "installed"
 :avy "installed"
+:browse-at-remote "installed"
 :dash "installed"
 :deft "installed"
 :delight "installed"
