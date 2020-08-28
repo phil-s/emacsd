@@ -1361,6 +1361,8 @@ With C-u prefix arg, always creates a new buffer."
     (delete-other-windows)))
 
 (defvar my-terminal-run-history nil)
+(defvar-local my-terminal-run-command nil)
+(put 'my-terminal-run-command 'permanent-local t)
 (defun my-terminal-run (command &optional name)
   "Runs COMMAND in a `term' buffer."
   (interactive
@@ -1370,6 +1372,7 @@ With C-u prefix arg, always creates a new buffer."
          (command (pop switches))
          (termbuf (apply 'make-term name command nil switches)))
     (set-buffer termbuf)
+    (setq-local my-terminal-run-command (cons command switches))
     (term-mode)
     (term-char-mode)
     (switch-to-buffer termbuf)))
