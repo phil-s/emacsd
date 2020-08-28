@@ -22,11 +22,6 @@ unhides lines again"
 (autoload 'loccur-current "loccur" "Call `loccur' for the current word." t)
 (autoload 'loccur-previous-match "loccur" "Call `loccur' for the previously found word." t)
 
-;; Use framemove, integrated with windmove.
-(windmove-default-keybindings) ;default modifier is <SHIFT>
-(when (require 'framemove nil :noerror)
-  (setq framemove-hook-into-windmove t))
-
 ;; Sudo support for Unix-like systems
 ;; (should this include (eq system-type 'cygwin) ??)
 (when (and (not (or (eq system-type 'windows-nt)
