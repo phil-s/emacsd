@@ -16,6 +16,7 @@
 /image-dired/
 /url
 /network-security.data
+/edit-server/*
 
 session.*
 my-lisp/my-local.backup
