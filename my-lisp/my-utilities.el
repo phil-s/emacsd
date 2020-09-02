@@ -1973,6 +1973,19 @@ toggle between real end and logical end of the buffer."
 \(loop-collect x for x in ...) => (cl-loop for x in ... collect x)"
   (require 'cl-macs)
   `(cl-loop ,@loop collect ,item))
+
+
+;; Make "M-g [1-9] ... RET" a shortcut for "M-g g [1-9] ... RET"
+;; (dotimes (n 9)
+;;   (global-set-key (kbd (format "M-g %s" (1+ n))) #'my-goto-line))
+(defun my-goto-line (&optional buffer)
+  "Slightly faster `goto-line'."
+  (interactive "P")
+  (when (and (>= last-command-event ?1)
+             (<= last-command-event ?9)
+             (not (numberp current-prefix-arg)))
+    (push last-command-event unread-command-events))
+  (call-interactively #'goto-line))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

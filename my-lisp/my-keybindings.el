@@ -293,6 +293,8 @@
   (define-key keymap (kbd "<s-home>") 'org-agenda)
   (define-key keymap (kbd "<XF86Calculator>") 'calc)
   (define-key keymap (kbd "<menu> z") 'repeat)
+  (dotimes (n 9) ;; Make "M-g [1-9]..." a shortcut for "M-g g [1-9]..."
+    (define-key keymap (kbd (format "M-g %s" (1+ n))) #'my-goto-line))
   ) ; end of key definitions
 
 (define-minor-mode my-keys-local-minor-mode
