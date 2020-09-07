@@ -234,8 +234,8 @@
   (define-key keymap (kbd "C-c s !")   'my-terminal-run)
 
   ;; Miscellaneous (mine/third-party)
-  (define-key keymap (kbd "s-/")       'avy-goto-char-timer)
   (define-key keymap (kbd "<menu> s")  'avy-goto-char-timer)
+  (define-key keymap (kbd "<menu> w")  'avy-goto-word-1)
   (define-key keymap (kbd "<menu> d")  'sdcv-search)
   (define-key keymap (kbd "<menu> e")  'mu4e)
   (define-key keymap (kbd "C-c v")     'my-copy-buffer-file-name)
