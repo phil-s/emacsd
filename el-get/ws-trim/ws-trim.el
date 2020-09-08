@@ -304,7 +304,7 @@ See the variable docstring for details about this mode."
 	(add-hook 'after-change-functions 'ws-trim-after-change nil t)
 	(add-hook 'post-command-hook 'ws-trim-post-command nil t)
 	(add-hook 'first-change-hook 'ws-trim-on-first-change nil t)
-	(add-hook 'write-contents-hooks 'ws-trim-on-write)
+	(add-hook 'write-contents-functions 'ws-trim-on-write)
 	(run-hooks 'ws-trim-mode-hook)
 	(if (or (>= ws-trim-level 3)
 		(and (>= ws-trim-level 2) (buffer-modified-p)))
@@ -313,7 +313,7 @@ See the variable docstring for details about this mode."
     (remove-hook 'after-change-functions 'ws-trim-after-change t)
     (remove-hook 'post-command-hook 'ws-trim-post-command t)
     (remove-hook 'first-change-hook 'ws-trim-on-first-change t)
-    (remove-hook 'write-contents-hooks 'ws-trim-on-write)
+    (remove-hook 'write-contents-functions 'ws-trim-on-write)
     (ws-trim-reset-changed-region nil))
   (if (fboundp 'force-mode-line-update)
       (force-mode-line-update)
@@ -526,10 +526,10 @@ controlled by the `ws-trim-global-modes' variable."
 			      (> (prefix-numeric-value arg) 0)))
   (if global-ws-trim-mode
       (progn
-	(add-hook 'find-file-hooks 'global-ws-trim-init-ws-trim)
+	(add-hook 'find-file-hook 'global-ws-trim-init-ws-trim)
 	(setq ws-trim-buffers (buffer-list))
 	(global-ws-trim-init-ws-trim))
-    (remove-hook 'find-file-hooks 'global-ws-trim-init-ws-trim)))
+    (remove-hook 'find-file-hook 'global-ws-trim-init-ws-trim)))
 
 (defun ws-trim-mode-heuristic ()
   "Return 1 if WS Trim mode likely should be active, 0 otherwise.
@@ -559,8 +559,7 @@ detects both these cases."
   (while ws-trim-buffers
     (if (and (buffer-live-p (car ws-trim-buffers))
 	     (not (local-variable-p 'ws-trim-mode (car ws-trim-buffers))))
-	(save-excursion
-	  (set-buffer (car ws-trim-buffers))
+	(with-current-buffer (car ws-trim-buffers)
 	  (ws-trim-mode
 	   (cond ((eq ws-trim-global-modes t) 1)
 		 ((eq ws-trim-global-modes 'guess) (ws-trim-mode-heuristic))

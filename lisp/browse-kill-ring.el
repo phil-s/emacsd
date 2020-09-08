@@ -672,9 +672,9 @@ of the *Kill Ring*."
 	     (overlays-at (point)))
     (let ((overs (overlay-lists))
 	  (current-overlay (car (overlays-at (point)))))
-      (mapcar #'(lambda (o)
-		  (overlay-put o 'face nil))
-	      (nconc (car overs) (cdr overs)))
+      (mapc #'(lambda (o)
+                (overlay-put o 'face nil))
+            (nconc (car overs) (cdr overs)))
       (overlay-put current-overlay 'face 'highlight)))
   (when browse-kill-ring-recenter
     (recenter 1)))
