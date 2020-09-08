@@ -48,6 +48,7 @@
   (declare-function ediff-copy-diff "ediff-util")
   (declare-function ediff-get-region-contents "ediff-util")
   (declare-function keep-buffers-mode "keep-buffers")
+  (declare-function my-fortune-set-initial-scratch-message "my-utilities")
   (declare-function my-isearch-delete "my-configuration")
   (declare-function notify "notify")
   (declare-function outline-show-all "outline")
@@ -117,62 +118,9 @@ when `auto-save-mode' is invoked manually.")
 (setq inhibit-startup-screen t)
 (eval '(setq inhibit-startup-echo-area-message "phil"))
 
-;; Supply a random fortune cookie as the *scratch* message.
-(defvar my-fortune-map (make-sparse-keymap)
-  "Keymap for `my-fortune-message'.")
-
-(defun my-fortune-scratch-message ()
-  "Supply a random fortune cookie."
-  (interactive)
-  (let* ((comment
-          (when (executable-find "fortune")
-            (with-temp-buffer
-              (shell-command "fortune" t)
-              (let ((comment-start ";;")
-                    (comment-empty-lines t)
-                    (tab-width 4))
-                (untabify (point-min) (point-max))
-                (comment-region (point-min) (point-max)))
-              (delete-trailing-whitespace (point-min) (point-max))
-              (buffer-substring-no-properties (point-min) (1- (point-max))))))
-         (fortune (concat (propertize comment 'keymap my-fortune-map)
-                          "\n\n")))
-    (if (called-interactively-p 'any)
-        (insert fortune)
-      fortune)))
-
-;; Type "RET" to add another.
-(define-key my-fortune-map (kbd "RET")
-  (defalias (make-symbol "my-fortune-add")
-    (lambda ()
-      (interactive)
-      (forward-paragraph)
-      (if (looking-at "\n")
-          (forward-char)
-        (insert "\n"))
-      (save-excursion
-        (insert (my-fortune-scratch-message))))
-    "Add another fortune."))
-
-;; Type "g" to replace the current.
-(define-key my-fortune-map (kbd "g")
-  (defalias (make-symbol "my-fortune-replace")
-    (lambda ()
-      (interactive)
-      (save-excursion
-        (backward-paragraph)
-        (when (looking-at "\n")
-          (forward-line))
-        (kill-paragraph 1)
-        (when (looking-at "\n")
-          (delete-char 1))
-        (insert (my-fortune-scratch-message))))
-    "Replace the current fortune."))
-
-;; initial-scratch-message
-(let ((fortune (my-fortune-scratch-message)))
-  (when fortune
-    (setq initial-scratch-message fortune)))
+;; Set `initial-scratch-message'.
+;; (Deferred until my-utilities.el has loaded.)
+(add-hook 'after-init-hook #'my-fortune-set-initial-scratch-message)
 
 ;; Restore traditional `yow' functionality.
 (setq yow-file (expand-file-name "~/.emacs.d/yow.lines"))

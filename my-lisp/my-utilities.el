@@ -1071,11 +1071,15 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
           (forward-sexp)))
       (mark-sexp -1))))
 
-(defun my-copy-region-unindented (pad beginning end)
+(defun my-copy-region-unindented (pad beginning end &optional func)
   "Copy the region, un-indented by the length of its minimum indent.
 
 If numeric prefix argument PAD is supplied, indent the resulting
-text by that amount."
+text by that amount.
+
+If FUNC is supplied, it will be called in the temporary buffer
+with the unindented contents before the buffer is killed, rather
+than copying those contents to the kill ring."
   (interactive "P\nr")
   (let ((buf (current-buffer))
         (itm indent-tabs-mode)
@@ -1102,7 +1106,9 @@ text by that amount."
         (when pad
           (setq indent (- indent (prefix-numeric-value pad))))
         (indent-rigidly (point-min) (point-max) (- indent))
-        (copy-region-as-kill (point-min) (point-max))))))
+        (if func
+            (funcall func)
+          (copy-region-as-kill (point-min) (point-max)))))))
 
 (defun my-copy-region-as-kill (pad beginning end)
   "Like `copy-region-as-kill' or, with prefix arg, `my-copy-region-unindented'.
@@ -1133,6 +1139,81 @@ See also `my-copy-region-as-kill'."
                                    beginning end)
         (delete-region beginning end))
     (kill-region beginning end)))
+
+
+;; Supply a random fortune cookie as the *scratch* message.
+(defvar my-fortune-map (make-sparse-keymap)
+  "Keymap for `my-fortune-message'.")
+
+(defun my-fortune-scratch-message ()
+  "Supply a random fortune cookie."
+  (interactive)
+  (when-let*
+      ((comment
+        (and (executable-find "fortune")
+             (with-temp-buffer
+               (shell-command "fortune" t)
+               (let ((comment-start ";;")
+                     (comment-empty-lines t)
+                     (tab-width 4)
+                     (buf (current-buffer)))
+                 (untabify (point-min) (point-max))
+                 ;; Replace buffer contents with an unindented copy.
+                 ;; FIXME: There are more buffers being used here
+                 ;; (including in the unindent code) than I'd like.
+                 (with-temp-buffer
+                   (insert (with-current-buffer buf
+                             (my-copy-region-unindented
+                              0 (point-min) (point-max) #'buffer-string)))
+                   (let ((buf2 (current-buffer)))
+                     (set-buffer buf)
+                     (replace-buffer-contents buf2)))
+                 ;; Make it a comment.
+                 (comment-region (point-min) (point-max)))
+               (delete-trailing-whitespace (point-min) (point-max))
+               (buffer-substring-no-properties (point-min) (1- (point-max))))))
+       ;; Add keybindings.
+       (fortune (concat (propertize comment 'keymap my-fortune-map)
+                        "\n\n")))
+    (if (called-interactively-p 'any)
+        (insert fortune)
+      fortune)))
+
+;; Type "RET" to add another.
+(define-key my-fortune-map (kbd "RET")
+  (defalias (make-symbol "my-fortune-add")
+    (lambda ()
+      (interactive)
+      (forward-paragraph)
+      (if (looking-at "\n")
+          (forward-char)
+        (insert "\n"))
+      (save-excursion
+        (insert (my-fortune-scratch-message))))
+    "Add another fortune."))
+
+;; Type "g" to replace the current.
+(define-key my-fortune-map (kbd "g")
+  (defalias (make-symbol "my-fortune-replace")
+    (lambda ()
+      (interactive)
+      (save-excursion
+        (backward-paragraph)
+        (when (looking-at "\n")
+          (forward-line))
+        (kill-paragraph 1)
+        (when (looking-at "\n")
+          (delete-char 1))
+        (insert (my-fortune-scratch-message))))
+    "Replace the current fortune."))
+
+(defun my-fortune-set-initial-scratch-message ()
+  "Set `initial-scratch-message' from `my-fortune-scratch-message'.
+
+Used with `after-init-hook'."
+  (let ((fortune (my-fortune-scratch-message)))
+    (when fortune
+      (setq initial-scratch-message fortune))))
 
 (defun my-region-or-word (prompt)
   "Read a string from the minibuffer, prompting with PROMPT.
