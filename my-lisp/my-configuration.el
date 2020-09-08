@@ -47,6 +47,7 @@
   (declare-function dired-mode-map "dired")
   (declare-function ediff-copy-diff "ediff-util")
   (declare-function ediff-get-region-contents "ediff-util")
+  (declare-function ediff-setup-windows-plain "ediff-wind")
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function my-isearch-delete "my-configuration")
   (declare-function notify "notify")

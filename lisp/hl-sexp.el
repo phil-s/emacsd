@@ -64,6 +64,26 @@
   "Face used to fontify the sexp you're looking at."
   :group 'faces)
 
+;;;###autoload
+(define-minor-mode hl-sexp-mode
+  "Minor mode to highlight the sexp about point in the current window.
+With ARG, turn Hl-Sexp mode on if ARG is positive, off otherwise.
+Uses functions `hl-sexp-unhighlight' and `hl-sexp-highlight' on
+`pre-command-hook' and `post-command-hook'."
+  nil nil nil
+  (if hl-sexp-mode
+      (progn
+	(add-hook 'pre-command-hook #'hl-sexp-unhighlight)
+	(add-hook 'post-command-hook #'hl-sexp-highlight))
+    (hl-sexp-unhighlight)
+    (remove-hook 'pre-command-hook #'hl-sexp-unhighlight)
+    (remove-hook 'post-command-hook #'hl-sexp-highlight)))
+
+;;;###autoload
+(easy-mmode-define-global-mode
+ global-hl-sexp-mode hl-sexp-mode hl-sexp-mode
+ :group 'hl-sexp)
+
 (defvar hl-sexp-overlay nil)
 
 (defun hl-sexp-highlight ()
@@ -89,26 +109,6 @@
   "Deactivate the Hl-Sexp overlay on the current sexp in the current window."
   (if hl-sexp-overlay
       (delete-overlay hl-sexp-overlay)))
-
-;;;###autoload
-(define-minor-mode hl-sexp-mode
-  "Minor mode to highlight the sexp about point in the current window.
-With ARG, turn Hl-Sexp mode on if ARG is positive, off otherwise.
-Uses functions `hl-sexp-unhighlight' and `hl-sexp-highlight' on
-`pre-command-hook' and `post-command-hook'."
-  nil nil nil
-  (if hl-sexp-mode
-      (progn
-	(add-hook 'pre-command-hook #'hl-sexp-unhighlight)
-	(add-hook 'post-command-hook #'hl-sexp-highlight))
-    (hl-sexp-unhighlight)
-    (remove-hook 'pre-command-hook #'hl-sexp-unhighlight)
-    (remove-hook 'post-command-hook #'hl-sexp-highlight)))
-
-;;;###autoload
-(easy-mmode-define-global-mode
- global-hl-sexp-mode hl-sexp-mode hl-sexp-mode
- :group 'hl-sexp)
 
 (provide 'hl-sexp)
 
