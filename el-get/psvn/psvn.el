@@ -619,12 +619,12 @@ It is an experimental feature.")
   :group 'psvn)
 
 
-(eval-and-compile
-  (require 'cl)
-  (defconst svn-xemacsp (featurep 'xemacs))
-  (if svn-xemacsp
-      (require 'overlay)
-    (require 'overlay nil t)))
+;; (eval-and-compile
+;;   (require 'cl)
+;;   (defconst svn-xemacsp (featurep 'xemacs))
+;;   (if svn-xemacsp
+;;       (require 'overlay)
+;;     (require 'overlay nil t)))
 
 (defcustom svn-status-display-full-path nil
   "Specifies how the filenames look like in the listing.
