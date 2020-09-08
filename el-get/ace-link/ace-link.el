@@ -50,7 +50,7 @@
                       ,collector)))
      (setq ace-jump-mode-end-hook
        (list (lambda ()
-               (setq ace-jump-mode-end-hook)
+               (setq ace-jump-mode-end-hook nil)
                ,@follower)))
      (ace-jump-do "")))
 
