@@ -859,16 +859,16 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   (declare-function erc-default-target "erc")
   (declare-function erc-update-modules "erc"))
 
-(eval-after-load "erc"
-  '(progn
-     ;; Add the following modules:
-     ;; dcc: Provide Direct Client-to-Client support
-     ;; keep-place: Leave point above un-viewed text
-     ;; ;; log: Save buffers in logs
-     ;; ;; using `erc-log-mode' instead (see below).
-     ;; ;; (is that the same thing?)
-     (setq erc-modules (nconc erc-modules '(dcc keep-place))) ;; log
-     (erc-update-modules)))
+(with-eval-after-load "erc"
+  ;; Add the following modules:
+  ;; dcc: Provide Direct Client-to-Client support
+  ;; keep-place: Leave point above un-viewed text
+  ;; ;; log: Save buffers in logs
+  ;; ;; using `erc-log-mode' instead (see below).
+  ;; ;; (is that the same thing?)
+  (dolist (module '(dcc keep-place)) ;; log
+    (add-to-list 'erc-modules module))
+  (erc-update-modules))
 
 ;; Auto-log (and restore!?) channels
 (setq-default erc-enable-logging t)
