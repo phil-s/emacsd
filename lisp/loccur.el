@@ -27,7 +27,7 @@
 ;;; Commentary:
 ;;
 ;; Add the following to your .emacs file:
-;; 
+;;
 ;; (require 'loccur)
 ;; ;; defines shortcut for loccur of the current word
 ;; (define-key global-map [(control o)] 'loccur-current)
@@ -41,7 +41,7 @@
 ;; gives unexpected jumps in loccur mode
 ;;
 ;;; TODO:
-;; 
+;;
 ;;; Change Log:
 ;;
 ;; 2009-10-05 (1.1.0)
@@ -85,7 +85,7 @@
 
 
 (defun loccur-mode (regex)
-  (setq	loccur-mode 
+  (setq	loccur-mode
 		(if (or loccur-mode
 				(null regex)
 				(zerop (length regex)))
@@ -116,7 +116,7 @@ expression REGEX
 This command hides all lines from the current buffer except those
 containing the regular expression REGEX. A second call of the function
 unhides lines again"
-  (interactive 
+  (interactive
    (if loccur-mode
 	   (list nil)
      (loccur-prompt)))
@@ -145,7 +145,7 @@ if its size is 1 line"
 (defun loccur-1 (regex)
   (let* ((buffer-matches (loccur-find-matches regex))
 		 (ovl-bounds (loccur-create-overlay-bounds-btw-lines buffer-matches)))
-	(setq loccur-overlay-list 
+	(setq loccur-overlay-list
 		  (loccur-create-invisible-overlays ovl-bounds))
     (setq loccur-overlay-list
           (append loccur-overlay-list
@@ -154,28 +154,28 @@ if its size is 1 line"
 	(recenter)))
 
 (defun loccur-create-highlighted-overlays(buffer-matches)
-  (let ((overlays 
+  (let ((overlays
 		 (cl-map 'list #'(lambda (match)
 						(make-overlay
 						 (nth 1 match)
 						 (nth 2 match)
 						 (current-buffer) t nil))
 			  buffer-matches)))
-	(mapcar (lambda (ovl) 
+        (mapcar (lambda (ovl)
               (overlay-put ovl loccur-overlay-property-name t)
              (overlay-put ovl 'face 'isearch))
             overlays)))
 
 
 (defun loccur-create-invisible-overlays (ovl-bounds)
-  (let ((overlays 
+  (let ((overlays
 		 (cl-map 'list #'(lambda (bnd)
 						(make-overlay
 						 (car bnd)
 						 (cadr bnd)
 						 (current-buffer) t nil))
 			  ovl-bounds)))
-	(mapcar (lambda (ovl) 
+	(mapcar (lambda (ovl)
               (overlay-put ovl loccur-overlay-property-name t)
               (overlay-put ovl 'invisible t)
               ;; force intangible property if invisible property
