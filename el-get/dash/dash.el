@@ -651,15 +651,15 @@ See also: `-last-item'."
   (declare (pure t) (side-effect-free t))
   (car (cdr (cdr (cdr (cdr list))))))
 
-;; TODO: gv was introduced in 24.3, so we can remove the if statement
-;; when support for earlier versions is dropped
-(eval-when-compile
-  (require 'cl)
-  (if (fboundp 'gv-define-simple-setter)
-      (gv-define-simple-setter -first-item setcar)
-    (require 'cl)
-    (with-no-warnings
-      (defsetf -first-item (x) (val) `(setcar ,x ,val)))))
+;; ;; TODO: gv was introduced in 24.3, so we can remove the if statement
+;; ;; when support for earlier versions is dropped
+;; (eval-when-compile
+;;   (require 'cl)
+;;   (if (fboundp 'gv-define-simple-setter)
+;;       (gv-define-simple-setter -first-item setcar)
+;;     (require 'cl)
+;;     (with-no-warnings
+;;       (defsetf -first-item (x) (val) `(setcar ,x ,val)))))
 
 (defun -last-item (list)
   "Return the last item of LIST, or nil on an empty list."
