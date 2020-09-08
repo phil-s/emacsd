@@ -56,7 +56,6 @@
 :smart-tabs-mode "installed"
 :transpose-frame "installed"
 :unbound "installed"
-:undo-tree "installed"
 :vcl-mode "installed"
 :web-mode "installed"
 :wgrep "installed"

@@ -282,8 +282,6 @@
      (:name unbound
             :type emacswiki)
 
-     (:name undo-tree)
-
      (:name vcl-mode
             :type http
             :url ,(my-local-repository-url-for "vcl-mode"))
