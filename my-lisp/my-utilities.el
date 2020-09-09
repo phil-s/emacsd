@@ -565,13 +565,13 @@ Does not set point.  Does nothing if mark ring is empty."
 ;; pieces of text, but yank the same thing in as a replacement.
 ;; @see; http://stackoverflow.com/a/5825012/324105
 (defun jp/yank (&optional arg)
-  "Yank and save text to jp/yank register"
+  "Perform a `yank' and save the text to the jp/yank register."
   (interactive)
   (set-register 'jp/yank (current-kill 0 t))
   (yank arg))
 
 (defun jp/yank-pop (&optional arg)
-  "If yank-pop fails, insert jp/yank register contents instead."
+  "If `yank-pop' fails, insert jp/yank register contents instead."
   (interactive)
   (condition-case nil
       (yank-pop arg)
