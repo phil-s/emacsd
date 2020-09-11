@@ -502,16 +502,27 @@ Can be tested with (signal-process (emacs-pid) 'sigusr1)"
 ;; (add-hook 'ibuffer-mode-hook 'my-ibuffer-auto-revert-setup)
 
 ;; Enable find-file-at-point key-bindings.
+;; See also: `my-copy-buffer-file-name'.
 (ffap-bindings) ; see variable `ffap-bindings'
 (setq ffap-url-regexp nil) ; disable URL features in ffap
-(defadvice ffap-alternate-file (around my-ffap-alternate-file-fallback)
-  "Provide fall-back to old C-x C-v behaviour, if no fap.
-n.b. ffap-alternate-file is intended for interactive use only.
-See also: `my-copy-buffer-file-name'."
-  (if (ffap-guesser)
-      ad-do-it
-    (call-interactively 'find-alternate-file)))
-(ad-activate 'ffap-alternate-file)
+;; ffap.el changed significantly in 27.1
+(if (< emacs-major-version 27)
+    (progn
+      (defadvice ffap-alternate-file (around my-ffap-alternate-file-fallback)
+        "Provide fall-back to old C-x C-v behaviour, if no `ffap-file-at-point'.
+n.b. ffap-alternate-file is intended for interactive use only."
+        (if (ffap-guesser)
+            ad-do-it
+          (call-interactively 'find-alternate-file)))
+      (ad-activate 'ffap-alternate-file))
+  ;; Emacs 27+
+  (defadvice ffap-read-file-or-url (around my-ffap-alternate-file-fallback)
+    "Provide fall-back to old C-x C-v behaviour, if no `ffap-file-at-point'."
+    (unless (ad-get-arg 1)
+      (when (eq this-command 'ffap-alternate-file)
+        (ad-set-arg 1 (buffer-file-name))))
+    ad-do-it)
+  (ad-activate 'ffap-read-file-or-url))
 
 ;; Use CUA selection mode (enhanced rectangle editing)
 (setq cua-delete-selection nil) ; typing should not delete the region.
