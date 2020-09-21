@@ -85,9 +85,9 @@
                               (string-match "\\.make\\'" buffer-file-name))
                      (unless (derived-mode-p 'conf-mode)
                        (conf-mode))))
-           (eval . (grep-apply-setting ; Make M-x grep use git-grep:
-                    'grep-command
-                    "git --no-pager grep -H -n --no-color -I -e "))
+           ;; (eval . (grep-apply-setting ; Make M-x grep use git-grep:
+           ;;          'grep-command
+           ;;          "git --no-pager grep -H -n --no-color -I -e "))
            ))
    (php-mode . ((eval . (unless (derived-mode-p 'drupal-mode)
                           (drupal-mode)
