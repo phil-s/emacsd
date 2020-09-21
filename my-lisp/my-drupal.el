@@ -306,11 +306,13 @@ See function `drupal-tags-autoupdate-command' for details.")
   ;; TODO: This uses `tags-file-name'. What about `tags-table-list'??
   ;; (Should I use `locate-dominating-file' instead?)
   `(,(concat
-      " find %s \\( -type d -regex %s -prune \\)" ;dir,prune
+      " find %s.git/HEAD %s \\( -type d -regex %s -prune \\)" ;dir,prune
       " -o -type f \\( -regex %s" ;ignore
-      "                -o -newer %s -iregex %s -print \\)" ;mtime,pattern
+      "                -o -newer %s \\( -iregex %s -o -name HEAD \\)"
+      "                -print \\)" ;mtime,pattern
       " | head -1")
-    (shell-quote-argument dir)
+    (shell-quote-argument dir) ;; %s.git/HEAD -- TODO: should be another var.
+    (shell-quote-argument dir) ;; %s
     (shell-quote-argument drupal-tags-autoupdate-prune)
     (shell-quote-argument drupal-tags-autoupdate-ignore)
     (shell-quote-argument tags-file-name)
