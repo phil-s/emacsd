@@ -348,30 +348,32 @@ files are not relevant.")
 
 (defun drupal-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
-  (when (and drupal-tags-autoupdate-enabled
-             tags-file-name
-             ;; Verify that the TAGS file actually exists on the
-             ;; server the shell commands will be running on.  We can
-             ;; be called in a buffer with a tramp default-directory,
-             ;; in which case all of our shell commands will be
-             ;; running on the remote server, and that may not be the
-             ;; intended server.
-             (let ((max-mini-window-height 1))
-               (eq 0 (shell-command
-                      (format "stat --printf='' %s"
-                              (shell-quote-argument tags-file-name))))))
-    (let ((dir (file-name-directory tags-file-name)))
-      (when (drupal-tags-autoupdate-tree-modified dir)
-        (save-window-excursion
-          (let ((message-truncate-lines t))
-            (async-shell-command (drupal-tags-autoupdate-command dir)
-                                 drupal-tags-autoupdate-buffer)))
-        (let ((proc (get-buffer-process drupal-tags-autoupdate-buffer)))
-          (when proc
-            (set-process-sentinel proc 'drupal-tags-sentinel)))
-        (bury-buffer drupal-tags-autoupdate-buffer)
-        (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
-          (setq tags-completion-table nil))))))
+  (when (and drupal-tags-autoupdate-enabled tags-file-name)
+    (let ((tags-file-local-name (if (not (file-remote-p tags-file-name))
+                                    tags-file-name
+                                  (require 'tramp)
+                                  (tramp-file-local-name tags-file-name))))
+      ;; Verify that the TAGS file actually exists on the server the
+      ;; shell commands will be running on.  We can be called in a
+      ;; buffer with a tramp default-directory, in which case all of
+      ;; our shell commands will be running on the remote server, and
+      ;; that may not be the intended server.
+      (when (let ((max-mini-window-height 1))
+              (eq 0 (shell-command
+                     (format "stat --printf='' %s >/dev/null 2>&1"
+                             (shell-quote-argument tags-file-local-name)))))
+        (let ((dir (file-name-directory tags-file-local-name)))
+          (when (drupal-tags-autoupdate-tree-modified dir)
+            (save-window-excursion
+              (let ((message-truncate-lines t))
+                (async-shell-command (drupal-tags-autoupdate-command dir)
+                                     drupal-tags-autoupdate-buffer)))
+            (let ((proc (get-buffer-process drupal-tags-autoupdate-buffer)))
+              (when proc
+                (set-process-sentinel proc 'drupal-tags-sentinel)))
+            (bury-buffer drupal-tags-autoupdate-buffer)
+            (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
+              (setq tags-completion-table nil))))))))
 
 (defun drupal-tags-autoupdate-start ()
   "Start (or re-start) the TAGS file autoupdate mechanism.
