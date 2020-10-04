@@ -401,7 +401,7 @@
 
 ;;;; * Registers
 ;;   C-x r x a           Copy region to register 'a'
-;;   C-x r g a           Insert contents of register 'a'
+;;   C-x r i a           Insert contents of register 'a'
 ;;   C-x r SPC a         point-to-register 'a'
 ;;   C-x r j a           jump-to-register 'a'
 ;;
