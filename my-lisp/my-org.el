@@ -69,9 +69,21 @@
 
 
 ;;; Agenda / Capture
+(with-eval-after-load "org-capture"
+  ;; (setq org-capture-templates nil)
+  (add-to-list 'org-capture-templates
+               `("t" "Todo" entry
+                 (file+headline ,org-default-notes-file "Tasks")
+                 "** %^{title}
+SCHEDULED: %T
+%?
+%i
+  %a
+  Added: %U"))
+  )
 
 ;; Default notes file.
-(setq org-default-notes-file "~/notes.org")
+(setq org-default-notes-file (expand-file-name "~/notes.org"))
 
 ;; Default agenda files.
 (setq org-agenda-files `(,org-default-notes-file "~/todo.org"))
