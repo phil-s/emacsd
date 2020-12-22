@@ -150,8 +150,8 @@ before generating the TAGS file:
 
 cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
 
-Exuberant ctags:
-$ ctags -eR --langmap=php:+.module.install.inc.engine --languages=php
+Universal Ctags:
+$ ctags -eR --langmap=php:+.module.install.inc.engine --kinds-php=-van --language-force=php
 
 Old etags:
 $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.engine' \\) | etags --language=php -
@@ -193,14 +193,9 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
 
 ;;; TAGS
 
-;; Uses Exuberant Ctags syntax:
-;; sudo apt-get install -y exuberant-ctags
+;; Uses Universal Ctags syntax:
+;; https://ctags.io => https://github.com/universal-ctags/ctags
 ;; (ensure "ctags --version" does not report the GNU version)
-;;
-;; Even better: https://ctags.io => https://github.com/universal-ctags/ctags
-;; Ctags (5.8) is now old and unmaintained. The above appears to be the way
-;; forwards, and includes a complete rewrite of the PHP functionality, so I
-;; should be checking this out...
 
 ;; Ensure Emacs doesn't prompt us when the TAGS file has changed.
 (setq tags-revert-without-query t)
@@ -248,39 +243,24 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
            (if drupal-tags-autoupdate-enabled "enabled" "disabled")))
 
 (defvar drupal-tags-autoupdate-command
-  ;; # We can almost do this directly with an Exuberant Ctags command,
+  ;; # We can almost do this directly with an Universal Ctags command,
   ;; # but the exclusion options are not as comprehensive. A basic
   ;; # approach looks like this:
   ;; exclude="--exclude=.git --exclude=.debian --exclude=.branches"
   ;; exclude="${exclude} --exclude='sites/*/files'" #n.b. '*' can include '/' :/
   ;; drupalmap="php:+.module.install.inc.engine"
-  ;; drupalspec="--langmap=${drupalmap} --php-kinds=-v --languages=php"
+  ;; drupalspec="--langmap=${drupalmap} --kinds-php=-van --language-force=php"
   ;; ctags -e -R -f TAGS.new ${drupalspec} ${exclude} ${args} \
   ;;   && ! cmp --silent TAGS TAGS.new \
   ;;   && mv -f TAGS.new TAGS
   ;; rm -f TAGS.new
   `(,(concat
-      "cd %s;"                                       ;dir
-      ;; Gah. Ctags (5.8) is buggy:
-      ;; If we use 'find .' or 'find ./' we get broken paths:
-      ;; $ find . -name "*.php" | ctags -e -f TAGS -L -
-      ;; $ grep sites/.*/settings.php TAGS
-      ;; sites/defauls/settings.php,418
-      ;;             ^
-      ;; But it's happy with 'find *"
-      ;; $ find * -name "*.php" | ctags -e -f TAGS -L -
-      ;; $ grep settings.php TAGS
-      ;; sites/default/settings.php,418
-      ;;             ^
-      ;; We don't expect to index any dot files in a Drupal site's
-      ;; root directory so in practice it's ok to use 'find *'. This
-      ;; is an annoying bug, though.  n.b. Using an absolute path is
-      ;; also safe, but makes the TAGS non-portable.
-      " find * %s" ;include drush.api.php
-      " \\( -type d -regex %s -prune \\)" ;prune
+      "cd %s;"                                   ;dir
+      " find . %s"                               ;include drush.api.php
+      " \\( -type d -regex %s -prune \\)"        ;prune
       " -o -type f \\( -regex %s "               ;ignore
       "                -o -iregex %s -print \\)" ;pattern
-      " | ctags -e --php-kinds=-v --language-force=php -f TAGS.new -L -"
+      " | ctags -e --php-kinds=-van --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
       " && mv -f TAGS.new TAGS"
       " ; rm -f TAGS.new"
