@@ -25,6 +25,7 @@
          "Inbox"                ?i))
       ;; viewing mail
       mu4e-view-show-addresses t
+      mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
       ;; misc
       mu4e-completing-read-function 'ido-completing-read
       mu4e-confirm-quit nil
