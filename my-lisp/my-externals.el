@@ -310,6 +310,10 @@
             :type ftp
             :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
 
+     (:name yaml-mode
+            :type git
+            :url "https://github.com/yoshiki/yaml-mode.git")
+
      ;; (:name yasnippet
      ;;        :type git-svn
      ;;        :url "http://yasnippet.googlecode.com/svn/trunk/")
