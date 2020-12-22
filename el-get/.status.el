@@ -64,6 +64,7 @@
 :winnow "installed"
 :with-editor "installed"
 :ws-trim "installed"
+:yaml-mode "installed"
 :zenburn-theme "installed"
 :ztree-diff "installed"
 )
