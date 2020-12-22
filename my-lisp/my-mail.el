@@ -5,6 +5,7 @@
 (add-hook 'mu4e-view-mode-hook 'my-mu4e-view-mode-hook)
 (defun my-mu4e-view-mode-hook ()
   "Custom `mu4e-view-mode' behaviours."
+  (setq-local shr-use-colors nil)
   (visual-line-mode 1)
   (delete-trailing-whitespace))
 
