@@ -10,6 +10,7 @@
 :delight "installed"
 :diff-hl "installed"
 :dired-details "installed"
+:docker-tramp "installed"
 :dtrt-indent "installed"
 :ediff-binary-hexl "installed"
 :ediff-trees "installed"
