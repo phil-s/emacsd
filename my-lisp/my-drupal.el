@@ -14,6 +14,8 @@
   (declare-function term-mode "term")
   )
 
+(add-to-list 'auto-mode-alist '("\\.twig\\'" . web-mode))
+
 ;;;###autoload
 (define-derived-mode drupal-mode php-mode "Drupal"
   "Major mode for Drupal coding.\n\n\\{drupal-mode-map}"
