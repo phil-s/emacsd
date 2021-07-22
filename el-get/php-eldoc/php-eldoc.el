@@ -148,21 +148,16 @@
 		    function-doc))))))))))
 
 ;;;###autoload
-(add-hook 'php+-mode-hook
-	  '(lambda ()
-	     (set
-	      (make-local-variable 'eldoc-documentation-function)
-	      'php-eldoc-function)
-	     (eldoc-mode)))
+(defun php-eldoc-enable ()
+  "Set buffer-local `eldoc-documentation-function' and enable `eldoc-mode'."
+  (setq-local eldoc-documentation-function #'php-eldoc-function)
+  (eldoc-mode 1))
 
 ;;;###autoload
-(add-hook 'php-mode-hook
-	  '(lambda ()
-	     (set
-	      (make-local-variable 'eldoc-documentation-function)
-	      'php-eldoc-function)
-	     (eldoc-mode)))
+(add-hook 'php+-mode-hook #'php-eldoc-enable)
 
+;;;###autoload
+(add-hook 'php-mode-hook #'php-eldoc-enable)
 
 (provide 'php-eldoc)
 ;;; php-eldoc.el ends here

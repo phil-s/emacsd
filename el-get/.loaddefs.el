@@ -1858,9 +1858,14 @@ Get function arguments for PHP function at point.
 
 \(fn)" nil nil)
 
-(add-hook 'php+-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+(autoload 'php-eldoc-enable "php-eldoc/php-eldoc" "\
+Set buffer-local `eldoc-documentation-function' and enable `eldoc-mode'.
 
-(add-hook 'php-mode-hook '(lambda nil (set (make-local-variable 'eldoc-documentation-function) 'php-eldoc-function) (eldoc-mode)))
+\(fn)" nil nil)
+
+(add-hook 'php+-mode-hook #'php-eldoc-enable)
+
+(add-hook 'php-mode-hook #'php-eldoc-enable)
 
 ;;;***
 
