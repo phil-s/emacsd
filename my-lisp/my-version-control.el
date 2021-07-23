@@ -5,6 +5,7 @@
   (defvar vc-log-show-limit)
   (declare-function diff-hl-flydiff-mode "diff-hl-flydiff")
   (declare-function global-diff-hl-mode "diff-hl")
+  (declare-function magit-push-current-to-upstream@query-yes-or-no "my-version-control" t nil)
   (declare-function vc-deduce-fileset "vc")
   (declare-function vc-find-revision "vc")
   (declare-function vc-print-log-internal "vc")
@@ -304,28 +305,40 @@ static char * data[] = {
         (recenter -1)))))
 
 ;; Protect against accidental pushes to upstream
-(defadvice magit-push-current-to-upstream
-    (around my-protect-accidental-magit-push-current-to-upstream)
-  "Protect against accidental push to upstream.
+(if (locate-library "transient")
+    ;; We undoubtedly have a more recent magit version.
+    ;; (It's actually difficult to establish magit's version!)
+    (define-advice magit-push-current-to-upstream (:before (args) query-yes-or-no)
+      "Prompt for confirmation before permitting a push to upstream."
+      (when-let ((branch (magit-get-current-branch)))
+        (unless (yes-or-no-p (format "Push %s branch upstream to %s? "
+                                     branch
+                                     (or (magit-get-upstream-branch branch)
+                                         (magit-get "branch" branch "remote"))))
+          (user-error "Push to upstream aborted by user"))))
+  ;; Otherwise we're probably still using 2.12:
+  (defadvice magit-push-current-to-upstream
+      (around my-protect-accidental-magit-push-current-to-upstream)
+    "Protect against accidental push to upstream.
 
 Causes `magit-git-push' to ask the user for confirmation first."
-  (let ((my-magit-ask-before-push t))
-    ad-do-it))
+    (let ((my-magit-ask-before-push t))
+      ad-do-it))
 
-(defadvice magit-git-push (around my-protect-accidental-magit-git-push)
-  "Maybe ask the user for confirmation before pushing.
+  (defadvice magit-git-push (around my-protect-accidental-magit-git-push)
+    "Maybe ask the user for confirmation before pushing.
 
 Advice to `magit-push-current-to-upstream' triggers this query."
-  (if (bound-and-true-p my-magit-ask-before-push)
-      ;; Arglist is (BRANCH TARGET ARGS)
-      (if (yes-or-no-p (format "Push %s branch upstream to %s? "
-                               (ad-get-arg 0) (ad-get-arg 1)))
-          ad-do-it
-        (error "Push to upstream aborted by user"))
-    ad-do-it))
+    (if (bound-and-true-p my-magit-ask-before-push)
+        ;; Arglist is (BRANCH TARGET ARGS)
+        (if (yes-or-no-p (format "Push %s branch upstream to %s? "
+                                 (ad-get-arg 0) (ad-get-arg 1)))
+            ad-do-it
+          (error "Push to upstream aborted by user"))
+      ad-do-it))
 
-(ad-activate 'magit-push-current-to-upstream)
-(ad-activate 'magit-git-push)
+  (ad-activate 'magit-push-current-to-upstream)
+  (ad-activate 'magit-git-push))
 
 ;; Custom major mode for commits
 (define-derived-mode my-git-commit-mode text-mode "Git commit"
