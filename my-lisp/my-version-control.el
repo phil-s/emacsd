@@ -372,6 +372,38 @@ Advice to `magit-push-current-to-upstream' triggers this query."
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
 
+(add-hook 'magit-revision-mode-hook 'my-magit-revision-mode-hook)
+(defun my-magit-revision-mode-hook ()
+  "Custom `magit-revision-mode' behaviours."
+  ;; Link to bug URLs.
+  (setq-local bug-reference-url-format #'my-bug-reference-url-format)
+  (bug-reference-mode 1))
+
+;; Link to bug URLs.
+(setq bug-reference-bug-regexp
+      (concat "\\([Ww][Rr] ?[#-]?"
+              "\\|[Rr][Mm] ?[#-]?"
+              "\\|[Ii]ssue ?#?"
+              "\\|[Bb]ug ?#?"
+              "\\|[Pp]atch ?#"
+              "\\|RFE ?#"
+              "\\|PR [a-z+-]+/"
+              "\\)\\([0-9]+\\(?:#[0-9]+\\)?\\)"))
+
+(defun my-bug-reference-url-format ()
+  "URL generator for `bug-reference-url-format' (see which)."
+  (when-let ((type (match-string 1))
+             (formatstring
+              (cond ((string-prefix-p "WR" type t)
+                     "https://wrms.catalyst.net.nz/wr.php?request_id=%s")
+                    ((string-prefix-p "RM" type t)
+                     "https://redmine.catalyst.net.nz/issues/%s")
+                    ((string-prefix-p "Issue" type t)
+                     "https://www.drupal.org/node/%s")
+                    ((string-prefix-p "Bug" type t)
+                     "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
+    (format formatstring (match-string-no-properties 2))))
+
 ;; pcomplete
 
 ;; Silence compiler warnings
