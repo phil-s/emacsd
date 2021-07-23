@@ -399,7 +399,7 @@ Advice to `magit-push-current-to-upstream' triggers this query."
                     ((string-prefix-p "RM" type t)
                      "https://redmine.catalyst.net.nz/issues/%s")
                     ((string-prefix-p "Issue" type t)
-                     "https://www.drupal.org/node/%s")
+                     "https://www.drupal.org/i/%s")
                     ((string-prefix-p "Bug" type t)
                      "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
     (format formatstring (match-string-no-properties 2))))
