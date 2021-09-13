@@ -3385,59 +3385,135 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 
 ;;;***
 
-;;;### (autoloads nil "php-mode/php-mode" "php-mode/php-mode.el"
+;;;### (autoloads nil "php-mode/lisp/php" "php-mode/lisp/php.el"
 ;;;;;;  (0 0 0 0))
-;;; Generated autoloads from php-mode/php-mode.el
+;;; Generated autoloads from php-mode/lisp/php.el
 
-(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php 'custom-loads (cons '"php-mode/php-mode" loads))))
+(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/lisp/php" loads) nil (put 'php 'custom-loads (cons '"php-mode/lisp/php" loads))))
 
-(defvar php-extra-constants 'nil "\
-A list of additional strings to treat as PHP constants.")
+(autoload 'php-mode-maybe "php-mode/lisp/php" "\
+Select PHP mode or other major mode." t nil)
 
-(custom-autoload 'php-extra-constants "php-mode/php-mode" nil)
+(autoload 'php-current-class "php-mode/lisp/php" "\
+Insert current class name if cursor in class context." t nil)
 
-(if (version< emacs-version "24.4") (dolist (i '("php" "php5" "php7")) (add-to-list 'interpreter-mode-alist (cons i 'php-mode))) (add-to-list 'interpreter-mode-alist (cons "php\\(?:-?[3457]\\(?:\\.[0-9]+\\)*\\)?" 'php-mode)))
+(autoload 'php-current-namespace "php-mode/lisp/php" "\
+Insert current namespace if cursor in namespace context." t nil)
+
+(autoload 'php-copyit-fqsen "php-mode/lisp/php" "\
+Copy/kill class/method FQSEN." t nil)
+
+(autoload 'php-run-builtin-web-server "php-mode/lisp/php" "\
+Run PHP Built-in web server.
+
+`ROUTER-OR-DIR': Path to router PHP script or Document root.
+`HOSTNAME': Hostname or IP address of Built-in web server.
+`PORT': Port number of Built-in web server.
+`DOCUMENT-ROOT': Path to Document root.
+
+When `DOCUMENT-ROOT' is NIL, the document root is obtained from `ROUTER-OR-DIR'.
+
+\(fn ROUTER-OR-DIR HOSTNAME PORT &optional DOCUMENT-ROOT)" t nil)
+
+(autoload 'php-find-system-php-ini-file "php-mode/lisp/php" "\
+Find php.ini FILE by `php --ini'.
+
+\(fn &optional FILE)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php" '("php-")))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-align" "php-mode/lisp/php-align.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-align.el
+
+(autoload 'php-align-setup "php-mode/lisp/php-align" "\
+Setup alignment configuration for PHP code." nil nil)
+
+(autoload 'php-align-mode "php-mode/lisp/php-align" "\
+Alignment lines for PHP script.
+
+If called interactively, enable Php-Align mode if ARG is
+positive, and disable it if ARG is zero or negative.  If called
+from Lisp, also enable the mode if ARG is omitted or nil, and
+toggle it if ARG is `toggle'; disable the mode otherwise.
+
+\(fn &optional ARG)" t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-align" '("php-align-")))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-face" "php-mode/lisp/php-face.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-face.el
+
+(let ((loads (get 'php-faces 'custom-loads))) (if (member '"php-mode/lisp/php-face" loads) nil (put 'php-faces 'custom-loads (cons '"php-mode/lisp/php-face" loads))))
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-face" '("php-annotations-annotation-face")))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-local-manual" "php-mode/lisp/php-local-manual.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-local-manual.el
+
+(autoload 'php-local-manual-search "php-mode/lisp/php-local-manual" "\
+Search the local PHP documentation (i.e. in `php-manual-path') for
+the word at point.  The function returns t if the requested documentation
+exists, and nil otherwise.
+
+With a prefix argument, prompt (with completion) for a word to search for.
+
+\(fn WORD)" t nil)
+
+(define-obsolete-function-alias 'php-search-local-documentation #'php-local-manual-search "2.0.0")
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-local-manual" '("php-local-manual-")))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-mode" "php-mode/lisp/php-mode.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-mode.el
+
+(let ((loads (get 'php-mode 'custom-loads))) (if (member '"php-mode/lisp/php-mode" loads) nil (put 'php-mode 'custom-loads (cons '"php-mode/lisp/php-mode" loads))))
+
+(add-to-list 'interpreter-mode-alist (cons "php\\(?:-?[34578]\\(?:\\.[0-9]+\\)*\\)?" 'php-mode))
 
 (define-obsolete-variable-alias 'php-available-project-root-files 'php-project-available-root-files "1.19.0")
 
-(let ((loads (get 'php-faces 'custom-loads))) (if (member '"php-mode/php-mode" loads) nil (put 'php-faces 'custom-loads (cons '"php-mode/php-mode" loads))))
-
-(autoload 'php-mode "php-mode/php-mode" "\
+(autoload 'php-mode "php-mode/lisp/php-mode" "\
 Major mode for editing PHP code.
 
 \\{php-mode-map}
 
 \(fn)" t nil)
 
-(autoload 'php-current-class "php-mode/php-mode" "\
-Insert current class name if cursor in class context.
+(add-to-list 'auto-mode-alist '("/\\.php_cs\\(?:\\.dist\\)?\\'" . php-mode))
 
-\(fn)" t nil)
+(add-to-list 'auto-mode-alist '("\\.\\(?:php\\.inc\\|stub\\)\\'" . php-mode))
 
-(autoload 'php-current-namespace "php-mode/php-mode" "\
-Insert current namespace if cursor in namespace context.
+(add-to-list 'auto-mode-alist '("\\.\\(?:php[s345]?\\|phtml\\)\\'" . php-mode-maybe))
 
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist (cons (eval-when-compile (rx (or (: "." (or (: "php" (32 (in "s345t"))) "amk" "phtml")) (: "/" (or "Amkfile" ".php_cs" ".php_cs.dist"))) string-end)) 'php-mode) t)
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/php-mode" '("php-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-mode" '("php-")))
 
 ;;;***
 
-;;;### (autoloads nil "php-mode/php-mode-test" "php-mode/php-mode-test.el"
+;;;### (autoloads nil "php-mode/lisp/php-mode-debug" "php-mode/lisp/php-mode-debug.el"
 ;;;;;;  (0 0 0 0))
-;;; Generated autoloads from php-mode/php-mode-test.el
+;;; Generated autoloads from php-mode/lisp/php-mode-debug.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/php-mode-test" '("php-mode-test-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-mode-debug" '("php-mode-debug")))
 
 ;;;***
 
-;;;### (autoloads nil "php-mode/php-project" "php-mode/php-project.el"
+;;;### (autoloads nil "php-mode/lisp/php-project" "php-mode/lisp/php-project.el"
 ;;;;;;  (0 0 0 0))
-;;; Generated autoloads from php-mode/php-project.el
+;;; Generated autoloads from php-mode/lisp/php-project.el
 
-(defvar php-project-root 'auto "\
+(defvar-local php-project-root 'auto "\
 Method of searching for the top level directory.
 
 `auto' (default)
@@ -3451,54 +3527,92 @@ STRING
       If the string is an actual directory path, it is set as the absolute path
       of the root directory, not the marker.")
 
-(make-variable-buffer-local 'php-project-root)
-
 (put 'php-project-root 'safe-local-variable #'(lambda (v) (or (stringp v) (assq v php-project-available-root-files))))
 
-(defvar php-project-bootstrap-scripts nil "\
+(defvar-local php-project-etags-file nil)
+
+(put 'php-project-etags-file 'safe-local-variable #'(lambda (v) (or (functionp v) (eq v t) (php-project--eval-bootstrap-scripts v))))
+
+(defvar-local php-project-bootstrap-scripts nil "\
 List of path to bootstrap php script file.
 
 The ideal bootstrap file is silent, it only includes dependent files,
 defines constants, and sets the class loaders.")
 
-(make-variable-buffer-local 'php-project-bootstrap-scripts)
-
 (put 'php-project-bootstrap-scripts 'safe-local-variable #'php-project--eval-bootstrap-scripts)
 
-(defvar php-project-php-executable nil "\
+(defvar-local php-project-php-executable nil "\
 Path to php executable file.")
-
-(make-variable-buffer-local 'php-project-php-executable)
 
 (put 'php-project-php-executable 'safe-local-variable #'(lambda (v) (and (stringp v) (file-executable-p v))))
 
-(defvar php-project-phan-executable nil "\
+(defvar-local php-project-phan-executable nil "\
 Path to phan executable file.")
-
-(make-variable-buffer-local 'php-project-phan-executable)
 
 (put 'php-project-phan-executable 'safe-local-variable #'php-project--eval-bootstrap-scripts)
 
-(defvar php-project-coding-style nil "\
+(defvar-local php-project-coding-style nil "\
 Symbol value of the coding style of the project that PHP major mode refers to.
 
 Typically it is `pear', `drupal', `wordpress', `symfony2' and `psr2'.")
 
-(make-variable-buffer-local 'php-project-coding-style)
-
 (put 'php-project-coding-style 'safe-local-variable #'symbolp)
 
-(autoload 'php-project-get-bootstrap-scripts "php-mode/php-project" "\
-Return list of bootstrap script.
+(defvar-local php-project-align-lines t "\
+If T, automatically turn on `php-align-mode' by `php-align-setup'.")
 
-\(fn)" nil nil)
+(put 'php-project-align-lines 'safe-local-variable #'booleanp)
 
-(autoload 'php-project-get-root-dir "php-mode/php-project" "\
-Return path to current PHP project.
+(defvar-local php-project-php-file-as-template 'auto "\
 
-\(fn)" nil nil)
+`auto' (default)
+      Automatically switch to mode for template when HTML tag detected in file.
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/php-project" '("php-project-")))
+`t'
+      Switch all PHP files in that directory to mode for HTML template.
+
+`nil'
+      Any .php  in that directory is just a PHP script.
+
+\((PATTERN . SYMBOL))
+      Alist of file name pattern regular expressions and the above symbol pairs.
+      PATTERN is regexp pattern.
+")
+
+(put 'php-project-php-file-as-template 'safe-local-variable #'php-project--validate-php-file-as-template)
+
+(defvar-local php-project-repl nil "\
+Function name or path to REPL (interactive shell) script.")
+
+(put 'php-project-repl 'safe-local-variable #'(lambda (v) (or (functionp v) (php-project--eval-bootstrap-scripts v))))
+
+(defvar-local php-project-unit-test nil "\
+Function name or path to unit test script.")
+
+(put 'php-project-unit-test 'safe-local-variable #'(lambda (v) (or (functionp v) (php-project--eval-bootstrap-scripts v))))
+
+(defvar-local php-project-deploy nil "\
+Function name or path to deploy script.")
+
+(put 'php-project-deploy 'safe-local-variable #'(lambda (v) (or (functionp v) (php-project--eval-bootstrap-scripts v))))
+
+(defvar-local php-project-build nil "\
+Function name or path to build script.")
+
+(put 'php-project-build 'safe-local-variable #'(lambda (v) (or (functionp v) (php-project--eval-bootstrap-scripts v))))
+
+(defvar-local php-project-server-start nil "\
+Function name or path to server-start script.")
+
+(put 'php-project-server-start 'safe-local-variable #'(lambda (v) (or (functionp v) (php-project--eval-bootstrap-scripts v))))
+
+(autoload 'php-project-get-bootstrap-scripts "php-mode/lisp/php-project" "\
+Return list of bootstrap script." nil nil)
+
+(autoload 'php-project-get-root-dir "php-mode/lisp/php-project" "\
+Return path to current PHP project." nil nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-project" '("php-project-")))
 
 ;;;***
 

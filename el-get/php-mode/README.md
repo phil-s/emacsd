@@ -1,58 +1,81 @@
-PHP Mode for GNU Emacs
-======================
+<div align="center">
+  <h1>Emacs PHP Mode</h1>
 
-[![lang: PHP 7](https://img.shields.io/badge/lang-PHP%207-brightgreen.svg)](http://php.net/manual/migration70.php)
-[![lang: PHP 5](https://img.shields.io/badge/lang-PHP%205-green.svg)](http://php.net/downloads.php)
-[![travis badge][travis-badge]][travis-link]
+[![Emacs: 27.1](https://img.shields.io/badge/Emacs-27.1-blue.svg)](https://www.gnu.org/software/emacs/)
+[![lang: PHP 8.0](https://img.shields.io/badge/lang-PHP%208.0-brightgreen.svg)](https://php.net/manual/migration80.php)
+[![lang: PHP 7](https://img.shields.io/badge/lang-PHP%207-green.svg)](https://php.net/downloads.php)
+[![Build Status](https://github.com/emacs-php/php-mode/workflows/CI/badge.svg)](https://github.com/emacs-php/php-mode/actions)
 [![melpa badge][melpa-badge]][melpa-link]
 [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
-[![GPL v3](https://img.shields.io/badge/license-GPL_v3-green.svg)](http://www.gnu.org/licenses/gpl-3.0.txt)
+[![GPL v3](https://img.shields.io/badge/license-GPL_v3-green.svg)](http://www.gnu.org/licenses/gpl-3.0.txt)<br>
+[![NonGNU ELPA][nongnu-elpa-badge]][nongnu-elpa]
+[![NonGNU-devel ELPA][nongnu-devel-elpa-badge]][nongnu-devel-elpa]
 
-This project updates PHP Mode for GNU Emacs with features to make it more friendly to use with PHP 5.4 and later.  This fork builds on the work of:
+A powerful and flexible Emacs major mode for editing PHP scripts
 
-1. Turadg Aleahmad (Original Author)
-2. Aaron S. Hawley
-3. Lennart Borgman
-4. Eric James Michael Ritz
-5. Syohei Yoshida
+</div>
 
-All contributors listed below improved PHP Mode as well.
-
-The current maintainer is:
-
-1. USAMI Kenta (@zonuexe)
-
-Please submit any bug reports or feature requests by creating issues on [the GitHub page for PHP Mode](https://github.com/ejmr/php-mode).
-
+Please submit any bug reports or feature requests by creating issues on [the GitHub page for PHP Mode][php-mode].
 
 Installation
 ------------
 
-**PHP Mode requires Emacs 24 or later.**  PHP Mode may work with older versions of Emacs but this is not guaranteed.  Bug reports for problems related to using PHP Mode with older versions of Emacs will most like *not* be addressed.
+**PHP Mode works on Emacs 25.2 or later.**  PHP Mode may work with older versions of Emacs but this is not guaranteed.  Bug reports for problems related to using PHP Mode with older versions of Emacs will most like *not* be addressed.
 
-With GNU Emacs 24 or later then you can use its [package][] feature to install PHP Mode from [MELPA][].  *The [Marmalade][] package repository only has the original PHP Mode from 2004.*  Therefore we recommend you use MELPA to install PHP Mode.  If you simply do not wish to use the package manager, then all you need to do is download the `php-mode.el` file, place it inside your `load-path`, and optionally add `(require 'php-mode)` to your Emacs configuration to automatically enable PHP Mode whenever you open a PHP file.
+The current support policy can be found on the [Supported Version] page.
 
-Additionally, you can add `skeleton/php-ext.el` to your `load-path` to [enable the templates](https://www.gnu.org/software/emacs/manual/html_node/autotype/index.html#Top).
+### Install from NonGNU ELPA
 
-```lisp
-(eval-after-load 'php-mode
-  '(require 'php-ext))
+[![NonGNU ELPA][nongnu-elpa-badge]][nongnu-elpa] [![NonGNU-devel ELPA][nongnu-devel-elpa-badge]][nongnu-devel-elpa]
+
+Emacs 28 (unreleased; next major version) includes [NonGNU ELPA](https://elpa.nongnu.org/) as the default package repository.
+
+```el
+;; For Emacs < 28
+(when (< emacs-major-version 28)
+  (with-eval-after-load 'package
+    (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/"))))
+
+(unless (package-installed-p 'php-mode)
+  (package-install 'php-mode))
 ```
+
+### **(RECOMMENDED)** Install from MELPA
+
+[![melpa badge][melpa-badge]][melpa-link] [![melpa stable badge][melpa-stable-badge]][melpa-stable-link]
+
+With GNU Emacs 24 or later then you can use its [package][] feature (or [Cask][]) to install PHP Mode from [MELPA][] or [MELPA Stable][].
+
+### Install using OS package system
+
+PHP Mode is available from [package systems provided by several OSs][php-mode-packages].  On Debian, and operating systems derived from it, such as Ubuntu, the easiest way to add PHP support to Emacs is `sudo apt install elpa-php-mode`.  "Stable" releases of these operating systems include a well-tested frozen version of this package that is always older than the latest upstream version of PHP Mode.  Autoloads and byte-compilation are automatic.
+
+Please consider installing the package provided in `sid` (aka: "unstable", a rolling release) in order to benefit from the latest PHP Mode features and performance improvements.  The latest version can be found here: [`elpa-php-mode`][elpa-php-mode].  Investigate "apt-pinning" to make tracking this update stream automatic.
+
+Also, the `php-elisp` package provided by [Debian 9 (stretch)][php-elisp-stretch] and [Ubuntu 18.10][php-elisp-ubuntu1810] and earlier is [extremely old][issue-430], so **PLEASE DO NOT INSTALL IT**.
+
+### Manual installation
+
+If you don't want to depend on a package manager, you can install Lisp files directly in the traditional way.  See [Manual installation][wiki-manual-installation] for our recommended setup method.
+
+### Configuration
+
+PHP Mode's default style might not be what you expect.  Before filing a bug, please try the following:  `C-h v php-mode-coding-style`, to get the list of available styles.  Then use `M-x php-set-style` for each of these, to check to see if one of them is to your liking.  Use `TODO: Please comment on what config method you'd like to recommend to users`
 
 Reporting Bugs
 --------------
 
-When reporting a bug please run the function `php-mode-version` and include its output in your bug report.  This helps up reproduce any problem you may have.
+When reporting a bug please run the function `M-x php-mode-debug` and include its output in your bug report.  This helps up reproduce any problem you may have.
 
 
 Experimental and In-Progress Features
 -------------------------------------
 
-### CC Mode, CEDET, EDE, and Semantic ###
+### CC Mode, CEDET, EDE, and Semantic
 
-In 2013 Daniel Haxney began rewriting parts of PHP Mode in terms of Emacs' built-in CC Mode.  This laid the foundation for incorporating some of the inherit IDE-ish features of Emacs, such as CEDET, EDE, and Semantic.  Support for these tools continues to improve thanks to the work of Andrea Turso, Steven Rémot, Joris Steyn, and others.  If you wish to test, contribute to, or simply experiment with such features then [this thread is a good place to start](https://github.com/ejmr/php-mode/issues/256).
+In 2013 Daniel Haxney began rewriting parts of PHP Mode in terms of Emacs' built-in CC Mode.  This laid the foundation for incorporating some of the inherit IDE-ish features of Emacs, such as CEDET, EDE, and Semantic.  Support for these tools continues to improve thanks to the work of Andrea Turso, Steven Rémot, Joris Steyn, and others.  If you wish to test, contribute to, or simply experiment with such features then [this thread is a good place to start](https://github.com/emacs-php/php-mode/issues/256).
 
-### PHP 7 Support ###
+### PHP 7 Support
 
 PHP 7 has been released.  PHP Mode supports the following features and changes from PHP 7:
 
@@ -66,23 +89,23 @@ PHP 7 has been released.  PHP Mode supports the following features and changes f
 Features
 --------
 
-### New Keywords ###
+### New Keywords
 
 Now PHP Mode supports syntax highlighting for new keywords which PHP 5.4 introduced, e.g. those related to traits, such as `insteadof`.  Also supported are the older keywords `clone` and `default`.
 
-### Constants ###
+### Constants
 
 Syntax highlighting includes every magic constant and predefined constant listed on the official PHP site.  However, some constants from specific extensions are not currently included.
 
-### Traits, Interfaces, and Namespaces ###
+### Traits, Interfaces, and Namespaces
 
 Traits, interfaces, and namespaces now appear under Imenu listings. Fontification behaves properly for namespaces as well, so that code like `namespace Foo\Bar\Baz` no longer looks like a warning.  This is also true for namespace aliases, e.g. `use <namespace> as <alias>`; currently the aliased name is not listed in Imenu, but future versions will address this.
 
-### Treatment of Underscores ###
+### Treatment of Underscores
 
 PHP Mode treats underscores as ‘symbol constituents’ (in Emacs terminology) so that you can use keys like `M-f` and `M-b` to move through the individual parts of a variable name like `$foo_bar_baz`.
 
-### Chained Method Calls ###
+### Chained Method Calls
 
 PHP Mode can align method calls over multiple lines anchored around the `->` operator, e.g.:
 
@@ -92,11 +115,11 @@ $object->foo()
        ->baz();
 ```
 
-This behaviour is off by default, but you can customize the variable `php-lineup-cascaded-calls` to enable this.
+This behaviour is off by default, but you can customize the variable `php-mode-lineup-cascaded-calls` to enable this.
 
 **Note:** Alignment will only work if you use one of the php-mode coding styles or inherit one of the styles.
 
-### Nested Array Formatting ###
+### Nested Array Formatting
 
 Nested function calls and `array()` structures now look better by default (or at least in my opinion).  Here is an example of the style:
 
@@ -110,7 +133,7 @@ $results = Post::model()->find(
 );
 ```
 
-### Anonymous Functions ###
+### Anonymous Functions
 
 Anonymous functions such as
 
@@ -120,19 +143,19 @@ $greet = function($name) { ... };
 
 will now appear on Imenu; in this case the name will be `$greet`.
 
-### Flymake Support ###
+### Flymake Support
 
 By customizing the variable `php-executable` you can enable Flymake mode in order to see warnings and errors in real-time as you write code.
 
-### Search Local Documentation ###
+### Search Local Documentation
 
 The key command `C-c C-f` will search the PHP website for documentation on the word under the cursor.  However, if you have a [local copy of the PHP documentation](http://us2.php.net/download-docs.php) then PHP Mode will try searching that documentation first.  All you need to do is customize the variable `php-manual-path` and give it the path to your copy of the documentation.  If PHP Mode cannot find something locally then it will still fallback on searching the PHP website.
 
-### Executing Regions of PHP ###
+### Executing Regions of PHP
 
 The command `php-send-region`, which is bound to `C-c C-r` by default, will execute the selected region of PHP code.  In conjunction with the Emacs command `C-x h` you can use this to execute an entire file.  Any output will appear in a buffer called `*PHP*`.
 
-### PHPDoc Tag / Annotation Highlighting ###
+### PHPDoc Tag / Annotation Highlighting
 
 PHPDoc is a documentation format similar to [JavaDoc](https://en.wikipedia.org/wiki/Javadoc).
 
@@ -140,7 +163,7 @@ There are `@param`, `@return`, `@var`... etc in the notation called **tag**, loo
 
 In addition, it also partially supports notation called **annotation**.  Annotation has a slightly different grammar from tag, and the example is `@Annotation(attr1="vvv", attr2="zzz")`.
 
-[Symfony](http://symfony.com/) project and [Go! AOP](https://github.com/goaop/framework) and some projects/frameworks use annotation grammer based on [Doctrine Annotations](http://docs.doctrine-project.org/projects/doctrine-common/en/latest/reference/annotations.html).
+[Symfony](https://symfony.com/) project and [Go! AOP](https://github.com/goaop/framework) and some projects/frameworks use annotation grammer based on [Doctrine Annotations](https://www.doctrine-project.org/projects/doctrine-annotations/en/latest/index.html).
 
 ```php
 /**
@@ -179,9 +202,9 @@ class Product
 
 The annotations are the lines that begin with the `@` character, and PHP Mode will give these special highlighting to help them stand out.
 
-PHP Mode has not fully supported [PSR-5: PHPDoc (Draft)](https://github.com/phpDocumentor/fig-standards/blob/master/proposed/phpdoc.md) yet.
+PHP Mode has not fully supported [PSR-5: PHPDoc (Draft)](https://github.com/phpDocumentor/fig-standards/blob/master/proposed/phpdoc.md) yet.  We want to support them, but the current implementation still limited.  See issue [#478](https://github.com/emacs-php/php-mode/issues/478) for details.
 
-### Coding Styles ###
+### Coding Styles
 
 By default PHP Mode tries to provide a reasonable style for indentation and formatting, which you can use via the function `php-enable-default-coding-style`.  However, it provides other options suited for particular projects which you may find useful.  Other coding styles are available through these functions:
 
@@ -197,7 +220,7 @@ They will help format your code for PEAR/PSR-2 projects, or work on Drupal, Word
 (add-hook 'php-mode-hook 'php-enable-default-coding-style)
 ```
 
-#### Symfony2 Style ####
+#### Symfony2 Style
 
 With this style method call chains can be formatted with indented continuation and a hanging semi-colon:
 
@@ -211,19 +234,11 @@ With this style method call chains can be formatted with indented continuation a
 
 This style is used widely throughout Symfony2 source code even if it is not explicitly mentioned in their conventions documents.
 
-### Extra Constants ###
-
-If you commonly use a framework or library that defines a set of constants then you may wish to customize the value of `php-extra-constants`.  It is a list of strings that PHP Mode will treat as additional constants, i.e. providing them the same level syntax highlighting that PHP Mode uses for built-in constants.
-
-### Web Mode Constants and Keywords ###
-
-If you use [Web Mode][] then PHP Mode will attempt to use any additional PHP constants and keywords that Web Mode allows you to define.
-
-### Avoid HTML Template Compatibility ###
+### Avoid HTML Template Compatibility
 
 Many developers use PHP Mode to edit pure PHP scripts (e.g. files with only PHP and no HTML). A basic compatibility layer with HTML has historically been part of PHP Mode but it does not work perfectly and can cause some bad side effects such as slowness and incorrect font locking.  Configuring the `php-template-compatibility` property with a `nil` will cancel any attempt of HTML compatibility.  [Web Mode](http://web-mode.org/) is a great alternative to PHP Mode if you need to work with PHP scripts that do contain HTML and other markup.
 
-### Subword Mode ###
+### Subword Mode
 
 GNU Emacs comes with [Subword Mode][], a minor mode that allows you to navigate the parts of a [camelCase][] as if they were separate words.  For example, PHP Mode treats the variable `$fooBarBaz` as a whole name by default.  But if you enable Subword Mode then Emacs will treat the variable name as three separate words, and therefore word-related commands (e.g. `M-f`, `M-b`, `M-d`) will only affect the camelCase part of the name under the cursor.
 
@@ -235,11 +250,7 @@ If you want to always use Subword Mode for PHP files then you can add this to yo
 
 The key-binding `C-c C-w` will also toggle Subword Mode on and off.
 
-### Amaka Support ###
-
-Viewing and editing build scripts for [Amaka](http://trashofmasters.github.io/amaka/) will automatically enable PHP Mode.
-
-### Insert current class/namespace ###
+### Insert current class/namespace
 
 ```el
 (with-eval-after-load 'php-mode
@@ -274,143 +285,71 @@ Other Packages for PHP programming
 How to Contribute
 -----------------
 
-All contributions to PHP Mode are welcome.  But please try to do the following when sending improvements or bug fixes:
-
-1. Add your name to the list of ‘Contributors’ in this `README.md` file if it is not there already.  If you have a GitHub page and/or personal site then please feel free to link your name to it so people can see your other work.
-
-2. If your contribution addresses an issue on the GitHub project page then include a single line like `GitHub-Issue: #16` with the appropriate issue number.
-
-3. Make sure to update the constant `php-mode-modified` *only if you patch affects `php-mode.el`,* which means this step is unnecessary for patches related to unit tests.
-
-4. However, please do not modify `php-mode-version-number`.  The maintainers will decide what constitutes a bump in the version number.
-
-5. Open the `php-mode-test.el` file and [run all of the tests](http://www.gnu.org/software/emacs/manual/html_node/ert/Running-Tests-Interactively.html#Running-Tests-Interactively) to ensure they still pass as expected.  Sometimes we expect for a test to fail, and those unit tests have the appropriate configuration so their failure will not raise any warnings.  You can use `make test` script to run all tests from a terminal, which is also useful in conjunction with [`git bisect run`](http://git-scm.com/book/en/Git-Tools-Debugging-with-Git).
-
-6. Send us a pull request here on GitHub.
-
-7. Please make your commit messages as detailed as possible.  It is better to be too verbose than to write too little.  Look at the commits of the maintainers to see many examples of the level of detail that we feel is ideal.  Please never assume that your patch is so simple that future developers will be able to understand the *reason* for the change without comment.  And that is important: your commit message should always strive to answer *"Why"* the patch exists, *"What*" does it accomplish?  The maintainers will sometimes write detailed commit messages for pull-requests by other developers, but please do not rely on us to do this consistently.
-
-If you are fixing a bug related to a GitHub issue, then first of all, thank you for the help improving PHP Mode.  Second, there is a `tests/` directory which contains PHP scripts for issues (although not all of them).  Please consider adding a test script to that directory that documents the expected behavior and provides code that allows others to see if said behavior works properly.  Then create a unit test within `php-mode-test.el` using [ERT][]. Please try to follow the format of the existing tests.
-
+Please see [CONTRIBUTING.md](CONTRIBUTING.md#english).
 
 The Wiki
 --------
 
 The GitHub project page has a [wiki][] that you should feel free to edit.  The wiki lists the features and bugs that are on plan to include in upcoming versions of PHP Mode.  It is also a place to add any tips to make the mode more useful.
 
+## Copyright
 
-The Mailing List
-----------------
+PHP Mode is licensed under [GNU General Public License Version 3][gpl-v3] (GPLv3).
 
-The “emacs-php” mailing list is a place to discuss PHP Mode as well as all other PHP-related packages for Emacs.  You can find the mailing list at:
+This project originated in `php-mode.el` written by [Turadg Aleahmad][@turadg] in 1999.  In 2013 [Daniel Hackney][@haxney] began rewriting parts of PHP Mode in terms of Emacs' built-in CC Mode.  Other contributors are listed in [Authors] and [Contributors].
 
-1. [emacs-php at Google Groups](https://groups.google.com/forum/#!forum/emacs-php)
-2. [Gmane](http://dir.gmane.org/gmane.emacs.php)
+This project was maintained by [Eric James Michael Ritz][@ejmr] until 2017. Currently, the [Friends of Emacs-PHP Development][@emacs-php] community inherits PHP Mode.
 
-We encourage all users of PHP Mode *and* developers of any PHP-related packages to feel free to post anything there regarding PHP and Emacs.
+> ```
+> Copyright (C) 2018-2020  Friends of Emacs-PHP development
+> Copyright (C) 1999, 2000, 2001, 2003, 2004 Turadg Aleahmad
+>               2008 Aaron S. Hawley
+>               2011, 2012, 2013, 2014, 2015, 2016, 2017 Eric James Michael Ritz
+> ```
+>
+> This program is free software; you can redistribute it and/or modify
+> it under the terms of the GNU General Public License as published by
+> the Free Software Foundation, either version 3 of the License, or
+> (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful,
+> but WITHOUT ANY WARRANTY; without even the implied warranty of
+> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> GNU General Public License for more details.
+>
+> You should have received a copy of the GNU General Public License
+> along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-License
--------
-
-PHP Mode uses the [GNU General Public License 3](http://www.gnu.org/copyleft/gpl.html).
-
-
-Contributors
-------------
-
-In chronological order:
-
-1. Juanjo
-2. Torsten Martinsen
-3. Vinai Kopp
-4. Sean Champ
-5. Doug Marcey
-6. Kevin Blake
-7. Rex McMaster
-8. Mathias Meyer
-9. Boris Folgmann
-10. Roland
-11. Rosenfeld
-12. Fred Yankowski
-13. Craig Andrews
-14. John Keller
-15. Ryan
-16. Sammartino
-17. ppercot
-18. Valentin Funk
-19. Stig Bakken
-20. Gregory Stark
-21. Chris Morris
-22. Nils Rennebarth
-23. Gerrit Riessen
-24. Eric Mc Sween
-25. Ville Skytta
-26. Giacomo Tesio
-27. Urban Müller
-28. [Engelke Eschner](https://github.com/tekai)
-29. Lennart Borgman
-30. Stefan Monnier
-31. Aaron S. Hawley
-32. [Ian Eure](https://github.com/ieure)
-33. [Bill Lovett](https://github.com/lovett)
-34. Dias Badekas
-35. David House
-36. [Tom Willemse](https://github.com/ryuslash)
-37. [Olaf the Viking](https://github.com/olavTHEviking)
-38. [Maël Nison](https://github.com/arcanis)
-39. [flack](https://github.com/flack)
-40. [Michele Bini](https://github.com/rev22)
-41. Emanuele Tomasi
-42. [David Maus](https://github.com/dmj)
-43. [Jakub Jankiewicz](https://github.com/jcubic)
-44. [Marcin Antczak](https://github.com/marcinant)
-45. [顾伟刚](https://github.com/guweigang)
-46. [zapad](https://github.com/zargener)
-47. [Carl Groner](https://github.com/cgroner)
-48. [Michael Dwyer](https://github.com/kalifg)
-49. [Daniel Hackney](https://github.com/haxney)
-50. [Nate Eagleson](https://github.com/NateEag)
-51. [Steve Purcell](https://github.com/purcell)
-52. TatriX
-53. [François-Xavier Bois](https://github.com/fxbois)
-54. [James Laver](https://github.com/jjl)
-55. [Jacek Wysocki](https://github.com/exu)
-56. [Jon Dufrense](https://github.com/jdufresne)
-57. [Andrei Chițu](https://github.com/achitu)
-58. [phil-s](https://github.com/phil-s)
-59. [Bence Kalmar](https://github.com/brkalmar)
-60. [Elis Axelsson](https://github.com/etu)
-61. [Alan Pearce](https://github.com/alanpearce)
-62. Syohei Yoshida
-63. Joris Steyn
-64. l3msh0
-65. [Hernawan Fa'iz Abdillah](https://github.com/Abdillah)
-66. [Sebastian Wiesner](https://github.com/lunaryorn)
-67. [Michael Stolovitzsky](https://github.com/emestee)
-68. [David Arroyo Menéndez](https://github.com/davidam)
-69. [USAMI Kenta](https://tadsan.github.io/) (@zonuexe)
-70. [Tim Landscheidt](http://www.tim-landscheidt.de)
-71. [Fabian Wiget](https://github.com/fabacino)
-72. tangxifan
-73. [Serghei Iakovlev](https://github.com/sergeyklay)
-74. [Christian Albrecht](https://github.com/calbrecht)
-75. [Sebastian Fieber](https://github.com/fallchildren)
-76. [Mark A. Hershberger](https://github.com/hexmode)
-
-
-[wiki]: https://github.com/ejmr/php-mode/wiki
-[ert]: http://www.gnu.org/software/emacs/manual/html_node/ert/index.html
-[cc mode]: https://www.gnu.org/software/emacs/manual/html_mono/ccmode.html
+[@ejmr]: https://github.com/ejmr
+[@emacs-php]: https://github.com/emacs-php
+[@haxney]: https://github.com/haxney
+[@turadg]: https://github.com/turadg
+[Authors]: https://github.com/emacs-php/php-mode/wiki/Authors
+[Cask]: https://github.com/cask/cask
+[Contributors]: https://github.com/emacs-php/php-mode/graphs/contributors
+[MELPA Stable]: https://stable.melpa.org/
+[MELPA]: https://melpa.org/
 [Subword Mode]: https://www.gnu.org/software/emacs/manual/html_node/ccmode/Subword-Movement.html
-[camelCase]: http://en.wikipedia.org/wiki/Camel_case
-[package]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Packages.html
-[MELPA]: http://melpa.milkbox.net/
-[Marmalade]: http://marmalade-repo.org/
+[Supported Version]: https://github.com/emacs-php/php-mode/wiki/Supported-Version
 [Web Mode]: http://web-mode.org/
-[travis-badge]: https://travis-ci.org/ejmr/php-mode.svg
-[travis-link]: https://travis-ci.org/ejmr/php-mode
-[melpa-link]: http://melpa.org/#/php-mode
-[melpa-stable-link]: http://stable.melpa.org/#/php-mode
+[camelCase]: https://ja.wikipedia.org/wiki/%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AB%E3%82%B1%E3%83%BC%E3%82%B9
+[cc mode]: https://www.gnu.org/software/emacs/manual/html_mono/ccmode.html
+[elpa-php-mode]: https://packages.debian.org/sid/elpa-php-mode
+[gpl-v3]: https://www.gnu.org/licenses/quick-guide-gplv3.html
+[issue-430]: https://github.com/emacs-php/php-mode/issues/430
+[nongnu-devel-elpa-badge]: https://elpa.nongnu.org/nongnu-devel/php-mode.svg
+[nongnu-devel-elpa]: https://elpa.nongnu.org/nongnu-devel/php-mode.html
+[nongnu-elpa-badge]: https://elpa.nongnu.org/nongnu/php-mode.svg
+[nongnu-elpa]: https://elpa.nongnu.org/nongnu/php-mode.html
 [melpa-badge]: http://melpa.org/packages/php-mode-badge.svg
+[melpa-link]: http://melpa.org/#/php-mode
 [melpa-stable-badge]: http://stable.melpa.org/packages/php-mode-badge.svg
+[melpa-stable-link]: http://stable.melpa.org/#/php-mode
+[package]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Packages.html
+[php-elisp-stretch]: https://packages.debian.org/stretch/php-elisp
+[php-elisp-ubuntu1810]: https://packages.ubuntu.com/cosmic/php-elisp
+[php-mode-packages]: https://repology.org/project/emacs:php-mode/versions
+[php-mode]: https://github.com/emacs-php/php-mode
+[php-suite]: https://github.com/emacs-php/php-suite
+[wiki]: https://github.com/emacs-php/php-mode/wiki
+[wiki-manual-installation]: https://github.com/emacs-php/php-mode/wiki/Manual-installation

@@ -36,7 +36,8 @@
                         (list download-directory url file file file)))))
       ;; Check the result
       (if (file-directory-p expected)
-          (setq php-manual-path expected)
+          (setq php-manual-path expected
+                php-search-documentation-function #'php-local-manual-search)
         (message "Failed to download PHP manual.")))))
 
 ;; Custom php-mode configuration

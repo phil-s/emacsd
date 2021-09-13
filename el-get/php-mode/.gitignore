@@ -1,4 +1,5 @@
 /.cask/
-/php-mode-autoloads.el
+/.keg/
+php-mode-autoloads.el
 *~
 *.elc

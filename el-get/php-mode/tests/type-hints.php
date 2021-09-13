@@ -62,6 +62,14 @@ class SomeClass
     {
     }
 
+    public function callable(callable $callable): callable
+    {
+    }
+
+    public function nullableCallable(?callable $callable): ?callable
+    {
+    }
+
     public function someFunction(
         $any,
         string $name,
@@ -125,11 +133,29 @@ class SomeClass
     ): ?stdClass {
     }
 
+    abstract public function getOtherObject(
+    ): stdClass;
+
+    abstract public function getOtherNullableObject(
+    ): ?stdClass;
+
     public function getNsObject(
     ): \path\to\my\Object {
     }
 
     public function getNullableNsObject(
     ): ?\path\to\my\Object {
+    }
+
+    public function getCallable(
+    ): callable {
+    }
+
+    public function getNullableCallable(
+    ): ?callable {
+    }
+
+    public function neverReturn(
+    ): never {
     }
 }
