@@ -11,6 +11,8 @@
   (declare-function web-mode "web-mode")
   )
 
+(add-to-list 'auto-mode-alist '("/composer\\.lock\\'" . js-mode))
+
 ;; Find documentation (locally or online).
 (define-key php-mode-map (kbd "<f1>") 'php-search-documentation)
 (when (fboundp 'eww-browse-url)
