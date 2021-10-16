@@ -2024,6 +2024,12 @@ or a ref which is not a branch, then it inserts nothing."
         (save-excursion
           (while (search-forward "\r\n" nil t) ; Remove trailing CRs.
             (delete-region (match-beginning 0) (1+ (match-beginning 0)))))
+        (save-excursion
+          (let ((fill-column 80)
+                (start beg))
+            (while (eql (forward-line) 0)
+              (fill-region start (point))
+              (setq start (point)))))
         (when magit-revision-use-hash-sections
           (save-excursion
             (while (not (eobp))
