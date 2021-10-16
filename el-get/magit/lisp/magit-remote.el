@@ -898,6 +898,16 @@ branch as default."
   (run-hooks 'magit-credential-hook)
   (magit-run-git-async "push" remote tag args))
 
+(defun magit-push-notes-ref (ref remote &optional args)
+  "Push a notes ref to another repository."
+  (interactive
+   (let ((note (magit-notes-read-ref "Push notes")))
+     (list note
+           (magit-read-remote (format "Push %s to remote" note) nil t)
+           (magit-push-arguments))))
+  (run-hooks 'magit-credential-hook)
+  (magit-run-git-async "push" remote ref args))
+
 ;;;###autoload
 (defun magit-push-implicitly (args)
   "Push somewhere without using an explicit refspec.

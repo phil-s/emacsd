@@ -58,7 +58,8 @@
   :actions  '((?T "Edit"             magit-notes-edit)
               (?r "Remove"           magit-notes-remove)
               (?m "Merge"            magit-notes-merge)
-              (?p "Prune"            magit-notes-prune))
+              (?p "Prune"            magit-notes-prune)
+              (?P "Push"             magit-push-notes-ref))
   :sequence-actions '((?c "Commit merge" magit-notes-merge-commit)
                       (?a "Abort merge"  magit-notes-merge-abort))
   :sequence-predicate 'magit-notes-merging-p
