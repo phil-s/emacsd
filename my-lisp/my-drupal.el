@@ -84,6 +84,11 @@
 
 ;;; find-grep
 
+;; Ignore nodejs modules -- when present, they tend to be both
+;; enormous and also entirely irrelevant to our own code.
+(with-eval-after-load "grep"
+  (add-to-list 'grep-find-ignored-directories "node_modules"))
+
 ;; Don't rgrep in sites/*/files
 
 ;; Gah. The (cons predicate . path) behaviour of grep-find-ignored-directories
