@@ -75,7 +75,7 @@
       (or (executable-find executable)
           ;; This works if epdfinfo is in the same place as emacs and
           ;; the editor was started with an absolute path, i.e. it is
-          ;; ment for Windows/Msys2.
+          ;; meant for Windows/Msys2.
           (and (stringp (car-safe command-line-args))
                (file-name-directory (car command-line-args))
                (try-directory
@@ -1594,7 +1594,7 @@ Return the data of the corresponding PNG image."
     'renderpage
     (pdf-info--normalize-file-or-buffer file-or-buffer)
     page
-    width
+    (* width (pdf-util-frame-scale-factor))
     (let (transformed)
       (while (cdr commands)
         (let ((kw (pop commands))

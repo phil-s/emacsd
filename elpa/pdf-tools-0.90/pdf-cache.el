@@ -23,6 +23,7 @@
 ;;; Code:
 ;;
 
+(require 'pdf-macs)
 (require 'pdf-info)
 (require 'pdf-util)
 
@@ -207,21 +208,16 @@ width MAX-WIDTH and `eql' hash value.
 Remember that image was recently used.
 
 Returns nil, if no matching image was found."
-  (let ((cache (cons nil pdf-cache--image-cache))
+  (let ((cache pdf-cache--image-cache)
         image)
-    ;; Find it in the cache and remove it.  We need to find the
-    ;; element in front of it.
-    (while (and (cdr cache)
+    ;; Find it in the cache.
+    (while (and (setq image (pop cache))
                 (not (pdf-cache--image-match
-                      (car (cdr cache))
-                      page min-width max-width hash)))
-      (setq cache (cdr cache)))
-    (setq image (cadr cache))
-    (when (car cache)
-      (setcdr cache (cddr cache)))
-    ;; Now push it at the front.
+                      image page min-width max-width hash))))
+    ;; Remove it and push it to the front.
     (when image
-      (push image pdf-cache--image-cache)
+      (setq pdf-cache--image-cache
+            (cons image (delq image pdf-cache--image-cache)))
       (pdf-cache--image/data image))))
 
 (defun pdf-cache-put-image (page width data &optional hash)
@@ -343,7 +339,7 @@ See also `pdf-info-renderpage-highlight' and
 
 (define-minor-mode pdf-cache-prefetch-minor-mode
   "Try to load images which will probably be needed in a while."
-  nil nil t
+  :group 'pdf-cache
   (pdf-cache--prefetch-cancel)
   (cond
    (pdf-cache-prefetch-minor-mode
@@ -384,6 +380,7 @@ See also `pdf-info-renderpage-highlight' and
          (pdf-cache-pagelinks
           (pdf-view-current-page)))))))))
 
+(defvar pdf-view-use-scaling)
 (defun pdf-cache--prefetch-pages (window image-width)
   (when (and (eq window (selected-window))
              (pdf-util-pdf-buffer-p))
@@ -392,7 +389,7 @@ See also `pdf-info-renderpage-highlight' and
                   (pdf-cache-lookup-image
                    page
                    image-width
-                   (if (not (pdf-view-use-scaling-p))
+                   (if (not pdf-view-use-scaling)
                        image-width
                      (* 2 image-width))))
         (setq page (pop pdf-cache--prefetch-pages)))

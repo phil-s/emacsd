@@ -25,6 +25,7 @@
 
 ;;; Code:
 
+(require 'pdf-macs)
 (require 'cl-lib)
 (require 'format-spec)
 (require 'faces)
@@ -33,9 +34,8 @@
 ;; which won't succeed, if pdf-view.el isn't loaded.
 (declare-function pdf-view-image-size "pdf-view")
 (declare-function pdf-view-image-offset "pdf-view")
-(declare-function pdf-view-current-image "pdf-view")
-(declare-function pdf-view-current-overlay "pdf-view")
 (declare-function pdf-cache-pagesize "pdf-cache")
+(declare-function pdf-view-image-type "pdf-view")
 
 
 
@@ -91,6 +91,7 @@ remove the entry if the new value is `eql' to DEFAULT."
   (require 'image-mode)
   (defvar image-mode-winprops-original-function
     (symbol-function 'image-mode-winprops))
+  (defvar image-mode-winprops-alist)
   (eval-after-load "image-mode"
     '(defun image-mode-winprops (&optional window cleanup)
        (if (not (eq major-mode 'pdf-view-mode))
@@ -178,7 +179,7 @@ else return the scaled singleton."
 (defun pdf-util-scale-to (list-of-edges from to &optional rounding-fn)
   "Scale LIST-OF-EDGES in FROM basis to TO.
 
-FROM and TO should both be a cons \(WIDTH . HEIGTH\).  See also
+FROM and TO should both be a cons \(WIDTH . HEIGHT\).  See also
 `pdf-util-scale'."
 
   (pdf-util-scale list-of-edges
@@ -417,7 +418,7 @@ Returns a list of pixel edges."
     (mapcar 'round (list x0 y0 x1 y1))))
 
 (defun pdf-util-required-hscroll (edges &optional eager-p context-pixel)
-  "Return the amount of scrolling nescessary, to make image EDGES visible.
+  "Return the amount of scrolling necessary, to make image EDGES visible.
 
 Scroll as little as necessary.  Unless EAGER-P is non-nil, in
 which case scroll as much as possible.
@@ -456,7 +457,7 @@ needed."
                         (frame-char-width)))))))))
 
 (defun pdf-util-required-vscroll (edges &optional eager-p context-pixel)
-  "Return the amount of scrolling nescessary, to make image EDGES visible.
+  "Return the amount of scrolling necessary, to make image EDGES visible.
 
 Scroll as little as necessary.  Unless EAGER-P is non-nil, in
 which case scroll as much as possible.
@@ -465,9 +466,11 @@ Keep CONTEXT-PIXEL pixel of the image visible at the bottom and
 top of the window.  CONTEXT-PIXEL defaults to an equivalent pixel
 value of `next-screen-context-lines'.
 
-Return the required vscroll in lines or nil, if scrolling is not
-needed."
+Return the required vscroll in pixels or nil, if scrolling is not
+needed.
 
+Note: For versions of emacs before 27 this will return lines instead of
+pixels. This is because of a change that occurred to `image-mode' in 27."
   (pdf-util-assert-pdf-window)
   (let* ((win (window-inside-pixel-edges))
          (image-height (cdr (pdf-view-image-size t)))
@@ -481,20 +484,28 @@ needed."
                                    (frame-char-height))))
              ;;Be careful not to modify edges.
              (edges-top (- edges-top context-pixel))
-             (edges-bot (+ edges-bot context-pixel)))
-        (if (< edges-top image-top)
-            (round (/ (max 0 (if eager-p
-                                 (- edges-bot win-height)
-                               edges-top))
-                      (float (frame-char-height))))
-          (if (> (min image-height
-                      edges-bot)
-                 (+ image-top win-height))
-              (round (/ (min (- image-height win-height)
-                             (if eager-p
-                                 edges-top
-                               (- edges-bot win-height)))
-                        (float (frame-char-height))))))))))
+             (edges-bot (+ edges-bot context-pixel))
+             (vscroll
+              (cond ((< edges-top image-top)
+                     (max 0 (if eager-p
+                                (- edges-bot win-height)
+                              edges-top)))
+                    ((> (min image-height
+                             edges-bot)
+                        (+ image-top win-height))
+                     (min (- image-height win-height)
+                          (if eager-p
+                              edges-top
+                            (- edges-bot win-height)))))))
+
+
+        (when vscroll
+          (round
+           ;; `image-set-window-vscroll' changed in version 27 to using
+           ;; pixels, not lines.
+           (if (version< emacs-version "27")
+               (/ vscroll (float (frame-char-height)))
+               vscroll)))))))
 
 (defun pdf-util-scroll-to-edges (edges &optional eager-p)
   "Scroll window such that image EDGES are visible.
@@ -547,11 +558,7 @@ killed."
       (let ((temporary-file-directory
              pdf-util--base-directory))
         (setq pdf-util--dedicated-directory
-              (make-temp-file (concat (if buffer-file-name
-                                          (file-name-nondirectory
-                                           buffer-file-name)
-                                        (buffer-name))
-                                      "-")
+              (make-temp-file (convert-standard-filename (pdf-util-temp-prefix))
                               t))
         (add-hook 'kill-buffer-hook 'pdf-util-delete-dedicated-directory
                   nil t)))
@@ -565,13 +572,21 @@ killed."
   "Expand filename against current buffer's dedicated directory."
   (expand-file-name name (pdf-util-dedicated-directory)))
 
-(defun pdf-util-make-temp-file (prefix &optional dir-flag suffix)
+(defun pdf-util-temp-prefix ()
+  "Create a temp-file prefix for the current buffer"
+  (concat (if buffer-file-name
+              (file-name-nondirectory buffer-file-name)
+            (replace-regexp-in-string "[^[:alnum:]]+" "-" (buffer-name)))
+          "-"))
+
+(defun pdf-util-make-temp-file (&optional prefix dir-flag suffix)
   "Create a temporary file in current buffer's dedicated directory.
 
 See `make-temp-file' for the arguments."
-  (let ((temporary-file-directory
-         (pdf-util-dedicated-directory)))
-    (make-temp-file prefix dir-flag suffix)))
+  (let ((temporary-file-directory (pdf-util-dedicated-directory)))
+    (make-temp-file (convert-standard-filename
+                     (or prefix (pdf-util-temp-prefix)))
+                    dir-flag suffix)))
 
 
 ;; * ================================================================== *
@@ -627,7 +642,7 @@ is non-nil."
 (defun pdf-util-hexcolor (color)
   "Return COLOR in hex-format.
 
-Singal an error, if color is invalid."
+Signal an error, if color is invalid."
   (if (string-match "\\`#[[:xdigit:]]\\{6\\}\\'" color)
       color
     (let ((values (color-values color)))
@@ -789,7 +804,7 @@ AWINDOW is deleted."
     (setq newwin (window--display-buffer
                   buf
                   (split-window-below height)
-                  'window alist display-buffer-mark-dedicated))
+                  'window alist))
     (pdf-util-window-attach newwin window)
     newwin))
 
@@ -834,8 +849,8 @@ trailing 2 is ignored.  The other possible values have similar
 effects.  The default is nil, which means to match the whole
 sequences.
 
-Return a cons \(VALUE . ALINGMENT\), where VALUE says how similar
-the sequences are and ALINGMENT is a list of \(E1 . E2\), where
+Return a cons \(VALUE . ALIGNMENT\), where VALUE says how similar
+the sequences are and ALIGNMENT is a list of \(E1 . E2\), where
 E1 is an element from SEQ1 or nil, likewise for E2.  If one of
 them is nil, it means there is gap at this position in the
 respective sequence."
@@ -918,6 +933,34 @@ See also `regexp-quote'."
       (push ch escaped))
     (apply 'string (nreverse escaped))))
 
+(defun pdf-util-frame-ppi ()
+  "Return the PPI of the current frame."
+  (let* ((props (frame-monitor-attributes))
+         (px (nthcdr 2 (alist-get 'geometry props)))
+         (mm (alist-get 'mm-size props))
+         (dp (sqrt (+ (expt (nth 0 px) 2)
+                      (expt (nth 1 px) 2))))
+         (di (sqrt (+ (expt (/ (nth 0 mm) 25.4) 2)
+                      (expt (/ (nth 1 mm) 25.4) 2)))))
+    (/ dp di)))
+
+(defvar pdf-view-use-scaling)
+
+(defun pdf-util-frame-scale-factor ()
+  "Return the frame scale factor depending on the image type used for display.
+When `pdf-view-use-scaling' is non-nil, return the scale factor of the frame
+if available. If the scale factor isn't available, return 2 if the
+frame's PPI is larger than 180. Otherwise, return 1."
+  (if pdf-view-use-scaling
+      (or (and (fboundp 'frame-scale-factor)
+               (truncate (frame-scale-factor)))
+          (and (fboundp 'frame-monitor-attributes)
+               (cdr (assq 'backing-scale-factor (frame-monitor-attributes))))
+          (if (>= (pdf-util-frame-ppi) 180)
+              2
+            1))
+    1))
+
 
 ;; * ================================================================== *
 ;; * Imagemagick's convert
@@ -968,10 +1011,10 @@ Returns a cons \(WIDTH . HEIGHT\)."
   "Convert image IN-FILE to OUT-FILE according to SPEC.
 
 IN-FILE should be the name of a file containing an image.  Write
-the result to OUT-FILE.  The extension of this filename ususally
+the result to OUT-FILE.  The extension of this filename usually
 determines the resulting image-type.
 
-SPEC is a property list, specifying what the convert programm
+SPEC is a property list, specifying what the convert program
 should do with the image.  All manipulations operate on a
 rectangle, see below.
 
@@ -1000,7 +1043,7 @@ as a single argument.
 
 `:formats' An alist of additional %-escapes.  Every element
 should be a cons \(CHAR . STRING\) or \(CHAR . FUNCTION\).  In
-the first case, all occurences of %-CHAR in the above commands
+the first case, all occurrences of %-CHAR in the above commands
 will be replaced by STRING.  In the second case FUNCTION is
 called with the current rectangle and it should return the
 replacement string.

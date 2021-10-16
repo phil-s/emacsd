@@ -74,6 +74,13 @@ Usually a page's label is it's displayed page number."
   :group 'pdf-outline
   :type 'boolean)
 
+(defcustom pdf-outline-fill-column fill-column
+  "The value of `fill-column' in pdf outline buffers.
+
+Set to nil to disable line wrapping."
+  :group 'pdf-outline
+  :type 'integer)
+
 (defvar pdf-outline-minor-mode-map
   (let ((km (make-sparse-keymap)))
     (define-key km (kbd "o") 'pdf-outline)
@@ -141,7 +148,7 @@ Additionally the same outline may be viewed in a designated
 buffer.
 
 \\{pdf-outline-minor-mode-map}"
-  nil nil nil
+  :group 'pdf-outline
   (pdf-util-assert-pdf-buffer)
   (cond
    (pdf-outline-minor-mode
@@ -186,7 +193,7 @@ rebound to their respective last character.
 
 (define-minor-mode pdf-outline-follow-mode
   "Display links as point moves."
-  nil nil nil
+  :group 'pdf-outline
   (setq pdf-outline-follow-mode-last-link nil)
   (cond
    (pdf-outline-follow-mode
@@ -229,6 +236,7 @@ buffer, unless NO-SELECT-WINDOW-P is non-nil."
            (buffer-exists-p (get-buffer bname))
            (buffer (get-buffer-create bname)))
       (with-current-buffer buffer
+        (setq-local fill-column pdf-outline-fill-column)
         (unless buffer-exists-p
           (when (= 0 (save-excursion
                        (pdf-outline-insert-outline pdf-buffer)))

@@ -1,10 +1,12 @@
 This file is part of the SyncTeX package.
 
+Please refer to synctex_parser_readme.md
+
 The Synchronization TeXnology named SyncTeX is a new feature
 of recent TeX engines designed by Jerome Laurens.
 It allows to synchronize between input and output, which means to
 navigate from the source document to the typeset material and vice versa.
-More informations on http://itexmac2.sourceforge.net/SyncTeX.html
+More information on http://itexmac2.sourceforge.net/SyncTeX.html
 
 This package is mainly for developers, it mainly contains the following files:
 
@@ -13,10 +15,11 @@ synctex_parser_version.txt
 synctex_parser_utils.c
 synctex_parser_utils.h
 synctex_parser_local.h
+synctex_parser_private.h
 synctex_parser.h
 synctex_parser.c
 
-The file you are reading contains more informations about the SyncTeX parser history.
+The file you are reading contains more information about the SyncTeX parser history.
 
 In order to support SyncTeX in a viewer, it is sufficient to include
 in the source the files synctex_parser.h and synctex_parser.c.
@@ -167,6 +170,25 @@ TeX and friends are not concerned by these changes.
 - cosmetic changes: uniform indentation
 - suppression of warnings, mainly long/int ones. In short, zlib likes ints when size_t likes longs.
 - CLI synctex tool can build out of TeXLive (modulo appropriate options passed to the compiler)
+1.19: Thu Mar  9 21:26:27 UTC 2017
+- the nested sheets patch was not a good solution.
+  It has been moved from the parser to the engine.
+  See the synctex.c source file for detailed explanations.
+- there is a new synctex format specification.
+  We can see that a .synctex file can contain many times
+  the same vertical position because many objects belong
+  to the same line. When the options read -synctex=±2 or more,
+  a very basic compression algorithm is used:
+  if synctex is about write the same number then it writes
+  an = sign instead. This saves approximately 10% of the
+  synctex output file, either compressed or not.
+  The new synctex parser has been updated accordingly.
+  Actual tex frontend won't see any difference with the
+  TeX engines that include this new feature.
+  Frontends with the new parser won't see any difference
+  with the older TeX engines.
+  Frontends with the new parser will only see a difference
+  with new TeX engines if -synctex=±2 or more is used.
 
 Acknowledgments:
 ----------------

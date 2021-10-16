@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'image-mode)
+(require 'pdf-macs)
 (require 'pdf-util)
 (require 'pdf-info)
 (require 'pdf-cache)
@@ -86,11 +87,12 @@ FIXME: Explain dis-/advantages of imagemagick and png."
   :type 'boolean)
 
 (defcustom pdf-view-use-scaling nil
-  "Whether images should be allowed to be scaled down for rendering.
+  "Whether images should be allowed to be scaled for rendering.
 
-This variable has no effect, if imagemagick was not compiled into
-Emacs or `pdf-view-use-imagemagick' is nil.  FIXME: Explain
-dis-/advantages of imagemagick and png."
+This variable affects both the reuse of higher-resolution images
+as lower-resolution ones by down-scaling the image.  As well as
+the rendering of higher-resolution for high-resolution displays,
+if available."
   :group 'pdf-view
   :type 'boolean)
 
@@ -109,7 +111,7 @@ dis-/advantages of imagemagick and png."
   :group 'pdf-tools-faces)
 
 (defcustom pdf-view-midnight-colors '("#839496" . "#002b36" )
-  "Colors used when `pdf-view-midnight-minor-mode' is activated.
+  "Colors used when command `pdf-view-midnight-minor-mode' is activated.
 
 This should be a cons \(FOREGROUND . BACKGROUND\) of colors."
   :group 'pdf-view
@@ -165,7 +167,7 @@ See :relief property in Info node `(elisp) Image Descriptors'."
   :type '(integer :tag "Pixel"))
 
 (defcustom pdf-view-use-unicode-ligther t
-  "Whether to use unicode symbols in the mode-line
+  "Decide whether to use unicode symbols in the mode-line.
 
 On some systems finding a font which supports those symbols can
 take some time.  If you don't want to spend that time waiting and
@@ -218,25 +220,8 @@ regarding display of the region in the later function.")
 (defvar-local pdf-view-register-alist nil
   "Local, dedicated register for PDF positions.")
 
-(defmacro pdf-view-current-page (&optional window)
-  ;;TODO: write documentation!
-  `(image-mode-window-get 'page ,window))
-
-(defmacro pdf-view-current-overlay (&optional window)
-  ;;TODO: write documentation!
-  `(image-mode-window-get 'overlay ,window))
-
-(defmacro pdf-view-current-image (&optional window)
-  ;;TODO: write documentation!
-  `(image-mode-window-get 'image ,window))
-
-(defmacro pdf-view-current-slice (&optional window)
-  ;;TODO: write documentation!
-  `(image-mode-window-get 'slice ,window))
-
-(defmacro pdf-view-current-window-size (&optional window)
-  ;;TODO: write documentation!
-  `(image-mode-window-get 'window-size ,window))
+(defun pdf-view-current-pagelabel (&optional window)
+  (nth (1- (pdf-view-current-page window)) (pdf-info-pagelabels)))
 
 (defun pdf-view-active-region-p nil
   "Return t if there are active regions."
@@ -246,6 +231,10 @@ regarding display of the region in the later function.")
   "Signal an error if there are no active regions."
   `(unless (pdf-view-active-region-p)
      (error "The region is not active")))
+
+(defconst pdf-view-have-image-mode-pixel-vscroll
+  (>= emacs-major-version 27)
+  "Whether `image-mode' scrolls vertically by pixels.")
 
 
 ;; * ================================================================== *
@@ -268,10 +257,14 @@ regarding display of the region in the later function.")
     (define-key map (kbd "DEL")       'pdf-view-scroll-down-or-previous-page)
     (define-key map (kbd "C-n")       'pdf-view-next-line-or-next-page)
     (define-key map (kbd "<down>")    'pdf-view-next-line-or-next-page)
-    (define-key map (kbd "C-p")       'pdf-view-previous-line-or-previous-page)
-    (define-key map (kbd "<up>")      'pdf-view-previous-line-or-previous-page)
-    (define-key map (kbd "M-<")       'pdf-view-first-page)
-    (define-key map (kbd "M->")       'pdf-view-last-page)
+    (define-key map [remap next-line] 'pdf-view-next-line-or-next-page)
+    (define-key map (kbd "C-p")           'pdf-view-previous-line-or-previous-page)
+    (define-key map (kbd "<up>")          'pdf-view-previous-line-or-previous-page)
+    (define-key map [remap previous-line] 'pdf-view-previous-line-or-previous-page)
+    (define-key map (kbd "M-<")                 'pdf-view-first-page)
+    (define-key map [remap beginning-of-buffer] 'pdf-view-first-page)
+    (define-key map (kbd "M->")                 'pdf-view-last-page)
+    (define-key map [remap end-of-buffer]       'pdf-view-last-page)
     (define-key map [remap goto-line] 'pdf-view-goto-page)
     (define-key map (kbd "M-g l")     'pdf-view-goto-label)
     (define-key map (kbd "RET")       'image-next-line)
@@ -307,6 +300,7 @@ regarding display of the region in the later function.")
     (define-key map (kbd "C-c C-i") 'pdf-view-extract-region-image)
     ;; Rendering
     (define-key map (kbd "C-c C-r m") 'pdf-view-midnight-minor-mode)
+    (define-key map (kbd "C-c C-r t") 'pdf-view-themed-minor-mode)
     (define-key map (kbd "C-c C-r p") 'pdf-view-printer-minor-mode)
     map)
   "Keymap used by `pdf-view-mode' when displaying a doc as a set of images.")
@@ -325,12 +319,7 @@ PNG images in Emacs buffers."
                    (not (and buffer-file-name
                              (file-readable-p buffer-file-name)))))
              (pdf-tools-pdf-buffer-p))
-    (let ((tempfile (pdf-util-make-temp-file
-                     (concat (if buffer-file-name
-                                 (file-name-nondirectory
-                                  buffer-file-name)
-                               (buffer-name))
-                             "-"))))
+    (let ((tempfile (pdf-util-make-temp-file)))
       (write-region nil nil tempfile nil 'no-message)
       (setq-local pdf-view--buffer-file-name tempfile)))
   ;; Decryption needs to be done before any other function calls into
@@ -373,6 +362,9 @@ PNG images in Emacs buffers."
   (setq-local revert-buffer-function #'pdf-view-revert-buffer)
   ;; No auto-save at the moment.
   (setq-local buffer-auto-save-file-name nil)
+  ;; Disable image rescaling.
+  (when (boundp 'image-scaling-factor)
+    (setq-local image-scaling-factor 1))
   ;; No undo at the moment.
   (unless buffer-undo-list
     (buffer-disable-undo))
@@ -389,7 +381,7 @@ PNG images in Emacs buffers."
     (setq-local cua-mode nil))
 
   (add-hook 'window-configuration-change-hook
-            'pdf-view-maybe-redisplay-resized-windows nil t)
+            'pdf-view-redisplay-some-windows nil t)
   (add-hook 'deactivate-mark-hook 'pdf-view-deactivate-region nil t)
   (add-hook 'write-contents-functions
             'pdf-view--write-contents-function nil t)
@@ -406,9 +398,7 @@ PNG images in Emacs buffers."
   (run-with-timer 1 nil (lambda (buffer)
                           (when (buffer-live-p buffer)
                             (pdf-view-check-incompatible-modes buffer)))
-		  (current-buffer))
-  ;; Setup initial page and start display
-  (pdf-view-goto-page (or (pdf-view-current-page) 1)))
+		  (current-buffer)))
 
 (unless (version< emacs-version "24.4")
   (defun cua-copy-region--pdf-view-advice (&rest _)
@@ -492,7 +482,7 @@ operating on a local copy of a remote file."
           (delete-file tempfile))))))
 
 (defun pdf-view-revert-buffer (&optional ignore-auto noconfirm)
-  "Revert buffer while preseving current modes.
+  "Revert buffer while preserving current modes.
 
 Optional parameters IGNORE-AUTO and NOCONFIRM are defined as in
 `revert-buffer'."
@@ -513,7 +503,7 @@ Optional parameters IGNORE-AUTO and NOCONFIRM are defined as in
 (defun pdf-view-close-document ()
   "Return immediately after closing document.
 
-This function always suceeds.  See also `pdf-info-close', which
+This function always succeeds.  See also `pdf-info-close', which
 does not return immediately."
   (when (pdf-info-running-p)
     (let ((pdf-info-asynchronous 'ignore))
@@ -611,7 +601,7 @@ windows."
   (save-selected-window
     ;; Select the window for the hooks below.
     (when (window-live-p window)
-      (select-window window))
+      (select-window window 'norecord))
     (let ((changing-p
            (not (eq page (pdf-view-current-page window)))))
       (when changing-p
@@ -705,7 +695,8 @@ next page only on typing SPC (ARG is nil)."
   (if (or pdf-view-continuous (null arg))
       (let ((hscroll (window-hscroll))
             (cur-page (pdf-view-current-page)))
-        (when (or (= (window-vscroll) (image-scroll-up arg))
+        (when (or (= (window-vscroll nil pdf-view-have-image-mode-pixel-vscroll)
+                     (image-scroll-up arg))
                   ;; Workaround rounding/off-by-one issues.
                   (memq pdf-view-display-size
                         '(fit-height fit-page)))
@@ -713,7 +704,7 @@ next page only on typing SPC (ARG is nil)."
           (when (/= cur-page (pdf-view-current-page))
             (image-bob)
             (image-bol 1))
-          (set-window-hscroll (selected-window) hscroll)))
+          (image-set-window-hscroll hscroll)))
     (image-scroll-up arg)))
 
 (defun pdf-view-scroll-down-or-previous-page (&optional arg)
@@ -726,7 +717,8 @@ to previous page only on typing DEL (ARG is nil)."
   (if (or pdf-view-continuous (null arg))
       (let ((hscroll (window-hscroll))
             (cur-page (pdf-view-current-page)))
-        (when (or (= (window-vscroll) (image-scroll-down arg))
+        (when (or (= (window-vscroll nil pdf-view-have-image-mode-pixel-vscroll)
+                     (image-scroll-down arg))
                   ;; Workaround rounding/off-by-one issues.
                   (memq pdf-view-display-size
                         '(fit-height fit-page)))
@@ -734,7 +726,7 @@ to previous page only on typing DEL (ARG is nil)."
           (when (/= cur-page (pdf-view-current-page))
             (image-eob)
             (image-bol 1))
-          (set-window-hscroll (selected-window) hscroll)))
+          (image-set-window-hscroll hscroll)))
     (image-scroll-down arg)))
 
 (defun pdf-view-next-line-or-next-page (&optional arg)
@@ -746,12 +738,13 @@ at the bottom edge of the page moves to the next page."
   (if pdf-view-continuous
       (let ((hscroll (window-hscroll))
             (cur-page (pdf-view-current-page)))
-        (when (= (window-vscroll) (image-next-line arg))
+        (when (= (window-vscroll nil pdf-view-have-image-mode-pixel-vscroll)
+                 (image-next-line arg))
           (pdf-view-next-page)
           (when (/= cur-page (pdf-view-current-page))
             (image-bob)
             (image-bol 1))
-          (set-window-hscroll (selected-window) hscroll)))
+          (image-set-window-hscroll hscroll)))
     (image-next-line 1)))
 
 (defun pdf-view-previous-line-or-previous-page (&optional arg)
@@ -763,12 +756,13 @@ at the top edge of the page moves to the previous page."
   (if pdf-view-continuous
       (let ((hscroll (window-hscroll))
             (cur-page (pdf-view-current-page)))
-        (when (= (window-vscroll) (image-previous-line arg))
+        (when (= (window-vscroll nil pdf-view-have-image-mode-pixel-vscroll)
+                 (image-previous-line arg))
           (pdf-view-previous-page)
           (when (/= cur-page (pdf-view-current-page))
             (image-eob)
             (image-bol 1))
-          (set-window-hscroll (selected-window) hscroll)))
+          (image-set-window-hscroll hscroll)))
     (image-previous-line arg)))
 
 (defun pdf-view-goto-label (label)
@@ -867,7 +861,7 @@ again."
   "Automatically slice pages according to their bounding boxes.
 
 See also `pdf-view-set-slice-from-bounding-box'."
-  nil nil nil
+  :group 'pdf-view
   (pdf-util-assert-pdf-buffer)
   (cond
    (pdf-view-auto-slice-minor-mode
@@ -900,6 +894,8 @@ See also `pdf-view-use-imagemagick'."
   (cond ((and pdf-view-use-imagemagick
               (fboundp 'imagemagick-types))
          'imagemagick)
+        ((image-type-available-p 'image-io)
+         'image-io)
         ((image-type-available-p 'png)
          'png)
         ((fboundp 'imagemagick-types)
@@ -907,25 +903,25 @@ See also `pdf-view-use-imagemagick'."
         (t
          (error "PNG image supported not compiled into Emacs"))))
 
-(defun pdf-view-use-scaling-p ()
-  "Return t if scaling should be used."
-  (and (eq 'imagemagick
-           (pdf-view-image-type))
-       pdf-view-use-scaling))
-
 (defmacro pdf-view-create-image (data &rest props)
   ;; TODO: add DATA and PROPS to docstring.
   "Like `create-image', but with set DATA-P and TYPE arguments."
   (declare (indent 1) (debug t))
-  `(create-image ,data (pdf-view-image-type) t ,@props
-                 :relief (or pdf-view-image-relief 0)))
+  (let ((image-data (make-symbol "data")))
+    `(let ((,image-data ,data))
+       (apply #'create-image ,image-data (pdf-view-image-type) t ,@props
+              (cl-list*
+               :relief (or pdf-view-image-relief 0)
+               (when (and (eq (framep-on-display) 'mac)
+                          (= (pdf-util-frame-scale-factor) 2))
+                 (list :data-2x ,image-data)))))))
 
 (defun pdf-view-create-page (page &optional window)
   "Create an image of PAGE for display on WINDOW."
   (let* ((size (pdf-view-desired-image-size page window))
          (data (pdf-cache-renderpage
                 page (car size)
-                (if (not (pdf-view-use-scaling-p))
+                (if (not pdf-view-use-scaling)
                     (car size)
                   (* 2 (car size)))))
          (hotspots (pdf-view-apply-hotspot-functions
@@ -963,6 +959,7 @@ It is equal to \(LEFT . TOP\) of the current slice in pixel."
 
 (defun pdf-view-display-page (page &optional window)
   "Display page PAGE in WINDOW."
+  (setf (pdf-view-window-needs-redisplay window) nil)
   (pdf-view-display-image
    (pdf-view-create-page page window)
    window))
@@ -1001,7 +998,8 @@ It is equal to \(LEFT . TOP\) of the current slice in pixel."
                (vscroll (image-mode-window-get 'vscroll win)))
           ;; Reset scroll settings, in case they were changed.
           (if hscroll (set-window-hscroll win hscroll))
-          (if vscroll (set-window-vscroll win vscroll)))))))
+          (if vscroll (set-window-vscroll
+                       win vscroll pdf-view-have-image-mode-pixel-vscroll)))))))
 
 (defun pdf-view-redisplay (&optional window)
   "Redisplay page in WINDOW.
@@ -1015,7 +1013,13 @@ If WINDOW is t, redisplay pages in all windows."
       (dolist (win (get-buffer-window-list nil nil t))
         (pdf-view-display-page
          (pdf-view-current-page win)
-         win)))
+         win))
+      (when (consp image-mode-winprops-alist)
+        (dolist (window (mapcar #'car image-mode-winprops-alist))
+          (unless (or (not (window-live-p window))
+                      (eq (current-buffer)
+                          (window-buffer window)))
+            (setf (pdf-view-window-needs-redisplay window) t)))))
     (force-mode-line-update)))
 
 (defun pdf-view-redisplay-pages (&rest pages)
@@ -1043,6 +1047,12 @@ If WINDOW is t, redisplay pages in all windows."
                       (and (eq pdf-view-display-size 'fit-height)
                            (eq (cdr size) (cdr stored))))
             (pdf-view-redisplay window)))))))
+
+(defun pdf-view-redisplay-some-windows ()
+  (pdf-view-maybe-redisplay-resized-windows)
+  (dolist (window (get-buffer-window-list nil nil t))
+    (when (pdf-view-window-needs-redisplay window)
+      (pdf-view-redisplay window))))
 
 (defun pdf-view-new-window-function (winprops)
   ;; TODO: write documentation!
@@ -1126,7 +1136,7 @@ This will display a text cursor, when hovering over them."
   "Mode for PDF documents with dark background.
 
 This tells the various modes to use their face's dark colors."
-  nil nil nil
+  :group 'pdf-view
   (pdf-util-assert-pdf-buffer)
   ;; FIXME: This should really be run in a hook.
   (when (bound-and-true-p pdf-isearch-active-mode)
@@ -1137,7 +1147,8 @@ This tells the various modes to use their face's dark colors."
 
 (define-minor-mode pdf-view-printer-minor-mode
   "Display the PDF as it would be printed."
-  nil " Prn" nil
+  :group 'pdf-view
+  :lighter " Prn"
   (pdf-util-assert-pdf-buffer)
   (let ((enable (lambda ()
                   (pdf-info-setoptions :render/printed t))))
@@ -1157,8 +1168,8 @@ This tells the various modes to use their face's dark colors."
 
 The colors are determined by the variable
 `pdf-view-midnight-colors', which see. "
-
-  nil " Mid" nil
+  :group 'pdf-view
+  :lighter " Mid"
   (pdf-util-assert-pdf-buffer)
   ;; FIXME: Maybe these options should be passed stateless to pdf-info-renderpage ?
   (let ((enable (lambda ()
@@ -1177,6 +1188,43 @@ The colors are determined by the variable
       (pdf-info-setoptions :render/usecolors nil))))
   (pdf-cache-clear-images)
   (pdf-view-redisplay t))
+
+(defun pdf-view-refresh-themed-buffer (&optional get-theme)
+  "Refresh the current buffer to activate applied colors.
+
+When GET-THEME is non-nil, also reset the applied colors to the
+current theme's colors."
+  (pdf-util-assert-pdf-buffer)
+  (pdf-cache-clear-images)
+  (when get-theme
+	(pdf-view-set-theme-background))
+  (pdf-view-redisplay t))
+
+(defun pdf-view-set-theme-background ()
+  "Set the buffer's color filter to correspond to the current Emacs theme."
+  (pdf-util-assert-pdf-buffer)
+  (pdf-info-setoptions
+   :render/foreground (face-foreground 'default nil)
+   :render/background (face-background 'default nil)
+   :render/usecolors t))
+
+(define-minor-mode pdf-view-themed-minor-mode
+  "Synchronize color filter with the present Emacs theme.
+
+The colors are determined by the `face-foreground' and
+`face-background' of the currently active theme."
+  :group 'pdf-view
+  :lighter " Thm"
+  (pdf-util-assert-pdf-buffer)
+  (cond
+   (pdf-view-themed-minor-mode
+    (add-hook 'after-save-hook #'pdf-view-set-theme-background nil t)
+    (add-hook 'after-revert-hook #'pdf-view-set-theme-background nil t))
+   (t
+    (remove-hook 'after-save-hook #'pdf-view-set-theme-background t)
+    (remove-hook 'after-revert-hook #'pdf-view-set-theme-background t)
+    (pdf-info-setoptions :render/usecolors nil)))
+  (pdf-view-refresh-themed-buffer pdf-view-themed-minor-mode))
 
 (when pdf-view-use-unicode-ligther
   ;; This check uses an implementation detail, which hopefully gets the
@@ -1201,7 +1249,7 @@ image size \(WIDTH . HEIGHT\) as arguments.  It should return a
 list of hotspots applicable to the the :map image-property.
 
 LAYER determines the order: Functions in a higher LAYER will
-supercede hotspots in lower ones."
+supersede hotspots in lower ones."
   (push (cons (or layer 0) fn)
         pdf-view--hotspot-functions))
 
@@ -1220,7 +1268,7 @@ supercede hotspots in lower ones."
   ;; TODO: write documentation!
   (unless pdf-view-inhibit-hotspots
     (save-selected-window
-      (when window (select-window window))
+      (when window (select-window window 'norecord))
       (apply 'nconc
              (mapcar (lambda (fn)
                        (funcall fn page image-size))
@@ -1286,7 +1334,7 @@ Stores the region in `pdf-view-active-region'."
          (abs-begin (posn-x-y pos))
          pdf-view-continuous
          region)
-    (when (pdf-util-track-mouse-dragging (event 0.15)
+    (when (pdf-util-track-mouse-dragging (event 0.05)
             (let* ((pos (event-start event))
                    (end (posn-object-x-y pos))
                    (end-inside-image-p
@@ -1297,7 +1345,7 @@ Stores the region in `pdf-view-active-region'."
                 (cond
                  ((and end-inside-image-p
                        (not begin-inside-image-p))
-                  ;; Started selection ouside the image, setup begin.
+                  ;; Started selection outside the image, setup begin.
                   (let* ((xy (posn-x-y pos))
                          (dxy (cons (- (car xy) (car begin))
                                     (- (cdr xy) (cdr begin))))
@@ -1377,7 +1425,8 @@ This is more useful for commands like
               `(,(car colors) ,(cdr colors) 0.35 ,@region))
            (pdf-info-renderpage-text-regions
             page width nil nil
-            `(,(car colors) ,(cdr colors) ,@region)))))))
+            `(,(car colors) ,(cdr colors) ,@region)))
+       :width width))))
 
 (defun pdf-view-kill-ring-save ()
   "Copy the region to the `kill-ring'."
@@ -1418,7 +1467,7 @@ image*\" and display it, unless NO-DISPLAY-P is non-nil.
 
 In case of multiple regions, the resulting image is constructed
 by joining them horizontally.  For this operation (and this only)
-the `convert' programm is used."
+the `convert' program is used."
 
   (interactive
    (list (if (pdf-view-active-region-p)
@@ -1532,7 +1581,9 @@ See also `pdf-view-bookmark-make-record'."
                              (frame-char-width))))
                   (image-set-window-vscroll
                    (round (/ (* (cdr origin) (cdr size))
-                             (frame-char-height)))))))))
+                             (if pdf-view-have-image-mode-pixel-vscroll
+                                 1
+                               (frame-char-height))))))))))
     (add-hook 'bookmark-after-jump-hook show-fn-sym)
     (set-buffer (or (find-buffer-visiting file)
                     (find-file-noselect file)))))

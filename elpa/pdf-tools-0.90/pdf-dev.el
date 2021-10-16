@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 ;;
-;; This file is only ment for developers.  The entry point is
+;; This file is only meant for developers.  The entry point is
 ;; pdf-dev-minor-mode, which see.
 
 ;;; Code:
@@ -54,7 +54,7 @@ Installs a `compilation-finish-functions' which will restart
 epdfinfo after a successful recompilation.
 
 Sets up `load-path' and reloads all PDF Tools lisp files."
-  nil nil nil
+  :group 'pdf-dev
   (let ((lisp-dir (expand-file-name "lisp" pdf-dev-root-directory)))
     (setq load-path (remove lisp-dir load-path))
     (cond

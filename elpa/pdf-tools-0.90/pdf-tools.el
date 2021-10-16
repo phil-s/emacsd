@@ -1,12 +1,13 @@
-;;; pdf-tools.el --- Support library for PDF documents. -*- lexical-binding:t -*-
+;;; pdf-tools.el --- Support library for PDF documents -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2013, 2014  Andreas Politz
 
 ;; Author: Andreas Politz <politza@fh-trier.de>
+;; URL: http://github.com/vedang/pdf-tools/
 ;; Keywords: files, multimedia
 ;; Package: pdf-tools
-;; Version: 0.90
-;; Package-Requires: ((emacs "24.3") (tablist "0.70") (let-alist "1.0.4"))
+;; Version: 1.0
+;; Package-Requires: ((emacs "24.3") (tablist "1.0") (let-alist "1.0.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,8 +29,11 @@
 ;; e.g. ghostscript and stored in the file-system, but rather created
 ;; on-demand and stored in memory.
 ;;
-;; Note: This package requires external libraries and works currently
-;; only on GNU/Linux systems.
+;; Note: This package is built and tested on GNU/Linux systems. It
+;; works on macOS and Windows, but is officially supported only on
+;; GNU/Linux systems. This package will not make macOS or Windows
+;; specific functionality changes, behaviour on these systems is
+;; provided as-is.
 ;;
 ;; Note: If you ever update it, you need to restart Emacs afterwards.
 ;;
@@ -206,6 +210,15 @@ PDF buffers."
 
 (defvar pdf-tools-msys2-directory nil)
 
+(defcustom pdf-tools-installer-os nil
+  "Specifies which installer to use.
+
+If nil the installer is chosen automatically. This variable is
+useful if you have multiple installers present on your
+system (e.g. nix on arch linux)"
+  :group 'pdf-tools
+  :type 'string)
+
 (defun pdf-tools-identify-build-directory (directory)
   "Return non-nil, if DIRECTORY appears to contain the epdfinfo source.
 
@@ -281,7 +294,7 @@ Install into TARGET-DIRECTORY, which should be a directory.
 
 If CALLBACK is non-nil, it should be a function.  It is called
 with the compiled executable as the single argument or nil, if
-the build falied.
+the build failed.
 
 Expect sources to be in BUILD-DIRECTORY.  If nil, search for it
 using `pdf-tools-locate-build-directory'.
@@ -319,13 +332,14 @@ Returns the buffer of the compilation process."
             target-directory))
           (compilation-buffer
            (compilation-start
-            (format "%s -i %s%s"
+            (format "%s -i %s%s%s"
                     autobuild
                     (shell-quote-argument target-directory)
                     (cond
                      (skip-dependencies-p " -D")
                      (force-dependencies-p " -d")
-                     (t "")))
+                     (t ""))
+                    (if pdf-tools-installer-os (concat " --os " pdf-tools-installer-os) ""))
             t)))
       ;; In most cases user-input is required, so select the window.
       (if (get-buffer-window compilation-buffer)

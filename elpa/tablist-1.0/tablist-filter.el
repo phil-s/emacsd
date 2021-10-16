@@ -1,4 +1,4 @@
-;;; tablist-filter.el --- Filter expressions for tablists.
+;;; tablist-filter.el --- Filter expressions for tablists.  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2013, 2014  Andreas Politz
 
@@ -22,7 +22,8 @@
 
 ;;
 
-(let (python-mode-hook)
+(defvar python-mode-hook)
+(let (python-mode-hook)                 ;FIXME: Why?
 (require 'semantic/wisent/comp)
 (require 'semantic/wisent/wisent))
 
@@ -45,7 +46,7 @@
 (defvar tablist-filter-wisent-parser nil)
 
 (defvar tablist-filter-lexer-regexps nil)
-  
+
 (defvar tablist-filter-wisent-grammar
   '(
     ;; terminals
@@ -71,7 +72,7 @@
      ((not filter) `(not ,$2))
      ((filter and filter) `(and ,$1 ,$3))
      ((filter or filter) `(or ,$1 ,$3))
-     ((?( filter ?)) $2))))
+     ((?\( filter ?\)) $2))))
 
 (defun tablist-filter-parser-init (&optional reinitialize interactive)
   (interactive (list t t))
@@ -217,7 +218,6 @@
     (tablist-filter-parser-init)
     (unparse filter noerror)))
 
-
 (defun tablist-filter-eval (filter id entry &optional named-alist)
   (cl-labels
     ((feval (filter)
@@ -269,12 +269,12 @@
         (car item)
       item)))
 
-(defun tablist-filter-op-equal (id entry op1 op2)
+(defun tablist-filter-op-equal (_id entry op1 op2)
   "COLUMN == STRING : Matches if COLUMN's entry is equal to STRING."
   (let ((item (tablist-filter-get-item-by-name entry op1)))
     (string= item op2)))
 
-(defun tablist-filter-op-regexp (id entry op1 op2)
+(defun tablist-filter-op-regexp (_id entry op1 op2)
   "COLUMN =~ REGEXP : Matches if COLUMN's entry matches REGEXP."
   (let ((item (tablist-filter-get-item-by-name entry op1)))
     (string-match op2 item)))
@@ -299,7 +299,7 @@
   "COLUMN = NUMBER : Matches if COLUMN's entry as a number is equal to NUMBER."
   (tablist-filter-op-numeric '= id entry op1 op2))
 
-(defun tablist-filter-op-numeric (op id entry op1 op2)
+(defun tablist-filter-op-numeric (op _id entry op1 op2)
   (let ((item (tablist-filter-get-item-by-name entry op1)))
     (funcall op (string-to-number item)
              (string-to-number op2))))
@@ -340,9 +340,9 @@
      (princ "\"...\" may be used to quote names and values if necessary,
 and \(...\) to group expressions.")
      (with-current-buffer standard-output
-       (help-mode)))))                           
-  
-;; 
+       (help-mode)))))
+
+;;
 ;; **Filter Functions
 ;;
 
@@ -390,7 +390,6 @@ else return nil."
                      (tablist-filter-map fn f))
                    tail)))
     (_ (funcall fn filter))))
-
 
 ;;
 ;; Reading filter

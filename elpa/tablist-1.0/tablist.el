@@ -5,7 +5,7 @@
 ;; Author: Andreas Politz <politza@fh-trier.de>
 ;; Keywords: extensions, lisp
 ;; Package: tablist
-;; Version: 0.70
+;; Version: 1.0
 ;; Package-Requires: ((emacs "24.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,8 @@
 ;; It can be used by deriving from tablist-mode and some features by
 ;; using tablist-minor-mode inside a tabulated-list-mode buffer.
 ;;
+
+;;; Code:
 
 (require 'cl-lib)
 (require 'ring)
@@ -78,7 +80,7 @@ column."
             (replace-regexp-in-string
              "[\t ]+" "[\t ]*" (regexp-quote
                                 (or (thing-at-point 'line) ""))
-                                t t))
+             t t))
            (,id (tabulated-list-get-id))
            (,col (tablist-current-column)))
        (progn
@@ -117,7 +119,7 @@ column."
 
 ;;
 ;; *Mode Maps
-;; 
+;;
 
 (defvar tablist-mode-filter-map
   (let ((kmap (make-sparse-keymap)))
@@ -198,7 +200,6 @@ column."
     ;; (define-key kmap (kbd "C-o") 'tablist-display-item)
     kmap))
 
-  
 ;;
 ;; *Variables
 ;;
@@ -232,7 +233,7 @@ The 2nd argument will be a list of entry ID's.  The function
 should somehow delete these entries and update
 `tabulated-list-entries'.
 
-`find-entry' 
+`find-entry'
 
 The 2nd argument is the ID of an entry.  The function should
 somehow find/display this entry, i.e. a kind of default
@@ -291,9 +292,9 @@ as argument for the function `completion-in-region'.")
 ;;
 
 (defvar savehist-additional-variables)
-(add-hook 'savehist-save-hook 
-  (lambda nil
-    (add-to-list 'savehist-additional-variables 'tablist-named-filter)))
+(add-hook 'savehist-save-hook
+          (lambda nil
+            (add-to-list 'savehist-additional-variables 'tablist-named-filter)))
 
 ;;;###autoload
 (define-minor-mode tablist-minor-mode
@@ -344,12 +345,12 @@ as argument for the function `completion-in-region'.")
           (selected (tabulated-list-get-id)))
       (unless (eq selected id)
         (setq tablist-selected-id selected)
-        (run-hook-with-args 
+        (run-hook-with-args
          'tablist-selection-changed-functions
          tablist-selected-id)))))
 
 (defvar tablist-context-window-update--timer nil)
-  
+
 (defun tablist-context-window-update (&optional id)
   (when (and tablist-context-window-function
              (window-live-p tablist-context-window)
@@ -360,16 +361,16 @@ as argument for the function `completion-in-region'.")
       (cancel-timer tablist-context-window-update--timer))
     (setq tablist-context-window-update--timer
           (run-with-idle-timer 0.1 nil
-            (lambda (fn window)
-              (when (window-live-p window)
-                (with-selected-window window
-                  (set-window-dedicated-p nil nil)
-                  (save-selected-window
-                    (funcall fn id))
-                  (when (window-live-p (selected-window))
-                    (set-window-dedicated-p nil t)))))
-            tablist-context-window-function
-            tablist-context-window))))
+                               (lambda (fn window)
+                                 (when (window-live-p window)
+                                   (with-selected-window window
+                                     (set-window-dedicated-p nil nil)
+                                     (save-selected-window
+                                       (funcall fn id))
+                                     (when (window-live-p (selected-window))
+                                       (set-window-dedicated-p nil t)))))
+                               tablist-context-window-function
+                               tablist-context-window))))
 
 (defun tablist-display-context-window ()
   (interactive)
@@ -396,8 +397,7 @@ as argument for the function `completion-in-region'.")
   (if (window-live-p tablist-context-window)
       (tablist-hide-context-window)
     (tablist-display-context-window)))
-  
-  
+
 ;;
 ;; *Marking
 ;;
@@ -415,7 +415,7 @@ as argument for the function `completion-in-region'.")
     (if (numberp tablist-major-columns)
         (list tablist-major-columns)
       tablist-major-columns)))
-  
+
 (defun tablist-put-mark (&optional pos)
   "Put a mark before the entry at POS.
 
@@ -539,7 +539,7 @@ OLD and NEW are both characters used to mark files."
          (pcase new
            (?D
             (tablist-flag-forward 1))
-           (t
+           (_
             (let ((tablist-marker-char new)
                   (tablist-marked-face
                    (and default-mark-p
@@ -647,13 +647,13 @@ proceeds as \(BINOP N OPERAND\)."
           (list (funcall fn))))
        (t
         (cl-labels ((search (re)
-                      (let (sucess)
-                        (tablist-skip-invisible-entries)
-                        (while (and (setq sucess
-                                          (re-search-forward re nil t))
-                                    (invisible-p (point)))
-                          (tablist-forward-entry))
-                        sucess)))
+                            (let (sucess)
+                              (tablist-skip-invisible-entries)
+                              (while (and (setq sucess
+                                                (re-search-forward re nil t))
+                                          (invisible-p (point)))
+                                (tablist-forward-entry))
+                              sucess)))
           (let ((regexp (tablist-marker-regexp))
                 next-position results found)
             (save-excursion
@@ -814,8 +814,6 @@ STATE is a return value of `tablist-get-mark-state'."
                             :right-align)
                  (not (= n (1- (length columns)))))
         (forward-char (1- (car (cdr (elt tabulated-list-format n)))))))))
-        
-        
 
 (defun tablist-move-to-major-column (&optional first-skip-invisible-p)
   "Move to the first major column."
@@ -881,7 +879,7 @@ Return t, if point is now in a visible area."
                 'invisible nil (point-max)))))
   (not (invisible-p (point))))
 
-;; 
+;;
 ;; *Operations
 ;;
 
@@ -906,7 +904,6 @@ ARG the prefix-arg of the command used in
      (format "%s %s "
              op-str
              (tablist-mark-prompt arg pp-items)))))
-
 
 (defun tablist-operation-available-p (op)
   (and (functionp tablist-operations-function)
@@ -950,7 +947,7 @@ ARG the prefix-arg of the command used in
         (message (format "Killed %d line%s"
                          (length positions)
                          (dired-plural-s (length positions))))))))
-    
+
 (defun tablist-do-operation (arg fn operation &optional delete-p revert-p)
   "Operate on marked items.
 
@@ -973,9 +970,9 @@ Optional REVERT-P means, revert the display afterwards."
         (tablist-revert))
       (tablist-move-to-major-column))))
 
-;; 
+;;
 ;; *Editing
-;; 
+;;
 (defvar tablist-edit-column-minor-mode-map
   (let ((kmap (make-sparse-keymap)))
     (set-keymap-parent kmap (current-global-map))
@@ -990,7 +987,7 @@ Optional REVERT-P means, revert the display afterwards."
     (define-key kmap [remap beginning-of-buffer] 'beginning-of-line)
     (define-key kmap [remap mark-whole-buffer] 'tablist-edit-column-mark-field)
     kmap))
-                       
+
 (define-minor-mode tablist-edit-column-minor-mode
   "" nil nil nil
   (unless (or tablist-minor-mode
@@ -1005,8 +1002,7 @@ Optional REVERT-P means, revert the display afterwards."
    (t
     (remove-hook 'post-command-hook 'tablist-edit-column-constrain-point t)
     (read-only-mode 1))))
-  
-  
+
 (defun tablist-edit-column (&optional n)
   (interactive "P")
   (unless n (setq n (tablist-current-column)))
@@ -1054,7 +1050,7 @@ Optional REVERT-P means, revert the display afterwards."
     (overlay-put ov 'evaporate t)
     (overlay-put ov 'tablist-edit t)
     (tablist-edit-column-minor-mode 1)))
-       
+
 (defun tablist-edit-column-quit ()
   (interactive)
   (tablist-edit-column-commit t))
@@ -1091,7 +1087,7 @@ Optional REVERT-P means, revert the display afterwards."
       (save-excursion
         (tabulated-list-print-entry id entry))
       (forward-char (nth column (tablist-column-offsets))))))
-            
+
 (defun tablist-edit-column-complete ()
   (interactive)
   (unless (tablist-operation-available-p 'complete)
@@ -1109,8 +1105,8 @@ Optional REVERT-P means, revert the display afterwards."
                                  (- (point) beg))))
       (unless completions
         (error "No completions available"))
-      (completion-in-region beg end completions))))    
-  
+      (completion-in-region beg end completions))))
+
 (defun tablist-column-editable (n)
   (and (tablist-operation-available-p 'edit-column)
        (not (tablist-column-property n :read-only))))
@@ -1155,11 +1151,11 @@ Optional REVERT-P means, revert the display afterwards."
       (setq end pos
             beg (previous-single-property-change
                  pos 'tablist-edit))))
-    
+
     (unless (and beg end (get-text-property beg 'tablist-edit))
       (error "Unable to locate edited text"))
     (cons beg (if skip-final-space (1- end) end))))
-             
+
 (defun tablist-edit-column-mark-field ()
   (interactive)
   (push-mark (field-beginning))
@@ -1334,20 +1330,20 @@ Return the output buffer."
     (unless (buffer-live-p outb)
       (error "Expected a live buffer: %s" outb))
     (cl-labels
-      ((printit (entry)
-         (insert
-          (mapconcat
-           (lambda (e)
-             (unless (stringp e)
-               (setq e (car e)))
-             (if (or always-quote-p
-                     (string-match escape-re e))
-                 (concat "\""
-                         (replace-regexp-in-string "\"" "\"\"" e t t)
-                         "\"")
-               e))
-           entry separator))
-         (insert ?\n)))
+        ((printit (entry)
+                  (insert
+                   (mapconcat
+                    (lambda (e)
+                      (unless (stringp e)
+                        (setq e (car e)))
+                      (if (or always-quote-p
+                              (string-match escape-re e))
+                          (concat "\""
+                                  (replace-regexp-in-string "\"" "\"\"" e t t)
+                                  "\"")
+                        e))
+                    entry separator))
+                  (insert ?\n)))
       (with-current-buffer outb
         (let ((inhibit-read-only t))
           (erase-buffer)
@@ -1395,7 +1391,6 @@ This function is lazy and therfore pretty slow."
       (tablist-save-marks
        (tabulated-list-init-header)
        (tabulated-list-print)))))
-      
 
 (defun tablist-shrink-column (&optional column width)
   (interactive
@@ -1403,9 +1398,8 @@ This function is lazy and therfore pretty slow."
                 3)))
   (tablist-enlarge-column column (- (or width 1))))
 
-                     
 ;; *Sorting
-;; 
+;;
 
 (defun tablist-sort (&optional column)
   "Sort the tabulated-list by COLUMN.
@@ -1513,12 +1507,12 @@ FILTER defaults to `tablist-current-filter'."
   (when (and filter
              (null tablist-filter-suspended))
     (tablist-with-remembering-entry
-     (tablist-map-with-filter
-      (lambda nil
-        (if tablist-umark-filtered-entries
-            (save-excursion (tablist-unmark-forward)))
-        (tablist-filter-hide-entry))
-      (tablist-filter-negate filter))))
+      (tablist-map-with-filter
+       (lambda nil
+         (if tablist-umark-filtered-entries
+             (save-excursion (tablist-unmark-forward)))
+         (tablist-filter-hide-entry))
+       (tablist-filter-negate filter))))
   (force-mode-line-update))
 
 (defadvice tabulated-list-print (after tabulated-list activate)
@@ -1539,12 +1533,12 @@ FILTER defaults to `tablist-current-filter'."
   "Call FN for every unfiltered entry matching FILTER."
   (prog1
       (cl-labels ((search ()
-                    (tablist-skip-invisible-entries)
-                    (while (and (not (eobp))
-                                (not (tablist-eval-filter filter)))
-                      (tablist-forward-entry))
-                    (unless (eobp)
-                      (point-marker))))
+                          (tablist-skip-invisible-entries)
+                          (while (and (not (eobp))
+                                      (not (tablist-eval-filter filter)))
+                            (tablist-forward-entry))
+                          (unless (eobp)
+                            (point-marker))))
         (let (next-position results)
           (save-excursion
             (goto-char (point-min))
@@ -1563,7 +1557,7 @@ FILTER defaults to `tablist-current-filter'."
 
 ;;
 ;; **Filter Commands
-;; 
+;;
 (defun tablist-push-filter (filter &optional interactive or-p)
   (setq tablist-current-filter
         (tablist-filter-push
@@ -1731,7 +1725,7 @@ Named filter are saved in the variable `tablist-named-filter'."
     (when mode-filter
       (setcdr mode-filter
               (cl-remove name (cdr mode-filter)
-                         :test 'equal :key 'car)))))    
+                         :test 'equal :key 'car)))))
 
 (defun tablist-name-current-filter (name)
   (interactive
@@ -1749,7 +1743,7 @@ Named filter are saved in the variable `tablist-named-filter'."
           tablist-current-filter))
   (setq tablist-current-filter name)
   (force-mode-line-update))
-        
+
 (defun tablist-deconstruct-named-filter ()
   (interactive)
   (let (found)
@@ -1768,8 +1762,7 @@ Named filter are saved in the variable `tablist-named-filter'."
     (unless found
       (error "No named filter found"))
     (force-mode-line-update)))
-    
-          
+
 (defun tablist-filter-names (&optional mode)
   (mapcar 'car (cdr (assq (or mode major-mode)
                           tablist-named-filter))))
@@ -1826,7 +1819,7 @@ Named filter are saved in the variable `tablist-named-filter'."
   "Display the current filter according to FLAG.
 
 If FLAG has the value 'toggle, toggle it's visibility.
-If FLAG has the 'state, then do nothing but return the current 
+If FLAG has the 'state, then do nothing but return the current
 visibility."
   (interactive (list 'toggle))
   (let* ((tag 'tablist-display-filter-mode-line-tag)
@@ -1861,7 +1854,7 @@ visibility."
 
 ;;
 ;; **Hiding/Unhiding Entries
-;; 
+;;
 (defun tablist-filter-set-entry-hidden (flag &optional pos)
   (save-excursion
     (when pos (goto-char pos))
@@ -1884,7 +1877,6 @@ visibility."
     (remove-text-properties
      (point-min) (point-max)
      '(invisible))))
-
 
 (defun tablist-window-attach (awindow &optional window)
   "Attach AWINDOW to WINDOW.
@@ -1924,7 +1916,7 @@ AWINDOW is deleted."
     (setq newwin (window--display-buffer
                   buf
                   (split-window-below height)
-                  'window alist display-buffer-mark-dedicated))
+                  'window alist))
     (tablist-window-attach newwin window)
     newwin))
 

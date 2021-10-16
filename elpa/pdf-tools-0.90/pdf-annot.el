@@ -164,8 +164,7 @@ LaTeX fragment."
   (concat org-format-latex-header
           "\n\\setlength{\\textwidth}{12cm}")
   "Header used when latex compiling annotations.
-
-The default value is `org-format-latex-header' + \
+The default value is `org-format-latex-header' +
 \"\\n\\\\setlength{\\\\textwidth}{12cm}\"."
   :group 'pdf-annot
   :type 'string)
@@ -224,7 +223,7 @@ annoyed while reading the annotations."
 A function on this hook should accept one argument: A CLOSURE
 containing inserted, changed and deleted annotations.
 
-It may access theses annotations by calling CLOSURE with one of
+It may access these annotations by calling CLOSURE with one of
 these arguments:
 
 `:inserted' The list of recently added annotations.
@@ -323,7 +322,7 @@ Setting this after the package was loaded has no effect."
   "Support for PDF Annotations.
 
 \\{pdf-annot-minor-mode-map}"
-  nil nil nil
+  :group 'pdf-annot
   (cond
    (pdf-annot-minor-mode
     (when pdf-annot-tweak-tooltips
@@ -850,7 +849,7 @@ Return nil, if no annotation was found."
       (setq window (posn-window pos)
             pos (posn-object-x-y pos)))
     (save-selected-window
-      (when window (select-window window))
+      (when window (select-window window 'norecord))
       (let* ((annots (pdf-annot-getannots (pdf-view-current-page)))
              (size (pdf-view-image-size))
              (rx (/ (car pos) (float (car size))))
@@ -968,7 +967,7 @@ If HIGHLIGHT-P is non-nil, visually distinguish annotation A from
 other annotations."
 
   (save-selected-window
-    (when window (select-window window))
+    (when window (select-window window 'norecord))
     (pdf-util-assert-pdf-window)
     (let ((page (pdf-annot-get a 'page))
           (size (pdf-view-image-size)))
@@ -982,7 +981,8 @@ other annotations."
                 page (car size)
                 `("white" "steel blue" 0.35 ,@edges))
              :map (pdf-view-apply-hotspot-functions
-                   window page size))))
+                   window page size)
+             :width (car size))))
         (pdf-util-scroll-to-edges
          (pdf-util-scale-relative-to-pixel (car edges)))))))
 
@@ -1421,7 +1421,7 @@ annotation's contents and otherwise `text-mode'. "
 
 (define-minor-mode pdf-annot-edit-contents-minor-mode
   "Active when editing the contents of annotations."
-  nil nil nil
+  :group 'pdf-annot
   (when pdf-annot-edit-contents-minor-mode
     (message "%s"
              (substitute-command-keys
@@ -1657,16 +1657,18 @@ belong to the same page and A1 is displayed above/left of A2."
                           (format "*%s's annots*"
                                   (file-name-sans-extension
                                    (buffer-name))))
-      (unless (derived-mode-p 'pdf-annot-list-mode)
-        (pdf-annot-list-mode))
-      (setq pdf-annot-list-document-buffer buffer)
-      (tabulated-list-print)
-      (setq tablist-context-window-function
-            (lambda (id) (pdf-annot-list-context-function id buffer))
-            tablist-operations-function 'pdf-annot-list-operation-function)
-      (let ((list-buffer (current-buffer)))
-        (with-current-buffer buffer
-          (setq pdf-annot-list-buffer list-buffer)))
+      (delay-mode-hooks
+        (unless (derived-mode-p 'pdf-annot-list-mode)
+          (pdf-annot-list-mode))
+        (setq pdf-annot-list-document-buffer buffer)
+        (tabulated-list-print)
+        (setq tablist-context-window-function
+              (lambda (id) (pdf-annot-list-context-function id buffer))
+              tablist-operations-function 'pdf-annot-list-operation-function)
+        (let ((list-buffer (current-buffer)))
+          (with-current-buffer buffer
+            (setq pdf-annot-list-buffer list-buffer))))
+      (run-mode-hooks)
       (pop-to-buffer
        (current-buffer)
        pdf-annot-list-display-buffer-action)
@@ -1770,7 +1772,8 @@ belong to the same page and A1 is displayed above/left of A2."
             (pdf-annot-getannot id pdf-annot-list-document-buffer)))))
 
 (define-minor-mode pdf-annot-list-follow-minor-mode
-  "" nil nil nil
+  ""
+  :group 'pdf-annot
   (unless (derived-mode-p 'pdf-annot-list-mode)
     (error "No in pdf-annot-list-mode."))
   (cond
