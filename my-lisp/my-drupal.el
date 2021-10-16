@@ -286,7 +286,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' -o -name
       " && mv -f TAGS.new TAGS"
       " ; rm -f TAGS.new"
       " ; touch TAGS")
-    (shell-quote-argument dir)
+    (shell-quote-argument dir) ;; `dir' is the function argument.
     (shell-quote-argument drupal-drush-api-php)
     (shell-quote-argument drupal-tags-autoupdate-prune)
     (shell-quote-argument drupal-tags-autoupdate-ignore)
