@@ -153,10 +153,10 @@ before generating the TAGS file:
 cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
 
 Universal Ctags:
-$ ctags -eR --langmap=php:+.module.install.inc.engine --kinds-php=-van --language-force=php
+$ ctags -eR --langmap=php:+.inc.module.install.theme.engine --kinds-php=-van --language-force=php
 
 Old etags:
-$ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.engine' \\) | etags --language=php -
+$ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' -o -name '*.install' -o -name '*.theme' -o -name '*.engine' \\) | etags --language=php -
 "
   (interactive (find-tag-interactive "Hook: "))
   (let ((module (file-name-sans-extension
@@ -229,7 +229,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
   :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-pattern
-  ".*\\.\\(php\\|module\\|install\\|inc\\|engine\\)\\'"
+  ".*\\.\\(php\\|inc\\|module\\|install\\|theme\\|engine\\)\\'"
   "Regexp of files to index in TAGS. Case insensitive."
   :group 'drupal)
 
@@ -250,7 +250,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.module' -o -name '*.install' -o -
   ;; # approach looks like this:
   ;; exclude="--exclude=.git --exclude=.debian --exclude=.branches"
   ;; exclude="${exclude} --exclude='sites/*/files'" #n.b. '*' can include '/' :/
-  ;; drupalmap="php:+.module.install.inc.engine"
+  ;; drupalmap="php:+.inc.module.install.theme.engine"
   ;; drupalspec="--langmap=${drupalmap} --kinds-php=-van --language-force=php"
   ;; ctags -e -R -f TAGS.new ${drupalspec} ${exclude} ${args} \
   ;;   && ! cmp --silent TAGS TAGS.new \
