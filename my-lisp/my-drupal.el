@@ -39,8 +39,22 @@
 
   ;; Key bindings
   (local-set-key (kbd "C-c C-c") 'my-drupal-php-code-sniffer)
+  (local-set-key (kbd "C-c R") 'my-drupal-change-records)
   (local-set-key (kbd "C-x C-k h") 'my-insert-drupal-hook)
   (local-set-key (kbd "C-c q") 'drupal-quick-and-dirty-debugging))
+
+(defun my-drupal-change-records (phrase)
+  "Search Drupal core change records for PHRASE"
+  (interactive
+   (list (read-string (format "Search Drupal change records%s: "
+                              (if-let ((sap (symbol-at-point)))
+                                  (format " (%s)" sap)
+                                ""))
+                      nil nil (thing-at-point 'symbol))))
+  (let* ((url "https://www.drupal.org/list-changes/drupal/published")
+         (eww-search-prefix (concat url "?keywords_description="))
+         (eww-after-render-hook '(eww-readable)))
+    (eww phrase)))
 
 (defun my-compilation-relative-paths-filter ()
   "Make paths relative to `default-directory'."
