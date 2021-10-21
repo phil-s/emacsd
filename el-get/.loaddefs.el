@@ -4516,8 +4516,8 @@ A major mode for displaying the directory tree in text mode.
 
 ;;;***
 
-;;;### (autoloads nil nil ("docker-tramp/docker-tramp-compat.el")
-;;;;;;  (0 0 0 0))
+;;;### (autoloads nil nil ("docker-tramp/docker-tramp-compat.el"
+;;;;;;  "git-modes/git-modes.el") (0 0 0 0))
 
 ;;;***
 
