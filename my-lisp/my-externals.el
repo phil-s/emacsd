@@ -229,6 +229,7 @@
             :url "https://github.com/tarsius/packed")
 
      (:name php-mode
+            :load-path ("lisp")
             :type git
             :url "git://github.com/ejmr/php-mode.git")
 
