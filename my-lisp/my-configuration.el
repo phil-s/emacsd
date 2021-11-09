@@ -636,12 +636,7 @@ n.b. ffap-alternate-file is intended for interactive use only."
              )))
 
 ;; Display the hostname in the mode-line
-;; I tend to run enough emacs instances to make this valuable.
-(defvar my-hostname
-  (shell-command-to-string "printf @%s \"$(hostname)\"")
-  "Local hostname")
-
-(add-to-list 'mode-line-misc-info (list "" 'my-hostname) :append)
+(add-to-list 'mode-line-misc-info (list "@" 'system-name) :append)
 
 ;; Display the hostname and time in the minibuffer window.
 (defun my-minibuffer-line-justify-right (text)
