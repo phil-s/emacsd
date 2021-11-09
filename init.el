@@ -152,6 +152,11 @@
 ;; # Fonts I use: ttf-ancient-fonts
 ;; # The 1913 + 1828 Webster’s Revised Unabridged Dictionary: sdcv
 
+;; `org-mode' export to latex and/or pdf requires texlive packages
+;; (which are large, so not including these in the default list).
+;; sudo apt install texlive-latex-base texlive-latex-extra texlive-generic-recommended
+;; # maybe also?: sudo apt install texlive
+;;
 ;; Truetype font support packages: libxft-dev libfreetype6-dev
 ;; My preferred font is a variant of Droid Sans Mono (droid-fonts package)
 ;; which I have committed here in ~/.emacs.d/ for safe keeping.
@@ -168,16 +173,19 @@
 ;; From git repository working copy, or extracted tarball:
 ;; Assumes we're installing to ../usr/local relative to build dir.
 
+;; Trash everything:
+;; ([ -d .git ] && git clean -f -d -x -q && git pull || ([ -f Makefile ] && make distclean) || true)
+;;
 ;; WARNING: git clean -f -d -x -q *silently deletes all untracked files and
 ;; directories*. If you have any untracked patches-in-progress, or similar,
 ;; that’s liable to ruin your day.  The purpose is to reset the working copy
 ;; to a pristine state, as if it were freshly cloned. If that’s not what you
 ;; want, please don’t run that command.
 
-;; # ([ -d .git ] && git clean -f -d -x -q && git pull || ([ -f Makefile ] && make distclean) || true) && mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs")
+;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs")
 
 ;; Without duplicate message strings (but logic flow is less obvious):
-;; # ([ -d .git ] && git clean -f -d -x -q && git pull || ([ -f Makefile ] && make distclean) || true) && mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg"
+;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg"
 
 ;;
 ;; Configuration options:
