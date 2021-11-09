@@ -3,6 +3,7 @@
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar c-basic-offset)
+  (defvar compilation-filter-start)
   (defvar drupal-tags-autoupdate-timer)
   (defvar grep-find-ignored-directories)
   (defvar tags-completion-table)
@@ -12,6 +13,7 @@
   (declare-function php-mode "php-mode")
   (declare-function term-char-mode "term")
   (declare-function term-mode "term")
+  (declare-function tramp-file-local-name "tramp")
   )
 
 (add-to-list 'auto-mode-alist '("\\.twig\\'" . web-mode))
@@ -180,7 +182,10 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' -o -name
   (interactive (find-tag-interactive "Hook: "))
   (let ((module (file-name-sans-extension
                  (file-name-nondirectory (buffer-file-name)))))
-    (find-tag (format "^function %s(" tagname) nil t)
+    (with-suppressed-warnings ((obsolete find-tag))
+      ;; `find-tag' is an obsolete function (as of 25.1)
+      ;; use `xref-find-definitions' instead.
+      (find-tag (format "^function %s(" tagname) nil t))
     (forward-line) ; else (c-mark-function) now marks the wrong function.
                    ; M-x report-emacs-bug
     (let ((tmp-buffer (generate-new-buffer "*temp*")))
@@ -225,6 +230,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' -o -name
 (defcustom drupal-drush-api-php
   "/usr/local/src/drush/docs/drush.api.php"
   "Location of drush.api.php"
+  :type 'file
   :group 'drupal)
 
 ;; Update TAGS file automatically.
@@ -240,16 +246,19 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' -o -name
               "\\|")
    "\\)$")
   "Regexp of directories to omit from TAGS. Case sensitive"
+  :type 'regexp
   :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-ignore
   ".*/\\(TAGS\\(\\.new\\)?\\)$"
   "Regexp of files to omit from TAGS. Case sensitive."
+  :type 'regexp
   :group 'drupal)
 
 (defcustom drupal-tags-autoupdate-pattern
   ".*\\.\\(php\\|inc\\|module\\|install\\|theme\\|engine\\)\\'"
   "Regexp of files to index in TAGS. Case insensitive."
+  :type 'regexp
   :group 'drupal)
 
 (defvar drupal-tags-autoupdate-buffer "*drupal-tags-autoupdate*")

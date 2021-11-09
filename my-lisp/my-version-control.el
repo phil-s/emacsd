@@ -6,6 +6,7 @@
   (declare-function diff-hl-flydiff-mode "diff-hl-flydiff")
   (declare-function global-diff-hl-mode "diff-hl")
   (declare-function magit-push-current-to-upstream@query-yes-or-no "my-version-control" t nil)
+  (declare-function vc-deduce-backend "vc")
   (declare-function vc-deduce-fileset "vc")
   (declare-function vc-find-revision "vc")
   (declare-function vc-print-log-internal "vc")
@@ -175,6 +176,7 @@ static char * data[] = {
 
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar bug-reference-url-format)
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-finish-query-functions)
   (defvar git-commit-summary-max-length)

@@ -7,6 +7,8 @@
   (defvar php-search-documentation-browser-function)
   (defvar php-manual-path)
   (defvar php-template-compatibility)
+  (defvar psysh-mode-map)
+  (defvar psysh-history-file)
   (defvar c-electric-flag)
   (declare-function web-mode "web-mode")
   )
