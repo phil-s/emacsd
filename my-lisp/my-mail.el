@@ -23,6 +23,15 @@
          "Messages with images" ?p)
         ("maildir:\"/INBOX\" AND NOT flag:trashed AND NOT maildir:\"/Trash\""
          "Inbox"                ?i))
+      ;; headers listing
+      mu4e-headers-time-format "%X"
+      mu4e-headers-date-format "%x %X"
+      mu4e-headers-fields
+      '((:human-date . 18)
+        (:flags . 6)
+        (:mailing-list . 10)
+        (:from . 22)
+        (:subject))
       ;; viewing mail
       mu4e-view-show-addresses t
       mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
