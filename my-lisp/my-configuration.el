@@ -230,8 +230,16 @@ when `auto-save-mode' is invoked manually.")
 (setq jit-lock-stealth-time 0.25
       jit-lock-chunk-size 2048)
 
-;; Highlight current line
+;; Highlight current line, except in certain major modes.
 (global-hl-line-mode 1)
+
+(defun my-global-hl-line-mode-inhibit ()
+  "Inhibit `global-hl-line-mode' buffer-locally."
+  (setq-local global-hl-line-mode nil))
+
+(dolist (name '(calendar term))
+  (add-hook (intern (format "%s-mode-hook" name))
+            #'my-global-hl-line-mode-inhibit))
 
 ;; Use subword-mode
 (global-subword-mode 1)
@@ -1008,8 +1016,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   "Used in `term-mode-hook'."
   ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-04/msg00611.html
   (setq bidi-paragraph-direction 'left-to-right) ;; ^ HUGE performance improvement
-  (subword-mode 0)
-  (set (make-local-variable 'global-hl-line-mode) nil))
+  (subword-mode 0))
 
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
