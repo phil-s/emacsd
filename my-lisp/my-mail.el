@@ -40,6 +40,15 @@
       mu4e-confirm-quit nil
       )
 
+(with-eval-after-load "mu4e-view"
+  (dolist (action '(("viewInBrowser" . mu4e-action-view-in-browser)
+                    ("eww view" . my-mu4e-view-in-eww)))
+    (add-to-list 'mu4e-view-actions action :append)))
+
+(defun my-mu4e-view-in-eww (msg)
+  ;; http://disq.us/p/2g3gq62
+  "Display current message in EWW browser."
+  (eww-browse-url (concat "file://" (mu4e~write-body-to-html msg))))
 
 (with-eval-after-load 'mu4e-thread-folding
   ;; Adjust keybindings.
