@@ -86,6 +86,10 @@
 
 ;;; find-grep
 
+;; ;; Don't rgrep into .composer (from outside)
+;; (with-eval-after-load "grep"
+;;   (add-to-list 'grep-find-ignored-directories ".composer"))
+
 ;; Ignore nodejs modules -- when present, they tend to be both
 ;; enormous and also entirely irrelevant to our own code.
 (with-eval-after-load "grep"
@@ -94,52 +98,46 @@
 ;; Don't rgrep in sites/*/files
 
 ;; Gah. The (cons predicate . path) behaviour of grep-find-ignored-directories
-;; causes a no-value --path argument to appear in the find, which seems to allow
-;; the would-be-ignored path to be searched :( Reported as bug #21548.
+;; is broken.  Between bugs #21548 and #51711 this functionality hasn't worked
+;; for a long time :/
 
-;; Workaround: Ignore all "files" if we think it's Drupal.
-;; n.b. This STILL triggers the problem if we're NOT in Drupal, but that's
-;; less likely to be a problem, and when we ARE in Drupal we gain the benefit.
-(eval-after-load "grep"
-  '(add-to-list 'grep-find-ignored-directories
-                (cons 'my-drupal-grep-find-ignore-files-dir-p "files")))
-(defun my-drupal-grep-find-ignore-files-dir-p (dir)
-  "Test whether to ignore directories matching \"files\".
-
-Used in `grep-find-ignored-directories'."
-  (when dir
-    (locate-dominating-file dir "index.php")))
-;; Problematic code below...
-;; FIXME:
-
-;; ;; (a) Searching from the site root (outside of 'sites').
-;; (add-to-list 'grep-find-ignored-directories
-;;              (cons 'my-drupal-grep-find-ignore-sites-files-dir-p
-;;                    "sites/*/files"))
-;; (defun my-drupal-grep-find-ignore-sites-files-dir-p (dir)
-;;   "Test whether to ignore directories matching \"sites/*/files\"."
-;;   ;; Try to identify something which is reasonably unique to Drupal.
-;;   ;; xmlrpc.php was the best I could come up with for D7, but it won't
-;;   ;; match Drupal 8. Go with index.php, even though it's really
-;;   ;; generic, because Drupal is still the most likely use-case.
-;;   ;;
-;;   ;; TODO: We can implement a predicate function which does a more
-;;   ;; robust test than this. See C-h f `locate-dominating-file' for
-;;   ;; details of that functionality.
-;;   (let ((root (locate-dominating-file dir "index.php")))
-;;     (and root
-;;          (file-equal-p root dir))))
-;; ;; (b) Searching within 'sites'. Ok to just match any "files" in this case.
-;; (add-to-list 'grep-find-ignored-directories
-;;              (cons 'my-drupal-grep-find-ignore-files-dir-p
-;;                    "files"))
-;; (defun my-drupal-grep-find-ignore-files-dir-p (dir)
-;;   "Test whether to ignore directories matching \"files\"."
-;;   (let ((root (locate-dominating-file dir "index.php")))
-;;     (and root
-;;          (string-prefix-p (concat root "sites/")
-;;                           dir))))
-
+(with-eval-after-load "grep"
+  ;; (a) Searching from the site root (outside of 'sites').
+  ;;
+  ;; Test whether to ignore --path 'sites/*/files'
+  ;;
+  ;; Try to identify something which is reasonably unique to Drupal.
+  ;; xmlrpc.php was the best I could come up with for D7, but it won't
+  ;; match Drupal 8. Go with index.php, even though it's really generic,
+  ;; because Drupal is still the most likely use-case.
+  ;;
+  ;; TODO: We can implement a predicate function which does a more
+  ;; robust test than this. See C-h f `locate-dominating-file' for
+  ;; details of that functionality.
+  ;;
+  ;; n.b. If customize saves `grep-find-ignored-directories', we need it to
+  ;; save the function definitions too, and therefore we must use anonymous
+  ;; functions (intentionally quoted to prevent byte-compilation).
+  (let ((drupal-root-dir-p
+         '(lambda (dir)
+            (and dir
+                 (featurep 'my-drupal)
+                 (let ((root (locate-dominating-file dir "index.php")))
+                   (and root
+                        (file-equal-p root dir)))))))
+    (add-to-list 'grep-find-ignored-directories
+                 (cons drupal-root-dir-p "sites/*/files")))
+  ;; (b) Searching within 'sites'. Ok to just match any "files" in this case.
+  (let ((drupal-sites-dir-p
+         '(lambda (dir)
+            (and dir
+                 (featurep 'my-drupal)
+                 (let ((root (locate-dominating-file dir "index.php")))
+                   (and root
+                        (string-prefix-p (expand-file-name "sites/" root)
+                                         dir)))))))
+    (add-to-list 'grep-find-ignored-directories
+                 (cons drupal-sites-dir-p "files"))))
 
 ;; SQL support
 (defun my-drupal-db-name ()
