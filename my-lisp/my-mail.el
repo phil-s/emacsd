@@ -40,6 +40,23 @@
       mu4e-confirm-quit nil
       )
 
+
+(with-eval-after-load 'mu4e-thread-folding
+  ;; Adjust keybindings.
+  (define-key mu4e-headers-mode-map (kbd "<S-right>") nil)
+  (define-key mu4e-headers-mode-map (kbd "<S-left>") nil)
+  (define-key mu4e-headers-mode-map (kbd "<M-right>") 'mu4e-headers-unfold-all)
+  (define-key mu4e-headers-mode-map (kbd "<M-left>") 'mu4e-headers-fold-all)
+  ;; The prefix string is displayed over the header line and it is
+  ;; thus recommended to have an empty field at the start.
+  (with-eval-after-load 'mu4e-headers
+    (add-to-list 'mu4e-header-info-custom
+                 '(:empty . (:name "Empty"
+                                   :shortname ""
+                                   :function (lambda (msg) "  "))))
+    (setq mu4e-headers-fields
+          (cons '(:empty . 2)
+                (assq-delete-all :empty mu4e-headers-fields)))))
 
 ;;; Local mail settings go in my-local.el
 
