@@ -471,7 +471,7 @@ Also see the following:
 
 (defun reminder (what when)
   "Remind me about something later."
-  (interactive "sRemind me about: \nsRemind me at: ")
+  (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
   (let ((buf (get-buffer-create " *reminder*")))
     (with-current-buffer buf
       (erase-buffer))
