@@ -57,11 +57,6 @@
            (concat dir "/emacs-" (file-name-nondirectory dir)) 'emacs))
         (directory-files "~/emacs" :full "[0-9][0-9]\.[0-9]")))
 
-;; Generic read-only class
-(dir-locals-set-class-variables
- 'read-only
- '((nil (buffer-read-only . t))))
-
 ;; Drupal
 (dir-locals-set-class-variables
  'drupal
