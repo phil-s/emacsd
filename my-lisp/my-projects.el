@@ -88,7 +88,8 @@
                           (drupal-mode)
                           (hack-local-variables))) ;; Oooh.
                 (flymake-phpcs-standard . "Drupal")
-                (c-basic-offset . 2)))
+                (c-basic-offset . 2)
+                (psysh-buffer-name . "*Drush-PHP*")))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
    (scss-mode . ((css-indent-offset . 2)))
