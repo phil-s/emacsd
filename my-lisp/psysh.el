@@ -2,7 +2,7 @@
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
-;; Version: 0.3
+;; Version: 0.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -81,6 +81,48 @@ the command and its arguments.  No shell quoting of special characters
 is needed, but you may need to double-quote arguments which would
 otherwise be split."
   :type 'string)
+
+(defcustom psysh-process-connection-type nil
+  "The `process-connection-type' used when running PsySH.
+
+The default nil value means that we use a pipe, not a pty.  If you are
+experiencing problems connecting to the PsySH process then try setting
+this value to t, to use a pty instead; but be aware of the following:
+
+A pty will be in canonical / line-editing mode by default (use
+\"stty -F <device> -icanon\" to disable that).  That provides support
+for special line-editing key sequences, and also imposes a maximum
+input size for any line (4096 bytes on my system), discarding the
+overflow, which which means that PHP won't receive all the input.
+Using a pipe instead of a pty avoids this 4K buffer issue, as well as
+any other unwanted terminal-oriented weirdness which might occur.
+
+If psysh's 'useReadline' option is enabled and one of the supported
+implementations is available, then this issue shouldn't crop up (as
+they will not be using canonical mode); however we need our default
+behavior to cope with the fallback readline implementation provided by
+psysh (Psy\\Readline\\Transient).
+
+See also `psysh-tramp-process-connection-type'."
+  :type '(choice (const :tag "Pipe" nil)
+                 (const :tag "PTY" t)))
+
+(defcustom psysh-tramp-process-connection-type t
+  "The `tramp-process-connection-type' used when running PsySH.
+
+If you are connecting to PsySH via tramp, then this value will be
+used in place of `psysh-process-connection-type'.
+
+The default t value means that we use a pty, not a pipe, which is
+the same default as `tramp-process-connection-type' itself.
+
+We default to a pty in this scenario because tramp connections
+are liable to fail without a pty, and so this is the more
+reliable default.
+
+See `psysh-process-connection-type' for more information."
+  :type '(choice (const :tag "Pipe" nil)
+                 (const :tag "PTY" t)))
 
 (defcustom psysh-prompt-main ">>> "
   "The REPL's main input prompt."
@@ -375,7 +417,10 @@ can be used to enforce a local file."
     (unless (and buffer (comint-check-proc buffer))
       (let* ((command (split-string-and-unquote psysh-command)))
         (let ((inhibit-read-only t)
-              (process-connection-type nil) ; Use a pipe, not a pty.
+              (process-connection-type psysh-process-connection-type)
+              (tramp-process-connection-type psysh-tramp-process-connection-type)
+              ;; nil by default (we use a pipe, not a pty).
+              ;;
               ;; A pty will be in canonical / line-editing mode by
               ;; default ("stty -F <device> -icanon" to disable that).
               ;; That provides support for special line-editing key
