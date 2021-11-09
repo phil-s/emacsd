@@ -212,6 +212,10 @@ when `auto-save-mode' is invoked manually.")
 ;; Use day/month/year format in calendar
 (setq calendar-date-style 'european)
 
+;; The week begins on Monday, not Sunday.
+;; (It's right there in the name: WeekEND.)
+(setq calendar-week-start-day 1)
+
 ;; Make the `zap-up-to-char' command available.
 (autoload 'zap-up-to-char "misc"
   "Kill up to, but not including ARGth occurrence of CHAR."
