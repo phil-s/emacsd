@@ -199,7 +199,7 @@ when `auto-save-mode' is invoked manually.")
       read-file-name-completion-ignore-case t)
 
 ;; Place killed text into the clipboard
-(setq x-select-enable-clipboard t)
+(setq select-enable-clipboard t)
 
 ;; Save the clipboard to the kill ring if it would be clobbered
 (setq save-interprogram-paste-before-kill t)
