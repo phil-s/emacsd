@@ -466,6 +466,10 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
             'my-sql-comint-preoutput-filter :append :local))
 
 ;;(message (concat "'" output "'"))
+
+;; FIXME: We can now have duplicate prompts *following* the results as
+;; well as prefixing it.  Not sure whether this is Emacs 27's doing,
+;; or psql itself, but I'll want to address it here in any case.
 (defun my-sql-comint-preoutput-filter (output)
   "Filter prompts out of SQL query output.
 

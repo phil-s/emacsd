@@ -639,6 +639,19 @@ n.b. ffap-alternate-file is intended for interactive use only."
                     (if window-system (window-width) (1- (window-width))))
             text)))
 
+;; https://old.reddit.com/r/emacs/comments/jzh7on shows the following,
+;; which copes with changes to the frame width.
+;;
+;; (let* ((str "I'm right aligned!")
+;;        (width (string-width str)))
+;;   (message
+;;    (concat
+;;     (propertize
+;;      " "
+;;      'display
+;;      `(space :align-to (- right-fringe ,width)))
+;;     str))))
+
 (defun my-minibuffer-line-config ()
   "Require and configure the `minibuffer-line' library."
   (when (require 'minibuffer-line nil :noerror)
