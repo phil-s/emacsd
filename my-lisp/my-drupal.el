@@ -72,10 +72,22 @@
 ;; I think this is generic enough to use everywhere?
 (add-hook 'compilation-filter-hook 'my-compilation-relative-paths-filter)
 
+;; Drupal 7:
 (defun my-drupal-php-code-sniffer ()
   "Run phpcs (with Drupal standards) for the current buffer."
   (interactive)
   (compile (format "phpcs --report=emacs --standard=Drupal %s"
+                   (shell-quote-argument
+                    (file-relative-name (buffer-file-name))))))
+;; Drupal 9:
+;; Redefine `my-drupal-php-code-sniffer' to *not* specify a
+;; standard, as my D9 project uses a .phpcs.xml file which does
+;; all the right things by default, yet also has no idea about
+;; --standard=Drupal and issues a fatal error if you use it.
+(defun my-drupal-php-code-sniffer-d9 ()
+  "Run phpcs (with Drupal standards) for the current buffer."
+  (interactive)
+  (compile (format "phpcs --report=emacs %s"
                    (shell-quote-argument
                     (file-relative-name (buffer-file-name))))))
 
@@ -412,6 +424,87 @@ The update interval is set according to `drupal-tags-autoupdate-interval'."
           (drupal-tags-autoupdate-start))))))
 
 (add-hook 'drupal-mode-hook 'drupal-tags-autoupdate-init)
+
+;;; Docker containers.
+
+;; Templates only.  Edit and add to my-local.el.
+
+;; ;; Docker + drush-php.el
+;;
+;; (advice-add 'run-drush-php :around #'my-drupal-docker-directory)
+;;
+;; (defun my-drupal-docker-directory (orig-func &rest args)
+;;   "Sets `default-directory' to \"/docker:USER@WEB.HOST:/PATH/TO/DRUPAL\"
+;;
+;; Used as :around advice for `run-drush-php'."
+;;   (if (string-prefix-p "/PATH/TO/LOCAL/DRUPAL/"
+;;                        (expand-file-name
+;;                         (or default-directory dired-directory)))
+;;       (let ((default-directory "/docker:USER@WEB.HOST:/PATH/TO/DRUPAL"))
+;;         (setq-local drush-php-command "/REMOTE/PATH/TO/vendor/bin/drush php")
+;;         (setq-local psysh-completion-at-point-functions
+;;                     '(tags-completion-at-point-function))
+;;         (apply orig-func args))
+;;     (apply orig-func args)))
+
+;; ;; Docker + phpcs
+;;
+;; ;; Redefine `my-drupal-php-code-sniffer' to *not* specify a
+;; ;; standard, as my D9 project uses a .phpcs.xml file which does
+;; ;; all the right things by default, yet also has no idea about
+;; ;; --standard=Drupal and issues a fatal error if you use it.
+;; (defun my-drupal-php-code-sniffer ()
+;;   "Run phpcs (with .phpcs.xml standards) for the current buffer."
+;;   (interactive)
+;;   (let ((default-directory default-directory)
+;;         (file (buffer-file-name)))
+;;     (when (string-prefix-p "/PATH/TO/LOCAL/DRUPAL/"
+;;                            (expand-file-name default-directory))
+;;       (setq default-directory
+;;             (replace-regexp-in-string
+;;              "/PATH/TO/LOCAL/DRUPAL/"
+;;              "/docker:USER@WEB.HOST:/PATH/TO/DRUPAL/"
+;;              default-directory t t))
+;;       (setq file
+;;             (replace-regexp-in-string
+;;              "/PATH/TO/LOCAL/DRUPAL/"
+;;              "/docker:USER@WEB.HOST:/PATH/TO/DRUPAL/"
+;;              file t t)))
+;;     ;; Run phpcs.
+;;     (compile (format "/app/vendor/bin/phpcs --report=emacs %s"
+;;                      (shell-quote-argument
+;;                       (file-relative-name file))))))
+
+;; ;; Docker + compilation output.
+;;
+;; ;; Redefine compilation output filter.
+;; (defun my-compilation-relative-paths-filter ()
+;;   "Make paths relative to `default-directory'."
+;;   (save-excursion
+;;     (let ((inhibit-read-only t)
+;;           (pattern "^\\(/docker:USER@HOST:\\)?/PATH/"))
+;;       (goto-char compilation-filter-start)
+;;       (while (and (not (eobp))
+;;                   (looking-at pattern))
+;;         (delete-region (point) (match-end 0))
+;;         (forward-line 1)
+;;         (setq default-directory "/PATH/TO/LOCAL/DRUPAL/")))))
+
+;; ;; Docker + psql
+;;
+;; ;; PostgreSQL support.
+;; (with-eval-after-load 'tramp-sh
+;;   (add-to-list 'tramp-remote-path "/app/bin")
+;;   (add-to-list 'tramp-remote-path "/app/vendor/bin"))
+;; (define-advice my-drupal-db-user (:around (orig-fun &rest args) docker)
+;;   (let ((default-directory "/docker:USER@WEB.HOST:/PATH/TO/DRUPAL"))
+;;     (apply orig-fun args)))
+;; (define-advice my-drupal-db-name (:around (orig-fun &rest args) docker)
+;;   (let ((default-directory "/docker:USER@WEB.HOST:/PATH/TO/DRUPAL"))
+;;     (apply orig-fun args)))
+;; (define-advice my-sql-console (:around (orig-fun &rest args) docker)
+;;   (let ((default-directory "/docker:USER@DATABASE.HOST:/"))
+;;     (apply orig-fun args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
