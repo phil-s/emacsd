@@ -752,7 +752,7 @@ Called via `comint-output-filter-functions'."
       (goto-char comint-last-input-start)
       (when (looking-at " *doc ")
         (save-restriction
-          (narrow-to-region comint-last-output-start
+          (narrow-to-region comint-last-input-end
                             (marker-position
                              (process-mark (get-buffer-process
                                             (current-buffer)))))
