@@ -820,6 +820,14 @@ of the available lines."
                "Window '%s' is dedicated"
              "Window '%s' is normal")
            (current-buffer)))
+
+(defun my-new-buffer-to-other-window ()
+  "Relocate the current buffer to the other window."
+  (interactive)
+  (let ((buf (current-buffer)))
+    (switch-to-buffer (other-buffer (current-buffer)))
+    (other-window 1)
+    (switch-to-buffer buf)))
 
 ;;
 ;; Ediff the current buffer's file with its auto-saved backup file.
