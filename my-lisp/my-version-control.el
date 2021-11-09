@@ -240,6 +240,19 @@ static char * data[] = {
   '(progn
      (global-magit-file-mode 1))) ;; per-file popup on C-c M-g
 
+(with-eval-after-load "magit-diff"
+  (magit-define-popup-action 'magit-diff-popup
+    ?R "Diff range"
+    'magit-diff)
+  (magit-define-popup-action 'magit-diff-popup
+    ?r "Diff commit..HEAD"
+    'my-magit-diff-range-from-ref-to-head))
+
+(defun my-magit-diff-range-from-ref-to-head ()
+  "Diff the ref at point with HEAD."
+  (interactive)
+  (magit-diff (format "%s..HEAD" (magit-branch-or-commit-at-point))))
+
 (with-eval-after-load "magit-refs"
   ;; Do not insert Tags into the refs buffer by default. (Slow!)
   (setq magit-refs-sections-hook
