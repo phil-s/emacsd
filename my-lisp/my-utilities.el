@@ -1664,24 +1664,15 @@ still give me some idea of how long it was running for."
             (emacs-uptime) (format " (PID %d)\n" (emacs-pid)))
     (append-to-file nil nil my-emacs-uptime-log)))
 
-(defun my-insert-kbd (key)
-  ;; Based on http://emacs.stackexchange.com/a/2208/454
-  "Ask for a key, then insert its description using <kbd> markup.
-Will work in org-mode or in any mode that accepts plain html."
+(defun my-insert-kbd (keyseq)
+  "Read key sequence, and insert it with <kbd> markup."
   (interactive "kType key sequence: ")
-  (let* ((is-org-mode (derived-mode-p 'org-mode))
-         (output (if is-org-mode
-                     "@@html:<kbd>%s</kbd>@@"
-                   "<kbd>%s</kbd>")))
-    (if (not (equal key "\r")) ;; empty key
-        (insert
-         (format output
-                 (mapconcat (lambda (s)
-                              (replace-regexp-in-string "<" "&lt;" s))
-                            (split-string (help-key-description key nil))
-                            "</kbd><kbd>")))
-      (insert (format output ""))
-      (forward-char (if is-org-mode -8 -6)))))
+  (insert "<kbd>"
+          (mapconcat (lambda (s)
+                       (replace-regexp-in-string "<" "&lt;" s))
+                     (split-string (help-key-description keyseq nil))
+                     "</kbd><kbd>")
+          "</kbd>"))
 
 (defun display-buffer-reuse-major-mode-window (buffer alist)
   "Return a window displaying a buffer in BUFFER's major mode.
