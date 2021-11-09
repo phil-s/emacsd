@@ -80,18 +80,15 @@ This string is processed by `split-string-and-unquote' to establish
 the command and its arguments.  No shell quoting of special characters
 is needed, but you may need to double-quote arguments which would
 otherwise be split."
-  :type 'string
-  :group 'psysh)
+  :type 'string)
 
 (defcustom psysh-prompt-main ">>> "
   "The REPL's main input prompt."
-  :type 'string
-  :group 'psysh)
+  :type 'string)
 
 (defcustom psysh-prompt-continuation "... "
   "The REPL's input continuation prompt."
-  :type 'string
-  :group 'psysh)
+  :type 'string)
 
 (defcustom psysh-prompt-regexp (rx-to-string
                                 `(seq bol (or ,psysh-prompt-main
@@ -101,8 +98,7 @@ otherwise be split."
 
 Defaults to matching either of `psysh-prompt-main' or
 `psysh-prompt-continuation'."
-  :type 'string
-  :group 'psysh)
+  :type 'string)
 
 (defvar psysh-remap-php-send-region)
 (defvar php-mode-map)
@@ -121,8 +117,7 @@ Defaults to matching either of `psysh-prompt-main' or
   "Whether to remap bindings for `php-send-region' to `psysh-send-region'."
   :type '(choice (const :tag "Remap to psysh-send-region" t)
                  (const :tag "Do not remap" nil))
-  :set #'psysh-remap-php-send-region-setter
-  :group 'psysh)
+  :set #'psysh-remap-php-send-region-setter)
 
 (defcustom psysh-history-file nil
   "If non-nil, name of the file to read/write input history.
@@ -132,8 +127,7 @@ be read from and written to automatically."
   :type `(choice (const :tag "Do not save input history" nil)
                  (file :tag "File"
                        :value ,(locate-user-emacs-file
-                                ".psysh-history")))
-  :group 'psysh)
+                                ".psysh-history"))))
 
 (define-widget 'psysh-text-widget 'text
   "Defined due to Emacs bug #31309."
@@ -203,8 +197,7 @@ If `psysh-comint-input-sender' is configured to use the custom
 sender, then all input is manipulated into a single line, and
 consequently 'requireSemicolons' is not necessary."
   ;; See also https://github.com/bobthecow/psysh/issues/361
-  :type 'psysh-text-widget
-  :group 'psysh)
+  :type 'psysh-text-widget)
 
 (defcustom psysh-initial-input nil
   ;; `describe-variable' only displays this nicely since Emacs 26.1,
@@ -216,8 +209,7 @@ when invoking the REPL.
 
 You may enter multiple lines.  Enter one command per line."
   :type '(choice (const :tag "No initial input" nil)
-                 (psysh-text-widget :tag "Commands"))
-  :group 'psysh)
+                 (psysh-text-widget :tag "Commands")))
 
 (defcustom psysh-comint-input-sender t
   "How to send input to PsySH.
@@ -241,8 +233,7 @@ set 'requireSemicolons' => true, in `psysh-config'."
   :type '(choice (const :tag "Standard comint sender" nil)
                  (const :tag "PsySH sender" t)
                  (function :tag "Custom function"
-                           :value comint-simple-send))
-  :group 'psysh)
+                           :value comint-simple-send)))
 
 (defcustom psysh-doc-refill t
   "Whether to automatically refill psysh `doc' output.
@@ -258,16 +249,14 @@ wrongly-wrapped text is usually still easy to read, and so these
 minor disadvantages are vastly outweighed by the overall benefits.
 
 Refer to URL `https://github.com/bobthecow/psysh/issues/595'."
-  :type 'boolean
-  :group 'psysh)
+  :type 'boolean)
 
 (defcustom psysh-completion-at-point-functions '(psysh-completion-at-point)
   "What to set `completion-at-point-functions' to in the PsySH buffer.
 
 The default function `psysh-completion-at-point' requires a version
 of PsySH which includes the 'completions' command."
-  :type '(repeat function)
-  :group 'psysh)
+  :type '(repeat function))
 
 (defvar psysh-mode-map
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
