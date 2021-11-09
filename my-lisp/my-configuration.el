@@ -426,6 +426,7 @@ Can be tested with (signal-process (emacs-pid) 'sigusr1)"
   (declare-function text-scale-mode "face-remap"))
 (add-hook 'ibuffer-mode-hook 'my-ibuffer-mode-hook)
 (defun my-ibuffer-mode-hook ()
+  "Used in `ibuffer-mode-hook'."
   (require 'face-remap)
   (let ((text-scale-mode-amount -1))
     (text-scale-mode)))
@@ -488,6 +489,7 @@ n.b. ffap-alternate-file is intended for interactive use only."
 (add-hook 'cua-mode-hook 'my-cua-mode-hook)
 ;;(remove-hook 'cua-mode-hook 'my-cua-mode-hook)
 (defun my-cua-mode-hook ()
+  "Used in `cua-mode-hook'."
   (define-key cua--region-keymap
     [remap delete-backward-char] 'delete-backward-char)
   (define-key cua--region-keymap
@@ -817,6 +819,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 (defun my-dired-mode-hook ()
+  "Used in `dired-mode-hook'."
   (local-set-key (kbd "<backtab>") 'dired-omit-mode)
   (local-set-key (kbd "<f5>") 'dired-omit-mode)
   (dired-omit-mode 1))
@@ -846,6 +849,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; in outline-minor-mode
 (add-hook 'outline-minor-mode-hook 'my-outline-minor-mode-hook)
 (defun my-outline-minor-mode-hook ()
+  "Used in `outline-minor-mode-hook'."
   (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
 ;; Sauron (keeping an eye on things)
@@ -894,6 +898,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 
 (add-hook 'erc-mode-hook 'my-erc-mode-hook)
 (defun my-erc-mode-hook ()
+  "Used in `erc-mode-hook'."
   (erc-log-mode 1)
   (setq-local page-delimiter ;; e.g. [Fri Jan  5 2013]
               (rx (sequence
@@ -983,6 +988,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; Terminal buffer configuration.
 (add-hook 'term-mode-hook 'my-term-mode-hook)
 (defun my-term-mode-hook ()
+  "Used in `term-mode-hook'."
   ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-04/msg00611.html
   (setq bidi-paragraph-direction 'left-to-right) ;; ^ HUGE performance improvement
   (subword-mode 0)
@@ -991,6 +997,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; Shell mode
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
 (defun my-shell-mode-hook ()
+  "Used in `shell-mode-hook'."
   (ansi-color-for-comint-mode-on))
 
 ;; Don't intersperse stderr output with stdout
@@ -1071,6 +1078,7 @@ return to the save-some-buffers minibuffer prompt."
            (ediff-get-region-contents ediff-current-difference
                                       'B ediff-control-buffer))))
 (defun my-ediff-keymap-setup-hook ()
+  "Used in `ediff-keymap-setup-hook'."
   (define-key ediff-mode-map "d" 'my-ediff-copy-both-to-C))
 
 (add-hook 'ediff-keymap-setup-hook 'my-ediff-keymap-setup-hook)
@@ -1138,6 +1146,7 @@ when the file path is too long to show on one line."
 ;; By default, don't show continuation lines in grep results.
 (add-hook 'grep-mode-hook 'my-grep-mode-hook)
 (defun my-grep-mode-hook ()
+  "Used in `grep-mode-hook'."
   (setq truncate-lines t)
   (local-set-key (kbd "<f5>") 'toggle-truncate-lines))
 
