@@ -1,6 +1,11 @@
 ;; See my-externals for php-mode source.
 (load "php-mode") ;load the real php-mode
 
+;; Bug fix for https://github.com/emacs-php/php-mode/issues/688
+(when-let ((cmd (lookup-key php-mode-map [tab])))
+  (define-key php-mode-map [tab] nil)
+  (define-key php-mode-map (kbd "TAB") cmd))
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar php-mode-map)
