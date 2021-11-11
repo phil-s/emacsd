@@ -242,6 +242,27 @@ static char * data[] = {
   '(progn
      (global-magit-file-mode 1))) ;; per-file popup on C-c M-g
 
+(with-eval-after-load "magit-branch"
+  (magit-define-popup-action 'magit-branch-popup
+    ?a "Create alias"
+    'my-magit-branch-alias-create)
+  (magit-define-popup-action 'magit-branch-popup
+    ?K "Delete alias"
+    'my-magit-branch-alias-delete))
+
+(defun my-magit-branch-alias-create (alias &optional branch)
+  "Create a new ALIAS for BRANCH."
+  (interactive (list (magit-read-string-ns "New alias")
+                     (magit-read-branch "Source branch")))
+  (when (magit-branch-p alias)
+    (user-error "Cannot create alias %s.  It already exists" alias))
+  (magit-run-git "branch-alias" alias branch))
+
+(defun my-magit-branch-alias-delete (alias)
+  "Delete an existing ALIAS."
+  (interactive (list (magit-read-branch "Delete alias")))
+  (magit-run-git "branch-alias" "--delete" alias))
+
 (with-eval-after-load "magit-diff"
   (magit-define-popup-action 'magit-diff-popup
     ?R "Diff range"
