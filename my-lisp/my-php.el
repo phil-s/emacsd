@@ -55,7 +55,7 @@
 
 ;; Assume that we *only* use `php-mode' for pure PHP files.
 ;; (as we actually use `web-mode' for mixed-mode templates.)
-(setq php-template-compatibility nil)
+(setq php-mode-template-compatibility nil)
 
 ;; ;; Configure imenu usage with php-imenu (this was in nxhtml).
 ;; (autoload 'php-imenu-create-index "php-imenu" nil t)
