@@ -83,6 +83,23 @@
 ;; raised as bug fixes / feature requests.
 
 
+;; GUI Emacs stops responding to keyboard input; still responds to mouse.
+;; https://emacs.stackexchange.com/a/69360 suggests that this may be an
+;; ibus issue, and restarting the service may resolve the problem:
+;; $ ibus-daemon --xim -d -r
+;; (n.b. "ibus-daemon --xim --panel disable" is what ps guax | grep ibus-daemon
+;; tells me, so that command might not be quite right?)
+;;
+;; My own workaround for this was to create a terminal client frame, then
+;; delete *all* GUI frames (and potentially delete the hidden daemon frame
+;; too?!).  Once all pre-existing GUI-related frames were gone, I would be
+;; able to create new functional ones.
+;;
+;; I don't think this has happened to me in years; however I mostly stopped
+;; using --daemon several years ago, so maybe that's why I stopped seeing
+;; this problem?
+
+
 ;;;; * Useful links
 ;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
 ;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
