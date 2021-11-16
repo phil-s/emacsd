@@ -54,8 +54,17 @@
   (when (< emacs-major-version 25)
     (eldoc-mode 1))
   (setq indent-tabs-mode nil)
+  ;; Make RET smarter.  If `comment-auto-fill-only-comments' is non-nil then
+  ;; `default-indent-new-line' may do nothing (if `comment-line-break-function'
+  ;; is set to `comment-indent-new-line'), so we inhibit that here.  (I can't
+  ;; immediately see what this variable is protecting against, so let's assume
+  ;; for now that it's not a significant issue in practice.  It rather sounds
+  ;; like it only affects `auto-fill-mode', which I never use.  Here's hoping
+  ;; that I remember this if it turns out to be a problem :)
+  (setq-local comment-auto-fill-only-comments nil)
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
   (local-set-key (kbd "<S-return>") 'newline)
+  ;; Make "C-o" smarter as well.
   (local-set-key (kbd "C-o") 'my-open-line-and-indent)
   (add-hook 'hack-local-variables-hook
             (lambda ()
