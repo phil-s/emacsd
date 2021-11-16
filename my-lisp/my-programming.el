@@ -39,12 +39,6 @@
 ;; Programming language support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; whitespace-mode is SO SLOW :(
-;; (this is only defined in order to override the feature without
-;; removing it entirely.)
-(defvar my-inhibit-whitespace-mode t
-  "Inhibit `whitespace-mode' in `my-coding-hook'.")
-
 (defun my-coding-config ()
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
@@ -66,11 +60,6 @@
   (local-set-key (kbd "<S-return>") 'newline)
   ;; Make "C-o" smarter as well.
   (local-set-key (kbd "C-o") 'my-open-line-and-indent)
-  (add-hook 'hack-local-variables-hook
-            (lambda ()
-              (unless (bound-and-true-p my-inhibit-whitespace-mode)
-                (whitespace-mode 1)))
-            nil t)
   (fic-mode 1)
   ;;(which-function-mode 1) ; Global minor mode, and `which-func-non-auto-modes'
                             ; is checked only upon find-file (hook).

@@ -32,7 +32,6 @@
            (sentence-end-double-space . t)
            (fill-column . 70)
            (buffer-read-only . t)
-           (my-inhibit-whitespace-mode . t)
            (show-trailing-whitespace . nil)))
    (c-mode . ((c-file-style . "GNU")))
    (objc-mode . ((c-file-style . "GNU")))
@@ -62,7 +61,6 @@
  'drupal
  '((nil . ((indent-tabs-mode . nil)
            (tab-width . 8)
-           (my-inhibit-whitespace-mode . t)
            (fill-column . 76)
            (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info"
                              "*.js" "*.css" ".htaccess" "*.engine" "*.txt"
@@ -101,9 +99,6 @@
    (makefile-gmake-mode . ((eval . (progn (conf-mode)
                                           (hack-local-variables)))))
    (dired-mode . ((dired-omit-mode . t)))
-   ;; whitespace-mode is SO SLOW :(
-   ;; ("sites" . ((nil . ((my-inhibit-whitespace-mode . nil)))))
-   ("sites/all/modules/contrib" . ((nil . ((my-inhibit-whitespace-mode . t)))))
    ))
 
 ;; We call `grep-apply-setting' for Drupal projects.
