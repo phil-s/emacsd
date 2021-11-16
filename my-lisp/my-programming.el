@@ -56,6 +56,7 @@
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
   (local-set-key (kbd "<S-return>") 'newline)
+  (local-set-key (kbd "C-o") 'my-open-line-and-indent)
   (add-hook 'hack-local-variables-hook
             (lambda ()
               (unless (bound-and-true-p my-inhibit-whitespace-mode)

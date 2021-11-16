@@ -391,6 +391,15 @@ command was `winner-undo' or `winner-redo'."
         (while (> arg 0)
           (yank)
           (setq arg (1- arg)))))))
+
+;; Open a new line and indent.
+(defun my-open-line-and-indent (n)
+  "Like `newline-and-indent' for the `open-line' command."
+  (interactive "*p")
+  (let ((eol (copy-marker (line-end-position))))
+    (open-line n)
+    (indent-region (point) eol)
+    (set-marker eol nil)))
 
 ;; Toggle between BOL and beginning of code
 (defun my-beginning-of-line-or-indentation ()
