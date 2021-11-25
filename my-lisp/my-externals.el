@@ -316,8 +316,10 @@
             :url "ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el")
 
      (:name yaml-mode
-            :type git
-            :url "https://github.com/yoshiki/yaml-mode.git")
+            ;; :type git
+            ;; :url "https://github.com/yoshiki/yaml-mode.git")
+            :type http
+            :url ,(my-local-repository-url-for "yaml-mode"))
 
      ;; (:name yasnippet
      ;;        :type git-svn
