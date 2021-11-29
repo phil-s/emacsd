@@ -751,6 +751,13 @@ If the current search is successful, then only delete the last char."
            isearch-new-message
            (mapconcat 'isearch-text-char-description isearch-new-string "")))))
 
+;; Make the avy library use more keys.
+(setq avy-keys
+      (nconc '(?\r)
+             (number-sequence ?a ?z)
+             (number-sequence ?1 ?9)
+             '(?0)))
+
 ;;; Dired
 
 ;; Don't allow dragging and dropping files into dired
@@ -792,13 +799,6 @@ If the current search is successful, then only delete the last char."
              (not isearch-mode-end-hook-quit)
              (eq last-input-event ?\r))
     (dired-find-file)))
-
-;; Make the avy library use more keys.
-(setq avy-keys
-      (nconc '(?\r)
-             (number-sequence ?a ?z)
-             (number-sequence ?1 ?9)
-             '(?0)))
 
 ;; n.b. We bind C-x C-j to `my-dired-jump' in my-keys-minor-mode, so
 ;; this won't really be used. The custom function facilitates using
