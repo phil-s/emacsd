@@ -800,6 +800,24 @@ If the current search is successful, then only delete the last char."
              (eq last-input-event ?\r))
     (dired-find-file)))
 
+;; Recognise saved dired buffers.
+;; Supports both 'ls' and 'find+ls' dired buffers.
+;; Regexp is fairly specific, to avoid false-positives.
+(add-to-list 'magic-mode-alist
+             (cons (rx (seq (seq bos "  /" (+ not-newline) ":\n  ")
+                            (or (seq "total used in directory"
+                                     (+ not-newline) "\n" (+ space))
+                                (seq "find " (+ not-newline) " -ls\n"
+                                     (regexp " +[0-9]+ +[0-9]+ +")))
+                            (regexp "[-d]\\(?:[-r][-w][-xs]\\)\\{3\\}")
+                            (regexp " +[0-9]+ ")))
+                   #'my-dired-virtual-mode))
+
+(defun my-dired-virtual-mode ()
+  "Enable `dired-virtual-mode' without marking the buffer as modified."
+  (with-silent-modifications
+    (dired-virtual-mode)))
+
 ;; n.b. We bind C-x C-j to `my-dired-jump' in my-keys-minor-mode, so
 ;; this won't really be used. The custom function facilitates using
 ;; C-u C-x C-j instead of typing 'a' on the '..' entry in a dired
