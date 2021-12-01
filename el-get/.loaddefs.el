@@ -1236,23 +1236,6 @@ A major mode for editing .gitignore files.
 
 ;;;***
 
-;;;### (autoloads nil "haml-mode/haml-mode" "haml-mode/haml-mode.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from haml-mode/haml-mode.el
-
-(autoload 'haml-mode "haml-mode/haml-mode" "\
-Major mode for editing Haml files.
-
-\\{haml-mode-map}
-
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist '("\\.haml\\'" . haml-mode))
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "haml-mode/haml-mode" '("haml-")))
-
-;;;***
-
 ;;;### (autoloads nil "ibuffer-vc/ibuffer-vc" "ibuffer-vc/ibuffer-vc.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from ibuffer-vc/ibuffer-vc.el
@@ -3677,23 +3660,6 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\".
 \(fn &optional ARG)" t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "rainbow-mode/rainbow-mode" '("rainbow-")))
-
-;;;***
-
-;;;### (autoloads nil "sass-mode/sass-mode" "sass-mode/sass-mode.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from sass-mode/sass-mode.el
-
-(autoload 'sass-mode "sass-mode/sass-mode" "\
-Major mode for editing Sass files.
-
-\\{sass-mode-map}
-
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist '("\\.sass\\'" . sass-mode))
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "sass-mode/sass-mode" '("sass-")))
 
 ;;;***
 

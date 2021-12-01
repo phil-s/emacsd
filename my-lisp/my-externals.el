@@ -152,10 +152,6 @@
                          (autoload 'gpicker-visit-project "gpicker" nil t)
                          (autoload 'gpicker-find-file "gpicker" nil t)))
 
-     (:name haml-mode
-            :type git
-            :url "https://github.com/nex3/haml-mode.git")
-
      (:name htmlr
             :type emacswiki)
 
@@ -242,11 +238,6 @@
             :url "http://www.xsteve.at/prg/emacs/psvn.el")
 
      (:name rainbow-mode)
-
-     (:name sass-mode
-            :depends (haml-mode)
-            :type git
-            :url "https://github.com/nex3/sass-mode.git")
 
      (:name sauron
             :type git
