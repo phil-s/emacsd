@@ -51,6 +51,11 @@
 (eval-after-load "iedit"
   '(define-key isearch-mode-map (kbd "C-;") 'iedit-mode))
 
+;; Occur.
+(with-eval-after-load "occur"
+  (define-key occur-mode-map (kbd "n") #'next-error-no-select)
+  (define-key occur-mode-map (kbd "p") #'previous-error-no-select))
+
 ;; In Magit, make TAB cycle sections by default.
 (eval-after-load "magit"
   '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
