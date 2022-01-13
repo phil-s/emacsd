@@ -121,34 +121,33 @@ When called interactively with a prefix argument, prompts for LIMIT also."
 
 ;; Start the psvn interface with M-x svn-status
 ;; PSVN customisations
-(eval-after-load 'psvn
-  '(progn
-     (require 'cl-lib)
-     (setq svn-status-custom-hide-function 'svn-status-hide-pyc-files)
-     (defun svn-status-hide-pyc-files (info)
-       "Hide all pyc files in the `svn-status-buffer-name' buffer."
-       (let* ((fname (svn-status-line-info->filename-nondirectory info))
-              (fname-len (length fname)))
-         (and (> fname-len 4) (string= (substring fname (- fname-len 4)) ".pyc"))))
+(with-eval-after-load 'psvn
+  (require 'cl-lib)
+  (setq svn-status-custom-hide-function 'svn-status-hide-pyc-files)
+  (defun svn-status-hide-pyc-files (info)
+    "Hide all pyc files in the `svn-status-buffer-name' buffer."
+    (let* ((fname (svn-status-line-info->filename-nondirectory info))
+           (fname-len (length fname)))
+      (and (> fname-len 4) (string= (substring fname (- fname-len 4)) ".pyc"))))
 
-     (defsubst svn-status-interprete-state-mode-color (stat)
-       "Interpret vc-svn-state symbol to mode line color"
-       (cl-case stat
-         ('edited "tomato"      )
-         ('up-to-date "#c0e0c0" )
-         ;; what is missing here??
-         ;; ('unknown  "gray"        )
-         ;; ('added    "blue"        )
-         ;; ('deleted  "red"         )
-         ;; ('unmerged "purple"      )
-         (t "red")))
+  (defsubst svn-status-interprete-state-mode-color (stat)
+    "Interpret vc-svn-state symbol to mode line color"
+    (cl-case stat
+      ('edited "tomato"      )
+      ('up-to-date "#c0e0c0" )
+      ;; what is missing here??
+      ;; ('unknown  "gray"        )
+      ;; ('added    "blue"        )
+      ;; ('deleted  "red"         )
+      ;; ('unmerged "purple"      )
+      (t "red")))
 
-     (defun svn-status-state-mark-modeline-dot (color)
-       (propertize "    "
-                   'help-echo 'svn-status-state-mark-tooltip
-                   'display
-                   `(image :type xpm
-                           :data ,(format "/* XPM */
+  (defun svn-status-state-mark-modeline-dot (color)
+    (propertize "    "
+                'help-echo 'svn-status-state-mark-tooltip
+                'display
+                `(image :type xpm
+                        :data ,(format "/* XPM */
 static char * data[] = {
 \"15 10 3 1\",
 \"  c None\",
@@ -164,11 +163,11 @@ static char * data[] = {
 \"      +..+     \",
 \"       ++      \",
 \"               \"};"
-                                          color)
-                           :ascent center)))
+                                       color)
+                        :ascent center)))
 
-     (global-set-key (kbd "C-c v") 'svn-status)
-     )) ;; eval-after-load "psvn"
+  (global-set-key (kbd "C-c v") 'svn-status)
+  ) ;; eval-after-load "psvn"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -197,10 +196,10 @@ static char * data[] = {
 
 ;; No, I really don't want Emacs to complain that my summary line is
 ;; long enough to be useful (no matter what the git book recommends).
-(eval-after-load "git-commit"
-  '(setq git-commit-finish-query-functions
-         (delq 'git-commit-check-style-conventions
-               git-commit-finish-query-functions)))
+(with-eval-after-load "git-commit"
+  (setq git-commit-finish-query-functions
+        (delq 'git-commit-check-style-conventions
+              git-commit-finish-query-functions)))
 
 ;; Highlighting of too-long summary lines.
 ;; The default 50 chars is tiny, but let's still highlight summary lines
@@ -238,9 +237,8 @@ static char * data[] = {
 ;; FIXME. (el-get is messing this up? Why?)
 (load "magit-autoloads")
 
-(eval-after-load "magit"
-  '(progn
-     (global-magit-file-mode 1))) ;; per-file popup on C-c M-g
+(with-eval-after-load "magit"
+  (global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
 (with-eval-after-load "magit-branch"
   (magit-define-popup-action 'magit-branch-popup

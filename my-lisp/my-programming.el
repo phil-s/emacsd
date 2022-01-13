@@ -217,8 +217,8 @@ Advises `eldoc-print-current-symbol-info'."
     (winnow-mode 1)))
 
 ;; Handle ansi colour codes in compile command output.
-(eval-after-load "compile"
-  '(require 'ansi-color))
+(with-eval-after-load "compile"
+  (require 'ansi-color))
 
 (defun colorize-compilation-output ()
   "Process any ansi colour codes in `compile' command output.
@@ -273,13 +273,13 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 ;; Mumamo is making emacs 23.3 freak out:
 (when (and (equal emacs-major-version 23)
            (equal emacs-minor-version 3))
-  (eval-after-load "bytecomp"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-beginning-of-syntax-function))
+  (with-eval-after-load "bytecomp"
+    (add-to-list 'byte-compile-not-obsolete-vars
+                 'font-lock-beginning-of-syntax-function))
   ;; tramp-compat.el clobbers this variable!
-  (eval-after-load "tramp-compat"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-beginning-of-syntax-function)))
+  (with-eval-after-load "tramp-compat"
+    (add-to-list 'byte-compile-not-obsolete-vars
+                 'font-lock-beginning-of-syntax-function)))
 
 ;; Mark-up (SGML, XML, HTML)
 

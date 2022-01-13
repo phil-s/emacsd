@@ -67,8 +67,8 @@
         ))
 (savehist-mode 1)
 ;; n.b. Code elsewhere should use:
-;; (eval-after-load "savehist"
-;;   '(add-to-list 'savehist-additional-variables 'some-var))
+;; (with-eval-after-load "savehist"
+;;   (add-to-list 'savehist-additional-variables 'some-var))
 
 ;; Remove text properties from kill-ring before it is saved to the
 ;; history file, as these bloat the file dramatically.

@@ -37,8 +37,8 @@
 (require 'w32-symlinks nil 'noerror)
 
 ;; Make the emacs source files read-only
-(eval-after-load "my-projects"
-  '(dir-locals-set-directory-class (getenv "emacs_dir") 'emacs))
+(with-eval-after-load "my-projects"
+  (dir-locals-set-directory-class (getenv "emacs_dir") 'emacs))
 
 (defadvice server-create-window-system-frame
   (after my-after-server-create-window-system-frame)

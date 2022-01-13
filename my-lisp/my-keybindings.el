@@ -48,8 +48,8 @@
 (defun my-wgrep-setup-hook ()
   (define-key grep-mode-map (kbd "e") 'wgrep-change-to-wgrep-mode))
 
-(eval-after-load "iedit"
-  '(define-key isearch-mode-map (kbd "C-;") 'iedit-mode))
+(with-eval-after-load "iedit"
+  (define-key isearch-mode-map (kbd "C-;") 'iedit-mode))
 
 ;; Occur.
 (with-eval-after-load "occur"
@@ -57,30 +57,28 @@
   (define-key occur-mode-map (kbd "p") #'previous-error-no-select))
 
 ;; In Magit, make TAB cycle sections by default.
-(eval-after-load "magit"
-  '(define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
+(with-eval-after-load "magit"
+  (define-key magit-mode-map (kbd "TAB") 'magit-section-cycle))
 ;; ...but avoid expanding all branches in the refs buffer!
-(eval-after-load "magit-refs"
-  '(define-key magit-refs-mode-map (kbd "TAB") 'magit-section-toggle))
+(with-eval-after-load "magit-refs"
+  (define-key magit-refs-mode-map (kbd "TAB") 'magit-section-toggle))
 
-(eval-after-load "magit-diff"
-  '(progn
-     ;; Swap the meanings of RET and C-RET on diff hunks.
-     ;; Note that the default RET bindings are [remap magit-visit-thing]
-     ;; in the original keymaps, but I am only concerned with RET here.
-     ;; Note also that in a terminal, C-RET sends C-j.
-     ;; Using the same key formats here as magit-diff.el
-     (define-key magit-file-section-map [return] 'magit-diff-visit-file-worktree)
-     (define-key magit-file-section-map [C-return] 'magit-diff-visit-file)
-     (define-key magit-file-section-map (kbd "C-j") 'magit-diff-visit-file)
-     (define-key magit-hunk-section-map [return] 'magit-diff-visit-file-worktree)
-     (define-key magit-hunk-section-map [C-return] 'magit-diff-visit-file)
-     (define-key magit-hunk-section-map (kbd "C-j") 'magit-diff-visit-file)))
+(with-eval-after-load "magit-diff"
+  ;; Swap the meanings of RET and C-RET on diff hunks.
+  ;; Note that the default RET bindings are [remap magit-visit-thing]
+  ;; in the original keymaps, but I am only concerned with RET here.
+  ;; Note also that in a terminal, C-RET sends C-j.
+  ;; Using the same key formats here as magit-diff.el
+  (define-key magit-file-section-map [return] 'magit-diff-visit-file-worktree)
+  (define-key magit-file-section-map [C-return] 'magit-diff-visit-file)
+  (define-key magit-file-section-map (kbd "C-j") 'magit-diff-visit-file)
+  (define-key magit-hunk-section-map [return] 'magit-diff-visit-file-worktree)
+  (define-key magit-hunk-section-map [C-return] 'magit-diff-visit-file)
+  (define-key magit-hunk-section-map (kbd "C-j") 'magit-diff-visit-file))
 
-(eval-after-load "git-commit"
-  '(progn
-     (define-key git-commit-mode-map (kbd "s-[") 'git-commit-prev-message)
-     (define-key git-commit-mode-map (kbd "s-]") 'git-commit-next-message)))
+(with-eval-after-load "git-commit"
+  (define-key git-commit-mode-map (kbd "s-[") 'git-commit-prev-message)
+  (define-key git-commit-mode-map (kbd "s-]") 'git-commit-next-message))
 
 ;; Second selection support
 (global-set-key (kbd "C-M-y") 'secondary-dwim)

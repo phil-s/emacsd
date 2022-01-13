@@ -21,11 +21,10 @@
 
 
 ;;; Deferred configuration
-(eval-after-load "org"
-  '(progn
-     (my-org-babel-do-load-languages)
-     (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
-     (my-org-configuration)))
+(with-eval-after-load "org"
+  (my-org-babel-do-load-languages)
+  (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
+  (my-org-configuration))
 
 ;;; General configuration
 

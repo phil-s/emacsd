@@ -27,32 +27,31 @@
   (when (facep 'fill-column-indicator)
     (set-face-attribute 'fill-column-indicator nil :foreground "grey27"))
 
-  (eval-after-load "hl-sexp"
-    '(set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
+  (with-eval-after-load "hl-sexp"
+    (set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
 
-  (eval-after-load "hl-line"
-    '(set-face-background hl-line-face "#333333"))
+  (with-eval-after-load "hl-line"
+    (set-face-background hl-line-face "#333333"))
 
-  (eval-after-load "magit"
-    '(progn
-       (set-face-foreground 'magit-section-heading "LemonChiffon")
-       (set-face-foreground 'magit-mode-line-process "yellow")))
+  (with-eval-after-load "magit"
+    (set-face-foreground 'magit-section-heading "LemonChiffon")
+    (set-face-foreground 'magit-mode-line-process "yellow"))
 
-  (eval-after-load "whitespace"
-    '(set-face-attribute 'whitespace-space nil
-                         :foreground "grey30"
-                         :background 'unspecified))
+  (with-eval-after-load "whitespace"
+    (set-face-attribute 'whitespace-space nil
+                        :foreground "grey30"
+                        :background 'unspecified))
 
   ;; StackExchange (sx library)
   ;; (plist-get (symbol-plist 'sx-question-mode-kbd-tag) 'face-defface-spec)
-  (eval-after-load "sx-question-print"
-    '(when (symbol-plist 'sx-question-mode-kbd-tag)
-       (set-face-attribute
-        'sx-question-mode-kbd-tag nil
-        :box nil
-        :height 1.0
-        :weight 'normal
-        :foreground "LightGoldenrod1"))) ;; or yellow2 ?
+  (with-eval-after-load "sx-question-print"
+    (when (symbol-plist 'sx-question-mode-kbd-tag)
+      (set-face-attribute
+       'sx-question-mode-kbd-tag nil
+       :box nil
+       :height 1.0
+       :weight 'normal
+       :foreground "LightGoldenrod1"))) ;; or yellow2 ?
 
   ;; end of zenburn-theme config
   )
@@ -86,17 +85,16 @@
   (disable-theme 'zenburn)
   ;;(load-theme 'light-blue t)
   (load-theme 'deeper-blue t)
-  (eval-after-load "whitespace"
-    '(custom-theme-set-faces
-      'deeper-blue
-      '(whitespace-space ((t . (:foreground "grey16"))) t)
-      '(whitespace-newline ((t . (:foreground "grey16"))) t)))
-  ;; (eval-after-load "magit"
-  ;;   '(progn
-  ;;      (set-face-background 'magit-item-highlight "blue4")
-  ;;      (set-face-foreground 'magit-item-highlight nil)
-  ;;      (set-face-underline 'magit-item-highlight nil)
-  ;;      (set-face-attribute 'magit-item-highlight nil :inherit nil)))
+  (with-eval-after-load "whitespace"
+    (custom-theme-set-faces
+     'deeper-blue
+     '(whitespace-space ((t . (:foreground "grey16"))) t)
+     '(whitespace-newline ((t . (:foreground "grey16"))) t)))
+  ;; (with-eval-after-load "magit"
+  ;;   (set-face-background 'magit-item-highlight "blue4")
+  ;;   (set-face-foreground 'magit-item-highlight nil)
+  ;;   (set-face-underline 'magit-item-highlight nil)
+  ;;   (set-face-attribute 'magit-item-highlight nil :inherit nil))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

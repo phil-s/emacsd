@@ -398,29 +398,29 @@ Can be tested with (signal-process (emacs-pid) 'sigusr1)"
 ;; http://lists.gnu.org/archive/html/bug-gnu-emacs/2011-06/msg00117.html
 (when (and (equal emacs-major-version 23)
            (equal emacs-minor-version 3))
-  (eval-after-load "ibuf-ext"
-    '(defun ibuffer-filter-disable ()
-       "Disable all filters currently in effect in this buffer."
-       (interactive)
-       (setq ibuffer-filtering-qualifiers nil
-             ) ;ibuffer-filter-groups nil
-       (let ((buf (ibuffer-current-buffer)))
-         (ibuffer-update nil t)
-         (when buf
-           (ibuffer-jump-to-buffer (buffer-name buf)))))))
+  (with-eval-after-load "ibuf-ext"
+    (defun ibuffer-filter-disable ()
+      "Disable all filters currently in effect in this buffer."
+      (interactive)
+      (setq ibuffer-filtering-qualifiers nil
+            ) ;ibuffer-filter-groups nil
+      (let ((buf (ibuffer-current-buffer)))
+        (ibuffer-update nil t)
+        (when buf
+          (ibuffer-jump-to-buffer (buffer-name buf)))))))
 
 ;; Configure ibuffer columns
 (setq ibuffer-formats '((mark modified read-only " " (name 30 60 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename)))
 
 ;; Enable ibuffer-filter-by-filename to filter on directory names too.
-(eval-after-load "ibuf-ext"
-  '(define-ibuffer-filter filename
-     "Toggle current view to buffers with file or directory name matching QUALIFIER."
-     (:description "filename"
-      :reader (read-from-minibuffer "Filter by file/directory name (regexp): "))
-     (ibuffer-awhen (or (buffer-local-value 'buffer-file-name buf)
-                        (buffer-local-value 'dired-directory buf))
-       (string-match qualifier it))))
+(with-eval-after-load "ibuf-ext"
+  (define-ibuffer-filter filename
+    "Toggle current view to buffers with file or directory name matching QUALIFIER."
+    (:description "filename"
+     :reader (read-from-minibuffer "Filter by file/directory name (regexp): "))
+    (ibuffer-awhen (or (buffer-local-value 'buffer-file-name buf)
+                       (buffer-local-value 'dired-directory buf))
+      (string-match qualifier it))))
 
 ;; Ensure ibuffer opens with point at the current buffer's entry.
 (defadvice ibuffer
@@ -524,9 +524,9 @@ n.b. ffap-alternate-file is intended for interactive use only."
 
 ;; This is no longer helpful, as I don't have window titles any more.
 ;; ;; Don't display which-function in the mode line.
-;; (eval-after-load "which-func"
-;;   '(setq mode-line-misc-info
-;;          (assq-delete-all 'which-func-mode mode-line-misc-info)))
+;; (with-eval-after-load "which-func"
+;;   (setq mode-line-misc-info
+;;         (assq-delete-all 'which-func-mode mode-line-misc-info)))
 
 ;; Prevent C-z minimizing frames
 ;;(defun iconify-or-deiconify-frame nil)
@@ -854,7 +854,8 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   (define-key dired-mode-map (kbd "M-k") 'dired-kill-subdir)
   (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle))
 
-(eval-after-load "dired" '(my-dired-load-hook))
+(with-eval-after-load "dired"
+  (my-dired-load-hook))
 
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 (defun my-dired-mode-hook ()
@@ -949,8 +950,8 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 
 (eval-when-compile
   (defvar which-func-non-auto-modes))
-(eval-after-load "which-func"
-  '(add-to-list 'which-func-non-auto-modes 'erc-mode))
+(with-eval-after-load "which-func"
+  (add-to-list 'which-func-non-auto-modes 'erc-mode))
 
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
 (eval-when-compile
@@ -994,35 +995,34 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; this being non-nil when editing wrapped lines, so I've set this
 ;; out again for now.
 
-(eval-after-load "term"
-  '(progn
-     ;; Default terminal history is much too small.
-     (setq-default term-buffer-maximum-size 65535)
-     ;; Enable terminal history in line mode (term-mode-map).
-     (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
-     (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
-     ;; Enable ESC-x as a substitute for M-x (which sends term-send-raw-meta)
-     (define-key term-raw-map (kbd "<escape> x") 'execute-extended-command)
-     ;; Fix forward/backward word when (term-in-char-mode).
-     (define-key term-raw-map (kbd "<C-left>")
-       (lambda () (interactive) (term-send-raw-string "\eb")))
-     (define-key term-raw-map (kbd "<M-left>")
-       (lambda () (interactive) (term-send-raw-string "\eb")))
-     (define-key term-raw-map (kbd "<C-right>")
-       (lambda () (interactive) (term-send-raw-string "\ef")))
-     (define-key term-raw-map (kbd "<M-right>")
-       (lambda () (interactive) (term-send-raw-string "\ef")))
-     ;; Disable killing and yanking in char mode (term-raw-map).
-     (mapc
-      (lambda (func)
-        (eval `(define-key term-raw-map [remap ,func] 'my-interactive-ding)))
-      '(backward-kill-paragraph
-        backward-kill-sentence backward-kill-sexp backward-kill-word
-        bookmark-kill-line kill-backward-chars kill-backward-up-list
-        kill-forward-chars kill-line kill-paragraph kill-rectangle
-        kill-region kill-sentence kill-sexp kill-visual-line
-        kill-whole-line kill-word subword-backward-kill subword-kill
-        yank yank-pop yank-rectangle))))
+(with-eval-after-load "term"
+  ;; Default terminal history is much too small.
+  (setq-default term-buffer-maximum-size 65535)
+  ;; Enable terminal history in line mode (term-mode-map).
+  (define-key term-mode-map (kbd "<C-up>") 'term-send-up)
+  (define-key term-mode-map (kbd "<C-down>") 'term-send-down)
+  ;; Enable ESC-x as a substitute for M-x (which sends term-send-raw-meta)
+  (define-key term-raw-map (kbd "<escape> x") 'execute-extended-command)
+  ;; Fix forward/backward word when (term-in-char-mode).
+  (define-key term-raw-map (kbd "<C-left>")
+    (lambda () (interactive) (term-send-raw-string "\eb")))
+  (define-key term-raw-map (kbd "<M-left>")
+    (lambda () (interactive) (term-send-raw-string "\eb")))
+  (define-key term-raw-map (kbd "<C-right>")
+    (lambda () (interactive) (term-send-raw-string "\ef")))
+  (define-key term-raw-map (kbd "<M-right>")
+    (lambda () (interactive) (term-send-raw-string "\ef")))
+  ;; Disable killing and yanking in char mode (term-raw-map).
+  (mapc
+   (lambda (func)
+     (eval `(define-key term-raw-map [remap ,func] 'my-interactive-ding)))
+   '(backward-kill-paragraph
+     backward-kill-sentence backward-kill-sexp backward-kill-word
+     bookmark-kill-line kill-backward-chars kill-backward-up-list
+     kill-forward-chars kill-line kill-paragraph kill-rectangle
+     kill-region kill-sentence kill-sexp kill-visual-line
+     kill-whole-line kill-word subword-backward-kill subword-kill
+     yank yank-pop yank-rectangle)))
 
 ;; Terminal buffer configuration.
 (add-hook 'term-mode-hook 'my-term-mode-hook)
@@ -1082,28 +1082,27 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 
 ;; Use ediff instead of diff when typing 'd' in `save-some-buffers'
 ;; See variable `save-some-buffers-action-alist'
-(eval-after-load "files"
-  '(progn
-     (setcdr (assq ?d save-some-buffers-action-alist)
-             `(,(lambda (buf)
-                  (if (null (buffer-file-name buf))
-                      (message "Not applicable: no file")
-                    (add-hook 'ediff-after-quit-hook-internal
-                              'my-save-some-buffers-with-ediff-quit t)
-                    (with-current-buffer buf
-                      (let ((enable-recursive-minibuffers t))
-                        (ediff-current-file)
-                        (recursive-edit))))
-                  ;; Return nil to ask about BUF again.
-                  nil)
-               ,(purecopy "view changes in this buffer")))
+(with-eval-after-load "files"
+  (setcdr (assq ?d save-some-buffers-action-alist)
+          `(,(lambda (buf)
+               (if (null (buffer-file-name buf))
+                   (message "Not applicable: no file")
+                 (add-hook 'ediff-after-quit-hook-internal
+                           'my-save-some-buffers-with-ediff-quit t)
+                 (with-current-buffer buf
+                   (let ((enable-recursive-minibuffers t))
+                     (ediff-current-file)
+                     (recursive-edit))))
+               ;; Return nil to ask about BUF again.
+               nil)
+            ,(purecopy "view changes in this buffer")))
 
-     (defun my-save-some-buffers-with-ediff-quit ()
-       "Remove ourselves from the ediff quit hook, and
+  (defun my-save-some-buffers-with-ediff-quit ()
+    "Remove ourselves from the ediff quit hook, and
 return to the save-some-buffers minibuffer prompt."
-       (remove-hook 'ediff-after-quit-hook-internal
-                    'my-save-some-buffers-with-ediff-quit)
-       (exit-recursive-edit))))
+    (remove-hook 'ediff-after-quit-hook-internal
+                 'my-save-some-buffers-with-ediff-quit)
+    (exit-recursive-edit)))
 
 ;; Make "d" in a merge conflict concatenate A and B together.
 (defun my-ediff-copy-both-to-C ()
@@ -1210,7 +1209,8 @@ when the file path is too long to show on one line."
     (adaptive-wrap-prefix-mode 1)))
 
 ;; Show image dimensions in the mode line. See also frame-title-format.
-(eval-after-load 'image-mode '(require 'image-dimensions-minor-mode))
+(with-eval-after-load 'image-mode
+  (require 'image-dimensions-minor-mode))
 
 ;; Always open man pages in the same window.
 (add-to-list 'display-buffer-alist
@@ -1228,9 +1228,9 @@ when the file path is too long to show on one line."
 ;; Workaround for security problem.  See the release announcement:
 ;; https://lists.gnu.org/archive/html/emacs-devel/2017-09/msg00211.html
 (when (version< emacs-version "25.3")
-  (eval-after-load "enriched"
-    '(defun enriched-decode-display-prop (start end &optional param)
-       (list start end))))
+  (with-eval-after-load "enriched"
+    (defun enriched-decode-display-prop (start end &optional param)
+      (list start end))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

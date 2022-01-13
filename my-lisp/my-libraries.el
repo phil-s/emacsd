@@ -77,6 +77,8 @@ unhides lines again"
   (defvar geben-version)
   (declare-function geben-dbgp-decode-value "geben"))
 
+;; gebel.el uses dynamic binding, so do not convert this to
+;; `with-eval-after-load'.
 (eval-after-load 'geben
   '(progn
      ;; Evaluate word at point.
