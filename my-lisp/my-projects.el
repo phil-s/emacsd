@@ -96,8 +96,10 @@
                 (web-mode-css-indent-offset . 2)
                 (web-mode-markup-indent-offset . 2)
                 (web-mode-sql-indent-offset . 2)))
-   (makefile-gmake-mode . ((eval . (progn (conf-mode)
-                                          (hack-local-variables)))))
+   (makefile-gmake-mode . ((eval . (when (string= "make" (file-name-extension
+                                                          buffer-file-name))
+                                     (progn (conf-mode)
+                                            (hack-local-variables))))))
    (dired-mode . ((dired-omit-mode . t)))
    ))
 
