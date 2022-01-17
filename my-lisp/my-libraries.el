@@ -3,8 +3,8 @@
   (defvar framemove-hook-into-windmove)
   (defvar sudo-clear-password-always)
   (declare-function sudo-chown-file "sudo")
-  (declare-function sudo-quoting "sudo")
   (declare-function sudo-kill-password-timeout "sudo")
+  (declare-function sudo-quoting "sudo")
   (declare-function xml-get-children "xml")
   )
 
@@ -75,6 +75,7 @@ unhides lines again"
 (eval-when-compile
   (defvar geben-mode-map)
   (defvar geben-version)
+  (declare-function geben-dbgp-command-eval "geben")
   (declare-function geben-dbgp-decode-value "geben"))
 
 ;; gebel.el uses dynamic binding, so do not convert this to
