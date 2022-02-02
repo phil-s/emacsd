@@ -10,6 +10,32 @@
   (defvar deft-text-mode)
   )
 
+;; Intuitive word wrapping.
+(defun my-adaptive-visual-line-mode (&optional arg)
+  ;; Not a real minor mode.
+  "Toggles both `visual-line-mode' and `adaptive-wrap-prefix-mode'.
+
+Enable both modes if either/both are currently disabled or if ARG
+is positive; otherwise if both are currently enabled or if ARG is
+zero or negative, then disable both modes."
+  (interactive "P")
+  (require 'adaptive-wrap-prefix-mode nil :noerror)
+  (let ((state (if arg
+                   (prefix-numeric-value arg)
+                 (if (and visual-line-mode
+                          (or (not (boundp 'adaptive-wrap-prefix-mode))
+                              adaptive-wrap-prefix-mode))
+                     0 1))))
+    (visual-line-mode state)
+    (when (fboundp 'adaptive-wrap-prefix-mode)
+      (adaptive-wrap-prefix-mode state))))
+
+(require 'delight)
+(delight '((adaptive-wrap-prefix-mode "" adaptive-wrap)
+           (visual-line-mode
+            (adaptive-wrap-prefix-mode " AWrap" " Wrap")
+            simple)))
+
 ;; PDFs
 (defun my-pdf-tools-install ()
   "Initialise `pdf-tools' if the package is installed."

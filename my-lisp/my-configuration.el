@@ -1204,9 +1204,7 @@ when the file path is too long to show on one line."
 (add-hook 'eww-mode-hook 'my-eww-mode-hook)
 (defun my-eww-mode-hook ()
   "Used in `eww-mode-hook'."
-  (visual-line-mode 1)
-  (when (fboundp 'adaptive-wrap-prefix-mode)
-    (adaptive-wrap-prefix-mode 1)))
+  (my-adaptive-visual-line-mode 1))
 
 ;; Show image dimensions in the mode line. See also frame-title-format.
 (with-eval-after-load 'image-mode
