@@ -660,15 +660,43 @@ n.b. ffap-alternate-file is intended for interactive use only."
 ;;      `(space :align-to (- right-fringe ,width)))
 ;;     str))))
 
+;; Display remaining laptop battery power in the minibuffer-line.
+;; Display only if battery capacity drops below 75%, and increase
+;; the visibility at 25% (low) and 10% (critical) thresholds.
+;; Use the POWER SYMBOL character.
+(setq battery-mode-line-format "%b⏻%p%% "
+      battery-mode-line-limit 75
+      battery-load-low 25
+      battery-load-critical 10)
+(display-battery-mode 1)
+;; (setq global-mode-string
+;;       (delq 'battery-mode-line-string global-mode-string))
+
+(with-eval-after-load "battery"
+  (advice-add battery-status-function
+              :filter-return #'my-battery-status-filter))
+
+(defun my-battery-status-filter (battery-status)
+  "Round the battery percentage (%p) value, to save some characters.
+
+Advice for the `battery-status-function' function value."
+  (when-let ((p (assq ?p battery-status)))
+    (setcdr p (number-to-string (round (string-to-number (cdr p))))))
+  battery-status)
+
 (defun my-minibuffer-line-config ()
   "Require and configure the `minibuffer-line' library."
   (when (require 'minibuffer-line nil :noerror)
     (setq minibuffer-line-refresh-interval 5
           minibuffer-line-format
-          '("" (:eval (my-minibuffer-line-justify-right
-                       (concat system-name
-                               " | "
-                               (format-time-string "%F %R"))))))
+          `("" (:eval (my-minibuffer-line-justify-right
+                       (concat system-name " "
+                               (and (bound-and-true-p battery-mode-line-string)
+                                    (not (string= "" battery-mode-line-string))
+                                    (format "| %s"
+                                            (replace-regexp-in-string
+                                             "%" "%%" battery-mode-line-string t t)))
+                               (format-time-string "| %F %R"))))))
     (set-face-attribute 'minibuffer-line nil :inherit 'unspecified)
     (set-face-attribute 'minibuffer-line nil :foreground "dark gray")
     (minibuffer-line-mode 1)))
