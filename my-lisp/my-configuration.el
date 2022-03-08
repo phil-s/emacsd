@@ -538,6 +538,19 @@ n.b. ffap-alternate-file is intended for interactive use only."
 ;; Full-screen by default.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Make errors during mode hooks more apparent.
+;; (advice-remove 'run-mode-hooks 'run-mode-hooks@handle-error)
+(define-advice run-mode-hooks (:around (orig-fun &rest hooks) handle-error)
+  "Ensure errors during mode hooks are more apparent."
+  (condition-case err
+      (apply orig-fun hooks)
+    (error
+     (setq mode-name
+           `(:propertize ,mode-name face error
+                         help-echo ,(format "%s during run-mode-hooks"
+                                            (error-message-string err))))
+     (funcall #'signal (car err) (cdr err)))))
+
 ;; The visible bell is usually fine, but still horrid in certain terminals.
 ;; We can make a nicer version.
 (defun my-visible-bell ()
