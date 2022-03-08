@@ -67,6 +67,109 @@
           (cons '(:empty . 2)
                 (assq-delete-all :empty mu4e-headers-fields)))))
 
+;; ecomplete
+;;
+;; "A simpler way [than BBDB and the like] to store email addresses
+;; and insert them with completion when composing new messages."
+;; -- https://www.reddit.com/r/emacs/comments/sl33w6
+(setq message-mail-alias-type 'ecomplete)
+
+;; ;; "If you prefer to use the standard completion-at-point instead of
+;; ;; ecomplete's handicrafted UI (works well with Orderless or flex
+;; ;; completion styles) you can use the following:"
+;; (setq message-mail-alias-type 'ecomplete
+;;       message-self-insert-commands nil
+;;       message-expand-name-standard-ui t)
+
+;; Helpers.
+;; https://github.com/oantolin/emacs-config/blob/master/my-lisp/ecomplete-extras.el
+(defun my-mail--name+address (email)
+  "Return a pair of the name and address for an EMAIL."
+  (let (name)
+    (when (string-match "^\\(.*\\) <\\(.*\\)>$" email)
+      (setq name (match-string 1 email)
+            email (match-string 2 email)))
+    (cons name email)))
+
+(defun my-mail-add-to-ecomplete-database (email)
+  "Add email address to ecomplete's database."
+  (interactive "sEmail address: ")
+  (pcase-let ((`(,name . ,email) (my-mail--name+address email)))
+    (unless name (setq name (read-string "Name: ")))
+    (ecomplete-add-item
+     'mail email
+     (format (cond ((equal name "") "%s%s")
+                   ((string-match-p "^\\(?:[A-Za-z0-9 ]*\\|\".*\"\\)$" name)
+                    "%s <%s>")
+                   (t "\"%s\" <%s>"))
+             name email))
+    (ecomplete-save)))
+
+(defun my-mail-remove-from-ecomplete-database (email)
+  "Remove email address from ecomplete's database."
+  (interactive
+   (list (completing-read "Email address: "
+                          (ecomplete-completion-table 'mail))))
+  (when-let ((email (cdr (my-mail--name+address email)))
+             (entry (ecomplete-get-item 'mail email)))
+    (setf (cdr (assq 'mail ecomplete-database))
+          (remove entry (cdr (assq 'mail ecomplete-database))))
+    (ecomplete-save)))
+
+;; Override.
+(defcustom ecomplete-message-display-abbrev-auto-select t
+  "Whether `message-display-abbrev' should automatically select a sole option."
+  :group 'ecomplete
+  :type 'boolean)
+
+(advice-add 'ecomplete-display-matches :override #'my-mail-ecomplete-display-matches)
+
+(defun my-mail-ecomplete-display-matches (type word &optional choose)
+  "Display the top-rated elements TYPE that match WORD.
+If CHOOSE, allow the user to choose interactively between the
+matches.
+
+Auto-select when `ecomplete-message-display-abbrev-auto-select' is
+non-nil and there is only a single completion option available."
+  (let* ((matches (ecomplete-get-matches type word))
+         (match-list (and matches (split-string matches "\n")))
+         (max-lines (and matches (- (length match-list) 2)))
+         (line 0)
+         (message-log-max nil)
+         command highlight)
+    (if (not matches)
+	(progn
+	  (message "No ecomplete matches")
+	  nil)
+      (if (not choose)
+	  (progn
+	    (message "%s" matches)
+	    nil)
+        (if (and ecomplete-message-display-abbrev-auto-select
+                 (eql 0 max-lines))
+            ;; Auto-select when only one option is available.
+            (nth 0 match-list)
+          ;; Interactively choose from the filtered completions.
+          (let ((local-map (make-sparse-keymap))
+                (prev-func (lambda () (setq line (max (1- line) 0))))
+                (next-func (lambda () (setq line (min (1+ line) max-lines))))
+                selected)
+            (define-key local-map (kbd "RET")
+              (lambda () (setq selected (nth line match-list))))
+	    (define-key local-map (kbd "M-n") next-func)
+	    (define-key local-map (kbd "<down>") next-func)
+	    (define-key local-map (kbd "M-p") prev-func)
+	    (define-key local-map (kbd "<up>") prev-func)
+            (let ((overriding-local-map local-map))
+              (setq highlight (ecomplete-highlight-match-line matches line))
+              (while (and (null selected)
+			  (setq command (read-key-sequence highlight))
+			  (lookup-key local-map command))
+	        (apply (key-binding command) nil)
+	        (setq highlight (ecomplete-highlight-match-line matches line))))
+	    (message (or selected "Abort"))
+            selected))))))
+
 ;;; Local mail settings go in my-local.el
 
 ;; ;; Email address.
