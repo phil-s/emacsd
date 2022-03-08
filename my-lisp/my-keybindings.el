@@ -248,6 +248,7 @@
   (define-key keymap (kbd "C-c W")     'my-write-copy-to-file)
   (define-key keymap (kbd "C-z n")     'my-scroll-one-line-ahead-repeatable)
   (define-key keymap (kbd "C-z p")     'my-scroll-one-line-back-repeatable)
+  (define-key keymap (kbd "C-z P")     'domain-hash-md5-as-kill)
   (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
   (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
   (define-key keymap (kbd "M-s /")     'my-multi-occur)

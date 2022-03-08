@@ -1875,6 +1875,25 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
   (let ((domain-hash-algorithm 'md5)
         (domain-hash-length 8))
     (domain-hash domain passphrase kill)))
+
+(defun domain-hash-md5-as-kill (domain passphrase &optional _kill)
+  (interactive (domain-hash-arguments))
+  (domain-hash-md5 domain passphrase :kill))
+
+(defun my-xmonad-domain-hash-md5-as-kill ()
+  "Create a new frame and run `domain-hash-md5-as-kill'.
+
+XMonad key binding for xmonad.hs:
+
+, ((modMask .|. shiftMask, xK_m), spawn \"emacsclient --eval \
+\\\"(my-xmonad-domain-hash-md5-as-kill)\\\"\")"
+  (interactive)
+  (select-frame (make-frame '((my-xmonad-domain-hash-md5-as-kill . t))))
+  (delete-other-windows)
+  (cl-letf (((symbol-function 'switch-to-buffer-other-window) #'switch-to-buffer))
+    (unwind-protect
+        (and (call-interactively #'domain-hash-md5-as-kill) t)
+      (delete-frame))))
 
 (defun my-crontab-edit ()
   "Edit crontab."
