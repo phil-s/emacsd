@@ -874,19 +874,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Initialise third-party packages
-
-;; ;; Added by Package.el.  This must come before configurations of
-;; ;; installed packages.  Don't delete this line.  If you don't want it,
-;; ;; just comment it out by adding a semicolon to the start of the line.
-;; (setq package-enable-at-startup nil)
-;; (package-initialize)
-
-;; ELPA -- Emacs Lisp Package Archive
-;; TODO: Make el-get take care of ELPA?
-(require 'my-elpa)
-
-;; Other packages, via el-get
+;; Initialise third-party libraries and ELPA packages
 (require 'my-externals)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

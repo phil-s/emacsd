@@ -3,6 +3,21 @@
   (defvar el-get-sources)
   )
 
+;; ELPA
+;; In Emacs 27 `package-initialize' happens between early-init.el and init.el.
+;; In earlier versions we should initialize packages manually.
+(when (< emacs-major-version 27)
+  (require 'package)
+  (setq package-enable-at-startup nil)
+  (package-initialize))
+;; Add extra package archives.
+;; The nongnu ELPA archive is standard starting from Emacs 28.
+(add-to-list 'package-archives
+             '("nongnu" . "https://elpa.nongnu.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+
+;; el-get
 (defun my-local-repository-url-for (library)
   "Provide a URL for a library in the local-repository directory."
   (concat "file://" (expand-file-name user-emacs-directory)
