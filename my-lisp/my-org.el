@@ -4,6 +4,7 @@
 (eval-when-compile
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
+  (defvar org-capture-templates)
   (defvar org-default-notes-file)
   (defvar org-ellipsis)
   (defvar org-fontify-done-headline)

@@ -4,6 +4,7 @@
 
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar adaptive-wrap-prefix-mode)
   (defvar deft-auto-save-interval)
   (defvar deft-directory)
   (defvar deft-extension)

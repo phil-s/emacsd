@@ -50,7 +50,9 @@ the changes, or \\[kill-buffer] RET to cancel."))))
       ;; rectangle.
       (goto-char (point-min))
       (let ((remaining (forward-line (1- height))))
-        (insert-char ?\n (if (looking-back "^") remaining (1+ remaining))))
+        (insert-char ?\n (if (looking-back "^" (point))
+                             remaining
+                           (1+ remaining))))
       (move-to-column width t)
       ;; Replace the original rectangle with the edited version.
       (let ((content (extract-rectangle (point-min) (point))))

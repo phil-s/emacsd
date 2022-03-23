@@ -49,6 +49,7 @@
   (declare-function ediff-get-region-contents "ediff-util")
   (declare-function ediff-setup-windows-plain "ediff-wind")
   (declare-function erc-log-mode "erc-log")
+  (declare-function ibuffer-pop-filter "ibuf-ext")
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function my-fortune-set-initial-scratch-message "my-utilities")
   (declare-function my-isearch-delete "my-configuration")

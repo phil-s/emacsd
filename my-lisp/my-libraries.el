@@ -73,10 +73,12 @@ unhides lines again"
 
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar geben-minibuffer-map)
   (defvar geben-mode-map)
   (defvar geben-version)
   (declare-function geben-dbgp-command-eval "geben")
-  (declare-function geben-dbgp-decode-value "geben"))
+  (declare-function geben-dbgp-decode-value "geben")
+  (declare-function geben-with-current-session "geben"))
 
 ;; gebel.el uses dynamic binding, so do not convert this to
 ;; `with-eval-after-load'.
@@ -106,6 +108,9 @@ functions.\n\n"))
           (geben-dbgp-decode-value (car-safe (xml-get-children msg 'property)))))
        ;; (select-window (display-buffer "*GEBEN: eval*"))
        )
+
+     (with-suppressed-warnings ((lexical session))
+       (defvar session))
 
      (defun geben-eval-expression (expr)
        "Evaluate a given string EXPR within the current execution context.

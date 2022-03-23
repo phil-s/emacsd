@@ -1,3 +1,22 @@
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar ecomplete-database)
+  (defvar mu4e-header-info-custom)
+  (defvar mu4e-header-info-custom)
+  (defvar mu4e-headers-mode-map)
+  (defvar mu4e-view-actions)
+  (defvar mu4e-view-actions)
+  (defvar shr-use-colors)
+  (declare-function ecomplete-add-item "ecomplete")
+  (declare-function ecomplete-completion-table "ecomplete")
+  (declare-function ecomplete-get-item "ecomplete")
+  (declare-function ecomplete-get-matches "ecomplete")
+  (declare-function ecomplete-highlight-match-line "ecomplete")
+  (declare-function ecomplete-save "ecomplete")
+  (declare-function mu4e-view-raw-message "mu4e-view")
+  (declare-function mu4e~write-body-to-html "mu4e-actions")
+  )
+
 ;; mu4e
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/mu4e"))
 (load-file (expand-file-name "~/.emacs.d/lisp/mu4e/autoloads.el"))

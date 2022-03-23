@@ -192,7 +192,7 @@ Advises `eldoc-print-current-symbol-info'."
              (setq my-contextual-help-last-symbol sym)
              sym
              (save-selected-window
-               (help-xref-interned sym)))))))
+               (describe-symbol sym)))))))
 
 (defun my-contextual-help-toggle ()
   "Intelligently enable or disable `my-contextual-help-mode'."
