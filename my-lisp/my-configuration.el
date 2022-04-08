@@ -1105,6 +1105,22 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; Format completion lists in columns rather than rows
 (setq completions-format 'vertical)
 
+;; Use detailed completion output.
+;; The "symbol class" prefix characters are:
+;;   c: command
+;;   f: function
+;;   m: macro
+;;   u: user option
+;;   v: variable
+;;   *: non-default value
+;;   a: face
+;;   t: type (class)
+;;   ': automatically buffer-local when set
+;;   -: obsolete
+;;   !: advice
+;; (Refer to `help--symbol-class')
+(setq completions-detailed t)
+
 ;; Don't use a separate control frame for ediff, as it's not working
 ;; very well with my current config & window manager.
 ;; See also `ediff-setup-control-frame' and my full-screen by default
