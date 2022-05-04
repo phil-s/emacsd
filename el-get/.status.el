@@ -1,6 +1,7 @@
 (
 :ace-jump-mode "installed"
 :ace-link "installed"
+:ace-window "installed"
 :async "installed"
 :auto-compile "installed"
 :avy "installed"

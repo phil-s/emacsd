@@ -49,6 +49,10 @@
             :type git
             :url "https://github.com/winterTTr/ace-jump-mode/")
 
+     (:name ace-window
+            :type git
+            :url "https://github.com/abo-abo/ace-window.git")
+
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
