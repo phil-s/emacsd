@@ -836,6 +836,26 @@ of the available lines."
     (switch-to-buffer (other-buffer (current-buffer)))
     (other-window 1)
     (switch-to-buffer buf)))
+
+(defun my-relocate-buffer ()
+  "Move the current buffer to a different window.
+
+Intended for use when a buffer gets displayed in the 'wrong'
+window, in order to move it to the preferred window without
+otherwise disturbing the pre-existing window configuration.
+
+The target window is selected using `ace-window'.
+
+The buffer is buried first, so that the original window can
+acquire whichever buffer it had been displaying previously."
+  (interactive)
+  (require 'ace-window)
+  (aw-select " - Relocate to target window"
+             (lambda (win)
+               (let ((buf (current-buffer)))
+                 (bury-buffer)
+                 (select-window win)
+                 (switch-to-buffer buf nil :force)))))
 
 ;;
 ;; Ediff the current buffer's file with its auto-saved backup file.

@@ -206,6 +206,7 @@
   (define-key keymap (kbd "C-c |")     'rotate-frame)
   (define-key keymap (kbd "C-c C-\\")  'transpose-frame)
   (define-key keymap (kbd "C-c b b")   'my-new-buffer-to-other-window)
+  (define-key keymap (kbd "<menu> b")  'my-relocate-buffer)
   (define-key keymap (kbd "C-c w a")   'my-align-next-window)
   (define-key keymap (kbd "C-x 2")     'my-split-window-below)
   (define-key keymap (kbd "<f7>")      'my-other-frame)
