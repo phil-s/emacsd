@@ -688,7 +688,31 @@ n.b. ffap-alternate-file is intended for interactive use only."
 
 (with-eval-after-load "battery"
   (advice-add battery-status-function
-              :filter-return #'my-battery-status-filter))
+              :filter-return #'my-battery-status-filter)
+  (when (< emacs-major-version 28)
+    (advice-add 'battery-update
+                :override #'my-battery-update)))
+
+(defun my-battery-update ()
+  "Update battery status information in the mode line.
+
+Adds a warning face for 'low' battery in Emacs versions <= 27."
+  (let* ((data (and battery-status-function (funcall battery-status-function)))
+         (percentage (car (read-from-string (cdr (assq ?p data))))))
+    (setq battery-mode-line-string
+	  (propertize (if (and battery-mode-line-format
+			       (numberp percentage)
+                               (<= percentage battery-mode-line-limit))
+			  (battery-format battery-mode-line-format data)
+			"")
+		      'face
+                      (and (numberp percentage)
+                           (or (and (<= percentage battery-load-critical)
+                                    'error)
+                               (and (<= percentage battery-load-low)
+                                    'warning)))
+		      'help-echo "Battery status information")))
+  (force-mode-line-update))
 
 (defun my-battery-status-filter (battery-status)
   "Round the battery percentage (%p) value, to save some characters.
