@@ -2,6 +2,31 @@
 ;; Colour theme and faces
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Notes on "light" and "dark" terminal themes
+;; --------------------------------------------
+;; Have a look at the code for `frame-set-background-mode' and
+;; `frame-terminal-default-bg-mode'.
+;;
+;; The latter "checks the ‘frame-background-mode’ variable, the X
+;; resource named "backgroundMode" (if FRAME is an X frame), and
+;; finally the ‘background-mode’ terminal parameter."
+;;
+;; Customize the `frame-background-mode' user option to enforce a
+;; value.
+;;
+;; Individual terminals/emulators are handled via the various files
+;; in the "lisp/term/" directory; e.g.:
+;; "/usr/local/share/emacs/27.2/lisp/term/" (but depending on how
+;; Emacs is installed); or else refer to
+;; https://git.savannah.gnu.org/cgit/emacs.git/tree/lisp/term
+;;
+;; See the README file in that directory for details of how Emacs
+;; selects which of those files to load.  Once you've established
+;; which file is in use, you would need to read the code to see how
+;; backgrounds are established, as functionality can vary between
+;; terminals.
+
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar hl-line-face)
