@@ -4498,6 +4498,14 @@ Simple mode to edit YAML.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from zenburn-theme/zenburn-theme.el
 
+(defvar zenburn-override-colors-alist 'nil "\
+Place to override default theme colors.
+
+You can override a subset of the theme's default colors by
+defining them in this alist.")
+
+(custom-autoload 'zenburn-override-colors-alist "zenburn-theme/zenburn-theme" t)
+
 (and load-file-name (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "zenburn-theme/zenburn-theme" '("zenburn")))
