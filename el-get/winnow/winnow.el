@@ -54,14 +54,16 @@
   "Find the start position of the compilation output."
   (save-excursion
     (goto-char (point-min))
-    (compilation-next-error 1)
+    (when (derived-mode-p 'compilation-mode)
+      (compilation-next-error 1))
     (point-at-bol 1)))
 
 (defun winnow-results-end ()
   "Find the end position of the compilation output."
   (save-excursion
     (goto-char (point-max))
-    (compilation-next-error -1)
+    (when (derived-mode-p 'compilation-mode)
+      (compilation-next-error -1))
     (point-at-bol 2)))
 
 (defun winnow-exclude-lines (regexp &optional rstart rend interactive)

@@ -230,6 +230,13 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
       (ansi-color-apply-on-region compilation-filter-start (point)))))
 
 (add-hook 'compilation-filter-hook 'colorize-compilation-output)
+
+;; TAGS
+;;
+;; `winnow' provides bindings "m" and "x" to Match and eXclude results
+;; from the list (it's essentially `keep-lines' and `flush-lines').
+(add-hook 'etags-select-mode-hook #'winnow-mode)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Modes
