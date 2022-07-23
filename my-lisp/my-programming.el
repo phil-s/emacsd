@@ -428,6 +428,20 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
   ;; Automatically upcase SQL keywords.
   (sql-upcase-mode 1))
 
+(defvar-local my-sql-last-input ""
+  "The last input sent by `sql-input-sender'.
+
+See advice `sql-input-sender@my-sql-last-input'.")
+
+(define-advice sql-input-sender (:filter-args (args) my-sql-last-input)
+  "Store STRING in `my-sql-last-input'.
+
+Used by `my-sql-comint-preoutput-filter-table-cruft' so that we can
+handle input from `sql-mode' buffers as well as comint prompt input."
+  (cl-destructuring-bind (_proc string) args
+    (setq my-sql-last-input (concat my-sql-last-input string)))
+  args)
+
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours. See `sql-interactive-mode-hook'."
@@ -461,23 +475,56 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
     ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
     (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*=[#>] ")
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
-    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(][#>] "))
+    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(][#>] ")
+
+    ;; Remove "Indexes" and "Check constraints" output in table details when
+    ;; using the psql "\d" command (as that is almost never useful to me; it
+    ;; takes up many extra lines; and it causes dabbrev to be less useful).
+    ;; (If I actually want to see this information, I can simply use "\d+".)
+    ;; Runs after `sql-interactive-remove-continuation-prompt'.
+    ;; See also the advice to `sql-input-sender'.
+    (add-hook 'comint-preoutput-filter-functions
+              'my-sql-comint-preoutput-filter-table-cruft :append :local))
 
   ;; Deal with inline prompts in query output.
   ;; Runs after `sql-interactive-remove-continuation-prompt'.
+  ;; For postgres, runs after `my-sql-comint-preoutput-filter-table-cruft'.
   (add-hook 'comint-preoutput-filter-functions
-            'my-sql-comint-preoutput-filter :append :local))
+            'my-sql-comint-preoutput-filter-prompts :append :local))
 
-;;(message (concat "'" output "'"))
+(defun my-sql-comint-preoutput-filter-table-cruft (output)
+  "Filter 'Indexes' and 'Check constrints' lines from psql '\d' output.
+
+Runs after `my-sql-comint-preoutput-filter-prompts' in
+`comint-preoutput-filter-functions'."
+  ;; If the entire output is simply the main prompt, return that.
+  ;; (i.e. When simply typing RET at the sqli prompt.)
+  (prog1
+      (save-match-data
+        (if (not (string-match "\\`\n*\\\\d " my-sql-last-input))
+            output
+          (with-temp-buffer
+            (insert output)
+            (goto-char (point-min))
+            (while (re-search-forward "^Indexes:\n\\(    \".+\n\\)+" nil t)
+              (replace-match ""))
+            (when (re-search-forward "^Check constraints:\n\\(    \".+\n\\)+" nil t)
+              (replace-match ""))
+            ;; Return the filtered output.
+            (buffer-substring-no-properties (point-min) (point-max)))))
+    ;; Clear the input buffer.
+    (setq my-sql-last-input "")))
 
 ;; FIXME: We can now have duplicate prompts *following* the results as
 ;; well as prefixing it.  Not sure whether this is Emacs 27's doing,
 ;; or psql itself, but I'll want to address it here in any case.
-(defun my-sql-comint-preoutput-filter (output)
+(defun my-sql-comint-preoutput-filter-prompts (output)
   "Filter prompts out of SQL query output.
 
 Runs after `sql-interactive-remove-continuation-prompt' in
-`comint-preoutput-filter-functions'."
+`comint-preoutput-filter-functions'.
+
+For postgres, runs after `my-sql-comint-preoutput-filter-table-cruft'."
   ;; If the entire output is simply the main prompt, return that.
   ;; (i.e. When simply typing RET at the sqli prompt.)
   (if (string-match (concat "\\`\\(" sql-prompt-regexp "\\)\\'") output)
@@ -512,7 +559,7 @@ Runs after `sql-interactive-remove-continuation-prompt' in
   "Force all `sql-send-*' commands to include an initial newline.
 
 This is a trivial solution to single-line queries tripping up my
-custom output filter.  (See `my-sql-comint-preoutput-filter'.)"
+custom output filter.  (See `my-sql-comint-preoutput-filter-prompts'.)"
   (ad-set-arg 0 (concat "\n" (ad-get-arg 0))))
 (ad-activate 'sql-send-string)
 
