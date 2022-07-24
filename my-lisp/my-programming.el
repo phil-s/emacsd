@@ -552,6 +552,12 @@ For postgres, runs after `my-sql-comint-preoutput-filter-table-cruft'."
           (when (> (- (match-end 0) (match-beginning 0)) (window-body-width))
             (replace-match
              (substring (match-string 0) 0 (window-body-width)))))
+        ;; Filter duplicate trailing prompts.
+        (goto-char (point-max))
+        (move-beginning-of-line 1)
+        (while (and (re-search-forward main-prompt nil t)
+                    (not (eobp)))
+          (replace-match ""))
         ;; Return the filtered output.
         (buffer-substring-no-properties (point-min) (point-max))))))
 
