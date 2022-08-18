@@ -18,6 +18,18 @@
   (declare-function web-mode "web-mode")
   )
 
+;; Open *.phar files in `so-long-mode'.
+;; TODO: Consider adding to `magic-mode-alist' to also test
+;; executables without ".phar" filename extensions?
+(add-to-list 'auto-mode-alist '("\\.phar\\'" . so-long-mode))
+;; `interpreter-mode-alist' has precedence over `auto-mode-alist',
+;; and `php-template-mode-alist' gets checked by `php-mode-maybe'.
+(add-to-list 'php-template-mode-alist '("\\.phar\\'" . so-long-mode))
+(dolist (i interpreter-mode-alist)
+  (when (eq (cdr i) 'php-mode)
+    (setcdr i 'php-mode-maybe)))
+
+;; Open composer.lock files (which are JSON) in `js-mode'.
 (add-to-list 'auto-mode-alist '("/composer\\.lock\\'" . js-mode))
 
 ;; Find documentation (locally or online).
