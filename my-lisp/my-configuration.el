@@ -381,7 +381,7 @@ when `auto-save-mode' is invoked manually.")
 (defun sigusr1-handler ()
   "Handler for SIGUSR1 signal.
 
-Can be tested with (signal-process (emacs-pid) 'sigusr1)"
+Can be tested with (signal-process (emacs-pid) \\='sigusr1)"
   (interactive)
   (require 'server)
   (let ((newname (format "server%d" (emacs-pid))))
