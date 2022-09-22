@@ -60,7 +60,11 @@
       )
 
 (with-eval-after-load "mu4e-view"
-  (dolist (action '(("viewInBrowser" . mu4e-action-view-in-browser)
+  (setq mu4e-view-actions
+        (remove '("view as pdf" . mu4e-action-view-as-pdf)
+                mu4e-view-actions))
+  (dolist (action '(("browser view" . mu4e-action-view-in-browser)
+                    ("pdf view" . mu4e-action-view-as-pdf)
                     ("eww view" . my-mu4e-view-in-eww)))
     (add-to-list 'mu4e-view-actions action :append)))
 
