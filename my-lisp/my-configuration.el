@@ -666,6 +666,9 @@ n.b. ffap-alternate-file is intended for interactive use only."
 ;; (setq mode-line-misc-info '((global-mode-string ("" global-mode-string " "))))
 (add-to-list 'mode-line-misc-info '("v" emacs-version " @" system-name) :append)
 
+;; Inhibit "Mail" in the mode line.
+(advice-add 'display-time-update--mail :override #'ignore)
+
 ;; Display the hostname and time in the minibuffer window.
 (defun my-minibuffer-line-justify-right (text)
   "Return a string of `window-width' length with TEXT right-aligned."
