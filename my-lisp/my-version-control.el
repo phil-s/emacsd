@@ -413,20 +413,36 @@ Advice to `magit-push-current-to-upstream' triggers this query."
   (setq-local bug-reference-url-format #'my-bug-reference-url-format)
   (bug-reference-mode 1))
 
-;; Link to bug URLs.
-(setq bug-reference-bug-regexp
-      (concat "\\([Ww][Rr] ?[#-]?"
-              "\\|[Rr][Mm] ?[#-]?"
-              "\\|[Ii]ssue ?#?"
-              "\\|[Bb]ug ?#?"
-              "\\|[Pp]atch ?#"
-              "\\|RFE ?#"
-              "\\|PR [a-z+-]+/"
-              "\\)\\([0-9]+\\(?:#[0-9]+\\)?\\)"))
+;; Recognise various bug/issue identifiers.
+(defvar my-bug-reference-bug-regexp
+  (rx (group-n
+       1 (seq (group-n
+               3 (or (regexp "[Ww][Rr] ?[#-]?")
+                     (regexp "[Rr][Mm] ?[#-]?")
+                     (regexp "[Ii]ssue ?#?")
+                     (regexp "[Bb]ug ?#?")
+                     (regexp "[Pp]atch ?#")
+                     (regexp "RFE ?#")
+                     (regexp "PR [a-z+-]+/")))
+              (group-n
+               2 (seq (one-or-more digit)
+                      (opt "#" (one-or-more digit)))))))
+  "Value for `bug-reference-bug-regexp'.
+Intended for use with `my-bug-reference-url-format'.
+
+Note that if `bug-reference-url-format' is a function, group 1 should
+encompass the other groups (see `bug-reference-bug-regexp'); but this
+then conflicts with the need for group 2 to match the issue number
+if `bug-reference-url-format' actually a format string (if the default
+group numbers are used).  This is why I'm using explicit group numbers
+here, so that group 2 has the desired value in both scenarios.")
+
+;; Use my custom regexp by default.
+(setq bug-reference-bug-regexp my-bug-reference-bug-regexp)
 
 (defun my-bug-reference-url-format ()
   "URL generator for `bug-reference-url-format' (see which)."
-  (when-let ((type (match-string 1))
+  (when-let ((type (match-string 3))
              (formatstring
               (cond ((string-prefix-p "WR" type t)
                      "https://wrms.catalyst.net.nz/wr.php?request_id=%s")
@@ -437,6 +453,9 @@ Advice to `magit-push-current-to-upstream' triggers this query."
                     ((string-prefix-p "Bug" type t)
                      "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
     (format formatstring (match-string-no-properties 2))))
+
+;; Make that safe for use in the Local Variables section of a file.
+(put 'my-bug-reference-url-format 'bug-reference-url-format t)
 
 ;; pcomplete
 
