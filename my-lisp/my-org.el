@@ -47,6 +47,9 @@
   ;; Use the `org-headline-done' face for completed todo items.
   (setq org-fontify-done-headline t)
 
+  ;; Log the date/time when a TODO item is marked as DONE.
+  (setq org-log-done 'time)
+
   ;; Make the `org-headline-done' less noticeable.
   (set-face-attribute
    'org-headline-done nil :foreground nil :inherit 'shadow)
