@@ -77,7 +77,12 @@
         (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
                   'hide-trailing-whitespace))
       '(calendar
+        cfw:calendar
+        diary
+        diary-fancy-display
         ediff-meta
+        elfeed-search
+        elpher
         erc
         eww
         geben-context
