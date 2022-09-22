@@ -13,7 +13,7 @@
 ;; Add extra package archives.
 ;; The nongnu ELPA archive is standard starting from Emacs 28.
 (add-to-list 'package-archives
-             '("nongnu" . "https://elpa.nongnu.org/packages/") t)
+             '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
