@@ -132,6 +132,8 @@
 ;; http://askubuntu.com/questions/104609
 ;; ;; How to make terminal and X clipboards/selections interact.
 ;; https://elpa.gnu.org/packages/xclip.html
+;; ;; Overlays.
+;; https://emacs.stackexchange.com/q/2200/454
 
 ;; ;; Dynamic function definition without macro:
 ;; (let ((name "my-function"))
@@ -162,12 +164,13 @@
 
 ;; Pre-requisites:
 ;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev libjansson-dev libgccjit-7-dev make ncurses-term info texinfo texinfo-doc-nonfree ttf-ancient-fonts sdcv fortune-mod fortunes ispell ibritish wbritish
+;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev libjansson-dev libgccjit-7-dev make ncurses-term info texinfo texinfo-doc-nonfree ttf-ancient-fonts sdcv fortune-mod fortunes ispell ibritish wbritish meson gmime-3.0 libxapian-dev
 ;; # ^ Includes...
 ;; # Terminfo: ncurses-term
 ;; # PDF-tools packages: libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
 ;; # Fonts I use: ttf-ancient-fonts
 ;; # The 1913 + 1828 Webster’s Revised Unabridged Dictionary: sdcv
+;; # mu (building): meson gmime-3.0 libxapian-dev
 
 ;; `org-mode' export to latex and/or pdf requires texlive packages
 ;; (which are large, so not including these in the default list).
@@ -199,10 +202,14 @@
 ;; to a pristine state, as if it were freshly cloned. If that’s not what you
 ;; want, please don’t run that command.
 
-;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs")
+;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs")
 
 ;; Without duplicate message strings (but logic flow is less obvious):
-;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg"
+;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg"
+
+;; Secondary build/install --with-native-compilation:
+;;
+;; # ./configure --prefix=$(readlink -e ../native-compilation/usr/local) --with-native-compilation --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../native-compilation/config.out && cp config.log ../native-compilation/ && make 2>&1 | tee ../native-compilation/make.out && make install 2>&1 | tee ../native-compilation/install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs NC build (and installation) successful" now >/dev/null || echo "Emacs NC build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs NC" now >/dev/null || echo "Failed to build/install Emacs NC")
 
 ;;
 ;; Configuration options:
@@ -598,6 +605,33 @@
 ;; Dope -- DOtemacs ProfilEr.. A per-sexp-evaltime profiler.
 ;; https://raw.github.com/emacsmirror/dope/master/dope.el
 ;; M-x dope-quick-start will show a little introduction tutorial.
+
+;; Core dumps and gdb / C debugging
+;;
+;; Documentation: C-h C-d runs the command (view-emacs-debugging)
+;;
+;; First configure your system to actually save core dumps.
+;; /proc/sys/kernel/core_pattern needs to be set to something reasonable,
+;; and you need to set the core size limit in your shell like with ulimit -c.
+;; You can test that your system is actually generating core dumps by sending
+;; a running process a SIGABRT signal and then finding the core file.
+;;
+;; For the core dumps to be at all useful, you need to modify the CFLAGS used
+;; by Emacs when the C code is compiled.  You need to compile with -ggdb and
+;; -0g.  This leaves in the symbols, and optimizes the code for a "debugging
+;; experience", meaning that it disables optimizations that interfere with
+;; debugging.  I think you can just set the CFLAGS explicitly when you run make,
+;; but you may have to actually edit the Makefile?
+;;
+;; Load the core-dump-with-debug-symbols into gdb the debugger and type bt to
+;; get the back trace of where it was in the code when it crashed.  This trace
+;; output is what's going to be super useful for Emacs developers when you
+;; submit the bug.
+;;
+;; If you know C, you can actually go up and down stack frames, look at
+;; variables, and reason about what went wrong and maybe even fix the bug
+;; yourself.
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; * Elisp executable scripts
@@ -728,6 +762,20 @@
 ;; http://blog.habnab.it/blog/2013/06/25/emacsclient-and-tramp/
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;; * Sessions / Desktop
+
+;; ;; To prepare a static start-up desktop file:
+;; ;; 1. Run a separate temporary instance of Emacs, and within that:
+;; ;; 2. M-x make-directory RET ~/.emacs.d/start RET
+;; ;; 3. M-x desktop-change-dir RET ~/.emacs.d/start RET
+;; ;; 4. Visit files, etc -- create the configuration you wish to store
+;; ;; 5. M-x desktop-save-in-desktop-dir
+;; ;; 6. Quit the temporary instance of Emacs
+;; ;; 7. Add the following to your regular init file
+;; (let (desktop-dirname)
+;;   (desktop-read "~/.emacs.d/start")
+;;   (desktop-release-lock))
 
 ;;;; * Load or evaluate this file (and other files)
 
