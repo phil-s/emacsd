@@ -71,6 +71,9 @@
 (setq org-agenda-files `(,org-default-notes-file
                          ,(expand-file-name "~/org/todo.org")))
 
+;; Include diary entries in the agenda.
+(setq org-agenda-include-diary t)
+
 (with-eval-after-load "org-capture"
   ;; (setq org-capture-templates nil)
   (add-to-list 'org-capture-templates
