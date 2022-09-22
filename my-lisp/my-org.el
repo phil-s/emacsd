@@ -38,12 +38,6 @@
   ;; ;; Set maximum indentation for description lists.
   ;; (setq org-list-description-max-indent 5)
 
-  ;; Default notes file.
-  (setq org-default-notes-file "~/notes.org")
-
-  ;; Default agenda files.
-  (setq org-agenda-files '("~/todo.org"))
-
   ;; Prevent the demoting of a heading also shifting text within its sections.
   (setq org-adapt-indentation nil)
 
@@ -69,6 +63,14 @@
 
 
 ;;; Agenda / Capture
+
+;; Default notes file.
+(setq org-default-notes-file (expand-file-name "~/org/notes.org"))
+
+;; Default agenda files.
+(setq org-agenda-files `(,org-default-notes-file
+                         ,(expand-file-name "~/org/todo.org")))
+
 (with-eval-after-load "org-capture"
   ;; (setq org-capture-templates nil)
   (add-to-list 'org-capture-templates
@@ -81,12 +83,6 @@ SCHEDULED: %T
   %a
   Added: %U"))
   )
-
-;; Default notes file.
-(setq org-default-notes-file (expand-file-name "~/notes.org"))
-
-;; Default agenda files.
-(setq org-agenda-files `(,org-default-notes-file "~/todo.org"))
 
 ;; https://cestlaz.github.io/posts/using-emacs-24-capture-2/
 ;; Bind Key to: emacsclient --eval "(my-org-capture)"
