@@ -6,6 +6,7 @@
   (defvar apropos-do-all)
   (defvar bookmark-default-file)
   (defvar calendar-date-style)
+  (defvar calendar-week-start-day)
   (defvar cua--region-keymap)
   (defvar cua-delete-selection)
   (defvar dired-dnd-protocol-alist)
@@ -574,6 +575,7 @@ n.b. ffap-alternate-file is intended for interactive use only."
 (define-minor-mode my-visible-bell-mode
   "Use `my-visible-bell' as the `ring-bell-function'."
   :global t
+  :group 'display
   (let ((this 'my-visible-bell-mode))
     (if my-visible-bell-mode
         (progn
