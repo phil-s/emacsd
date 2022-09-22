@@ -662,8 +662,9 @@ n.b. ffap-alternate-file is intended for interactive use only."
              (reb-lisp-mode ,reb-lisp-mode-name :major)
              )))
 
-;; Display the hostname in the mode-line
-(add-to-list 'mode-line-misc-info (list "@" 'system-name) :append)
+;; Display the hostname and Emacs version in the mode-line
+;; (setq mode-line-misc-info '((global-mode-string ("" global-mode-string " "))))
+(add-to-list 'mode-line-misc-info '("v" emacs-version " @" system-name) :append)
 
 ;; Display the hostname and time in the minibuffer window.
 (defun my-minibuffer-line-justify-right (text)
@@ -740,7 +741,7 @@ Advice for the `battery-status-function' function value."
     (setq minibuffer-line-refresh-interval 5
           minibuffer-line-format
           `("" (:eval (my-minibuffer-line-justify-right
-                       (concat system-name " "
+                       (concat system-name " v" emacs-version " "
                                (and (bound-and-true-p battery-mode-line-string)
                                     (not (string= "" battery-mode-line-string))
                                     (format "| %s"
