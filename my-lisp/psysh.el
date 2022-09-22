@@ -54,6 +54,8 @@
 (require 'cc-mode) ;; `c-mode-syntax-table' is guaranteed to be available.
 (require 'php-mode nil :noerror) ;; Derives from c-mode; mightn't be installed.
 
+(defconst psysh--latest-version "0.4")
+
 (defvar psysh-process-name "psysh"
   "Name for the comint process.")
 
@@ -922,6 +924,18 @@ Runs the PsySH command 'completions' for the current input."
       ;; (message "psysh-completion-at-point: '%s'"
       ;;          (buffer-substring-no-properties beginning end))
       (list beginning end table))))
+
+(defvar psysh-version psysh--latest-version
+  "The loaded version of psysh.el.")
+
+;; Version-specific updates.
+(when (version< psysh-version psysh--latest-version)
+  ;; Perform each update in sequence, as necessary.
+  ;; Update to version 1.N from earlier versions:
+  ;; (when (version< psysh-version "1.N") ...)
+  ;;
+  ;; All updates completed.
+  (setq psysh-version psysh--latest-version))
 
 (provide 'psysh)
 ;;; psysh.el ends here
