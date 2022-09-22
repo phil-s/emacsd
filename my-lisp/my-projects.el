@@ -103,6 +103,11 @@
    (dired-mode . ((dired-omit-mode . t)))
    ))
 
+;; PHP Composer.
+(dir-locals-set-class-variables
+ 'composer
+ '((json-mode . ((js-indent-level . 4)))))
+
 ;; We call `grep-apply-setting' for Drupal projects.
 (autoload 'grep-apply-setting "grep")
 
