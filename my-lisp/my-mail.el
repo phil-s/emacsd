@@ -140,20 +140,27 @@
     (ecomplete-save)))
 
 ;; Override.
-(defcustom ecomplete-message-display-abbrev-auto-select t
-  "Whether `message-display-abbrev' should automatically select a sole option."
-  :group 'ecomplete
-  :type 'boolean)
 
-(advice-add 'ecomplete-display-matches :override #'my-mail-ecomplete-display-matches)
+;; Whether `message-display-abbrev' should automatically select a sole option.
+;; Added in Emacs 29.
+(setq ecomplete-auto-select t)
+
+(when (< emacs-major-version 29)
+  (defcustom ecomplete-auto-select t
+    "Whether `message-display-abbrev' should automatically select a sole option."
+    :group 'ecomplete
+    :type 'boolean)
+
+  (advice-add 'ecomplete-display-matches
+              :override #'my-mail-ecomplete-display-matches))
 
 (defun my-mail-ecomplete-display-matches (type word &optional choose)
   "Display the top-rated elements TYPE that match WORD.
 If CHOOSE, allow the user to choose interactively between the
 matches.
 
-Auto-select when `ecomplete-message-display-abbrev-auto-select' is
-non-nil and there is only a single completion option available."
+Auto-select when `ecomplete-auto-select' is non-nil and there is
+only a single completion option available."
   (let* ((matches (ecomplete-get-matches type word))
          (match-list (and matches (split-string matches "\n")))
          (max-lines (and matches (- (length match-list) 2)))
@@ -168,7 +175,7 @@ non-nil and there is only a single completion option available."
 	  (progn
 	    (message "%s" matches)
 	    nil)
-        (if (and ecomplete-message-display-abbrev-auto-select
+        (if (and ecomplete-auto-select
                  (eql 0 max-lines))
             ;; Auto-select when only one option is available.
             (nth 0 match-list)
