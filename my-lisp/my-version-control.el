@@ -106,6 +106,63 @@ When called interactively with a prefix argument, prompts for LIMIT also."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Link to bug trackers.
+
+;; Recognise various bug/issue identifiers.
+(defvar my-bug-reference-bug-regexp
+  (rx (group-n
+       1 (seq (group-n
+               3 (or (regexp "[Ww][Rr] ?[#-]?")
+                     (regexp "[Rr][Mm] ?[#-]?")
+                     (regexp "[Ii]ssue ?#?")
+                     (regexp "[Bb]ug ?#?")
+                     (regexp "[Pp]atch ?#")
+                     (regexp "RFE ?#")
+                     (regexp "PR [a-z+-]+/")))
+              (group-n
+               2 (seq (one-or-more digit)
+                      (opt "#" (one-or-more digit)))))))
+  "Value for `bug-reference-bug-regexp'.
+Intended for use with `my-bug-reference-url-format'.
+
+Note that if `bug-reference-url-format' is a function, group 1 should
+encompass the other groups (see `bug-reference-bug-regexp'); but this
+then conflicts with the need for group 2 to match the issue number
+if `bug-reference-url-format' actually a format string (if the default
+group numbers are used).  This is why I'm using explicit group numbers
+here, so that group 2 has the desired value in both scenarios.")
+
+;; Use my custom regexp by default.
+(setq bug-reference-bug-regexp my-bug-reference-bug-regexp)
+
+(defun my-bug-reference-url-format ()
+  "URL generator for `bug-reference-url-format' (see which)."
+  (when-let ((type (match-string 3))
+             (formatstring
+              (cond ((string-prefix-p "WR" type t)
+                     "https://wrms.catalyst.net.nz/wr.php?request_id=%s")
+                    ((string-prefix-p "RM" type t)
+                     "https://redmine.catalyst.net.nz/issues/%s")
+                    ((string-prefix-p "Issue" type t)
+                     "https://www.drupal.org/i/%s")
+                    ((string-prefix-p "Bug" type t)
+                     "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
+    (format formatstring (match-string-no-properties 2))))
+
+;; Make that safe for use in the Local Variables section of a file.
+(put 'my-bug-reference-url-format 'bug-reference-url-format t)
+
+;; Provide a function for use in mode hooks.
+(defun my-bug-reference-mode-enable ()
+  "Enable `bug-reference-mode' using `my-bug-reference-url-format'."
+  (setq-local bug-reference-url-format #'my-bug-reference-url-format)
+  (bug-reference-mode 1))
+
+;; Link bug references in VC log buffers.
+(add-hook 'log-view-mode-hook #'my-bug-reference-mode-enable)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; SVN (Subversion)
 
 ;; Silence compiler warnings
@@ -406,56 +463,9 @@ Advice to `magit-push-current-to-upstream' triggers this query."
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
 
-(add-hook 'magit-revision-mode-hook 'my-magit-revision-mode-hook)
-(defun my-magit-revision-mode-hook ()
-  "Custom `magit-revision-mode' behaviours."
-  ;; Link to bug URLs.
-  (setq-local bug-reference-url-format #'my-bug-reference-url-format)
-  (bug-reference-mode 1))
-
-;; Recognise various bug/issue identifiers.
-(defvar my-bug-reference-bug-regexp
-  (rx (group-n
-       1 (seq (group-n
-               3 (or (regexp "[Ww][Rr] ?[#-]?")
-                     (regexp "[Rr][Mm] ?[#-]?")
-                     (regexp "[Ii]ssue ?#?")
-                     (regexp "[Bb]ug ?#?")
-                     (regexp "[Pp]atch ?#")
-                     (regexp "RFE ?#")
-                     (regexp "PR [a-z+-]+/")))
-              (group-n
-               2 (seq (one-or-more digit)
-                      (opt "#" (one-or-more digit)))))))
-  "Value for `bug-reference-bug-regexp'.
-Intended for use with `my-bug-reference-url-format'.
-
-Note that if `bug-reference-url-format' is a function, group 1 should
-encompass the other groups (see `bug-reference-bug-regexp'); but this
-then conflicts with the need for group 2 to match the issue number
-if `bug-reference-url-format' actually a format string (if the default
-group numbers are used).  This is why I'm using explicit group numbers
-here, so that group 2 has the desired value in both scenarios.")
-
-;; Use my custom regexp by default.
-(setq bug-reference-bug-regexp my-bug-reference-bug-regexp)
-
-(defun my-bug-reference-url-format ()
-  "URL generator for `bug-reference-url-format' (see which)."
-  (when-let ((type (match-string 3))
-             (formatstring
-              (cond ((string-prefix-p "WR" type t)
-                     "https://wrms.catalyst.net.nz/wr.php?request_id=%s")
-                    ((string-prefix-p "RM" type t)
-                     "https://redmine.catalyst.net.nz/issues/%s")
-                    ((string-prefix-p "Issue" type t)
-                     "https://www.drupal.org/i/%s")
-                    ((string-prefix-p "Bug" type t)
-                     "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
-    (format formatstring (match-string-no-properties 2))))
-
-;; Make that safe for use in the Local Variables section of a file.
-(put 'my-bug-reference-url-format 'bug-reference-url-format t)
+;; Link bug references in Magit log and revision buffers.
+(add-hook 'magit-revision-mode-hook #'my-bug-reference-mode-enable)
+(add-hook 'magit-log-mode-hook #'my-bug-reference-mode-enable)
 
 ;; pcomplete
 
