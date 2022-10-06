@@ -162,7 +162,7 @@
      (:name git-modes
             :type git
             :branch "master"
-            :url "git://github.com/magit/git-modes.git")
+            :url "git@github.com:magit/git-modes.git")
 
      (:name gpicker
             :type http
