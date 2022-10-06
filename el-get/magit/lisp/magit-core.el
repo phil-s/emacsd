@@ -1,12 +1,14 @@
 ;;; magit-core.el --- core functionality  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2018  The Magit Project Contributors
+;; Copyright (C) 2010-2021  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; Magit is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
@@ -30,14 +32,22 @@
 
 ;;; Code:
 
-(require 'magit-popup)
 (require 'magit-utils)
 (require 'magit-section)
 (require 'magit-git)
 (require 'magit-mode)
 (require 'magit-margin)
 (require 'magit-process)
+(require 'magit-transient)
 (require 'magit-autorevert)
+
+(when (magit--libgit-available-p)
+  (condition-case err
+      (require 'magit-libgit)
+    (error
+     (setq magit-inhibit-libgit 'error)
+     (message "Error while loading `magit-libgit': %S" err)
+     (message "That is not fatal.  The `libegit2' module just won't be used."))))
 
 (defgroup magit nil
   "Controlling Git from Emacs."
@@ -59,25 +69,12 @@ Each of these options falls into one or more of these categories:
   :group 'magit)
 
 (defgroup magit-miscellaneous nil
-  "Miscellanous Magit options."
+  "Miscellaneous Magit options."
   :group 'magit)
 
 (defgroup magit-commands nil
   "Options controlling behavior of certain commands."
   :group 'magit)
-
-(defgroup magit-git-arguments nil
-  "Options controlling what arguments are passed to Git.
-
-Most of these options can be set using the respective popup,
-and it is recommended that you do that because then you can
-be certain that Magit supports the arguments that you select.
-
-An option `magit-NAME-argument' specifies the arguments that
-are enabled by default by the popup `magit-NAME-popup'."
-  :link '(info-link "(magit-popup)Customizing Existing Popups")
-  :link '(info-link "(magit-popup)Usage")
-  :group 'magit-commands)
 
 (defgroup magit-modes nil
   "Modes used or provided by Magit."
@@ -103,12 +100,12 @@ are enabled by default by the popup `magit-NAME-popup'."
   "Extensions to Magit."
   :group 'magit)
 
-(custom-add-to-group 'magit-modes   'magit-popup       'custom-group)
-(custom-add-to-group 'magit-faces   'magit-popup-faces 'custom-group)
 (custom-add-to-group 'magit-modes   'git-commit        'custom-group)
 (custom-add-to-group 'magit-faces   'git-commit-faces  'custom-group)
 (custom-add-to-group 'magit-modes   'git-rebase        'custom-group)
 (custom-add-to-group 'magit-faces   'git-rebase-faces  'custom-group)
+(custom-add-to-group 'magit         'magit-section     'custom-group)
+(custom-add-to-group 'magit-faces   'magit-section-faces 'custom-group)
 (custom-add-to-group 'magit-process 'with-editor       'custom-group)
 
 (defgroup magit-related nil
@@ -128,5 +125,6 @@ are enabled by default by the popup `magit-NAME-popup'."
 (custom-add-to-group 'magit-related 'smerge-refine-ignore-whitespace 'custom-variable)
 (custom-add-to-group 'magit-related 'vc-follow-symlinks 'custom-variable)
 
+;;; _
 (provide 'magit-core)
 ;;; magit-core.el ends here

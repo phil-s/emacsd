@@ -1,25 +1,27 @@
 ;;; magit.el --- A Git porcelain inside Emacs  -*- lexical-binding: t; coding: utf-8 -*-
 
-;; Copyright (C) 2008-2018  The Magit Project Contributors
+;; Copyright (C) 2008-2021  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
 
 ;; Author: Marius Vollmer <marius.vollmer@gmail.com>
+;;      Jonas Bernoulli <jonas@bernoul.li>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
-;;	Kyle Meyer        <kyle@kyleam.com>
-;;	Noam Postavsky    <npostavs@users.sourceforge.net>
+;;      Kyle Meyer <kyle@kyleam.com>
+;;      Noam Postavsky <npostavs@users.sourceforge.net>
 ;; Former-Maintainers:
-;;	Nicolas Dudebout  <nicolas.dudebout@gatech.edu>
-;;	Peter J. Weisberg <pj@irregularexpressions.net>
-;;	Phil Jackson      <phil@shellarchive.co.uk>
-;;	Rémi Vanicat      <vanicat@debian.org>
-;;	Yann Hodique      <yann.hodique@gmail.com>
+;;      Nicolas Dudebout <nicolas.dudebout@gatech.edu>
+;;      Peter J. Weisberg <pj@irregularexpressions.net>
+;;      Phil Jackson <phil@shellarchive.co.uk>
+;;      Rémi Vanicat <vanicat@debian.org>
+;;      Yann Hodique <yann.hodique@gmail.com>
 
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
-
-;; Magit requires at least GNU Emacs 24.4 and Git 1.9.4.
+;; Package-Requires: ((emacs "25.1") (dash "2.19.1") (git-commit "3.3.0") (magit-section "3.3.0") (transient "0.3.6") (with-editor "3.0.5"))
+;; Package-Version: 3.3.0
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; Magit is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
@@ -34,35 +36,37 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with Magit.  If not, see http://www.gnu.org/licenses.
 
+;; Magit requires at least GNU Emacs 25.1 and Git 2.2.0.
+
 ;;; Commentary:
 
-;; Magit is an interface to the version control system Git,
-;; implemented as an Emacs package.  Magit aspires to be a complete
-;; Git porcelain.  While we cannot (yet) claim, that Magit wraps and
-;; improves upon each and every Git command, it is complete enough to
-;; allow even experienced Git users to perform almost all of their
-;; daily version control tasks directly from within Emacs.  While many
-;; fine Git clients exist, only Magit and Git itself deserve to be
-;; called porcelains.
+;; Magit is a text-based Git user interface that puts an unmatched focus
+;; on streamlining workflows.  Commands are invoked using short mnemonic
+;; key sequences that take the cursor’s position in the highly actionable
+;; interface into account to provide context-sensitive behavior.
+
+;; With Magit you can do nearly everything that you can do when using Git
+;; on the command-line, but at greater speed and while taking advantage
+;; of advanced features that previously seemed too daunting to use on a
+;; daily basis.  Many users will find that by using Magit they can become
+;; more effective Git user.
 
 ;;; Code:
 
-(require 'cl-lib)
-(require 'dash)
-
-(require 'with-editor)
-(require 'git-commit)
 (require 'magit-core)
 (require 'magit-diff)
-(require 'magit-apply)
 (require 'magit-log)
+(require 'magit-wip)
+(require 'magit-apply)
 (require 'magit-repos)
+(require 'git-commit)
 
 (require 'format-spec)
 (require 'package nil t) ; used in `magit-version'
+(require 'with-editor)
 
-(defconst magit--minimal-git "1.9.4")
-(defconst magit--minimal-emacs "24.4")
+(defconst magit--minimal-git "2.2.0")
+(defconst magit--minimal-emacs "25.1")
 
 ;;; Faces
 
@@ -75,7 +79,7 @@ own faces for the `header-line', or for parts of the
   :group 'magit-faces)
 
 (defface magit-header-line-key
-  '((t :inherit magit-popup-key))
+  '((t :inherit font-lock-builtin-face))
   "Face for keys in the `header-line'."
   :group 'magit-faces)
 
@@ -104,8 +108,8 @@ own faces for the `header-line', or for parts of the
   :group 'magit-faces)
 
 (defface magit-branch-remote-head
-  '((((class color) (background light)) :inherit magit-branch-remote :box t)
-    (((class color) (background  dark)) :inherit magit-branch-remote :box t))
+  '((((supports (:box t))) :inherit magit-branch-remote :box t)
+    (t                     :inherit magit-branch-remote :inverse-video t))
   "Face for current branch."
   :group 'magit-faces)
 
@@ -116,9 +120,17 @@ own faces for the `header-line', or for parts of the
   :group 'magit-faces)
 
 (defface magit-branch-current
-  '((((class color) (background light)) :inherit magit-branch-local :box t)
-    (((class color) (background  dark)) :inherit magit-branch-local :box t))
+  '((((supports (:box t))) :inherit magit-branch-local :box t)
+    (t                     :inherit magit-branch-local :inverse-video t))
   "Face for current branch."
+  :group 'magit-faces)
+
+(defface magit-branch-upstream
+  '((t :slant italic))
+  "Face for upstream branch.
+This face is only used in logs and it gets combined
+ with `magit-branch-local', `magit-branch-remote'
+and/or `magit-branch-remote-head'."
   :group 'magit-faces)
 
 (defface magit-head
@@ -135,7 +147,7 @@ own faces for the `header-line', or for parts of the
 
 (defface magit-refname-stash
   '((t :inherit magit-refname))
-  "Face for wip refnames."
+  "Face for stash refnames."
   :group 'magit-faces)
 
 (defface magit-refname-wip
@@ -143,9 +155,19 @@ own faces for the `header-line', or for parts of the
   "Face for wip refnames."
   :group 'magit-faces)
 
+(defface magit-refname-pullreq
+  '((t :inherit magit-refname))
+  "Face for pullreq refnames."
+  :group 'magit-faces)
+
 (defface magit-keyword
   '((t :inherit font-lock-string-face))
   "Face for parts of commit messages inside brackets."
+  :group 'magit-faces)
+
+(defface magit-keyword-squash
+  '((t :inherit font-lock-warning-face))
+  "Face for squash! and fixup! keywords in commit messages."
   :group 'magit-faces)
 
 (defface magit-signature-good
@@ -159,7 +181,7 @@ own faces for the `header-line', or for parts of the
   :group 'magit-faces)
 
 (defface magit-signature-untrusted
-  '((t :foreground "cyan"))
+  '((t :foreground "medium aquamarine"))
   "Face for good untrusted signatures."
   :group 'magit-faces)
 
@@ -179,7 +201,7 @@ own faces for the `header-line', or for parts of the
   :group 'magit-faces)
 
 (defface magit-signature-error
-  '((t :foreground "firebrick3"))
+  '((t :foreground "light blue"))
   "Face for signatures that cannot be checked (e.g. missing key)."
   :group 'magit-faces)
 
@@ -198,93 +220,153 @@ own faces for the `header-line', or for parts of the
   "Face for filenames."
   :group 'magit-faces)
 
+;;; Global Bindings
+
+;;;###autoload
+(define-obsolete-variable-alias 'global-magit-file-mode
+  'magit-define-global-key-bindings "Magit 3.0.0")
+
+;;;###autoload
+(defcustom magit-define-global-key-bindings t
+  "Whether to bind some Magit commands in the global keymap.
+
+If this variable is non-nil, then the following bindings may
+be added to the global keymap.  The default is t.
+
+key             binding
+---             -------
+C-x g           magit-status
+C-x M-g         magit-dispatch
+C-c M-g         magit-file-dispatch
+
+These bindings may be added when `after-init-hook' is run.
+Each binding is added if and only if at that time no other key
+is bound to the same command and no other command is bound to
+the same key.  In other words we try to avoid adding bindings
+that are unnecessary, as well as bindings that conflict with
+other bindings.
+
+Adding the above bindings is delayed until `after-init-hook'
+is called to allow users to set the variable anywhere in their
+init file (without having to make sure to do so before `magit'
+is loaded or autoloaded) and to increase the likelihood that
+all the potentially conflicting user bindings have already
+been added.
+
+To set this variable use either `setq' or the Custom interface.
+Do not use the function `customize-set-variable' because doing
+that would cause Magit to be loaded immediately when that form
+is evaluated (this differs from `custom-set-variables', which
+doesn't load the libraries that define the customized variables).
+
+Setting this variable to nil has no effect if that is done after
+the key bindings have already been added.
+
+We recommend that you bind \"C-c g\" instead of \"C-c M-g\" to
+`magit-file-dispatch'.  The former is a much better binding
+but the \"C-c <letter>\" namespace is strictly reserved for
+users; preventing Magit from using it by default.
+
+Also see info node `(magit)Commands for Buffers Visiting Files'."
+  :package-version '(magit . "3.0.0")
+  :group 'magit-essentials
+  :type 'boolean)
+
+;;;###autoload
+(progn
+  (defun magit-maybe-define-global-key-bindings ()
+    (when magit-define-global-key-bindings
+      (let ((map (current-global-map)))
+        (dolist (elt '(("C-x g"   . magit-status)
+                       ("C-x M-g" . magit-dispatch)
+                       ("C-c M-g" . magit-file-dispatch)))
+          (let ((key (kbd (car elt)))
+                (def (cdr elt)))
+            (unless (or (lookup-key map key)
+                        (where-is-internal def (make-sparse-keymap) t))
+              (define-key map key def)))))))
+  (if after-init-time
+      (magit-maybe-define-global-key-bindings)
+    (add-hook 'after-init-hook 'magit-maybe-define-global-key-bindings t)))
+
 ;;; Dispatch Popup
 
-;;;###autoload (autoload 'magit-dispatch-popup "magit" nil t)
-(magit-define-popup magit-dispatch-popup
-  "Popup console for dispatching other popups."
-  :actions '("Popup and dwim commands"
-             (?A "Cherry-picking"  magit-cherry-pick-popup)
-             (?b "Branching"       magit-branch-popup)
-             (?B "Bisecting"       magit-bisect-popup)
-             (?c "Committing"      magit-commit-popup)
-             (?d "Diffing"         magit-diff-popup)
-             (?D "Change diffs"    magit-diff-refresh-popup)
-             (?e "Ediff dwimming"  magit-ediff-dwim)
-             (?E "Ediffing"        magit-ediff-popup)
-             (?f "Fetching"        magit-fetch-popup)
-             (?F "Pulling"         magit-pull-popup)
-             (?l "Logging"         magit-log-popup)
-             (?L "Change logs"     magit-log-refresh-popup)
-             (?m "Merging"         magit-merge-popup)
-             (?M "Remoting"        magit-remote-popup)
-             (?o "Submodules"      magit-submodule-popup)
-             (?O "Subtrees"        magit-subtree-popup)
-             (?P "Pushing"         magit-push-popup)
-             (?r "Rebasing"        magit-rebase-popup)
-             (?t "Tagging"         magit-tag-popup)
-             (?T "Notes"           magit-notes-popup)
-             (?V "Reverting"       magit-revert-popup)
-             (?w "Apply patches"   magit-am-popup)
-             (?W "Format patches"  magit-patch-popup)
-             (?X "Resetting"       magit-reset-popup)
-             (?y "Show Refs"       magit-show-refs-popup)
-             (?z "Stashing"        magit-stash-popup)
-             (?! "Running"         magit-run-popup)
-             (?% "Worktree"        magit-worktree-popup)
-             (lambda ()
-               (and (with-current-buffer magit-pre-popup-buffer
-                      (derived-mode-p 'magit-mode))
-                    (propertize "Applying changes" 'face 'magit-popup-heading)))
-             (?a "Apply"           magit-apply)
-             (?s "Stage"           magit-stage)
-             (?u "Unstage"         magit-unstage)
-             (?v "Reverse"         magit-reverse)
-             (?S "Stage all"       magit-stage-modified)
-             (?U "Unstage all"     magit-unstage-all)
-             (?k "Discard"         magit-discard)
-             (lambda ()
-               (and (with-current-buffer magit-pre-popup-buffer
-                      (derived-mode-p 'magit-mode))
-                    (propertize "Essential commands" 'face 'magit-popup-heading)))
-             (?g  "    refresh current buffer"   magit-refresh)
-             ;; These bindings only work because of :setup-function.
-             (?\t   "  toggle section at point"  magit-section-toggle)
-             (?\r   "  visit thing at point"     magit-visit-thing)
-             ;; This binding has no effect and only appears to do
-             ;; so because it is identical to the global binding.
-             ("C-h m" "show all key bindings"    describe-mode))
-  :setup-function 'magit-dispatch-popup-setup
-  :max-action-columns (lambda (heading)
-                        (pcase heading
-                          ("Popup and dwim commands" 4)
-                          ("Applying changes" 3)
-                          ("Essential commands" 1))))
-
-(defvar magit-dispatch-popup-map
-  (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map magit-popup-mode-map)
-    (cond ((featurep 'jkl)
-           (define-key map [tab]    'magit-invoke-popup-action)
-           (define-key map [return] 'magit-invoke-popup-action))
-          (t
-           (define-key map (kbd "C-i") 'magit-invoke-popup-action)
-           (define-key map (kbd "C-m") 'magit-invoke-popup-action)))
-    map)
-  "Keymap used by `magit-dispatch-popup'.")
-
-(defun magit-dispatch-popup-setup (val def)
-  (magit-popup-default-setup val def)
-  (use-local-map magit-dispatch-popup-map)
-  ;; This is necessary for users (i.e. me) who have broken the
-  ;; connection between C-i (aka TAB) and tab, and C-m (aka RET)
-  ;; and return.
-  (magit-popup-put
-   :actions (nconc (magit-popup-get :actions)
-                   (list (make-magit-popup-event :key 'tab
-                                                 :fun 'magit-section-toggle)
-                         (make-magit-popup-event :key 'return
-                                                 :fun 'magit-visit-thing)))))
+;;;###autoload (autoload 'magit-dispatch "magit" nil t)
+(transient-define-prefix magit-dispatch ()
+  "Invoke a Magit command from a list of available commands."
+  :info-manual "(magit)Top"
+  ["Transient and dwim commands"
+   ;; → bound in magit-mode-map or magit-section-mode-map
+   ;; ↓ bound below
+   [("A" "Apply"          magit-cherry-pick)
+    ;; a                  ↓
+    ("b" "Branch"         magit-branch)
+    ("B" "Bisect"         magit-bisect)
+    ("c" "Commit"         magit-commit)
+    ("C" "Clone"          magit-clone)
+    ("d" "Diff"           magit-diff)
+    ("D" "Diff (change)"  magit-diff-refresh)
+    ("e" "Ediff (dwim)"   magit-ediff-dwim)
+    ("E" "Ediff"          magit-ediff)
+    ("f" "Fetch"          magit-fetch)
+    ("F" "Pull"           magit-pull)
+    ;; g                  ↓
+    ;; G                → magit-refresh-all
+    ("h" "Help"           magit-help)
+    ("H" "Section info"   magit-describe-section :if-derived magit-mode)]
+   [("i" "Ignore"         magit-gitignore)
+    ("I" "Init"           magit-init)
+    ("j" "Jump to section"magit-status-jump  :if-mode     magit-status-mode)
+    ("j" "Display status" magit-status-quick :if-not-mode magit-status-mode)
+    ("J" "Display buffer" magit-display-repository-buffer)
+    ;; k                  ↓
+    ;; K                → magit-file-untrack
+    ("l" "Log"            magit-log)
+    ("L" "Log (change)"   magit-log-refresh)
+    ("m" "Merge"          magit-merge)
+    ("M" "Remote"         magit-remote)
+    ;; n                → magit-section-forward
+    ;; N       reserved → forge-dispatch
+    ("o" "Submodule"      magit-submodule)
+    ("O" "Subtree"        magit-subtree)
+    ;; p                → magit-section-backward
+    ("P" "Push"           magit-push)
+    ;; q                → magit-mode-bury-buffer
+    ("Q" "Command"        magit-git-command)]
+   [("r" "Rebase"         magit-rebase)
+    ;; R                → magit-file-rename
+    ;; s                  ↓
+    ;; S                  ↓
+    ("t" "Tag"            magit-tag)
+    ("T" "Note"           magit-notes)
+    ;; u                  ↓
+    ;; U                  ↓
+    ;; v                  ↓
+    ("V" "Revert"         magit-revert)
+    ("w" "Apply patches"  magit-am)
+    ("W" "Format patches" magit-patch)
+    ;; x                → magit-reset-quickly
+    ("X" "Reset"          magit-reset)
+    ("y" "Show Refs"      magit-show-refs)
+    ("Y" "Cherries"       magit-cherry)
+    ("z" "Stash"          magit-stash)
+    ("Z" "Worktree"       magit-worktree)
+    ("!" "Run"            magit-run)]]
+  ["Applying changes"
+   :if-derived magit-mode
+   [("a" "Apply"          magit-apply)
+    ("v" "Reverse"        magit-reverse)
+    ("k" "Discard"        magit-discard)]
+   [("s" "Stage"          magit-stage)
+    ("u" "Unstage"        magit-unstage)]
+   [("S" "Stage all"      magit-stage-modified)
+    ("U" "Unstage all"    magit-unstage-all)]]
+  ["Essential commands"
+   :if-derived magit-mode
+   ("g" "       refresh current buffer"   magit-refresh)
+   ("<tab>" "   toggle section at point"  magit-section-toggle)
+   ("<return>" "visit thing at point"     magit-visit-thing)
+   ("C-h m" "   show all key bindings"    describe-mode)])
 
 ;;; Git Popup
 
@@ -298,19 +380,20 @@ This affects `magit-git-command', `magit-git-command-topdir',
 
 (defvar magit-git-command-history nil)
 
-;;;###autoload (autoload 'magit-run-popup "magit" nil t)
-(magit-define-popup magit-run-popup
-  "Popup console for running raw Git commands."
-  :actions '((?! "Git Subcommand (in topdir)" magit-git-command-topdir)
-             (?k "Gitk"                       magit-run-gitk)
-             (?p "Git Subcommand (in pwd)"    magit-git-command)
-             (?a "Gitk --all"                 magit-run-gitk-all)
-             (?s "Shell command (in topdir)"  magit-shell-command-topdir)
-             (?b "Gitk --branches"            magit-run-gitk-branches)
-             (?S "Shell command (in pwd)"     magit-shell-command)
-             (?g "Git Gui"                    magit-run-git-gui))
-  :default-action 'magit-git-command
-  :max-action-columns 2)
+;;;###autoload (autoload 'magit-run "magit" nil t)
+(transient-define-prefix magit-run ()
+  "Run git or another command, or launch a graphical utility."
+  [["Run git subcommand"
+    ("!" "in repository root"   magit-git-command-topdir)
+    ("p" "in working directory" magit-git-command)]
+   ["Run shell command"
+    ("s" "in repository root"   magit-shell-command-topdir)
+    ("S" "in working directory" magit-shell-command)]
+   ["Launch"
+    ("k" "gitk"                 magit-run-gitk)
+    ("a" "gitk --all"           magit-run-gitk-all)
+    ("b" "gitk --branches"      magit-run-gitk-branches)
+    ("g" "git gui"              magit-run-git-gui)]])
 
 ;;;###autoload
 (defun magit-git-command (command)
@@ -364,13 +447,14 @@ is run in the top-level directory of the current working tree."
   (magit-process-buffer))
 
 (defun magit-read-shell-command (&optional toplevel initial-input)
-  (let ((dir (abbreviate-file-name
-              (if (or toplevel current-prefix-arg)
-                  (or (magit-toplevel)
-                      (magit--not-inside-repository-error))
-                default-directory))))
+  (let ((default-directory
+          (if (or toplevel current-prefix-arg)
+              (or (magit-toplevel)
+                  (magit--not-inside-repository-error))
+            default-directory)))
     (read-shell-command (if magit-shell-command-verbose-prompt
-                            (format "Async shell command in %s: " dir)
+                            (format "Async shell command in %s: "
+                                    (abbreviate-file-name default-directory))
                           "Async shell command: ")
                         initial-input 'magit-git-command-history)))
 
@@ -385,7 +469,6 @@ is run in the top-level directory of the current working tree."
        (2 'font-lock-function-name-face nil t))
       (,(concat "(" (regexp-opt '("magit-insert-section"
                                   "magit-section-case"
-                                  "magit-section-when"
                                   "magit-bind-match-strings"
                                   "magit-with-temp-index"
                                   "magit-with-blob"
@@ -413,9 +496,11 @@ and Emacs to it."
         (toplib (or load-file-name buffer-file-name))
         debug)
     (unless (and toplib
-                 (equal (file-name-nondirectory toplib) "magit.el"))
-      (setq toplib (locate-library "magit.el")))
-    (setq toplib (and toplib (file-chase-links toplib)))
+                 (member (file-name-nondirectory toplib)
+                         '("magit.el" "magit.el.gz")))
+      (let ((load-suffixes '(".el")))
+        (setq toplib (locate-library "magit"))))
+    (setq toplib (and toplib (magit--straight-chase-links toplib)))
     (push toplib debug)
     (when toplib
       (let* ((topdir (file-name-directory toplib))
@@ -423,7 +508,7 @@ and Emacs to it."
                       ".git" (file-name-directory
                               (directory-file-name topdir))))
              (static (locate-library "magit-version.el" nil (list topdir)))
-             (static (and static (file-chase-links static))))
+             (static (and static (magit--straight-chase-links static))))
         (or (progn
               (push 'repo debug)
               (when (and (file-exists-p gitdir)
@@ -437,7 +522,8 @@ and Emacs to it."
                   (ignore-errors (delete-file static)))
                 (setq magit-version
                       (let ((default-directory topdir))
-                        (magit-git-string "describe" "--tags" "--dirty")))))
+                        (magit-git-string "describe"
+                                          "--tags" "--dirty" "--always")))))
             (progn
               (push 'static debug)
               (when (and static (file-exists-p static))
@@ -454,16 +540,38 @@ and Emacs to it."
                              (package-version-join
                               (package-desc-version (cadr it))))))))
             (progn
-              (push 'debug debug)
+              (push 'dirname debug)
               (let ((dirname (file-name-nondirectory
                               (directory-file-name topdir))))
-                (when (string-match "\\`magit-\\([0-9]\\{8\\}\\.[0-9]*\\)"
-                                    dirname)
-                  (setq magit-version (match-string 1 dirname))))))))
+                (when (string-match "\\`magit-\\([0-9].*\\)" dirname)
+                  (setq magit-version (match-string 1 dirname)))))
+            ;; If all else fails, just report the commit hash. It's
+            ;; better than nothing and we cannot do better in the case
+            ;; of e.g. a shallow clone.
+            (progn
+              (push 'hash debug)
+              ;; Same check as above to see if it's really the Magit repo.
+              (when (and (file-exists-p gitdir)
+                         (file-exists-p
+                          (expand-file-name "../lisp/magit.el" gitdir)))
+                (setq magit-version
+                      (let ((default-directory topdir))
+                        (magit-git-string "rev-parse" "HEAD"))))))))
     (if (stringp magit-version)
         (when print-dest
-          (princ (format "Magit %s, Git %s, Emacs %s, %s"
+          (princ (format "Magit %s%s, Git %s, Emacs %s, %s"
                          (or magit-version "(unknown)")
+                         (or (and (ignore-errors (version< "2008" magit-version))
+                                  (ignore-errors
+                                    (require 'lisp-mnt)
+                                    (and (fboundp 'lm-header)
+                                         (format
+                                          " [>= %s]"
+                                          (with-temp-buffer
+                                            (insert-file-contents
+                                             (locate-library "magit.el" t))
+                                            (lm-header "Package-Version"))))))
+                             "")
                          (or (let ((magit-git-debug
                                     (lambda (err)
                                       (display-warning '(magit git)
@@ -477,7 +585,7 @@ and Emacs to it."
       (setq magit-version 'error)
       (when magit-version
         (push magit-version debug))
-      (unless (equal (getenv "TRAVIS") "true")
+      (unless (equal (getenv "CI") "true")
         ;; The repository is a sparse clone.
         (message "Cannot determine Magit's version %S" debug)))
     magit-version))
@@ -486,11 +594,14 @@ and Emacs to it."
 
 (defun magit-debug-git-executable ()
   "Display a buffer with information about `magit-git-executable'.
+Also include information about `magit-remote-git-executable'.
 See info node `(magit)Debugging Tools' for more information."
   (interactive)
   (with-current-buffer (get-buffer-create "*magit-git-debug*")
     (pop-to-buffer (current-buffer))
     (erase-buffer)
+    (insert (format "magit-remote-git-executable: %S\n"
+                    magit-remote-git-executable))
     (insert (concat
              (format "magit-git-executable: %S" magit-git-executable)
              (and (not (file-name-absolute-p magit-git-executable))
@@ -521,10 +632,18 @@ See info node `(magit)Debugging Tools' for more information."
 ;;; Startup Asserts
 
 (defun magit-startup-asserts ()
+  (when-let ((val (getenv "GIT_DIR")))
+    (setenv "GIT_DIR")
+    (message "Magit unset $GIT_DIR (was %S).  See \
+https://github.com/magit/magit/wiki/Don't-set-$GIT_DIR-and-alike" val))
+  (when-let ((val (getenv "GIT_WORK_TREE")))
+    (setenv "GIT_WORK_TREE")
+    (message "Magit unset $GIT_WORK_TREE (was %S).  See \
+https://github.com/magit/magit/wiki/Don't-set-$GIT_DIR-and-alike" val))
   (let ((version (magit-git-version)))
     (when (and version
                (version< version magit--minimal-git)
-               (not (equal (getenv "TRAVIS") "true")))
+               (not (equal (getenv "CI") "true")))
       (display-warning 'magit (format "\
 Magit requires Git >= %s, you are using %s.
 
@@ -563,7 +682,6 @@ For X11 something like ~/.xinitrc should work.\n"
   (require 'magit-status)
   (require 'magit-refs)
   (require 'magit-files)
-  (require 'magit-collab)
   (require 'magit-reset)
   (require 'magit-branch)
   (require 'magit-merge)
@@ -573,21 +691,27 @@ For X11 something like ~/.xinitrc should work.\n"
   (require 'magit-sequence)
   (require 'magit-commit)
   (require 'magit-remote)
+  (require 'magit-clone)
+  (require 'magit-fetch)
+  (require 'magit-pull)
+  (require 'magit-push)
   (require 'magit-bisect)
   (require 'magit-stash)
   (require 'magit-blame)
   (require 'magit-obsolete)
+  (require 'magit-submodule)
   (unless (load "magit-autoloads" t t)
-    (require 'magit-submodule)
+    (require 'magit-patch)
     (require 'magit-subtree)
     (require 'magit-ediff)
+    (require 'magit-gitignore)
     (require 'magit-extras)
     (require 'git-rebase)
     (require 'magit-imenu)
     (require 'magit-bookmark)))
 
-(eval-after-load 'bookmark
-  '(require 'magit-bookmark))
+(with-eval-after-load 'bookmark
+  (require 'magit-bookmark))
 
 (if after-init-time
     (progn (magit-startup-asserts)

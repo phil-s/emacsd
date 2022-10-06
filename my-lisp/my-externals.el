@@ -215,7 +215,7 @@
             :load-path ("lisp")
             :build ("make") ;; builds documentation.
             ;; :build ("make lisp") ;; just the code; fewer dependencies.
-            :depends (async dash ghub git-modes magit-popup))
+            :depends (dash ghub git-modes transient with-editor))
 
      (:name mo-git-blame)
 

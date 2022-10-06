@@ -1,12 +1,14 @@
 ;;; magit-obsolete.el --- obsolete definitions  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2018  The Magit Project Contributors
+;; Copyright (C) 2010-2021  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; Magit is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
@@ -29,127 +31,84 @@
 
 (require 'magit)
 
-;;; Obsolete since v2.1.0
+;;; Obsolete since v3.0.0
 
-(define-obsolete-variable-alias 'magit-git-standard-options
-  'magit-git-global-arguments "Magit 2.1.0")
+(define-obsolete-function-alias 'magit-diff-visit-file-worktree
+  'magit-diff-visit-worktree-file "Magit 3.0.0")
 
-;;; Obsolete since v2.2.0
+(define-obsolete-function-alias 'magit-status-internal
+  'magit-status-setup-buffer "Magit 3.0.0")
 
-(define-obsolete-variable-alias 'magit-log-section-args
-  'magit-log-section-arguments "Magit 2.2.0")
+(define-obsolete-variable-alias 'magit-mode-setup-hook
+  'magit-setup-buffer-hook "Magit 3.0.0")
 
-;;; Obsolete since v2.3.0
+(define-obsolete-variable-alias 'magit-branch-popup-show-variables
+  'magit-branch-direct-configure "Magit 3.0.0")
 
-(define-obsolete-function-alias 'global-magit-file-buffer-mode
-  'global-magit-file-mode "Magit 2.3.0")
+(define-obsolete-function-alias 'magit-dispatch-popup
+  'magit-dispatch "Magit 3.0.0")
 
-;;; Obsolete since v2.4.0
+(define-obsolete-function-alias 'magit-repolist-column-dirty
+  'magit-repolist-column-flag "Magit 3.0.0")
 
-(define-obsolete-function-alias 'magit-get-tracked-ref
-  'magit-get-upstream-ref "Magit 2.4.0")
+(define-obsolete-variable-alias 'magit-disable-line-numbers
+  'magit-section-disable-line-numbers "Magit 3.0.0")
 
-(define-obsolete-function-alias 'magit-get-tracked-branch
-  'magit-get-upstream-branch "Magit 2.4.0")
+(define-obsolete-variable-alias 'inhibit-magit-refresh
+  'magit-inhibit-refresh "Magit 3.0.0")
 
-(define-obsolete-function-alias 'magit-get-tracked-remote
-  'magit-get-upstream-remote "Magit 2.4.0")
+(defun magit--magit-popup-warning ()
+  (display-warning 'magit "\
+Magit no longer uses Magit-Popup.
+It now uses Transient.
+See https://emacsair.me/2019/02/14/transient-0.1.
 
-(define-obsolete-function-alias 'magit-insert-head-header
-  'magit-insert-head-branch-header "Magit 2.4.0")
+However your configuration and/or some third-party package that
+you use still depends on the `magit-popup' package.  But because
+`magit' no longer depends on that, `package' has removed it from
+your system.
 
-(define-obsolete-function-alias 'magit-insert-pull-branch-header
-  'magit-insert-upstream-branch-header "Magit 2.4.0")
+If some package that you use still depends on `magit-popup' but
+does not declare it as a dependency, then please contact its
+maintainer about that and install `magit-popup' explicitly.
 
-(define-obsolete-function-alias 'magit-insert-unpulled-or-recent-commits
-  'magit-insert-unpulled-from-upstream-or-recent "Magit 2.4.0")
+If you yourself use functions that are defined in `magit-popup'
+in your configuration, then the next step depends on what you use
+that for.
 
-(define-obsolete-function-alias 'magit-insert-upstream-header
-  'magit-insert-upstream-branch-header "Magit 2.4.0")
+* If you use `magit-popup' to define your own popups but do not
+  modify any of Magit's old popups, then you have to install
+  `magit-popup' explicitly.  (You can also migrate to Transient,
+  but there is no need to rush that.)
 
-(make-obsolete-variable 'magit-revert-buffers
-                        'magit-auto-revert-mode
-                        "Magit 2.4.0")
+* If you add additional arguments and/or actions to Magit's popups,
+  then you have to port that to modify the new \"transients\" instead.
+  See https://github.com/magit/magit/wiki/\
+Converting-popup-modifications-to-transient-modifications
 
-(make-obsolete-variable 'magit-status-refresh-hook "\
-use `magit-pre-refresh-hook', `magit-post-refresh-hook',
-  `magit-refresh-buffer-hook', or `magit-status-mode-hook' instead.
+To find installed packages that still use `magit-popup' you can
+use e.g. \"M-x rgrep RET magit-popup RET RET ~/.emacs.d/ RET\"."))
+(cl-eval-when (eval load)
+  (unless (require (quote magit-popup) nil t)
+    (defun magit-define-popup-switch (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-define-popup-option (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-define-popup-variable (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-define-popup-action (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-define-popup-sequence-action (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-define-popup-key (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-define-popup-keys-deferred (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-change-popup-key (&rest _)
+      (magit--magit-popup-warning))
+    (defun magit-remove-popup-key (&rest _)
+      (magit--magit-popup-warning))))
 
-  If you want to run a function every time the status buffer is
-  refreshed, in order to do something with that buffer, then use:
-
-    (add-hook 'magit-refresh-buffer-hook
-              (lambda ()
-                (when (derived-mode-p 'magit-status-mode)
-                  ...)))
-
-  If your hook function should run regardless of whether the
-  status buffer exists or not, then use `magit-pre-refresh-hook'
-  or `magit-post-refresh-hook'.
-
-  If your hook function only has to be run once, when the buffer
-  is first created, then `magit-status-mode-hook' instead.
-" "Magit 2.4.0")
-
-;;; Obsolete since v2.6.0
-
-(define-obsolete-function-alias 'magit-insert-unpulled-module-commits
-  'magit-insert-modules-unpulled-from-upstream "Magit 2.6.0")
-
-(define-obsolete-function-alias 'magit-insert-unpushed-module-commits
-  'magit-insert-modules-unpushed-to-upstream "Magit 2.6.0")
-
-;;; Obsolete since v2.8.0
-
-(make-obsolete-variable 'magit-repository-directories-depth
-                        'magit-repository-directories "Magit 2.8.0")
-
-;;; Obsolete since v2.9.0
-
-(define-obsolete-variable-alias 'magit-duration-spec
-  'magit--age-spec "Magit 2.9.0")
-
-(make-obsolete-variable 'magit-diff-show-lines-boundary
-                        'magit-diff-highlight-hunk-region-functions
-                        "Magit 2.9.0")
-
-(define-obsolete-variable-alias 'magit-log-output-coding-system
-  'magit-git-output-coding-system "Magit 2.9.0")
-
-;;; Obsolete since v2.9.1
-
-(define-obsolete-function-alias 'magit-checkout-file
-  'magit-file-checkout "Magit 2.9.1")
-
-;;; Obsolete since v2.11.0
-
-(define-obsolete-function-alias 'magit-modified-files
-  'magit-unstaged-files "Magit 2.11.0")
-
-(define-obsolete-function-alias 'magit-insert-submodules
-  'magit-insert-modules-overview "Magit 2.11.0")
-
-;;; Obsolete since v2.12.0
-
-(define-obsolete-function-alias 'magit-insert-unpulled-from-upstream-or-recent
-  'magit-insert-unpulled-from-upstream "Magit 2.12.0")
-
-(define-obsolete-function-alias 'magit-get-submodules
-  'magit-list-module-paths "Magit 2.12.0")
-
-(make-obsolete-variable 'magit-status-expand-stashes
-                        'magit-section-initial-visibility-alist
-                        "Magit 2.12.0")
-
-(make-obsolete 'magit-section-type     "use (oref ... type) instead"     "Magit 2.12.0")
-(make-obsolete 'magit-section-value    "use (oref ... value) instead"    "Magit 2.12.0")
-(make-obsolete 'magit-section-start    "use (oref ... start) instead"    "Magit 2.12.0")
-(make-obsolete 'magit-section-content  "use (oref ... content) instead"  "Magit 2.12.0")
-(make-obsolete 'magit-section-end      "use (oref ... end) instead"      "Magit 2.12.0")
-(make-obsolete 'magit-section-hidden   "use (oref ... hidden) instead"   "Magit 2.12.0")
-(make-obsolete 'magit-section-washer   "use (oref ... washer) instead"   "Magit 2.12.0")
-(make-obsolete 'magit-section-parent   "use (oref ... parent) instead"   "Magit 2.12.0")
-(make-obsolete 'magit-section-children "use (oref ... children) instead" "Magit 2.12.0")
-
+;;; _
 (provide 'magit-obsolete)
 ;;; magit-obsolete.el ends here

@@ -1,12 +1,14 @@
 ;;; magit-ediff.el --- Ediff extension for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2018  The Magit Project Contributors
+;; Copyright (C) 2010-2021  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; Magit is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
@@ -99,23 +101,30 @@ tree at the time of stashing."
   :group 'magit-ediff
   :type 'boolean)
 
+(defcustom magit-ediff-use-indirect-buffers nil
+  "Whether to use indirect buffers."
+  :package-version '(magit . "3.1.0")
+  :group 'magit-ediff
+  :type 'boolean)
+
 ;;; Commands
 
 (defvar magit-ediff-previous-winconf nil)
 
-;;;###autoload (autoload 'magit-ediff-popup "magit-ediff" nil t)
-(magit-define-popup magit-ediff-popup
-  "Popup console for ediff commands."
-  :actions '((?E "Dwim"          magit-ediff-dwim)
-             (?u "Show unstaged" magit-ediff-show-unstaged)
-             (?s "Stage"         magit-ediff-stage)
-             (?i "Show staged"   magit-ediff-show-staged)
-             (?m "Resolve"       magit-ediff-resolve)
-             (?w "Show worktree" magit-ediff-show-working-tree)
-             (?r "Diff range"    magit-ediff-compare)
-             (?c "Show commit"   magit-ediff-show-commit) nil
-             (?z "Show stash"    magit-ediff-show-stash))
-  :max-action-columns 2)
+;;;###autoload (autoload 'magit-ediff "magit-ediff" nil)
+(transient-define-prefix magit-ediff ()
+  "Show differences using the Ediff package."
+  :info-manual "(ediff)"
+  ["Ediff"
+   [("E" "Dwim"          magit-ediff-dwim)
+    ("s" "Stage"         magit-ediff-stage)
+    ("m" "Resolve"       magit-ediff-resolve)]
+   [("u" "Show unstaged" magit-ediff-show-unstaged)
+    ("i" "Show staged"   magit-ediff-show-staged)
+    ("w" "Show worktree" magit-ediff-show-working-tree)]
+   [("c" "Show commit"   magit-ediff-show-commit)
+    ("r" "Show range"    magit-ediff-compare)
+    ("z" "Show stash"    magit-ediff-show-stash)]])
 
 ;;;###autoload
 (defun magit-ediff-resolve (file)
@@ -154,52 +163,82 @@ conflicts, including those already resolved by Git, use
          (let ((magit-ediff-previous-winconf smerge-ediff-windows))
            (run-hooks 'magit-ediff-quit-hook)))))))
 
+(defmacro magit-ediff-buffers (quit &rest spec)
+  (declare (indent 1))
+  (let ((fn (if (= (length spec) 3) 'ediff-buffers3 'ediff-buffers))
+        (char ?@)
+        get make kill)
+    (pcase-dolist (`(,g ,m) spec)
+      (let ((b (intern (format "buf%c" (cl-incf char)))))
+        (push `(,b ,g) get)
+        (push `(if ,b
+                   (if magit-ediff-use-indirect-buffers
+                       (prog1
+                           (make-indirect-buffer
+                            ,b (generate-new-buffer-name (buffer-name ,b)) t)
+                         (setq ,b nil))
+                     ,b)
+                 ,m)
+              make)
+        (push `(unless ,b
+                 (ediff-kill-buffer-carefully
+                  ,(intern (format "ediff-buffer-%c" char))))
+              kill)))
+    (setq get  (nreverse get))
+    (setq make (nreverse make))
+    (setq kill (nreverse kill))
+    `(magit-with-toplevel
+       (let ((conf (current-window-configuration))
+             ,@get)
+         (,fn
+          ,@make
+          (list (lambda ()
+                  (setq-local
+                   ediff-quit-hook
+                   (list ,@(and quit (list quit))
+                         (lambda ()
+                           ,@kill
+                           (let ((magit-ediff-previous-winconf conf))
+                             (run-hooks 'magit-ediff-quit-hook)))))))
+          ',fn)))))
+
 ;;;###autoload
 (defun magit-ediff-stage (file)
   "Stage and unstage changes to FILE using Ediff.
 FILE has to be relative to the top directory of the repository."
   (interactive
-   (list (magit-completing-read "Selectively stage file"
-                                (magit-tracked-files) nil nil nil nil
-                                (magit-current-file))))
+   (let ((files (magit-tracked-files)))
+     (list (magit-completing-read "Selectively stage file" files nil t nil nil
+                                  (car (member (magit-current-file) files))))))
   (magit-with-toplevel
-    (let* ((conf (current-window-configuration))
-           (bufA (magit-get-revision-buffer "HEAD" file))
-           (bufB (get-buffer (concat file ".~{index}~")))
-           (bufBrw (and bufB (with-current-buffer bufB (not buffer-read-only))))
-           (bufC (get-file-buffer file))
-           (fileBufC (or bufC (find-file-noselect file)))
+    (let* ((bufA  (magit-get-revision-buffer "HEAD" file))
+           (bufB  (magit-get-revision-buffer "{index}" file))
+           (lockB (and bufB (buffer-local-value 'buffer-read-only bufB)))
+           (bufC  (get-file-buffer file))
+           ;; Use the same encoding for all three buffers or we
+           ;; may end up changing the file in an unintended way.
+           (bufC* (or bufC (find-file-noselect file)))
            (coding-system-for-read
-            (with-current-buffer fileBufC buffer-file-coding-system)))
-      (ediff-buffers3
-       (or bufA (magit-find-file-noselect "HEAD" file))
-       (with-current-buffer (magit-find-file-index-noselect file t)
-         (setq buffer-read-only nil)
-         (current-buffer))
-       fileBufC
-       `((lambda ()
-           (setq-local
-            ediff-quit-hook
-            (lambda ()
-              (and (buffer-live-p ediff-buffer-B)
-                   (buffer-modified-p ediff-buffer-B)
-                   (with-current-buffer ediff-buffer-B
-                     (magit-update-index)))
-              (and (buffer-live-p ediff-buffer-C)
-                   (buffer-modified-p ediff-buffer-C)
-                   (with-current-buffer ediff-buffer-C
-                     (when (y-or-n-p
-                            (format "Save file %s? " buffer-file-name))
-                       (save-buffer))))
-              ,@(unless bufA '((ediff-kill-buffer-carefully ediff-buffer-A)))
-              ,@(if bufB
-                    (unless bufBrw '((with-current-buffer ediff-buffer-B
-                                       (setq buffer-read-only t))))
-                  '((ediff-kill-buffer-carefully ediff-buffer-B)))
-              ,@(unless bufC '((ediff-kill-buffer-carefully ediff-buffer-C)))
-              (let ((magit-ediff-previous-winconf ,conf))
-                (run-hooks 'magit-ediff-quit-hook))))))
-       'ediff-buffers3))))
+            (buffer-local-value 'buffer-file-coding-system bufC*))
+           (bufA* (magit-find-file-noselect-1 "HEAD" file t))
+           (bufB* (magit-find-file-index-noselect file t)))
+      (setf (buffer-local-value 'buffer-read-only bufB*) nil)
+      (magit-ediff-buffers
+          (lambda ()
+            (when (buffer-live-p ediff-buffer-B)
+              (when lockB
+                (setf (buffer-local-value 'buffer-read-only bufB) t))
+              (when (buffer-modified-p ediff-buffer-B)
+                (with-current-buffer ediff-buffer-B
+                  (magit-update-index))))
+            (when (and (buffer-live-p ediff-buffer-C)
+                       (buffer-modified-p ediff-buffer-C))
+              (with-current-buffer ediff-buffer-C
+                (when (y-or-n-p (format "Save file %s? " buffer-file-name))
+                  (save-buffer)))))
+        (bufA bufA*)
+        (bufB bufB*)
+        (bufC bufC*)))))
 
 ;;;###autoload
 (defun magit-ediff-compare (revA revB fileA fileB)
@@ -214,34 +253,16 @@ line of the region.  With a prefix argument, instead of diffing
 the revisions, choose a revision to view changes along, starting
 at the common ancestor of both revisions (i.e., use a \"...\"
 range)."
-  (interactive (-let [(revA revB) (magit-ediff-compare--read-revisions
-                                   nil current-prefix-arg)]
-                 (nconc (list revA revB)
-                        (magit-ediff-read-files revA revB))))
-  (magit-with-toplevel
-    (let ((conf (current-window-configuration))
-          (bufA (if revA
-                    (magit-get-revision-buffer revA fileA)
-                  (get-file-buffer fileA)))
-          (bufB (if revB
-                    (magit-get-revision-buffer revB fileB)
-                  (get-file-buffer fileB))))
-      (ediff-buffers
-       (or bufA (if revA
-                    (magit-find-file-noselect revA fileA)
-                  (find-file-noselect fileA)))
-       (or bufB (if revB
-                    (magit-find-file-noselect revB fileB)
-                  (find-file-noselect fileB)))
-       `((lambda ()
-           (setq-local
-            ediff-quit-hook
-            (lambda ()
-              ,@(unless bufA '((ediff-kill-buffer-carefully ediff-buffer-A)))
-              ,@(unless bufB '((ediff-kill-buffer-carefully ediff-buffer-B)))
-              (let ((magit-ediff-previous-winconf ,conf))
-                (run-hooks 'magit-ediff-quit-hook))))))
-       'ediff-revision))))
+  (interactive
+   (pcase-let ((`(,revA ,revB) (magit-ediff-compare--read-revisions
+                                nil current-prefix-arg)))
+     (nconc (list revA revB)
+            (magit-ediff-read-files revA revB))))
+  (magit-ediff-buffers nil
+    ((if revA (magit-get-revision-buffer revA fileA) (get-file-buffer    fileA))
+     (if revA (magit-find-file-noselect  revA fileA) (find-file-noselect fileA)))
+    ((if revB (magit-get-revision-buffer revB fileB) (get-file-buffer    fileB))
+     (if revB (magit-find-file-noselect  revB fileB) (find-file-noselect fileB)))))
 
 (defun magit-ediff-compare--read-revisions (&optional arg mbase)
   (let ((input (or arg (magit-diff-read-range-or-commit
@@ -306,15 +327,16 @@ mind at all, then it asks the user for a command to run."
           (setq command #'magit-ediff-show-stash)
           (setq revB value))
          ((pred stringp)
-          (-let [(a b) (magit-ediff-compare--read-revisions range)]
+          (pcase-let ((`(,a ,b) (magit-ediff-compare--read-revisions range)))
             (setq command #'magit-ediff-compare)
             (setq revA a)
             (setq revB b)))
          (_
           (when (derived-mode-p 'magit-diff-mode)
             (pcase (magit-diff-type)
-              (`committed (-let [(a b) (magit-ediff-compare--read-revisions
-                                        (car magit-refresh-args))]
+              (`committed (pcase-let ((`(,a ,b)
+                                       (magit-ediff-compare--read-revisions
+                                        magit-buffer-range)))
                             (setq revA a)
                             (setq revB b)))
               ((guard (not magit-ediff-dwim-show-on-hunks))
@@ -355,21 +377,11 @@ FILE must be relative to the top directory of the repository."
    (list (magit-read-file-choice "Show staged changes for file"
                                  (magit-staged-files)
                                  "No staged files")))
-  (let ((conf (current-window-configuration))
-        (bufA (magit-get-revision-buffer "HEAD" file))
-        (bufB (get-buffer (concat file ".~{index}~"))))
-    (ediff-buffers
-     (or bufA (magit-find-file-noselect "HEAD" file))
-     (or bufB (magit-find-file-index-noselect file t))
-     `((lambda ()
-         (setq-local
-          ediff-quit-hook
-          (lambda ()
-            ,@(unless bufA '((ediff-kill-buffer-carefully ediff-buffer-A)))
-            ,@(unless bufB '((ediff-kill-buffer-carefully ediff-buffer-B)))
-            (let ((magit-ediff-previous-winconf ,conf))
-              (run-hooks 'magit-ediff-quit-hook))))))
-     'ediff-buffers)))
+  (magit-ediff-buffers nil
+    ((magit-get-revision-buffer "HEAD" file)
+     (magit-find-file-noselect "HEAD" file))
+    ((get-buffer (concat file ".~{index}~"))
+     (magit-find-file-index-noselect file t))))
 
 ;;;###autoload
 (defun magit-ediff-show-unstaged (file)
@@ -383,22 +395,11 @@ FILE must be relative to the top directory of the repository."
    (list (magit-read-file-choice "Show unstaged changes for file"
                                  (magit-unstaged-files)
                                  "No unstaged files")))
-  (magit-with-toplevel
-    (let ((conf (current-window-configuration))
-          (bufA (get-buffer (concat file ".~{index}~")))
-          (bufB (get-file-buffer file)))
-      (ediff-buffers
-       (or bufA (magit-find-file-index-noselect file t))
-       (or bufB (find-file-noselect file))
-       `((lambda ()
-           (setq-local
-            ediff-quit-hook
-            (lambda ()
-              ,@(unless bufA '((ediff-kill-buffer-carefully ediff-buffer-A)))
-              ,@(unless bufB '((ediff-kill-buffer-carefully ediff-buffer-B)))
-              (let ((magit-ediff-previous-winconf ,conf))
-                (run-hooks 'magit-ediff-quit-hook))))))
-       'ediff-buffers))))
+  (magit-ediff-buffers nil
+    ((get-buffer (concat file ".~{index}~"))
+     (magit-find-file-index-noselect file t))
+    ((get-file-buffer file)
+     (find-file-noselect file))))
 
 ;;;###autoload
 (defun magit-ediff-show-working-tree (file)
@@ -408,22 +409,11 @@ FILE must be relative to the top directory of the repository."
    (list (magit-read-file-choice "Show changes in file"
                                  (magit-changed-files "HEAD")
                                  "No changed files")))
-  (magit-with-toplevel
-    (let ((conf (current-window-configuration))
-          (bufA (magit-get-revision-buffer "HEAD" file))
-          (bufB (get-file-buffer file)))
-      (ediff-buffers
-       (or bufA (magit-find-file-noselect "HEAD" file))
-       (or bufB (find-file-noselect file))
-       `((lambda ()
-           (setq-local
-            ediff-quit-hook
-            (lambda ()
-              ,@(unless bufA '((ediff-kill-buffer-carefully ediff-buffer-A)))
-              ,@(unless bufB '((ediff-kill-buffer-carefully ediff-buffer-B)))
-              (let ((magit-ediff-previous-winconf ,conf))
-                (run-hooks 'magit-ediff-quit-hook))))))
-       'ediff-buffers))))
+  (magit-ediff-buffers nil
+    ((magit-get-revision-buffer "HEAD" file)
+     (magit-find-file-noselect  "HEAD" file))
+    ((get-file-buffer file)
+     (find-file-noselect file))))
 
 ;;;###autoload
 (defun magit-ediff-show-commit (commit)
@@ -442,34 +432,20 @@ FILE must be relative to the top directory of the repository."
 three-buffer Ediff is used in order to distinguish changes in the
 stash that were staged."
   (interactive (list (magit-read-stash "Stash")))
-  (-let* ((revA (concat stash "^1"))
-          (revB (concat stash "^2"))
-          (revC stash)
-          ((fileA fileC) (magit-ediff-read-files revA revC))
-          (fileB fileC))
+  (pcase-let* ((revA (concat stash "^1"))
+               (revB (concat stash "^2"))
+               (revC stash)
+               (`(,fileA ,fileC) (magit-ediff-read-files revA revC))
+               (fileB fileC))
     (if (and magit-ediff-show-stash-with-index
              (member fileA (magit-changed-files revB revA)))
-        (let ((conf (current-window-configuration))
-              (bufA (magit-get-revision-buffer revA fileA))
-              (bufB (magit-get-revision-buffer revB fileB))
-              (bufC (magit-get-revision-buffer revC fileC)))
-          (ediff-buffers3
-           (or bufA (magit-find-file-noselect revA fileA))
-           (or bufB (magit-find-file-noselect revB fileB))
-           (or bufC (magit-find-file-noselect revC fileC))
-           `((lambda ()
-               (setq-local
-                ediff-quit-hook
-                (lambda ()
-                  ,@(unless bufA
-                      '((ediff-kill-buffer-carefully ediff-buffer-A)))
-                  ,@(unless bufB
-                      '((ediff-kill-buffer-carefully ediff-buffer-B)))
-                  ,@(unless bufC
-                      '((ediff-kill-buffer-carefully ediff-buffer-C)))
-                  (let ((magit-ediff-previous-winconf ,conf))
-                    (run-hooks 'magit-ediff-quit-hook))))))
-           'ediff-buffers3))
+        (magit-ediff-buffers nil
+          ((magit-get-revision-buffer revA fileA)
+           (magit-find-file-noselect  revA fileA))
+          ((magit-get-revision-buffer revB fileB)
+           (magit-find-file-noselect  revB fileB))
+          ((magit-get-revision-buffer revC fileC)
+           (magit-find-file-noselect  revC fileC)))
       (magit-ediff-compare revA revC fileA fileC))))
 
 (defun magit-ediff-cleanup-auxiliary-buffers ()
@@ -494,8 +470,6 @@ stash that were staged."
            (delete-frame ctl-frm))
           ((window-live-p ctl-win)
            (delete-window ctl-win)))
-    (unless (ediff-multiframe-setup-p)
-      (ediff-kill-bottom-toolbar))
     (ediff-kill-buffer-carefully ctl-buf)
     (when (frame-live-p main-frame)
       (select-frame main-frame))))
@@ -503,5 +477,6 @@ stash that were staged."
 (defun magit-ediff-restore-previous-winconf ()
   (set-window-configuration magit-ediff-previous-winconf))
 
+;;; _
 (provide 'magit-ediff)
 ;;; magit-ediff.el ends here
