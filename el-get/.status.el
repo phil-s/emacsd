@@ -37,7 +37,6 @@
 :lexbind-mode "installed"
 :macrostep "installed"
 :magit "installed"
-:magit-popup "installed"
 :mo-git-blame "installed"
 :multiple-cursors "installed"
 :noflet "installed"
