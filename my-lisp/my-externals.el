@@ -324,7 +324,9 @@
 
      (:name with-editor
             :type git
-            :url "https://github.com/magit/with-editor.git")
+            :url "git@github.com:magit/with-editor.git"
+            :load-path ("lisp")
+            :build ("make")) ;; builds documentation.
 
      (:name ws-trim
             :type ftp
