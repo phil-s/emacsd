@@ -289,6 +289,15 @@
             :type emacswiki
             :features transpose-frame)
 
+     (:name transient
+            :type git
+            :url "git@github.com:magit/transient.git"
+            :load-path ("lisp")
+            :build ("make") ;; builds documentation.
+            ;; :build ("make lisp") ;; just the code; fewer dependencies.
+            ;; :depends (compat)
+            )
+
      (:name windcycle
             :type http
             :url ,(my-local-repository-url-for "windcycle")
