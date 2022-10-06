@@ -671,15 +671,55 @@ kill ring instead of opening it with `browse-url'.")
 ;;;### (autoloads nil "dash/dash" "dash/dash.el" (0 0 0 0))
 ;;; Generated autoloads from dash/dash.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dash/dash" '("dash-" "-keep" "-butlast" "-non" "-only-some" "-zip" "-e" "->" "-a" "-gr" "-when-let" "-d" "-l" "-s" "-p" "-r" "-m" "-i" "-f" "-u" "-value-to-list" "-t" "--" "-c" "!cons" "!cdr")))
+(autoload 'dash-fontify-mode "dash/dash" "\
+Toggle fontification of Dash special variables.
 
-;;;***
-
-;;;### (autoloads nil "dash/dash-functional" "dash/dash-functional.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from dash/dash-functional.el
+If called interactively, enable Dash-Fontify mode if ARG is positive,
+and disable it if ARG is zero or negative.  If called from Lisp, also
+enable the mode if ARG is omitted or nil, and toggle it if ARG is
+`toggle'; disable the mode otherwise.
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dash/dash-functional" '("-rpartial" "-juxt" "-not" "-o" "-a" "-iteratefn" "-c" "-f" "-p")))
+Dash-Fontify mode is a buffer-local minor mode intended for Emacs
+Lisp buffers.  Enabling it causes the special variables bound in
+anaphoric Dash macros to be fontified.  These anaphoras include
+`it', `it-index', `acc', and `other'.  In older Emacs versions
+which do not dynamically detect macros, Dash-Fontify mode
+additionally fontifies Dash macro calls.
+
+See also `dash-fontify-mode-lighter' and
+`global-dash-fontify-mode'.
+
+\(fn &optional ARG)" t nil)
+
+(put 'global-dash-fontify-mode 'globalized-minor-mode t)
+
+(defvar global-dash-fontify-mode nil "\
+Non-nil if Global Dash-Fontify mode is enabled.
+See the `global-dash-fontify-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-dash-fontify-mode'.")
+
+(custom-autoload 'global-dash-fontify-mode "dash/dash" nil)
+
+(autoload 'global-dash-fontify-mode "dash/dash" "\
+Toggle Dash-Fontify mode in all buffers.
+With prefix ARG, enable Global Dash-Fontify mode if ARG is positive;
+otherwise, disable it.  If called from Lisp, enable the mode if
+ARG is omitted or nil.
+
+Dash-Fontify mode is enabled in all buffers where
+`dash--turn-on-fontify-mode' would do it.
+See `dash-fontify-mode' for more information on Dash-Fontify mode.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'dash-register-info-lookup "dash/dash" "\
+Register the Dash Info manual with `info-lookup-symbol'.
+This allows Dash symbols to be looked up with \\[info-lookup-symbol]." t nil)
+
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dash/dash" '("!cdr" "!cons" "--" "->" "-a" "-butlast" "-c" "-d" "-e" "-f" "-gr" "-i" "-juxt" "-keep" "-l" "-m" "-no" "-o" "-p" "-r" "-s" "-t" "-u" "-value-to-list" "-when-let" "-zip" "dash-")))
 
 ;;;***
 
@@ -4622,8 +4662,9 @@ A major mode for displaying the directory tree in text mode.
 
 ;;;***
 
-;;;### (autoloads nil nil ("docker-tramp/docker-tramp-compat.el"
-;;;;;;  "git-modes/git-modes.el") (0 0 0 0))
+;;;### (autoloads nil nil ("dash/dash-functional.el" "docker-tramp/docker-tramp-compat.el"
+;;;;;;  "git-modes/git-modes.el" "transient/lisp/transient-autoloads.el")
+;;;;;;  (0 0 0 0))
 
 ;;;***
 
