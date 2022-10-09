@@ -1,0 +1,184 @@
+diff --git a/lisp/magit-diff.el b/lisp/magit-diff.el
+index 652c4772..87fc6dc4 100644
+--- a/lisp/magit-diff.el
++++ b/lisp/magit-diff.el
+@@ -2024,6 +2024,12 @@ or a ref which is not a branch, then it inserts nothing."
+         (save-excursion
+           (while (search-forward "\r\n" nil t) ; Remove trailing CRs.
+             (delete-region (match-beginning 0) (1+ (match-beginning 0)))))
++        (save-excursion
++          (let ((fill-column 80)
++                (start beg))
++            (while (eql (forward-line) 0)
++              (fill-region start (point))
++              (setq start (point)))))
+         (when magit-revision-use-hash-sections
+           (save-excursion
+             (while (not (eobp))
+diff --git a/lisp/magit-git.el b/lisp/magit-git.el
+index f169aee8..18bc213d 100644
+--- a/lisp/magit-git.el
++++ b/lisp/magit-git.el
+@@ -838,16 +838,43 @@ are considered."
+ 
+ ;;; Revisions and References
+ 
++(defvar magit--rev-parse-toplevel-cache (make-hash-table :test #'equal))
++(defvar magit--rev-parse-cdup-cache (make-hash-table :test #'equal))
++(defvar magit--rev-parse-git-dir-cache (make-hash-table :test #'equal))
++
++(defmacro magit--use-rev-parse-cache (cmd args)
++  `(pcase ,args
++     ('("--show-toplevel")
++      (or (gethash default-directory magit--rev-parse-toplevel-cache)
++          (let ((dir ,cmd))
++            (puthash default-directory dir magit--rev-parse-toplevel-cache)
++            dir)))
++     ('("--show-cdup")
++      (or (gethash default-directory magit--rev-parse-cdup-cache)
++          (let ((dir ,cmd))
++            (puthash default-directory dir magit--rev-parse-cdup-cache)
++            dir)))
++     ('("--git-dir")
++      (or (gethash default-directory magit--rev-parse-git-dir-cache)
++          (let ((dir ,cmd))
++            (puthash default-directory dir magit--rev-parse-git-dir-cache)
++            dir)))
++     (_ ,cmd)))
++
+ (defun magit-rev-parse (&rest args)
+   "Execute `git rev-parse ARGS', returning first line of output.
+ If there is no output, return nil."
+-  (apply #'magit-git-string "rev-parse" args))
++  (magit--use-rev-parse-cache
++   (apply #'magit-git-string "rev-parse" args)
++   args))
+ 
+ (defun magit-rev-parse-safe (&rest args)
+   "Execute `git rev-parse ARGS', returning first line of output.
+ If there is no output, return nil.  Like `magit-rev-parse' but
+ ignore `magit-git-debug'."
+-  (apply #'magit-git-str "rev-parse" args))
++  (magit--use-rev-parse-cache
++   (apply #'magit-git-str "rev-parse" args)
++   args))
+ 
+ (defun magit-rev-parse-true (&rest args)
+   "Execute `git rev-parse ARGS', returning t if it prints \"true\".
+diff --git a/lisp/magit-log.el b/lisp/magit-log.el
+index 4506b8a4..cbc1791b 100644
+--- a/lisp/magit-log.el
++++ b/lisp/magit-log.el
+@@ -371,7 +371,9 @@ the upstream isn't ahead of the current branch) show."
+                (?g "Search messages"         "--grep=")
+                (?G "Search changes"          "-G")
+                (?S "Search occurrences"      "-S")
+-               (?L "Trace line evolution"    "-L" magit-read-file-trace))
++               (?L "Trace line evolution"    "-L" magit-read-file-trace)
++               (?B "Before date"             "--until=")
++               (?A "After date"              "--since="))
+     :actions  ((?l "Log current"             magit-log-current)
+                (?L "Log local branches"      magit-log-branches)
+                (?r "Reflog current"          magit-reflog-current)
+diff --git a/lisp/magit-mode.el b/lisp/magit-mode.el
+index da5d4ca9..1a53622a 100644
+--- a/lisp/magit-mode.el
++++ b/lisp/magit-mode.el
+@@ -1328,6 +1328,11 @@ Remove the repository's entry from `magit-repository-cache'
+ and set `magit-section-visibility-cache' to nil in all of the
+ repository's Magit buffers."
+   (interactive)
++  ;; Custom hacks.
++  (setq magit--rev-parse-toplevel-cache (make-hash-table :test #'equal))
++  (setq magit--rev-parse-cdup-cache (make-hash-table :test #'equal))
++  (setq magit--rev-parse-git-dir-cache (make-hash-table :test #'equal))
++  ;; Normal.
+   (magit-with-toplevel
+     (setq magit-repository-local-cache
+           (cl-delete default-directory
+diff --git a/lisp/magit-notes.el b/lisp/magit-notes.el
+index 79b2fa53..f1b46a2e 100644
+--- a/lisp/magit-notes.el
++++ b/lisp/magit-notes.el
+@@ -58,7 +58,8 @@
+   :actions  '((?T "Edit"             magit-notes-edit)
+               (?r "Remove"           magit-notes-remove)
+               (?m "Merge"            magit-notes-merge)
+-              (?p "Prune"            magit-notes-prune))
++              (?p "Prune"            magit-notes-prune)
++              (?P "Push"             magit-push-notes-ref))
+   :sequence-actions '((?c "Commit merge" magit-notes-merge-commit)
+                       (?a "Abort merge"  magit-notes-merge-abort))
+   :sequence-predicate 'magit-notes-merging-p
+diff --git a/lisp/magit-process.el b/lisp/magit-process.el
+index 62701da5..313d7801 100644
+--- a/lisp/magit-process.el
++++ b/lisp/magit-process.el
+@@ -501,6 +501,30 @@ See `magit-start-process' for more information."
+     (apply #'magit-start-process magit-git-executable input
+            (magit-process-git-arguments args))))
+ 
++(defvar postpone-auto-revert-buffers nil)
++
++(defvar postpone-auto-revert-interval nil)
++
++(defadvice auto-revert-buffers (around maybe-postpone-auto-revert-buffers)
++  "Delay `auto-revert-buffers' if `postpone-auto-revert-buffers' is non-nil."
++  (if postpone-auto-revert-buffers
++      ;; Do not run `auto-revert-buffers', but make its timer run more
++      ;; frequently in the meantime, so that it will run promptly once
++      ;; it's safe.  Remember the original `auto-revert-interval'.
++      (unless postpone-auto-revert-interval
++        (setq postpone-auto-revert-interval auto-revert-interval)
++        (setq auto-revert-interval 0.5)
++        (auto-revert-set-timer))
++    ;; We are no longer postponed, so restore the original
++    ;; `auto-revert-interval', and run `auto-revert-buffers'.
++    (when postpone-auto-revert-interval
++      (setq auto-revert-interval postpone-auto-revert-interval)
++      (setq postpone-auto-revert-interval nil)
++      (auto-revert-set-timer))
++    ad-do-it)) ;; Run `auto-revert-buffers'.
++
++(ad-activate 'auto-revert-buffers)
++
+ (defun magit-start-process (program &optional input &rest args)
+   "Start PROGRAM, prepare for refresh, and return the process object.
+ 
+@@ -681,6 +705,7 @@ Magit status buffer."
+ 
+ (defun magit-process-filter (proc string)
+   "Default filter used by `magit-start-process'."
++  (setq postpone-auto-revert-buffers t)
+   (with-current-buffer (process-buffer proc)
+     (let ((inhibit-read-only t))
+       (magit-process-yes-or-no-prompt proc string)
+@@ -985,6 +1010,7 @@ Limited by `magit-process-error-tooltip-max-lines'."
+ 
+ (defun magit-process-finish (arg &optional process-buf command-buf
+                                  default-dir section)
++  (setq postpone-auto-revert-buffers nil)
+   (unless (integerp arg)
+     (setq process-buf (process-buffer arg))
+     (setq command-buf (process-get arg 'command-buf))
+diff --git a/lisp/magit-remote.el b/lisp/magit-remote.el
+index 777058fc..eb976040 100644
+--- a/lisp/magit-remote.el
++++ b/lisp/magit-remote.el
+@@ -898,6 +898,16 @@ branch as default."
+   (run-hooks 'magit-credential-hook)
+   (magit-run-git-async "push" remote tag args))
+ 
++(defun magit-push-notes-ref (ref remote &optional args)
++  "Push a notes ref to another repository."
++  (interactive
++   (let ((note (magit-notes-read-ref "Push notes")))
++     (list note
++           (magit-read-remote (format "Push %s to remote" note) nil t)
++           (magit-push-arguments))))
++  (run-hooks 'magit-credential-hook)
++  (magit-run-git-async "push" remote ref args))
++
+ ;;;###autoload
+ (defun magit-push-implicitly (args)
+   "Push somewhere without using an explicit refspec.

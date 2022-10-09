@@ -247,9 +247,7 @@ static char * data[] = {
   )
 
 ;; Refer to: (info "(magit) Wip Modes")
-(magit-wip-after-save-mode 1)
-(magit-wip-after-apply-mode 1)
-(magit-wip-before-change-mode 1)
+(magit-wip-mode 1)
 
 ;; No, I really don't want Emacs to complain that my summary line is
 ;; long enough to be useful (no matter what the git book recommends).
@@ -294,16 +292,18 @@ static char * data[] = {
 ;; FIXME. (el-get is messing this up? Why?)
 (load "magit-autoloads")
 
-(with-eval-after-load "magit"
-  (global-magit-file-mode 1)) ;; per-file popup on C-c M-g
+;; Remove -- now default behaviour.
+;; (with-eval-after-load "magit"
+;;   (global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
-(with-eval-after-load "magit-branch"
-  (magit-define-popup-action 'magit-branch-popup
-    ?a "Create alias"
-    'my-magit-branch-alias-create)
-  (magit-define-popup-action 'magit-branch-popup
-    ?K "Delete alias"
-    'my-magit-branch-alias-delete))
+;; ;; FIXME: Convert to transient.
+;; (with-eval-after-load "magit-branch"
+;;   (magit-define-popup-action 'magit-branch-popup
+;;     ?a "Create alias"
+;;     'my-magit-branch-alias-create)
+;;   (magit-define-popup-action 'magit-branch-popup
+;;     ?K "Delete alias"
+;;     'my-magit-branch-alias-delete))
 
 (defun my-magit-branch-alias-create (alias &optional branch)
   "Create a new ALIAS for BRANCH."
@@ -318,26 +318,29 @@ static char * data[] = {
   (interactive (list (magit-read-branch "Delete alias")))
   (magit-run-git "branch-alias" "--delete" alias))
 
-(with-eval-after-load "magit-diff"
-  (magit-define-popup-action 'magit-diff-popup
-    ?R "Diff range"
-    'magit-diff)
-  (magit-define-popup-action 'magit-diff-popup
-    ?r "Diff commit..HEAD"
-    'my-magit-diff-range-from-ref-to-head))
+;; ;; FIXME: Convert to transient.
+;; (with-eval-after-load "magit-diff"
+;;   (magit-define-popup-action 'magit-diff-popup
+;;     ?R "Diff range"
+;;     'magit-diff)
+;;   (magit-define-popup-action 'magit-diff-popup
+;;     ?r "Diff commit..HEAD"
+;;     'my-magit-diff-range-from-ref-to-head))
 
-(defun my-magit-diff-range-from-ref-to-head ()
+(defun my-magit-diff-range-from-ref-to-head (&optional args files)
   "Diff the ref at point with HEAD."
-  (interactive)
-  (magit-diff (format "%s..HEAD" (magit-branch-or-commit-at-point))))
+  (interactive (magit-diff-arguments))
+  (magit-diff-range (format "%s..HEAD" (magit-branch-or-commit-at-point))
+                    args files))
 
-(with-eval-after-load "magit-refs"
-  ;; Do not insert Tags into the refs buffer by default. (Slow!)
-  (setq magit-refs-sections-hook
-        (delq 'magit-insert-tags magit-refs-sections-hook))
-  ;; ...but add a new Tags option to the popup, which does so. (y t)
-  (magit-define-popup-action 'magit-show-refs-popup ?t
-    "Insert tags section" 'my-magit-insert-tags))
+;; ;; FIXME: Convert to transient.
+;; (with-eval-after-load "magit-refs"
+;;   ;; Do not insert Tags into the refs buffer by default. (Slow!)
+;;   (setq magit-refs-sections-hook
+;;         (delq 'magit-insert-tags magit-refs-sections-hook))
+;;   ;; ...but add a new Tags option to the popup, which does so. (y t)
+;;   (magit-define-popup-action 'magit-show-refs-popup ?t
+;;     "Insert tags section" 'my-magit-insert-tags))
 
 (defun my-magit-push-timestamp-tag-to-origin ()
   (interactive)
@@ -345,10 +348,11 @@ static char * data[] = {
     (magit-run-git "tag" ts)
     (magit-push-tag ts "origin")))
 
-(with-eval-after-load "magit-remote"
-  (magit-define-popup-action 'magit-push-popup
-    ?s "timestamp tag to origin"
-    'my-magit-push-timestamp-tag-to-origin))
+;; ;; FIXME: Convert to transient.
+;; (with-eval-after-load "magit-remote"
+;;   (magit-define-popup-action 'magit-push-popup
+;;     ?s "timestamp tag to origin"
+;;     'my-magit-push-timestamp-tag-to-origin))
 
 (defun my-magit-insert-tags ()
   "Insert the Tags section at the end of the current buffer."
@@ -457,7 +461,9 @@ Advice to `magit-push-current-to-upstream' triggers this query."
   ;; from its usual value of 160, as a workaround.
   (setq-local split-width-threshold 120)
   ;; Magit uses fringe bitmaps which don't fit nicely in the default fringe.
-  (setq left-fringe-width 20))
+  ;; (setq left-fringe-width 8)
+  (setq left-fringe-width 20)
+  )
 
 ;; Always open magit windows in the current frame.
 (add-to-list 'display-buffer-alist
