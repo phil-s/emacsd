@@ -149,7 +149,11 @@
                         (string-prefix-p (expand-file-name "sites/" root)
                                          dir)))))))
     (add-to-list 'grep-find-ignored-directories
-                 (cons drupal-sites-dir-p "files"))))
+                 (cons drupal-sites-dir-p "files")))
+
+  ;; Ignore .composer/cache/*
+  (add-to-list 'grep-find-ignored-directories ".composer/cache"))
+
 
 ;; SQL support
 (defun my-drupal-db-name ()
