@@ -231,8 +231,21 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 
 (add-hook 'compilation-filter-hook 'colorize-compilation-output)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TAGS
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-advice visit-tags-table (:around (orig-fun &rest args) large-file-ok)
+  "Suppress `large-file-warning-threshold' for `visit-tags-table'.
+
+Prevents \"File TAGS is large... really open?\" prompts when the TAGS
+file is initially visited.  We know TAGS files may be large; it's ok.
+
+Advice for `visit-tags-table'."
+  (let ((large-file-warning-threshold nil))
+    (apply orig-fun args)))
+
 ;; `winnow' provides bindings "m" and "x" to Match and eXclude results
 ;; from the list (it's essentially `keep-lines' and `flush-lines').
 (add-hook 'etags-select-mode-hook #'winnow-mode)
