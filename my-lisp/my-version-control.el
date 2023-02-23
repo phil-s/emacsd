@@ -477,6 +477,9 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 (add-hook 'magit-revision-mode-hook #'my-bug-reference-mode-enable)
 (add-hook 'magit-log-mode-hook #'my-bug-reference-mode-enable)
 
+;; In `magit-revision-mode' fill the summary line if it is long.
+(setq magit-revision-fill-summary-line 80)
+
 ;; pcomplete
 
 ;; Silence compiler warnings
