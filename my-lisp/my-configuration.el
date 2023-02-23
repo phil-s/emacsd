@@ -1175,6 +1175,19 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; (Refer to `help--symbol-class')
 (setq completions-detailed t)
 
+;; Allow grouping of completions.  E.g. for `insert-char' (C-x 8 RET).
+(setq completions-group t)
+
+;; Very minor tweak to completion group formatting, which allows me to
+;; isearch for ">" to skip between groups.  The rest of the rendering
+;; causes this to look like an arrow in GUI frames, which is nice.
+(setq completions-group-format
+      (concat
+       (propertize "   >" 'face 'completions-group-separator)
+       (propertize " %s " 'face 'completions-group-title)
+       (propertize " " 'face 'completions-group-separator
+                   'display '(space :align-to right))))
+
 ;; Don't use a separate control frame for ediff, as it's not working
 ;; very well with my current config & window manager.
 ;; See also `ediff-setup-control-frame' and my full-screen by default
