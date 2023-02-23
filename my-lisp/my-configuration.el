@@ -345,6 +345,9 @@ when `auto-save-mode' is invoked manually.")
 ;; Enable the which-key library.
 (which-key-mode 1)
 
+;; Make `describe-bindings' (C-h b) sections collapsible (TAB, S-TAB, M-TAB).
+(setq describe-bindings-outline t)
+
 ;; Recursive minibuffers lets us do neat things such as interactively
 ;; building command arguments using other commands.
 (setq enable-recursive-minibuffers t)
