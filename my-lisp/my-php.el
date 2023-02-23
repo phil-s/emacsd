@@ -53,11 +53,65 @@
             (url "http://nz2.php.net/get/php_manual_en.tar.gz/from/this/mirror")
             (file "php_manual_en.tar.gz"))
         (make-directory download-directory t)
-        (shell-command
-         (apply 'format
-                "cd %s && wget -q %s -O %s && tar -xf %s && rm %s"
-                (mapcar 'shell-quote-argument
-                        (list download-directory url file file file)))))
+        (let ((default-directory download-directory)
+              ;; Edit the navigation markup to be nicer for eww.
+              ;; See also;; https://bugs.php.net/bug.php?id=77018
+              (perl-reformatter "BEGIN{undef $/;}
+s|</head>
+ <body class=\"docs\"><div class=\"navbar navbar-fixed-top\">
+  <div class=\"navbar-inner clearfix\">
+    <ul class=\"nav\" style=\"width: 100%\">
+      <li style=\"float: left;\"><a href=\"(.*?)\">« (.*?)</a></li>
+      <li style=\"float: right;\"><a href=\"(.*?)\">(.*?) »</a></li>
+    </ul>
+  </div>
+</div>
+<div id=\"breadcrumbs\" class=\"clearfix\">
+  <ul class=\"breadcrumbs-container\">
+    <li><a href=\"(.*?)\">(.*?)</a></li>
+    (<li><a href=\"(.*?)\">(.*?)</a></li>)?
+    <li>(.*?)</li>
+  </ul>
+</div>
+|defined($8) ?
+\" <link rel=\\\"prev\\\" href=\\\"${1}\\\" title=\\\"${2}\\\">
+  <link rel=\\\"next\\\" href=\\\"${3}\\\" title=\\\"${4}\\\">
+  <link rel=\\\"up\\\" href=\\\"${8}\\\" title=\\\"${9}\\\">
+  <link rel=\\\"home\\\" href=\\\"${5}\\\" title=\\\"${6}\\\">
+</head>
+<body class=\\\"docs\\\">
+<span style=\\\"color: #70e0ff\\\">↑</span>
+<span style=\\\"color: #e0e0ff\\\"><a href=\\\"${8}\\\">${9}</a></span>
+&nbsp;&nbsp;&nbsp;
+<span style=\\\"color: #70e0ff\\\">←</span>
+<span style=\\\"color: #e0e0ff\\\"><a href=\\\"${1}\\\">${2}</a></span>
+&nbsp;&nbsp;&nbsp;
+<span style=\\\"color: #70e0ff\\\">→</span>
+<span style=\\\"color: #e0e0ff\\\"><a href=\\\"${3}\\\">${4}</a></span>
+\" :
+\" <link rel=\\\"prev\\\" href=\\\"${1}\\\" title=\\\"${2}\\\">
+  <link rel=\\\"next\\\" href=\\\"${3}\\\" title=\\\"${4}\\\">
+  <link rel=\\\"up\\\" href=\\\"${5}\\\" title=\\\"${6}\\\">
+  <link rel=\\\"home\\\" href=\\\"${5}\\\" title=\\\"${6}\\\">
+</head>
+<body class=\\\"docs\\\">
+<span style=\\\"color: #70e0ff\\\">↑</span>
+<span style=\\\"color: #e0e0ff\\\"><a href=\\\"${5}\\\">${6}</a></span>
+&nbsp;&nbsp;&nbsp;
+<span style=\\\"color: #70e0ff\\\">←</span>
+<span style=\\\"color: #e0e0ff\\\"><a href=\\\"${1}\\\">${2}</a></span>
+&nbsp;&nbsp;&nbsp;
+<span style=\\\"color: #70e0ff\\\">→</span>
+<span style=\\\"color: #e0e0ff\\\"><a href=\\\"${3}\\\">${4}</a></span>
+\"|se;
+"))
+          (shell-command
+           (apply 'format "wget -q %s -O %s \
+&& tar -xf %s \
+&& rm %s \
+&& find php-chunked-xhtml/ -name \"*.html\" -print | xargs perl -pi -e %s"
+                  (mapcar 'shell-quote-argument
+                          (list url file file file perl-reformatter))))))
       ;; Check the result
       (if (file-directory-p expected)
           (setq php-manual-path expected
