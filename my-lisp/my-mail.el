@@ -21,11 +21,16 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/mu4e"))
 (load-file (expand-file-name "~/.emacs.d/lisp/mu4e/autoloads.el"))
 
+(with-eval-after-load "mu4e-view"
+  (define-key mu4e-view-mode-map (kbd "<home>") nil)
+  (define-key mu4e-view-mode-map (kbd "<end>") nil))
+
 (add-hook 'mu4e-view-mode-hook 'my-mu4e-view-mode-hook)
 (defun my-mu4e-view-mode-hook ()
-  "Custom `mu4e-view-mode' behaviours."
+  "Custom `mu4e-view-mode' behaviours.  Used in `mu4e-view-mode-hook'."
+  (setq tab-width 8)
   (setq-local shr-use-colors nil)
-  (visual-line-mode 1)
+  (my-adaptive-visual-line-mode 1)
   (delete-trailing-whitespace))
 
 (with-eval-after-load "mu4e-headers"
