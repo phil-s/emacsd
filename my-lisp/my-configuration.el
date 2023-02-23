@@ -1245,6 +1245,9 @@ return to the save-some-buffers minibuffer prompt."
 
 (add-hook 'ediff-keymap-setup-hook 'my-ediff-keymap-setup-hook)
 
+;; Calc.
+(setq calc-make-windows-dedicated t)
+
 ;; Allow buffer reverts to be undone
 (defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)
   "Revert buffer from file in an undo-able manner."
