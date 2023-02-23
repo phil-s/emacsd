@@ -1158,7 +1158,10 @@ See also `my-kill-region'."
   (if pad
       (my-copy-region-unindented (if (consp pad) nil pad)
                                  beginning end)
-    (copy-region-as-kill beginning end)))
+    (copy-region-as-kill beginning end))
+  ;; Use the `indicate-copied-region' feature from `kill-ring-save'.
+  (if (called-interactively-p 'interactive)
+      (indicate-copied-region)))
 
 (defun my-kill-region (pad beginning end)
   "Like `kill-region'.  With prefix arg, also `my-copy-region-unindented'.
