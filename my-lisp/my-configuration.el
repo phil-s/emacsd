@@ -772,6 +772,9 @@ Advice for the `battery-status-function' function value."
 ;; ;; Use Pale Moon as the default web browser.
 ;; (setq browse-url-browser-function 'browse-url-palemoon)
 
+;; Use `eww' for local file:// URLs.
+(setq browse-url-handlers '(("\\`file://" . eww-browse-url)))
+
 ;; Do not expose certain information in HTTP request headers
 (setq url-privacy-level '(emacs email lastloc))
 (url-setup-privacy-info)
