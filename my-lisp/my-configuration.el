@@ -718,24 +718,25 @@ n.b. ffap-alternate-file is intended for interactive use only."
                 :override #'my-battery-update)))
 
 (defun my-battery-update ()
+  ;; NOT used with Emacs 28+ (see the conditional advice above).
   "Update battery status information in the mode line.
 
 Adds a warning face for 'low' battery in Emacs versions <= 27."
   (let* ((data (and battery-status-function (funcall battery-status-function)))
          (percentage (car (read-from-string (cdr (assq ?p data))))))
     (setq battery-mode-line-string
-	  (propertize (if (and battery-mode-line-format
-			       (numberp percentage)
+          (propertize (if (and battery-mode-line-format
+                               (numberp percentage)
                                (<= percentage battery-mode-line-limit))
-			  (battery-format battery-mode-line-format data)
-			"")
-		      'face
+                          (battery-format battery-mode-line-format data)
+                        "")
+                      'face
                       (and (numberp percentage)
                            (or (and (<= percentage battery-load-critical)
                                     'error)
                                (and (<= percentage battery-load-low)
                                     'warning)))
-		      'help-echo "Battery status information")))
+                      'help-echo "Battery status information")))
   (force-mode-line-update))
 
 (defun my-battery-status-filter (battery-status)
