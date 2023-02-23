@@ -1,22 +1,25 @@
 ;; See my-externals for php-mode source.
 (load "php-mode") ;load the real php-mode
 
+;; Silence compiler warnings
+(eval-when-compile
+  (defvar c-electric-flag)
+  (defvar php-manual-path)
+  (defvar php-mode-map)
+  (defvar php-mode-template-compatibility)
+  (defvar php-search-documentation-browser-function)
+  (defvar php-search-documentation-function)
+  (defvar php-template-compatibility)
+  (defvar php-template-mode-alist)
+  (defvar psysh-history-file)
+  (defvar psysh-mode-map)
+  (declare-function web-mode "web-mode")
+  )
+
 ;; Bug fix for https://github.com/emacs-php/php-mode/issues/688
 (when-let ((cmd (lookup-key php-mode-map [tab])))
   (define-key php-mode-map [tab] nil)
   (define-key php-mode-map (kbd "TAB") cmd))
-
-;; Silence compiler warnings
-(eval-when-compile
-  (defvar php-mode-map)
-  (defvar php-search-documentation-browser-function)
-  (defvar php-manual-path)
-  (defvar php-template-compatibility)
-  (defvar psysh-mode-map)
-  (defvar psysh-history-file)
-  (defvar c-electric-flag)
-  (declare-function web-mode "web-mode")
-  )
 
 ;; Open *.phar files in `so-long-mode'.
 ;; TODO: Consider adding to `magic-mode-alist' to also test

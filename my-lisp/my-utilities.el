@@ -13,6 +13,7 @@
   (defvar term-prompt-regexp)
   (defvar url-http-end-of-headers)
   (defvar url-http-target-url)
+  (declare-function aw-select "ace-window")
   (declare-function compare-windows-dehighlight "compare-w")
   (declare-function compare-windows-highlight "compare-w")
   (declare-function dired-add-file "dired-aux")
