@@ -2825,10 +2825,17 @@ with the named PACKAGE"
         (dolist (dir (el-get-load-path package))
           (when (file-directory-p dir)
             (dolist (f (directory-files dir t el-get-load-suffix-regexp))
-              ;; this will clear out any autoloads associated with the file
-              ;; `autoload-find-destination' signature has changed in emacs24.
-              (if (> emacs-major-version 23)
-                  (autoload-find-destination f (autoload-file-load-name f))
+              ;; Clear out any autoloads associated with the file.  The
+              ;; `autoload-find-destination' signature changed in emacs-24 and
+              ;; again in emacs-28; and the `autoload-file-load-name' signature
+              ;; changed in emacs-28.
+              (if (>= emacs-major-version 24)
+                  (if (>= emacs-major-version 28)
+                      (autoload-find-destination
+                       f (autoload-file-load-name f el-get-autoload-file)
+                       el-get-autoload-file)
+                    (autoload-find-destination
+                     f (autoload-file-load-name f)))
                 (autoload-find-destination f)))))))
     (el-get-save-and-kill el-get-autoload-file)))
 
