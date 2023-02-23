@@ -78,6 +78,7 @@
                   'hide-trailing-whitespace))
       '(calendar
         cfw:calendar
+        completion-list
         diary
         diary-fancy-display
         ediff-meta
