@@ -132,7 +132,13 @@ if `bug-reference-url-format' actually a format string (if the default
 group numbers are used).  This is why I'm using explicit group numbers
 here, so that group 2 has the desired value in both scenarios.")
 
-;; Use my custom regexp by default.
+;; Use my custom regexp as the default `bug-reference-bug-regexp'.
+;; This has no effect unless `bug-reference-url-format' is also set
+;; (which only happens conditionally, and buffer-locally).
+;;
+;; Starting from 28.1, if either of those variables are nil then
+;; 'bug-reference-mode' and 'bug-reference-prog-mode' will attempt
+;; an auto-setup process via `bug-reference-auto-setup-functions'.
 (setq bug-reference-bug-regexp my-bug-reference-bug-regexp)
 
 (defun my-bug-reference-url-format ()
@@ -480,8 +486,8 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 ;; In `magit-revision-mode' fill the summary line if it is long.
 (setq magit-revision-fill-summary-line 80)
 
-;; pcomplete
-
+;; pcomplete support for git.
+;;
 ;; Silence compiler warnings
 (eval-when-compile
   (declare-function pcomplete-here* "pcomplete")
