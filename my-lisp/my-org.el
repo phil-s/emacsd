@@ -167,7 +167,7 @@ SCHEDULED: %T
              ;; perl
              ;; picolisp
              ;; plantuml
-             python
+             ;; python
              ;; R
              ;; ruby
              sass
