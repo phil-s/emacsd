@@ -965,6 +965,12 @@
 ;; Org-Mode
 (require 'my-org)
 
+;; Bug fix for SHR/EWW.
+;; This is shr.el from Emacs 27.2 and byte-compiled in Emacs 28.2.
+;; The shr.el in Emacs 28 is buggy wrt fragment links.  Fixed in 29.
+(when (eql emacs-major-version 28)
+  (load-library "shr-27.2"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Start server (but don't restart).
