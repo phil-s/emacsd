@@ -1325,7 +1325,7 @@ when the file path is too long to show on one line."
           (nconc grep-find-ignored-files
                  '("*.vmdk" "*.box") ;; Virtual Machine disks
                  '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff") ;; Images
-                 '("*.pdf" "*.doc") ;; Binary documents
+                 '("*.pdf" "*.doc" "*.css.map") ;; Binary documents
                  ))))
 
 ;; ;; www / web / eww
