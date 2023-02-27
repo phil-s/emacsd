@@ -23,8 +23,9 @@
 
 ;;; Deferred configuration
 (with-eval-after-load "org"
-  (my-org-babel-do-load-languages)
+  (require 'org-tempo)
   (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
+  (my-org-babel-do-load-languages)
   (my-org-configuration))
 
 ;;; General configuration
