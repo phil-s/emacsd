@@ -80,34 +80,19 @@
         cfw:calendar
         completion-list
         diary
-        diary-fancy-display
         ediff-meta
         elfeed-search
-        elpher
         erc
-        eww
         geben-context
-        help
-        image-dired-display
-        image-dired-thumbnail
         Info
-        log-view
-        magit
-        magit-popup
-        messages-buffer
-        mu4e-headers
-        mu4e-view
         org-agenda
         python
         sauron
         shell
+        special
         sql-interactive
-        sx-compose
-        sx-inbox
-        sx-question
-        sx-question-list
         term
-        ztree))
+        ))
 
 ;(defun toggle-whitespace-mode ()
 ;  "Toggle whitespace-mode."
