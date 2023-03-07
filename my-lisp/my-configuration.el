@@ -94,6 +94,25 @@
       kept-old-versions      10 ; ...and how many of the old.
       vc-make-backup-files   t) ; Make backups even for files under VCS.
 
+(defvar my-backup-buffer-interval (* 60 60) ;; 1 hour.
+  "Time threshold in seconds for resetting `buffer-backed-up' in a buffer.")
+
+(defvar-local my-backup-buffer-timestamp nil
+  "When the current buffer was last backed up by `backup-buffer'.")
+
+(define-advice backup-buffer (:after () set-timestamp)
+  "Update `my-backup-buffer-timestamp'.  Advice for `backup-buffer'."
+  (setq-local my-backup-buffer-timestamp (current-time)))
+
+(define-advice save-buffer (:before (&optional arg) buffer-backed-up-threshold)
+  "Clear `buffer-backed-up' based on `my-backup-buffer-timestamp'.
+Advice for `save-buffer'."
+  (when (and buffer-backed-up
+             (or (not my-backup-buffer-timestamp)
+                 (> (time-to-seconds (time-since my-backup-buffer-timestamp))
+                    my-backup-buffer-interval)))
+    (setq-local buffer-backed-up nil)))
+
 (defvar my-non-file-buffer-auto-save-dir (file-name-directory user-init-file)
   "Directory in which to store auto-save files for non-file buffers,
 when `auto-save-mode' is invoked manually.")
