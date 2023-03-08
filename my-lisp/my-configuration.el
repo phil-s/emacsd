@@ -902,6 +902,9 @@ If the current search is successful, then only delete the last char."
 ;; marking commands, even if point is outside of that line's filename.
 (setq dired-mark-region 'line)
 
+;; Enable the shell's globstar support.
+(setq dired-maybe-use-globstar t)
+
 ;; Override the default suggested commands for '!' binding.
 (setq dired-guess-shell-alist-user
       '(("\\.pdf\\'" "evince")
