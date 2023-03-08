@@ -895,6 +895,9 @@ If the current search is successful, then only delete the last char."
   (setq-local dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$"))
 (ad-activate 'dired-insert-subdir)
 
+;; Revert local Dired buffers automatically after dired-do* commands.
+(setq dired-do-revert-buffer (lambda (dir) (not (file-remote-p dir))))
+
 ;; Override the default suggested commands for '!' binding.
 (setq dired-guess-shell-alist-user
       '(("\\.pdf\\'" "evince")
