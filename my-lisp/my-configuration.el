@@ -898,6 +898,10 @@ If the current search is successful, then only delete the last char."
 ;; Revert local Dired buffers automatically after dired-do* commands.
 (setq dired-do-revert-buffer (lambda (dir) (not (file-remote-p dir))))
 
+;; Consider the current line as part of the marked region for dired's
+;; marking commands, even if point is outside of that line's filename.
+(setq dired-mark-region 'line)
+
 ;; Override the default suggested commands for '!' binding.
 (setq dired-guess-shell-alist-user
       '(("\\.pdf\\'" "evince")
