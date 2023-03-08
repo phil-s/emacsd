@@ -456,6 +456,8 @@ Advice to `magit-push-current-to-upstream' triggers this query."
           (insert (format "WR#%s - " (match-string 1)))
           (open-line 1))))))
 
+(add-hook 'my-git-commit-mode-hook #'my-bug-reference-mode-enable)
+
 (setq git-commit-major-mode 'my-git-commit-mode)
 
 (add-hook 'magit-mode-hook 'my-magit-mode-hook)
