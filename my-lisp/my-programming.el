@@ -612,7 +612,12 @@ With a prefix argument, prompt for the connection settings."
       (call-interactively 'sql-product-interactive))))
 
 (defun my-sql-send-region (start end &optional arg)
-  "Send a region to the SQL process."
+  "Send a region to the SQL process.
+
+Like `sql-send-region', but automatically appends a trailing semicolon
+to the sent SQL if there wasn't one already.  The default command does
+work without a trailing semicolon, but the output formatting is cleaner
+with one."
   (interactive "r\nP")
   (let ((string (buffer-substring-no-properties start end)))
     (sql-send-string
