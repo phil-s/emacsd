@@ -4,6 +4,8 @@
   (defvar context-help)
   (defvar cperl-indent-level)
   (defvar eldoc-argument-case)
+  (defvar eldoc-documentation-strategy)
+  (defvar eldoc-echo-area-display-truncation-message)
   (defvar fic-highlighted-words)
   (defvar imenu--index-alist)
   (defvar imenu--rescan-item)
@@ -141,12 +143,15 @@
 ;; Support eldoc for eval-expression (Emacs 24.4).
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
 
-;; Highlight the eldoc echo area text
-(defun frob-eldoc-argument-list (string)
-  "Upcase and fontify STRING for use with `eldoc-mode'."
-  (propertize (upcase string)
-              'face 'font-lock-variable-name-face))
-(setq eldoc-argument-case 'frob-eldoc-argument-list)
+;; Call all functions in `eldoc-documentation-functions'and display as
+;; many of the resulting doc strings as possible, as soon as possible.
+;; Preserves the relative order of doc strings.
+(setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+
+;; Whether to display help when truncating verbose eldoc messages:
+;; If non-nil, provide verbose help when a message has been truncated.
+;; If nil, truncated messages will just have "..." appended.
+;; (setq eldoc-echo-area-display-truncation-message nil)
 
 (define-minor-mode my-contextual-help-mode
   "Show help for the elisp symbol at point in the current *Help* buffer.
