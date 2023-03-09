@@ -9,6 +9,8 @@
   (defvar calendar-week-start-day)
   (defvar cua--region-keymap)
   (defvar cua-delete-selection)
+  (defvar custom-unlispify-remove-prefixes)
+  (defvar custom-unlispify-tag-names)
   (defvar dired-dnd-protocol-alist)
   (defvar dired-dwim-target)
   (defvar dired-guess-shell-alist-user)
@@ -58,6 +60,10 @@
   (declare-function outline-show-all "outline")
   (declare-function which-key-mode "which-key")
   )
+
+;; Show actual symbol names for user options in Customize buffers.
+(setq custom-unlispify-tag-names nil
+      custom-unlispify-remove-prefixes nil)
 
 ;; Set a preferred coding system
 ;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
