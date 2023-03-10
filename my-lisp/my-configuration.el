@@ -798,6 +798,7 @@ Advice for the `battery-status-function' function value."
 ;; (setq browse-url-browser-function 'browse-url-palemoon)
 
 ;; Use `eww' for local file:// URLs.
+;; (See also `eww-use-browse-url' for the inverse functionality.)
 (setq browse-url-handlers '(("\\`file://" . eww-browse-url)))
 
 ;; Do not expose certain information in HTTP request headers
@@ -1021,6 +1022,8 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
              (lambda (&rest _) nil)))
     ad-do-it))
 (ad-activate 'hack-dir-local-variables)
+
+;; 28.1: `ignored-local-variable-values' is new and useful.
 
 ;; Align with spaces only
 (defadvice align-regexp (around align-regexp-with-spaces)
