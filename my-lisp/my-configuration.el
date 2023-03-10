@@ -925,6 +925,10 @@ If the current search is successful, then only delete the last char."
       '(("\\.pdf\\'" "evince")
         ("\\.ps\\'" "evince")))
 
+;; External image viewer for `image-dired-thumbnail-display-external'
+;; ("C-<return>" in `image-dired-thumbnail-mode').
+(setq image-dired-external-viewer "/usr/bin/viewnior")
+
 ;; Recursive-deleting multiple directories in dired is just a bit
 ;; painful with the default yes-or-no-p prompt every time.
 ;; TODO: Investigate a single top-level yes-or-no-p confirmation
