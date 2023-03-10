@@ -310,6 +310,11 @@
             :type git
             :url "https://github.com/fxbois/web-mode.git")
 
+     (:name webdriver
+            ;; May require: "apt-get install firefox-geckodriver".
+            :type git
+            :url "https://gitlab.com/maurooaranda/emacs-webdriver.git")
+
      (:name wgrep
             :type git
             :url "https://github.com/mhayashi1120/Emacs-wgrep.git")

@@ -58,6 +58,7 @@
 :unbound "installed"
 :vcl-mode "installed"
 :web-mode "installed"
+:webdriver "installed"
 :wgrep "installed"
 :which-key "installed"
 :windcycle "installed"

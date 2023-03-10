@@ -4034,13 +4034,19 @@ Major mode for editing web templates.
 
 ;;;***
 
+;;;### (autoloads nil "webdriver/webdriver" "webdriver/webdriver.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from webdriver/webdriver.el
+
+(register-definition-prefixes "webdriver/webdriver" '("webdriver-"))
+
+;;;***
+
 ;;;### (autoloads nil "wgrep/wgrep" "wgrep/wgrep.el" (0 0 0 0))
 ;;; Generated autoloads from wgrep/wgrep.el
 
 (autoload 'wgrep-setup "wgrep/wgrep" "\
-Setup wgrep preparation.
-
-\(fn)" nil nil)
+Setup wgrep preparation." nil nil)
 
 (add-hook 'grep-setup-hook 'wgrep-setup)
 
