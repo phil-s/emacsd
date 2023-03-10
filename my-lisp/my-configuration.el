@@ -879,6 +879,15 @@ If the current search is successful, then only delete the last char."
              (number-sequence ?1 ?9)
              '(?0)))
 
+;;;; Isearch
+
+;; When isearching, enable M-<, M->, C-v and M-v to skip between matches
+;; in an intuitive fashion.  Note that the `cua-selection-mode' bindings
+;; for C-v and M-v bindings are not supported.
+(setq isearch-allow-motion t
+      isearch-motion-changes-direction t
+      isearch-repeat-on-direction-change nil)
+
 ;;; Dired
 
 ;; Don't allow dragging and dropping files into dired
