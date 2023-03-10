@@ -255,6 +255,9 @@ Advice for `visit-tags-table'."
 ;; from the list (it's essentially `keep-lines' and `flush-lines').
 (add-hook 'etags-select-mode-hook #'winnow-mode)
 
+;; Show the matches in the current file first.
+(setq etags-xref-prefer-current-file t)
+
 ;; Occur
 (add-hook 'occur-mode-hook #'winnow-mode)
 
