@@ -1425,6 +1425,11 @@ Remove the repository's entry from `magit-repository-local-cache'
 and set `magit-section-visibility-cache' to nil in all of the
 repository's Magit buffers."
   (interactive)
+  ;; Custom hacks.
+  (setq magit--rev-parse-toplevel-cache (make-hash-table :test #'equal))
+  (setq magit--rev-parse-cdup-cache (make-hash-table :test #'equal))
+  (setq magit--rev-parse-git-dir-cache (make-hash-table :test #'equal))
+  ;; Normal.
   (magit-with-toplevel
     (setq magit-repository-local-cache
           (cl-delete default-directory

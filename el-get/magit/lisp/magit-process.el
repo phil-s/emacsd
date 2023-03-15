@@ -557,6 +557,30 @@ See `magit-start-process' for more information."
     (apply #'magit-start-process (magit-git-executable) input
            (magit-process-git-arguments args))))
 
+(defvar postpone-auto-revert-buffers nil)
+
+(defvar postpone-auto-revert-interval nil)
+
+(defadvice auto-revert-buffers (around maybe-postpone-auto-revert-buffers)
+  "Delay `auto-revert-buffers' if `postpone-auto-revert-buffers' is non-nil."
+  (if postpone-auto-revert-buffers
+      ;; Do not run `auto-revert-buffers', but make its timer run more
+      ;; frequently in the meantime, so that it will run promptly once
+      ;; it's safe.  Remember the original `auto-revert-interval'.
+      (unless postpone-auto-revert-interval
+        (setq postpone-auto-revert-interval auto-revert-interval)
+        (setq auto-revert-interval 0.5)
+        (auto-revert-set-timer))
+    ;; We are no longer postponed, so restore the original
+    ;; `auto-revert-interval', and run `auto-revert-buffers'.
+    (when postpone-auto-revert-interval
+      (setq auto-revert-interval postpone-auto-revert-interval)
+      (setq postpone-auto-revert-interval nil)
+      (auto-revert-set-timer))
+    ad-do-it)) ;; Run `auto-revert-buffers'.
+
+(ad-activate 'auto-revert-buffers)
+
 (defun magit-start-process (program &optional input &rest args)
   "Start PROGRAM, prepare for refresh, and return the process object.
 
@@ -752,6 +776,7 @@ Magit status buffer."
 
 (defun magit-process-filter (proc string)
   "Default filter used by `magit-start-process'."
+  (setq postpone-auto-revert-buffers t)
   (with-current-buffer (process-buffer proc)
     (let ((inhibit-read-only t))
       (goto-char (process-mark proc))
@@ -1117,6 +1142,7 @@ Limited by `magit-process-error-tooltip-max-lines'."
 
 (defun magit-process-finish (arg &optional process-buf command-buf
                                  default-dir section)
+  (setq postpone-auto-revert-buffers nil)
   (unless (integerp arg)
     (setq process-buf (process-buffer arg))
     (setq command-buf (process-get arg 'command-buf))
