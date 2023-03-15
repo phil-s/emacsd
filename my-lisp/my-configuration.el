@@ -839,10 +839,10 @@ Advice for the `battery-status-function' function value."
       uniquify-ignore-buffers-re   "^\\*") ; don't muck with special buffers
 
 ;; Increase the default undo limits
-(when (< undo-limit 320000)
-  (setq undo-limit 320000))
-(when (< undo-strong-limit 480000)
-  (setq undo-strong-limit 480000))
+(when (< undo-limit 720000)
+  (setq undo-limit 720000))
+(when (< undo-strong-limit 960000)
+  (setq undo-strong-limit 960000))
 (when (< undo-outer-limit 48000000)
   (setq undo-outer-limit 48000000))
 
