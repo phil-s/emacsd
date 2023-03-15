@@ -232,6 +232,9 @@ when `auto-save-mode' is invoked manually.")
 ;; Save the clipboard to the kill ring if it would be clobbered
 (setq save-interprogram-paste-before-kill t)
 
+;; Retain more in the kill ring.
+(setq kill-ring-max (max kill-ring-max 255))
+
 ;; Duration of the ping-pong cursor indicator when copying text.
 (setq copy-region-blink-delay 0.5)
 
