@@ -757,7 +757,7 @@ n.b. ffap-alternate-file is intended for interactive use only."
   ;; NOT used with Emacs 28+ (see the conditional advice above).
   "Update battery status information in the mode line.
 
-Adds a warning face for 'low' battery in Emacs versions <= 27."
+Adds a warning face for \\='low\\=' battery in Emacs versions <= 27."
   (let* ((data (and battery-status-function (funcall battery-status-function)))
          (percentage (car (read-from-string (cdr (assq ?p data))))))
     (setq battery-mode-line-string
