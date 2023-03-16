@@ -4,6 +4,12 @@
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar apropos-do-all)
+  (defvar battery-load-critical)
+  (defvar battery-load-low)
+  (defvar battery-mode-line-format)
+  (defvar battery-mode-line-limit)
+  (defvar battery-mode-line-string)
+  (defvar battery-status-function)
   (defvar bookmark-default-file)
   (defvar calendar-date-style)
   (defvar calendar-week-start-day)
@@ -42,6 +48,7 @@
   (defvar sauron-separate-frame)
   (defvar tramp-default-method)
   (defvar tramp-default-user)
+  (declare-function battery-format "battery")
   (declare-function delight "delight")
   (declare-function dired-details-install "dired-details")
   (declare-function dired-dnd-protocol-alist "dired")
@@ -54,6 +61,7 @@
   (declare-function erc-log-mode "erc-log")
   (declare-function ibuffer-pop-filter "ibuf-ext")
   (declare-function keep-buffers-mode "keep-buffers")
+  (declare-function my-adaptive-visual-line-mode "my-text")
   (declare-function my-fortune-set-initial-scratch-message "my-utilities")
   (declare-function my-isearch-delete "my-configuration")
   (declare-function notify "notify")
