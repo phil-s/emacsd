@@ -738,7 +738,7 @@ n.b. ffap-alternate-file is intended for interactive use only."
 ;; Display only if battery capacity drops below 75%, and increase
 ;; the visibility at 25% (low) and 10% (critical) thresholds.
 ;; Use the POWER SYMBOL character.
-(setq battery-mode-line-format "%b⏻%p%% "
+(setq battery-mode-line-format "%b🗱%p%% "
       battery-mode-line-limit 75
       battery-load-low 25
       battery-load-critical 10)
