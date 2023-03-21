@@ -2,7 +2,7 @@
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
-;; Version: 0.4
+;; Version: 0.5
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 (require 'cc-mode) ;; `c-mode-syntax-table' is guaranteed to be available.
 (require 'php-mode nil :noerror) ;; Derives from c-mode; mightn't be installed.
 
-(defconst psysh--latest-version "0.4")
+(defconst psysh--latest-version "0.5")
 
 (defvar psysh-process-name "psysh"
   "Name for the comint process.")
@@ -255,6 +255,35 @@ You may enter multiple lines.  Enter one command per line."
   :type '(choice (const :tag "No initial input" nil)
                  (psysh-text-widget :tag "Commands")))
 
+(defcustom psysh-temp-file-mode nil
+  "The file mode to set for temporary files.
+
+This affects files for `psysh-config' and `psysh-initial-input'.
+
+If nil, the default file mode is not modified, which is fine if
+the same user is running both Emacs and PsySH; but any custom
+commands for running PsySH as a different user may necessitate
+that these temporary files be made more visible.
+
+If non-nil, the value should be a string representation of an
+octal number, such as \"640\".  Refer to man page `chmod(1)' for
+details of the octal bit pattern.  The value may alternatively
+be an integer value such as #o640, however Emacs will display
+integer values in decimal which is more difficult for users to
+recognise."
+  :type '(choice (const :tag "Default" nil)
+                 (string :tag "Octal mode string")
+                 (integer :tag "Integer mode")))
+
+(defun psysh-temp-file-mode ()
+  "Return user option `psysh-temp-file-mode' as an integer, or nil."
+  (cond ((not psysh-temp-file-mode)
+         nil)
+        ((integerp psysh-temp-file-mode)
+         psysh-temp-file-mode)
+        ((stringp psysh-temp-file-mode)
+         (string-to-number psysh-temp-file-mode 8))))
+
 (defcustom psysh-comint-input-sender t
   "How to send input to PsySH.
 
@@ -350,7 +379,11 @@ If directory DIR (or `default-directory', if unspecified) is a
 tramp path for a remote host, the temporary file will be created
 on that host; otherwise the file will be created locally using
 `make-temp-file'.  Any DIR value which is not `tramp-tramp-file-p'
-can be used to enforce a local file."
+can be used to enforce a local file.
+
+If `psysh-temp-file-mode' is non-nil, `set-file-modes' will be
+called after a new temp file is created.  Pre-existing temporary
+files will not be affected by changes to `psysh-temp-file-mode'."
   (unless prefix
     (setq prefix "psysh."))
   (unless dir
@@ -374,13 +407,8 @@ can be used to enforce a local file."
     ;; Check for an existing cached config filename.
     (let* ((key (cons user host))
            (temp (cdr (assoc key filemap)))
-           (fulltemp (if (and temp isremote)
-                         (apply
-                          #'tramp-make-tramp-file-name
-                          (if (version< tramp-version "2.3")
-                              (list method user host temp hop)
-                            (list method user domain host port temp hop)))
-                       temp)))
+           (fulltemp (psysh--remote-temp-filename
+                      (and temp isremote) method user domain host port temp hop)))
       ;; Check that the cached temp file still exists.
       (unless (and fulltemp (file-exists-p fulltemp))
         (setq temp nil))
@@ -389,22 +417,30 @@ can be used to enforce a local file."
         (setq temp (if isremote
                        (let ((tramp-temp-name-prefix prefix))
                          ;; Is there a way to get the full VEC out of
-                         ;; tramp when makeing a temp file?!
+                         ;; tramp when making a temp file?!
                          (tramp-make-tramp-temp-file vec))
                      (make-temp-file prefix)))
         (push (cons key temp) filemap)
         (puthash contents filemap psysh-temp-file-hash-table)
         ;; Write the PsySH config to the new file.
-        (with-temp-file (if isremote
-                            (apply
-                             #'tramp-make-tramp-file-name
-                             (if (version< tramp-version "2.3")
-                                 (list method user host temp hop)
-                               (list method user domain host port temp hop)))
-                          temp)
-          (insert (concat contents "\n"))))
+        (setq fulltemp (psysh--remote-temp-filename
+                        isremote method user domain host port temp hop))
+        (with-temp-file fulltemp
+          (insert (concat contents "\n")))
+        ;; Set the file mode.
+        (when psysh-temp-file-mode
+          (set-file-modes fulltemp (psysh-temp-file-mode))))
       ;; Return the cached filename.
       temp)))
+
+(defun psysh--remote-temp-filename (isremote method user domain host port temp hop)
+  "Use `tramp-make-tramp-file-name' if ISREMOTE."
+  (if isremote
+      (apply #'tramp-make-tramp-file-name
+             (if (version< tramp-version "2.3")
+                 (list method user host temp hop)
+               (list method user domain host port temp hop)))
+    temp))
 
 ;;;###autoload
 (defun run-psysh ()
