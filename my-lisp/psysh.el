@@ -2,7 +2,7 @@
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
-;; Version: 0.5
+;; Version: 0.5.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 (require 'cc-mode) ;; `c-mode-syntax-table' is guaranteed to be available.
 (require 'php-mode nil :noerror) ;; Derives from c-mode; mightn't be installed.
 
-(defconst psysh--latest-version "0.5")
+(defconst psysh--latest-version "0.5.1")
 
 (defvar psysh-process-name "psysh"
   "Name for the comint process.")
@@ -127,11 +127,15 @@ See `psysh-process-connection-type' for more information."
                  (const :tag "PTY" t)))
 
 (defcustom psysh-prompt-main ">>> "
-  "The REPL's main input prompt."
+  "The REPL's main input prompt.
+
+This must match the 'prompt' theme setting in `psysh-config'."
   :type 'string)
 
 (defcustom psysh-prompt-continuation "... "
-  "The REPL's input continuation prompt."
+  "The REPL's input continuation prompt.
+
+This must match the 'bufferPrompt' theme setting in `psysh-config'."
   :type 'string)
 
 (defcustom psysh-prompt-regexp (rx-to-string
@@ -141,7 +145,9 @@ See `psysh-process-connection-type' for more information."
   "Regexp matching any REPL prompt.
 
 Defaults to matching either of `psysh-prompt-main' or
-`psysh-prompt-continuation'."
+`psysh-prompt-continuation'.
+
+See also the 'theme' setting in `psysh-config'."
   :type 'string)
 
 (defvar psysh-remap-php-send-region)
@@ -193,6 +199,17 @@ be read from and written to automatically."
   ;; Investigate...
   "<?php
 return array(
+  // Configure the prompts to match `psysh-prompt-main' and
+  // `psysh-prompt-continuation' explicitly.  Our defaults
+  // are equivalent to specifying 'theme' => 'classic';
+  // See \\Psy\\Output\\Theme::CLASSIC_THEME for details.
+  'theme' => [
+    'compact' => true,
+    'prompt' => '>>> ',
+    'bufferPrompt' => '... ',
+    'replayPrompt' => '--> ',
+    'returnValue' => '=>  ',
+  ],
   'pager' => 'cat', # Comint provides a dumb terminal.
   'useReadline' => false, # No need for this in Emacs.
   'requireSemicolons' => false, # More convenient, but may cause issues.
@@ -221,6 +238,11 @@ for details of all the available config options.
 
 At minimum the 'pager' value should be set to 'cat', as the comint
 buffer provides only a dumb terminal.
+
+For PsySH v0.11.9 or later, it's important for the 'theme' value
+to specify prompts which match the values of `psysh-prompt-main'
+and `psysh-prompt-continuation'.  If the 'prompt' value is set,
+it similarly must match `psysh-prompt-main'.
 
 If you set `psysh-comint-input-sender' to use the default comint
 sender then you may wish to set 'requireSemicolons' => true, as
