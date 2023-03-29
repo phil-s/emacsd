@@ -486,10 +486,12 @@ Also see the following:
     (with-current-buffer buf
       (erase-buffer))
     (shell-command
-     (format "echo 'DISPLAY=:0.0 zenity --info --title=\"Reminder\" --text=%s' \
+     (format "echo 'DISPLAY=:0.0 zenity --info --title=\"Reminder\" --text='%s \
 | at -M %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
-             (shell-quote-argument what)
-             (shell-quote-argument when))
+             ;; Escape the text for the shell command which will be run by 'at',
+             ;; as well as for the shell command we are running here.
+             (shell-quote-argument (shell-quote-argument what))
+             (shell-quote-argument (if (equal when "") "now" when)))
      buf " *reminder-errors*")))
 
 (defun my-interactive-ding ()
