@@ -41,6 +41,7 @@
   (defvar goto-address-mail-regexp)
   (defvar grep-find-ignored-files)
   (defvar ibuffer-formats)
+  (defvar image-dired-external-viewer)
   (defvar linum-format)
   (defvar require-trailing-newline)
   (defvar sauron-nick-insensitivity)
