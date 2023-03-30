@@ -259,17 +259,17 @@ when `auto-save-mode' is invoked manually.")
 ;; (It's right there in the name: WeekEND.)
 (setq calendar-week-start-day 1)
 
+;; (add-hook 'diary-mode-hook #'my-diary-mode-hook)
+;; (defun my-diary-mode-hook ()
+;;   "Called via `diary-mode-hook'."
+;;   )
+
 ;; Sort diary entries.
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 
-;; ;; Enable diary block comments (C-style).
-;; ;; These cannot span lines, and only work within entries.
-;; ;; Not so useful after all.
-;; (add-hook 'diary-mode-hook #'my-diary-hook)
-;; (defun my-diary-hook ()
-;;   "Called via `diary-mode-hook'."
-;;   (setq-local diary-comment-start "/*")
-;;   (setq-local diary-comment-end "*/"))
+;; "Commented" parts of diary entries are parsed but not rendered.
+;; Useful for things like `appt-warning-time-regexp'.
+(setq diary-comment-start ";;")
 
 ;; Make the `zap-up-to-char' command available.
 (autoload 'zap-up-to-char "misc"
