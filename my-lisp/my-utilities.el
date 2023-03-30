@@ -479,15 +479,22 @@ Also see the following:
          tmp-message
          backup-message)))))
 
-(defun reminder (what when)
-  "Remind me about something later."
+(defun reminder (what when &optional type timeout)
+  "Remind me about something later.
+
+WHAT is the text of the message.
+WHEN is a timespec recognised by 'at' (see Man page `at').
+TYPE should be one of `info' (default), `warning', `error', or `notification'.
+TIMEOUT is a number of seconds (default is no timeout)."
   (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
-  (let ((buf (get-buffer-create " *reminder*")))
-    (with-current-buffer buf
-      (erase-buffer))
+  (let ((buf (get-buffer-create " *reminder*"))
+        (shell-command-dont-erase-buffer nil)
+        (message-log-max nil))
     (shell-command
-     (format "echo 'DISPLAY=:0.0 zenity --info --title=\"Reminder\" --text='%s \
+     (format "echo 'DISPLAY=:0.0 zenity --%s%s --width=500 --title=Reminder --text='%s \
 | at -M %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
+             (or type 'info)
+             (if timeout (format " --timeout=%d" timeout) "")
              ;; Escape the text for the shell command which will be run by 'at',
              ;; as well as for the shell command we are running here.
              (shell-quote-argument (shell-quote-argument what))
