@@ -3,6 +3,14 @@
 
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar appt-audible)
+  (defvar appt-disp-window-function)
+  (defvar appt-display-diary)
+  (defvar appt-display-duration)
+  (defvar appt-display-format)
+  (defvar appt-display-interval)
+  (defvar appt-display-mode-line)
+  (defvar appt-message-warning-time)
   (defvar apropos-do-all)
   (defvar battery-load-critical)
   (defvar battery-load-low)
@@ -270,6 +278,39 @@ when `auto-save-mode' is invoked manually.")
 ;; "Commented" parts of diary entries are parsed but not rendered.
 ;; Useful for things like `appt-warning-time-regexp'.
 (setq diary-comment-start ";;")
+
+;; Activate diary/appointment notifications.
+(appt-activate 1)
+
+;; Configure diary/appointment notifications.
+(setq appt-message-warning-time 30
+      appt-display-interval 5
+      appt-display-duration 10
+      appt-display-mode-line t
+      appt-display-diary t
+      appt-audible nil ;; no point; I build emacs --without-sound
+      appt-display-format 'window
+      appt-disp-window-function #'my-appt-disp-window)
+
+(defun my-appt-disp-window (min-to-app new-time appt-msg)
+  "Custom `appt-disp-window-function'."
+  ;; Call the standard `appt-disp-window-function'.
+  (appt-disp-window min-to-app new-time appt-msg)
+  ;; Generate a `reminder' for the list of appointments.
+  (unless (listp min-to-app)
+    (setq min-to-app (list min-to-app)
+          appt-msg (list appt-msg)))
+  (let (now eta msg text (sep "\n\n\n\n"))
+    (dotimes (_ (length min-to-app))
+      (setq eta (pop min-to-app)
+            msg (pop appt-msg)
+            text (concat text (format "%s mins: %s" eta msg) sep))
+      (when (equal eta "0")
+        (setq now t)))
+    (reminder (string-trim text) "now"
+              (if now 'warning 'info)
+              (unless now ;; there will be another one
+                (* 60 appt-display-interval)))))
 
 ;; Make the `zap-up-to-char' command available.
 (autoload 'zap-up-to-char "misc"
