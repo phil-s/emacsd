@@ -23,6 +23,7 @@
   (declare-function dired-move-to-filename "dired")
   (declare-function he-substitute-string "hippie-exp")
   (declare-function ibuffer-quit "ibuffer")
+  (declare-function notifications-notify "notifications")
   (declare-function shr-render-buffer "shr")
   (declare-function sql-buffer-live-p "sql")
   (declare-function sql-highlight-product "sql")
@@ -479,13 +480,22 @@ Also see the following:
          tmp-message
          backup-message)))))
 
-(defun reminder (what when &optional type timeout)
+(defun reminder (what when &optional type timeout handler)
   "Remind me about something later.
 
 WHAT is the text of the message.
 WHEN is a timespec recognised by 'at' (see Man page `at').
 TYPE should be one of `info' (default), `warning', `error', or `notification'.
-TIMEOUT is a number of seconds (default is no timeout)."
+TIMEOUT is a number of seconds (default is no timeout).
+HANDLER is the symbol `zenity' or `notification'."
+  (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
+  (if handler
+      (funcall (intern (concat "reminder--" (symbol-name handler)))
+               what when type timeout)
+    (reminder--zenity what when type timeout)))
+
+(defun reminder--zenity (what when &optional type timeout)
+  "Zenity-based handler for `reminder'."
   (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
   (let ((buf (get-buffer-create " *reminder*"))
         (shell-command-dont-erase-buffer nil)
@@ -500,6 +510,66 @@ TIMEOUT is a number of seconds (default is no timeout)."
              (shell-quote-argument (shell-quote-argument what))
              (shell-quote-argument (if (equal when "") "now" when)))
      buf " *reminder-errors*")))
+
+(defun reminder--notification (what &optional type timeout)
+  "Notification-based handler for `reminder'.  Does not support WHEN.
+
+See URL `https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html'."
+  (interactive "sRemind me about: ")
+  (require 'notifications)
+  (let ((args (list :title "Reminder"
+                    :transient t ;; Important!
+                    :body what)))
+    ;; If the notification isn't `:transient' then Gnome will hold onto it
+    ;; *even after it disappears from view*; and once it has a hard-coded total
+    ;; of 20 such "unacknowledged" notifications hidden away behind the scenes,
+    ;; it will refuse to allow any others to be delivered.  The fix for that is
+    ;; to run gnome-panel (which initially has nothing helpful), hold Alt while
+    ;; right-clicking that bar (how nice that regular right-click does nothing
+    ;; at all while this gets you a menu), select "Add to panel", choose
+    ;; "Notification area", and then interact with that new UI, which provides
+    ;; a way to view and remove previous notifications.  Apparently the entire
+    ;; notification system is wrapped up into some kind of "gnome applet" with
+    ;; no CLI access at all.  Thanks Gnome.
+    (setq args (append args (reminder--notification-type-args type)))
+    (if timeout
+        (setq args (append args (list :timeout (* 1000 timeout))))
+      (setq args (append args (list :timeout 0))))
+    ;; :replaces-id    The ID that this notification replaces.
+    ;; :actions        A list of actions
+    ;; :category       The type of notification this is.
+    ;; :sound-file     The path to a sound file to play
+    ;; :sound-name     https://specifications.freedesktop.org/sound-naming-spec/sound-naming-spec-latest.html#names
+    ;;                 Some relevant examples are:
+    ;;                 - "dialog-information"
+    ;;                 - "dialog-warning"
+    ;;                 - "dialog-error"
+    ;;                 - "dialog-question"
+    ;; :suppress-sound Suppress playing sounds, if able.
+    ;; :on-action      Function to call when an action is invoked.
+    ;; :on-close       Function to call when the notification is closed
+    ;;                 by timeout or by the user.
+    (apply #'notifications-notify args)))
+
+(defun reminder--notification-type-args (type)
+  "Return the TYPE-specific arguments for `reminder--notification'."
+  (let* ((icondir "/usr/share/icons/Humanity/status/128/")
+         (args (cond ((eq type 'error)
+                      '( :urgency critical
+                         :app-icon "dialog-error.svg"
+                         :sound-name "dialog-warning"))
+                     ((eq type 'warning)
+                      '( :urgency normal
+                         :app-icon "dialog-warning.svg"
+                         :sound-name "dialog-warning"))
+                     (t
+                      '( :urgency low
+                         :app-icon "dialog-information.svg"
+                         :sound-name "dialog-information")))))
+    ;; Establish the path for the icon filename.
+    (plist-put args :app-icon (expand-file-name
+                               (plist-get args :app-icon) icondir))
+    args))
 
 (defun my-interactive-ding ()
   (interactive)
