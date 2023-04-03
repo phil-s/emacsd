@@ -260,8 +260,14 @@ when `auto-save-mode' is invoked manually.")
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
-;; Use day/month/year format in calendar
+;; Use day/month/year format in calendar and diary entries.
 (setq calendar-date-style 'european)
+
+;; Also use day/month/year format when inserting diary entries via
+;; `org-agenda-diary-entry', `diary-insert-entry' and similar.
+(setq calendar-date-display-form
+      '((format "%d/%d/%s"
+                (string-to-number day) (string-to-number month) year)))
 
 ;; The week begins on Monday, not Sunday.
 ;; (It's right there in the name: WeekEND.)
