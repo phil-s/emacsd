@@ -81,6 +81,12 @@
             :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el"
             :features browse-kill-ring)
 
+     (:name csv-mode
+            :type git
+            :url "https://git.savannah.gnu.org/git/emacs/elpa.git"
+            :branch "externals/csv-mode"
+            :features csv-mode)
+
      (:name dash
             :type git
             :branch "2.14.1"

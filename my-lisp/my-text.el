@@ -45,11 +45,6 @@ zero or negative, then disable both modes."
 
 (add-hook 'doc-view-mode-hook #'my-pdf-tools-install)
 
-;; CSV mode
-(add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
-(autoload 'csv-mode "csv-mode"
-  "Major mode for editing comma-separated value files." t)
-
 ;; ;; Enable spelling correction
 ;; (add-hook 'text-mode-hook 'my-text-mode-hook)
 ;; (defun my-text-mode-hook ()

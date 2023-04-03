@@ -6,6 +6,7 @@
 :auto-compile "installed"
 :avy "installed"
 :browse-at-remote "installed"
+:csv-mode "installed"
 :dash "installed"
 :deft "installed"
 :delight "installed"
