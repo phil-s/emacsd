@@ -1368,9 +1368,11 @@ found."
 	 (name   (format "*git clone %s*" package))
 	 (source (el-get-package-def package))
 	 (branch (plist-get source :branch))
+         (gargs  (append (list "--no-pager" "clone")
+                         (plist-get source :extra-args)))
 	 (args   (if branch
-		     (list "--no-pager" "clone" "-b" branch url package)
-		   (list "--no-pager" "clone" url package)))
+		     (append gargs (list "-b" branch url package))
+		   (append gargs (list url package))))
 	 (ok     (format "Package %s installed." package))
 	 (ko     (format "Could not install package %s." package)))
     (el-get-start-process-list
@@ -1379,7 +1381,7 @@ found."
 		      :buffer-name ,name
 		      :default-directory ,el-get-dir
 		      :program ,git-executable
-		      :args ,args
+		      :args ,(delq nil args)
 		      :message ,ok
 		      :error ,ko)
        (:command-name "*git submodule update*"

@@ -85,6 +85,7 @@
             :type git
             :url "https://git.savannah.gnu.org/git/emacs/elpa.git"
             :branch "externals/csv-mode"
+            :extra-args ("--single-branch")
             :features csv-mode)
 
      (:name dash
