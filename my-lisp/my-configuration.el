@@ -273,6 +273,9 @@ when `auto-save-mode' is invoked manually.")
 ;; (It's right there in the name: WeekEND.)
 (setq calendar-week-start-day 1)
 
+;; Hard-code the standard `diary-file' value for `file-exists-p' tests.
+(setq diary-file (expand-file-name (locate-user-emacs-file "diary" "diary")))
+
 ;; (add-hook 'diary-mode-hook #'my-diary-mode-hook)
 ;; (defun my-diary-mode-hook ()
 ;;   "Called via `diary-mode-hook'."
@@ -286,7 +289,8 @@ when `auto-save-mode' is invoked manually.")
 (setq diary-comment-start ";;")
 
 ;; Activate diary/appointment notifications.
-(appt-activate 1)
+(when (file-exists-p diary-file)
+  (appt-activate 1))
 
 ;; Configure diary/appointment notifications.
 (setq appt-message-warning-time 30
@@ -295,8 +299,18 @@ when `auto-save-mode' is invoked manually.")
       appt-display-mode-line t
       appt-display-diary t
       appt-audible nil ;; no point; I build emacs --without-sound
-      appt-display-format 'window
-      appt-disp-window-function #'my-appt-disp-window)
+      appt-display-format 'window)
+
+;; We don't want duplicate GUI notifications being triggered from
+;; multiple different instances, so let's tie this to what *should*
+;; be my primary emacs server instance.  Other instances with access
+;; to the diary can still display notifications within Emacs.
+(add-hook 'after-init-hook #'my-appt-disp-window-enable-maybe)
+(defun my-appt-disp-window-enable-maybe ()
+  "Only trigger GUI notifications from my primary server instance."
+  (when (and (my-server-running "server")
+             (file-exists-p diary-file))
+    (setq appt-disp-window-function #'my-appt-disp-window)))
 
 (defun my-appt-disp-window (min-to-app new-time appt-msg)
   "Custom `appt-disp-window-function'."
@@ -482,6 +496,13 @@ Can be tested with (signal-process (emacs-pid) \\='sigusr1)"
                (setq server-name newname))))
   (server-force-delete)
   (server-start))
+
+(defun my-server-running (name)
+  "Non-nil if this instance is running `server-name' NAME."
+  (and (bound-and-true-p server-process)
+       (process-live-p server-process)
+       (server-running-p)
+       (equal server-name name)))
 
 ;; ibuffer config.
 (eval-when-compile
