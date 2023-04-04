@@ -3158,7 +3158,8 @@ entry which is not a symbol and is not already a known recipe."
 	(require 'notify))))
 
   (cond ((fboundp 'notifications-notify) (notifications-notify :title title
-							       :body message))
+							       :body message
+                                                               :transient t))
 	((fboundp 'notify)               (notify title message))
 	((fboundp 'el-get-growl)         (el-get-growl title message))
 	(t                               (message "%s: %s" title message))))
