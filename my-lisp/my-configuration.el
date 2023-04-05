@@ -276,10 +276,14 @@ when `auto-save-mode' is invoked manually.")
 ;; Hard-code the standard `diary-file' value for `file-exists-p' tests.
 (setq diary-file (expand-file-name (locate-user-emacs-file "diary" "diary")))
 
-;; (add-hook 'diary-mode-hook #'my-diary-mode-hook)
-;; (defun my-diary-mode-hook ()
-;;   "Called via `diary-mode-hook'."
-;;   )
+;; Always open the diary file in `diary-mode'.
+(add-to-list 'auto-mode-alist (cons (rx bos (eval diary-file) eos) 'diary-mode))
+
+(add-hook 'diary-mode-hook #'my-diary-mode-hook)
+(defun my-diary-mode-hook ()
+  "Called via `diary-mode-hook'."
+  (goto-address-mode 1)
+  (bug-reference-mode 1))
 
 ;; Sort diary entries.
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
