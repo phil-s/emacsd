@@ -263,11 +263,16 @@ when `auto-save-mode' is invoked manually.")
 ;; Use day/month/year format in calendar and diary entries.
 (setq calendar-date-style 'european)
 
-;; Also use day/month/year format when inserting diary entries via
-;; `org-agenda-diary-entry', `diary-insert-entry' and similar.
-(setq calendar-date-display-form
-      '((format "%d/%d/%s"
-                (string-to-number day) (string-to-number month) year)))
+(advice-add 'diary-insert-entry :around #'my-diary-insert-entry-advice)
+(advice-add 'org-agenda-diary-entry :around #'my-diary-insert-entry-advice)
+
+(defun my-diary-insert-entry-advice (orig-fun &rest args)
+  "Use day/month/year format when inserting diary entries.
+Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
+  (let ((calendar-date-display-form
+         '((format "%d/%d/%s"
+                   (string-to-number day) (string-to-number month) year))))
+    (apply orig-fun args)))
 
 ;; The week begins on Monday, not Sunday.
 ;; (It's right there in the name: WeekEND.)
