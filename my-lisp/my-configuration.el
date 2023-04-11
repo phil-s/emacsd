@@ -323,6 +323,13 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
              (file-exists-p diary-file))
     (setq appt-disp-window-function #'my-appt-disp-window)))
 
+(defvar my-appt-disp-window-seperator
+  (concat "\n\n" (propertize
+                  (make-string 80 (char-from-name "EM DASH"))
+                  'face 'shadow)
+          "\n\n")
+  "Separates appointments in `my-appt-disp-window'.")
+
 (defun my-appt-disp-window (min-to-app new-time appt-msg)
   "Custom `appt-disp-window-function'."
   ;; Call the standard `appt-disp-window-function'.
@@ -331,17 +338,28 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
   (unless (listp min-to-app)
     (setq min-to-app (list min-to-app)
           appt-msg (list appt-msg)))
-  (let (now eta msg text (sep "\n\n\n\n"))
-    (dotimes (_ (length min-to-app))
-      (setq eta (pop min-to-app)
-            msg (pop appt-msg)
-            text (concat text (format "%s mins: %s" eta msg) sep))
-      (when (equal eta "0")
-        (setq now t)))
-    (reminder (string-trim text) "now"
+  (let* ((now nil)
+         (text (with-temp-buffer
+                 (dolist (eta min-to-app)
+                   (insert (if (equal eta "0")
+                               (prog1 (propertize "NOW: " 'face 'warning)
+                                 (setq now t))
+                             (propertize (format "%s mins: " eta)
+                                         'face 'diary-time))
+                           (string-trim (pop appt-msg))
+                           (if appt-msg my-appt-disp-window-seperator "")))
+                 ;; Diary format requires indentation, so remove that.
+                 ;; Assume 1 space (so that any alignments are retained).
+                 (goto-char (point-min))
+                 (while (search-forward "\n " nil 'noerror)
+                   (replace-match "\n"))
+                 (buffer-string))))
+    ;; Display the reminder.
+    (reminder text "now"
               (if now 'warning 'info)
               (unless now ;; there will be another one
-                (* 60 appt-display-interval)))))
+                (* 60 appt-display-interval))
+              'frame)))
 
 ;; Make the `zap-up-to-char' command available.
 (autoload 'zap-up-to-char "misc"

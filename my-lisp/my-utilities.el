@@ -491,7 +491,7 @@ WHAT is the text of the message.
 WHEN is a timespec recognised by 'at' (see Man page `at').
 TYPE should be one of `info' (default), `warning', `error', or `notification'.
 TIMEOUT is a number of seconds (default is no timeout).
-HANDLER is the symbol `zenity' or `notification'."
+HANDLER is one of the symbols `zenity', `notification', `frame'."
   (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
   (if handler
       (funcall (intern (concat "reminder--" (symbol-name handler)))
@@ -574,6 +574,118 @@ See URL `https://specifications.freedesktop.org/notification-spec/notification-s
     (plist-put args :app-icon (expand-file-name
                                (plist-get args :app-icon) icondir))
     args))
+
+(defvar-local reminder--frame nil)
+(defun reminder--frame (what &optional _when _type _timeout)
+  "Frame-based handler for `reminder'.  Supports only the WHAT argument."
+  (interactive "sRemind me about: ")
+  (let ((buf (generate-new-buffer "*reminder*"))
+        (maxcol 0) (maxrow 1)
+        (minwidth 80) (maxwidth 120)
+        (minheight 10) (maxheight 40)
+        width height pxwidth pxheight
+        vscroll hscroll)
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (setq header-line-format "Reminder"
+              mode-line-format '("" appt-mode-string)
+              show-trailing-whitespace nil
+              cursor-type 'hbar)
+        (save-excursion
+          (insert what)
+          (goto-char (point-min))
+          (while (not (eobp))
+            (end-of-line)
+            (setq maxcol (max maxcol (current-column)))
+            (forward-line 1)
+            (cl-incf maxrow))
+          (setq width (max minwidth (min maxwidth maxcol))
+                height (1+ (max minheight (min maxheight maxrow)))
+                ;; Added width/height pixels determined by trial-and-error.
+                ;; I don't know exactly what they are accounting for, and it
+                ;; seems odd that the number is odd; but nevertheless this
+                ;; is what got me the desired result.
+                pxwidth (+ 3 (* width (default-font-width)))
+                pxheight (+ 3 (* height (default-font-height))))
+          ;; Adjust for scroll bars.  Use the same settings as the current frame.
+          (cl-destructuring-bind (fvscroll . fhscroll)
+              (frame-current-scroll-bars)
+            (if (<= maxrow maxheight)
+                ;; Avoid scrolling if the entire buffer is (probably) visible.
+                (setq-local next-screen-context-lines 0)
+              (when fvscroll
+                (setq vscroll fvscroll
+                      pxwidth (+ pxwidth (frame-scroll-bar-width)))))
+            (when (and fhscroll (> maxcol maxwidth))
+              (setq hscroll fhscroll
+                    pxheight (+ pxheight (frame-scroll-bar-height))))))
+        ;; Use `view-mode' in the notification buffer.
+        (view-mode 1)
+        (visual-line-mode 1)
+        (goto-address-mode 1)
+        (when (fboundp 'my-bug-reference-mode-enable)
+          (my-bug-reference-mode-enable))
+        ;; Ensure that our `view-exit-action' will know which frame to
+        ;; delete, even if the buffer is no longer being displayed in
+        ;; a window at the time the custom function is called.
+        (add-hook 'window-configuration-change-hook
+                  (lambda ()
+                    (unless reminder--frame
+                      (setq reminder--frame (window-frame (selected-window)))))
+                  nil :local)
+        ;; The "q" key binding deletes the notification frame and
+        ;; kills the buffer.
+        (setq view-exit-action
+              (lambda (buf)
+                (with-current-buffer buf
+                  (when reminder--frame
+                    (delete-frame reminder--frame)))
+                (kill-buffer buf)))
+        ;; Create the notification.
+        (with-selected-frame
+            (make-frame `((name . "Notification")
+                          (visibility . nil)
+                          (fullscreen . nil)
+                          (menu-bar-lines . 0)
+                          (tool-bar-lines . 0)
+                          (tab-bar-lines . 0)
+                          ;; (left-fringe . 0)
+                          ;; (right-fringe . 0)
+                          (vertical-scroll-bars . ,vscroll)
+                          (horizontal-scroll-bars . ,hscroll)
+                          (minibuffer . nil)
+                          (width . (text-pixels . ,pxwidth)) ;; (width . ,width)
+                          (height . (text-pixels . ,pxheight)) ;; (height . ,height)
+                          (left . ,(- (/ (display-pixel-width) 2) (/ pxwidth 2)))
+                          (top . ,(- (/ (display-pixel-height) 2) (/ pxheight 2)))
+                          ))
+          ;; Wrapped lines may have caused us to miscalculate the required
+          ;; height for the window, so check how many lines we're actually
+          ;; using, and make adjustments if necessary before making the frame
+          ;; visible.
+          (when (<= maxrow maxheight)
+            ;; TODO: Needs more testing.  I'm getting a scrollbar when I'm using
+            ;; up the exact number of lines on display.  I think that was
+            ;; working before, so presumably it's a bug in the line-wrapping
+            ;; adjustments?  (although testing was without wrapped lines), and
+            ;; maybe that +1/+2 confusion I was having.  I may be conflating
+            ;; window-height and frame-height?  Needs work.
+            ;; `header-line-format' and `mode-line-format' each require a line,
+            ;; which is probably the + 2 immediately below??
+            (let* ((screenlines (+ 2 (count-screen-lines (point-min)
+                                                         (point-max))))
+                   (sheight (min screenlines maxheight)))
+              (when (> sheight (window-height))
+                (setq pxheight (+ 3 (* sheight (default-font-height))))
+                (set-frame-parameter
+                 (selected-frame) 'height (cons 'text-pixels pxheight)))
+              (when (> screenlines maxheight)
+                (set-frame-parameter
+                 (selected-frame) 'vertical-scroll-bars 'right))
+              ))
+          ;; Make the frame visible.
+          (set-frame-parameter (selected-frame) 'visibility t))))))
 
 (defun my-interactive-ding ()
   (interactive)
