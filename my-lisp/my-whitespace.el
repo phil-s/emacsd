@@ -50,7 +50,12 @@
 ;; Use ws-trim mode to strip trailing whitespace automatically
 ;; from edited lines (the default ws-trim-level).
 (when (require 'ws-trim nil 'noerror)
-  (setq ws-trim-global-modes '(guess (not term-mode so-long-mode drush-php-mode)))
+  (setq ws-trim-global-modes '(guess (not
+                                      diary-mode
+                                      drush-php-mode
+                                      so-long-mode
+                                      term-mode
+                                      )))
   (global-ws-trim-mode 1))
 
 ;; ;; Strip trailing whitespace.
@@ -79,7 +84,6 @@
       '(calendar
         cfw:calendar
         completion-list
-        diary
         ediff-meta
         elfeed-search
         erc
