@@ -1,3 +1,7 @@
+;; -*- lexical-binding: t; -*-
+
+(require 'cl-lib)
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar compare-windows-get-window-function)
@@ -268,7 +272,7 @@ any numeric prefix argument is passed to `occur' as nlines."
       (multi-occur (my-multi-occur-buffers t) regexp)
     (multi-occur (my-multi-occur-buffers) regexp nlines)))
 
-(defun my-multi-occur-in-visible-buffers (regexp &optional arg)
+(defun my-multi-occur-in-visible-buffers (regexp &optional _arg)
   "Show all lines matching REGEXP in the current frame's visible buffers."
   (interactive (occur-read-primary-args)) ;; optional arg required but ignored
   (let ((visible-buffers nil))
@@ -601,7 +605,7 @@ Does not set point.  Does nothing if mark ring is empty."
            ;; (if (equal last-command 'unpop-to-mark-command) 1
            ;;   (error "Previous command was not a (un)pop-to-mark-command"))
            )))
-    (dotimes (x num-times)
+    (dotimes (_ num-times)
       (when mark-ring
         (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
         (set-marker (mark-marker) (+ 0 (car (last mark-ring))) (current-buffer))
@@ -749,7 +753,7 @@ within the current buffer-file-name."
   ;; my-dired-find-file
   (define-key dired-mode-map (kbd "F") 'my-dired-find-file)
   (defun my-dired-find-file (&optional arg)
-    "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
+    "Open each marked file, or the file at point, or the next ARG files."
     (interactive "P")
     (let* ((fn-list (dired-get-marked-files nil arg)))
       (mapc 'find-file fn-list)))
@@ -978,7 +982,7 @@ acquire whichever buffer it had been displaying previously."
 (defun my-ediff-dwim ()
   "Do what I mean, when invoking `ediff'.
 
-If a region is active when this command is called, call `ediff-regions-wordwise'.
+If there is an active region, call `ediff-regions-wordwise'.
 
 Else if the current frame has 2 windows,
 - Do `ediff-files' if the buffers are associated to files and the buffers
@@ -1010,6 +1014,7 @@ Otherwise call `ediff-buffers' interactively."
               (ediff-files filea fileb))))
       (call-interactively 'ediff-buffers))))
 
+(defvar compare-windows-highlight)
 (defun my-compare-windows-complete (&optional ignore-whitespace)
   "Highlight all differences between two windows.
 
@@ -1100,10 +1105,10 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
         (progn
           (skip-syntax-forward "^\"")
           (goto-char (1+ (point)))
-          (decf arg))
+          (cl-decf arg))
       (skip-syntax-backward "^\"")
       (goto-char (1- (point)))
-      (incf arg)))
+      (cl-incf arg)))
   (up-list arg))
 
 ;; Include any header comment when using narrow-to-defun
@@ -1368,7 +1373,7 @@ point. This function returns a list (string) for use in `interactive'."
   (require 'shr)
   (url-retrieve
    url
-   (lambda (&optional status cbargs)
+   (lambda (&optional _status _cbargs)
      (let ((markup (current-buffer)))
        (delete-region (point-min) (1+ url-http-end-of-headers))
        (shr-render-buffer markup)
@@ -1379,7 +1384,7 @@ point. This function returns a list (string) for use in `interactive'."
   (interactive "sURL: ")
   (url-retrieve
    url
-   (lambda (&optional status cbargs)
+   (lambda (&optional status _cbargs)
      (let ((error (plist-get status :error)))
        (if error
            (signal (car error) (cdr error))
@@ -1602,7 +1607,7 @@ With C-u prefix arg, always creates a new buffer."
       (use-local-map map))
     ;; Kill the buffer automatically when the process is killed.
     (set-process-sentinel
-     proc (lambda (process signal)
+     proc (lambda (process _signal)
             (and (memq (process-status process) '(exit signal))
                  (buffer-live-p (process-buffer process))
                  (kill-buffer (process-buffer process)))))
@@ -1988,7 +1993,7 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
 
 XMonad key binding for xmonad.hs:
 
-, ((modMask .|. shiftMask, xK_m), spawn \"emacsclient --eval \
+, ((modMask .|. shiftMask, xK_m), spawn \"emacsclient --eval \\
 \\\"(my-xmonad-domain-hash-md5-as-kill)\\\"\")"
   (interactive)
   (select-frame (make-frame '((my-xmonad-domain-hash-md5-as-kill . t))))
@@ -2010,8 +2015,9 @@ XMonad key binding for xmonad.hs:
   "Helper for `my-define-bob' and `my-define-eob'."
   (let ((modename (symbol-name mode)))
     (let (;;(fname (intern (concat "my-" modename "-" (symbol-name remap))))
-          (mode-map (intern (concat modename "-map")))
-          (mode-hook (intern (concat modename "-hook"))))
+          (modemap (intern (concat modename "-map")))
+          ;; (modehook (intern (concat modename "-hook")))
+          )
       `(progn
          (defalias ',fname
            (lambda ()
@@ -2024,8 +2030,8 @@ XMonad key binding for xmonad.hs:
            ,doc)
          (eval-after-load ,library
            '(progn
-              (defvar ,mode-map) ;; Silence compiler warnings.
-              (define-key ,mode-map [remap ,remap] #',fname)))))))
+              (defvar ,modemap) ;; Silence compiler warnings.
+              (define-key ,modemap [remap ,remap] #',fname)))))))
 
 (defmacro my-define-bob (fname mode library &rest forms)
   "Define a special version of `beginning-of-buffer' in MODE.
@@ -2191,7 +2197,7 @@ toggle between real end and logical end of the buffer."
 ;; Make "M-g [1-9] ... RET" a shortcut for "M-g g [1-9] ... RET"
 ;; (dotimes (n 9)
 ;;   (global-set-key (kbd (format "M-g %s" (1+ n))) #'my-goto-line))
-(defun my-goto-line (&optional buffer)
+(defun my-goto-line ()
   "Slightly faster `goto-line'."
   (interactive "P")
   (when (and (>= last-command-event ?1)

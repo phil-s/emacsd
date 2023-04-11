@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 ;; Consider switching variable set function for defcustom variables
 ;; From: (setq VAR VALUE) to: (customize-set-variable 'VAR VALUE "COMMENT")
 
@@ -127,7 +129,7 @@
   "Update `my-backup-buffer-timestamp'.  Advice for `backup-buffer'."
   (setq-local my-backup-buffer-timestamp (current-time)))
 
-(define-advice save-buffer (:before (&optional arg) buffer-backed-up-threshold)
+(define-advice save-buffer (:before (&optional _arg) buffer-backed-up-threshold)
   "Clear `buffer-backed-up' based on `my-backup-buffer-timestamp'.
 Advice for `save-buffer'."
   (when (and buffer-backed-up
@@ -1192,7 +1194,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 (add-hook 'erc-text-matched-hook 'my-notify-erc)
 (eval-when-compile
   (declare-function erc-default-target "erc"))
-(defun my-notify-erc (match-type nickuserhost message)
+(defun my-notify-erc (_match-type nickuserhost message)
   "Notify when a message is received."
   (notify (format "%s in %s"
                   ;; Username of sender
@@ -1480,7 +1482,7 @@ when the file path is too long to show on one line."
 
 ;; Always open man pages in the same window.
 (add-to-list 'display-buffer-alist
-             (cons (lambda (buffer alist)
+             (cons (lambda (buffer _alist)
                      (with-current-buffer buffer
                        (eq major-mode 'Man-mode)))
                    (cons 'display-buffer-reuse-major-mode-window
@@ -1495,7 +1497,7 @@ when the file path is too long to show on one line."
 ;; https://lists.gnu.org/archive/html/emacs-devel/2017-09/msg00211.html
 (when (version< emacs-version "25.3")
   (with-eval-after-load "enriched"
-    (defun enriched-decode-display-prop (start end &optional param)
+    (defun enriched-decode-display-prop (start end &optional _param)
       (list start end))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
