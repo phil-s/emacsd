@@ -998,6 +998,26 @@ If the current search is successful, then only delete the last char."
       isearch-motion-changes-direction t
       isearch-repeat-on-direction-change nil)
 
+;;;; Repeat mode.
+
+(repeat-mode 1)
+
+;; See URL https://emacs.stackexchange.com/a/76616
+;;
+;; Re-implement / enhance my custom utilities:
+;; - `my-forward-word-or-buffer-or-windows'
+;; - `my-backward-word-or-buffer-or-windows'
+;; - `my-scroll-one-line-ahead-repeatable'
+;; - `my-scroll-one-line-back-repeatable'
+;; - `clone-line'
+;; - `my-extend-selection'
+;;
+;; Also, suggest for standard functions:
+;; - `compare-windows'
+;; - `zap-to-char'
+;; - `zap-to-char-backwards'
+;; - `zap-up-to-char'
+
 ;;; Dired
 
 ;; Don't allow dragging and dropping files into dired
