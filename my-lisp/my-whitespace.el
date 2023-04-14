@@ -58,16 +58,6 @@
                                       )))
   (global-ws-trim-mode 1))
 
-;; ;; Strip trailing whitespace.
-;; ;; No need for this now; delete-trailing-whitespace is built in.
-;; (defun strip-trailing-whitespace ()
-;;   "Remove trailing spaces and tabs from lines."
-;;   (interactive "*")
-;;   (save-excursion
-;;     (goto-char (point-min))
-;;     (while (re-search-forward "[ \t]+$" nil t)
-;;       (replace-match "" nil nil))))
-
 (defun toggle-show-trailing-whitespace ()
   "Toggle the show-trailing-whitespace variable."
   (interactive)
