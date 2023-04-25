@@ -1529,6 +1529,10 @@ when the file path is too long to show on one line."
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
 
+;; Enable M-n and M-p to cycle through same-name man pages in multiple
+;; sections.  E.g. tty(1) and tty(4) when given M-x man RET tty RET.
+(setq Man-switches "-a")
+
 ;; Use `eww' for `posix-manual-entry'.
 (setq posix-manual-url-browser-function 'eww-browse-url)
 
