@@ -2325,5 +2325,4 @@ toggle between real end and logical end of the buffer."
 
 ;;; Local Variables:
 ;;; eval:(outline-minor-mode 1)
-;;; eval:(hide-body)
 ;;; End:
