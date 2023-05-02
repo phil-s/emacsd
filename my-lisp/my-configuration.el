@@ -257,6 +257,20 @@ when `auto-save-mode' is invoked manually.")
 ;; Duration of the ping-pong cursor indicator when copying text.
 (setq copy-region-blink-delay 0.5)
 
+;; Enforce encryption for authentication file.
+;;
+;; FIXME: Log bug report?
+;; (defcustom auth-sources '("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
+;; is contrary to the (auth) manual which says:
+;; > ;;; even shorter and the _default_:
+;; > (setq auth-sources '("~/.authinfo.gpg" "~/.authinfo" "~/.netrc"))
+;; And probably because of that sequence, tramp/sudo wrote auth data
+;; unencrypted to ~/.authinfo, even though ~/.authinfo.gpg existed!!!
+;;
+;; TODO: Consider use of the 'Secret Service' or 'Pass' integration.
+;; See (info "(auth)") for full details.
+(setq auth-sources '("~/.authinfo.gpg"))
+
 ;; Show time in mode line
 (require 'time)
 (setq display-time-24hr-format t)
