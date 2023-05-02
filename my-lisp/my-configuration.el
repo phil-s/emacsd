@@ -308,6 +308,12 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
   (goto-address-mode 1)
   (bug-reference-mode 1))
 
+(add-hook 'diary-fancy-display-mode-hook #'my-diary-fancy-display-mode-hook)
+(defun my-diary-fancy-display-mode-hook ()
+  "Called via `diary-fancy-display-mode-hook'."
+  (goto-address-mode 1)
+  (bug-reference-mode 1))
+
 ;; Sort diary entries.
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 

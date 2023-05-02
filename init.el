@@ -927,15 +927,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; White space
+(require 'my-whitespace)
+
 ;; Basic configuration
 (require 'my-configuration)
 
 ;; Custom utilities
 (require 'my-utilities)
 (require 'my-rectangles)
-
-;; White space
-(require 'my-whitespace)
 
 ;; Programming language support
 (require 'my-programming)
