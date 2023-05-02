@@ -288,6 +288,9 @@ static char * data[] = {
 ;; refer back to the output of previous commands.
 (setq magit-process-log-max 1024)
 
+;; Include timestamps in the process buffer.
+(setq magit-process-timestamp-format "%F %R")
+
 ;; Make the refs buffer show the remote name for remote branches.
 (setq magit-refs-show-remote-prefix t)
 
