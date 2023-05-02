@@ -30,10 +30,19 @@
   )
 
 ;; mu4e
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/mu4e"))
-(load-file (expand-file-name "~/.emacs.d/lisp/mu4e/autoloads.el"))
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(autoload 'mu4e "mu4e" nil t)
+(autoload 'mu4e-icalendar-setup "mu4e-icalendar")
+(autoload 'mu4e~compose-mail "mu4e-compose")
+(define-mail-user-agent 'mu4e-user-agent
+  'mu4e~compose-mail
+  'message-send-and-exit
+  'message-kill-buffer
+  'message-send-hook)
 
 (with-eval-after-load "mu4e-view"
+  (define-key mu4e-view-active-urls-keymap
+    (kbd "C-c RET") #'mu4e~view-browse-url-from-binding)
   (define-key mu4e-view-mode-map (kbd "<home>") nil)
   (define-key mu4e-view-mode-map (kbd "<end>") nil))
 
