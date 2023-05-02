@@ -1451,42 +1451,6 @@ return to the save-some-buffers minibuffer prompt."
 ;; Calc.
 (setq calc-make-windows-dedicated t)
 
-;; Allow buffer reverts to be undone
-(defun my-revert-buffer (&optional ignore-auto noconfirm preserve-modes)
-  "Revert buffer from file in an undo-able manner."
-  (interactive)
-  (when (buffer-file-name)
-    ;; Based upon `delphi-save-state':
-    ;; Ensure that any buffer modifications do not have any side
-    ;; effects beyond the actual content changes.
-    (let ((buffer-read-only nil)
-          (inhibit-read-only t)
-          (before-change-functions nil)
-          (after-change-functions nil))
-      (unwind-protect
-          (progn
-            ;; Prevent triggering `ask-user-about-supersession-threat'
-            (set-visited-file-modtime)
-            ;; Kill buffer contents and insert from associated file.
-            (widen)
-            (kill-region (point-min) (point-max))
-            (insert-file-contents (buffer-file-name))
-            ;; Mark buffer as unmodified.
-            (set-buffer-modified-p nil))))))
-
-(defadvice ask-user-about-supersession-threat
-  (around my-supersession-revert-buffer)
-  "Use my-revert-buffer in place of revert-buffer."
-  (let ((real-revert-buffer (symbol-function 'revert-buffer)))
-    (fset 'revert-buffer 'my-revert-buffer)
-    ;; Note that `ask-user-about-supersession-threat' calls
-    ;; (signal 'file-supersession ...), so we need to handle
-    ;; the error in order to restore revert-buffer.
-    (unwind-protect
-        ad-do-it
-      (fset 'revert-buffer real-revert-buffer))))
-(ad-activate 'ask-user-about-supersession-threat)
-
 ;; See: http://stackoverflow.com/questions/9748521
 (defadvice save-buffer (around my-save-buffer-mini-window-size)
   "Don't increase the height of the echo area when saving a file
