@@ -931,47 +931,50 @@ The shell command's output format must be equivalent to that of \"ls -al\"."
 
 (defun my-dired-do-query-replace (from to &optional delimited)
   "Do `query-replace' of FROM with TO, on all marked files.
+As each match is found, the user must type a character saying
+what to do with it.  Type SPC or `y' to replace the match,
+DEL or `n' to skip and go to the next match.  For more directions,
+type \\[help-command] at that time.
+
 Third arg DELIMITED (prefix arg) means replace only word-delimited matches.
-If you exit (\\[keyboard-quit], RET or q), you can resume the query replace
-with the command \\[tags-loop-continue]."
+If you exit the query-replace loop (\\[keyboard-quit], RET or q), you can
+resume the query replace with the command \\[fileloop-continue]."
   (interactive
    (let ((common
-          (query-replace-read-args
-           "Query replace in marked files" nil t)))
+	  (query-replace-read-args
+           "Query replace in marked files" t t)))
      (list (nth 0 common) (nth 1 common) (nth 2 common))))
-  (require 'dired-aux)
-  (dolist (file (dired-get-marked-files nil nil 'dired-nondirectory-p))
-    (let ((buf (get-file-buffer file)))
-      (if (and buf (buffer-local-value 'buffer-read-only buf))
-          (error "File `%s' is visited read-only" file))))
-  (my-tags-query-replace
-   from to delimited '(dired-get-marked-files nil nil 'dired-nondirectory-p)))
+  (dolist (file (dired-get-marked-files nil nil #'dired-nondirectory-p nil t))
+    (let ((buffer (get-file-buffer file)))
+      (if (and buffer (with-current-buffer buffer
+			buffer-read-only))
+	  (error "File `%s' is visited read-only" file))))
+  (fileloop-initialize-replace
+   (regexp-quote from) to
+   (dired-get-marked-files nil nil #'dired-nondirectory-p)
+   (if (equal from (downcase from)) nil 'default)
+   delimited)
+  (fileloop-continue))
 
-(defun my-tags-query-replace (from to &optional delimited file-list-form)
+(defun my-tags-query-replace (from to &optional delimited files)
   "Do `query-replace' of FROM with TO on all files listed in tags table.
 Third arg DELIMITED (prefix arg) means replace only word-delimited matches.
 If you exit (\\[keyboard-quit], RET or q), you can resume the query replace
-with the command \\[tags-loop-continue].
-Fourth arg FILE-LIST-FORM non-nil means initialize the replacement loop.
-Fifth and sixth arguments START and END are accepted, for compatibility
-with `query-replace', and ignored.
+with the command \\[fileloop-continue].
 
-If FILE-LIST-FORM is non-nil, it is a form to evaluate to
-produce the list of files to search.
+As each match is found, the user must type a character saying
+what to do with it.  Type SPC or `y' to replace the match,
+DEL or `n' to skip and go to the next match.  For more directions,
+type \\[help-command] at that time.
 
-See also the documentation of the variable `tags-file-name'."
-  (interactive (query-replace-read-args "Tags query replace" nil t))
-  (require 'etags)
-  (setq tags-loop-scan `(let ,(unless (equal from (downcase from))
-                                '((case-fold-search nil)))
-                          (if (search-forward ',from nil t)
-                              ;; When we find a match, move back
-                              ;; to the beginning of it so perform-replace
-                              ;; will see it.
-                              (goto-char (match-beginning 0))))
-        tags-loop-operate `(perform-replace ',from ',to t nil ',delimited
-                                            nil multi-query-replace-map))
-  (tags-loop-continue (or file-list-form t)))
+For non-interactive use, this is superseded by `fileloop-initialize-replace'."
+  (interactive (query-replace-read-args "Tags query replace" t t))
+  (fileloop-initialize-replace
+   (regexp-quote from) to
+   (tags--compat-files (or files t))
+   (if (equal from (downcase from)) nil 'default)
+   delimited)
+  (fileloop-continue))
 
 (defun my-replace-regexp-group (from to group)
   "In all matches for regexp FROM, replace the content of GROUP with TO."
