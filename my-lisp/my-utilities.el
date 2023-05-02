@@ -1905,56 +1905,6 @@ still give me some idea of how long it was running for."
                      "</kbd><kbd>")
           "</kbd>"))
 
-(defun display-buffer-reuse-major-mode-window (buffer alist)
-  "Return a window displaying a buffer in BUFFER's major mode.
-Return nil if no usable window is found.
-
-If ALIST has a non-nil `inhibit-same-window' entry, the selected
-window is not eligible for reuse.
-
-If ALIST contains a `reusable-frames' entry, its value determines
-which frames to search for a reusable window:
-  nil -- the selected frame (actually the last non-minibuffer frame)
-  A frame   -- just that frame
-  `visible' -- all visible frames
-  0   -- all frames on the current terminal
-  t   -- all frames.
-
-If ALIST contains no `reusable-frames' entry, search just the
-selected frame if `display-buffer-reuse-frames' and
-`pop-up-frames' are both nil; search all frames on the current
-terminal if either of those variables is non-nil.
-
-If ALIST has a non-nil `inhibit-switch-frame' entry, then in the
-event that a window on another frame is chosen, avoid raising
-that frame."
-  (let* ((alist-entry (assq 'reusable-frames alist))
-         (frames (cond (alist-entry (cdr alist-entry))
-                       ((if (eq pop-up-frames 'graphic-only)
-                            (display-graphic-p)
-                          pop-up-frames)
-                        0)
-                       (display-buffer-reuse-frames 0)
-                       (t (last-nonminibuffer-frame))))
-         (window (let ((mode (buffer-local-value 'major-mode buffer)))
-                   (if (and (eq mode (buffer-local-value 'major-mode
-                                                         (window-buffer)))
-                            (not (cdr (assq 'inhibit-same-window alist))))
-                       (selected-window)
-                     (catch 'window
-                       (walk-windows
-                        (lambda (w)
-                          (and (window-live-p w)
-                               (eq mode (buffer-local-value 'major-mode
-                                                            (window-buffer w)))
-                               (not (eq w (selected-window)))
-                               (throw 'window w)))
-                        'nomini frames))))))
-    (when (window-live-p window)
-      (prog1 (window--display-buffer buffer window 'reuse alist)
-        (unless (cdr (assq 'inhibit-switch-frame alist))
-          (window--maybe-raise-frame (window-frame window)))))))
-
 ;; I bind `apropos-do-all' non-nil by default, so these commands act
 ;; as replacements for `apropos-command' and `apropos-user-option' and
 ;; ensure that only commands and user options are displayed.

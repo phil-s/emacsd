@@ -479,7 +479,7 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 ;; Always open magit windows in the current frame.
 (add-to-list 'display-buffer-alist
              (cons "^magit[-:]"
-                   (cons 'display-buffer-reuse-major-mode-window
+                   (cons 'display-buffer-reuse-mode-window
                          '((inhibit-same-window . nil)
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))

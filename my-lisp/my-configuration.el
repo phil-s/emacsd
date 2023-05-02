@@ -1510,7 +1510,7 @@ when the file path is too long to show on one line."
              (cons (lambda (buffer _alist)
                      (with-current-buffer buffer
                        (eq major-mode 'Man-mode)))
-                   (cons 'display-buffer-reuse-major-mode-window
+                   (cons 'display-buffer-reuse-mode-window
                          '((inhibit-same-window . nil)
                            (reusable-frames . visible)
                            (inhibit-switch-frame . nil)))))
