@@ -345,7 +345,7 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
              (file-exists-p diary-file))
     (setq appt-disp-window-function #'my-appt-disp-window)))
 
-(defvar my-appt-disp-window-seperator
+(defvar my-appt-disp-window-separator
   (concat "\n\n" (propertize
                   (make-string 80 (char-from-name "EM DASH"))
                   'face 'shadow)
@@ -361,15 +361,23 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
     (setq min-to-app (list min-to-app)
           appt-msg (list appt-msg)))
   (let* ((now nil)
+         (soon nil)
          (text (with-temp-buffer
                  (dolist (eta min-to-app)
                    (insert (if (equal eta "0")
-                               (prog1 (propertize "NOW: " 'face 'warning)
+                               (prog1 (propertize "NOW: " 'face 'error)
                                  (setq now t))
-                             (propertize (format "%s mins: " eta)
-                                         'face 'diary-time))
+                             (let ((fstr (if (string= eta "1")
+                                             "%s min: "
+                                           "%s mins: ")))
+                               (prog1 (propertize (format fstr eta) 'face
+                                                  (if (<= (string-to-number eta) 15)
+                                                      'warning
+                                                    'diary-time))
+                                 (when (<= (string-to-number eta) appt-display-interval)
+                                   (setq soon t)))))
                            (string-trim (pop appt-msg))
-                           (if appt-msg my-appt-disp-window-seperator "")))
+                           (if appt-msg my-appt-disp-window-separator "")))
                  ;; Diary format requires indentation, so remove that.
                  ;; Assume 1 space (so that any alignments are retained).
                  (goto-char (point-min))
@@ -378,10 +386,9 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
                  (buffer-string))))
     ;; Display the reminder.
     (reminder text "now"
-              (if now 'warning 'info)
+              (if now 'error (if soon 'warning 'info))
               (unless now ;; there will be another one
-                (* 60 appt-display-interval))
-              'frame)))
+                (* 60 appt-display-interval)))))
 
 ;; Make the `zap-up-to-char' command available.
 (autoload 'zap-up-to-char "misc"

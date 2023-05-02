@@ -484,29 +484,60 @@ Also see the following:
          tmp-message
          backup-message)))))
 
+(defvar reminder-handler 'frame
+  "The default handler used by `reminder' if none is specified.
+
+One of `frame' or `notification' or `zenity'.")
+
 (defun reminder (what when &optional type timeout handler)
   "Remind me about something later.
 
 WHAT is the text of the message.
-WHEN is a timespec recognised by 'at' (see Man page `at').
+WHEN is a time spec which depends on HANDLER or `reminder-handler'.
+
+With an interactive prefix arg, also prompt for the remaining arguments:
+
 TYPE should be one of `info' (default), `warning', `error', or `notification'.
 TIMEOUT is a number of seconds (default is no timeout).
-HANDLER is one of the symbols `zenity', `notification', `frame'."
-  (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
-  (if handler
-      (funcall (intern (concat "reminder--" (symbol-name handler)))
-               what when type timeout)
-    (reminder--zenity what when type timeout)))
+HANDLER is one of the symbols `frame', `notification', `zenity' (the default
+is the value of `reminder-handler')."
+  ;; Read arguments.
+  (interactive
+   (nconc
+    (list (read-string "Remind me about: ")
+          (read-string "Remind me at [date|time|time date|NOW]: "))
+    (and current-prefix-arg
+         (list (intern (completing-read
+                        "Type (info): " '(info warning error notification)
+                        nil t nil nil "info"))
+               (let* ((str (read-string "Timeout in seconds (none): "))
+                      (num (string-to-number str)))
+                 (if (and (eql 0 num) (not (string= str "0")))
+                     nil
+                   num))
+               (intern (completing-read
+                        (format "Handler (%s): " reminder-handler)
+                        '(frame notification zenity)
+                        nil t nil nil
+                        (symbol-name reminder-handler)))))))
+  ;; Call handler.
+  (unless handler
+    (setq handler reminder-handler))
+  (funcall (intern (concat "reminder--" (symbol-name handler)))
+           what when type timeout))
 
 (defun reminder--zenity (what when &optional type timeout)
-  "Zenity-based handler for `reminder'."
+  "Zenity-based handler for `reminder'.
+
+The WHEN argument must be a valid 'at' timespec.  See man page `at(1)'."
   (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
   (let ((buf (get-buffer-create " *reminder*"))
         (shell-command-dont-erase-buffer nil)
         (message-log-max nil))
     (shell-command
-     (format "echo 'DISPLAY=:0.0 zenity --%s%s --width=500 --title=Reminder --text='%s \
+     (format "echo 'DISPLAY=%s zenity --%s%s --width=500 --title=Reminder --text='%s \
 | at -M %s 2>&1 | grep -v \"warning: commands will be executed using /bin/sh\""
+             (shell-quote-argument (getenv "DISPLAY"))
              (or type 'info)
              (if timeout (format " --timeout=%d" timeout) "")
              ;; Escape the text for the shell command which will be run by 'at',
@@ -515,7 +546,7 @@ HANDLER is one of the symbols `zenity', `notification', `frame'."
              (shell-quote-argument (if (equal when "") "now" when)))
      buf " *reminder-errors*")))
 
-(defun reminder--notification (what &optional type timeout)
+(defun reminder--notification (what &optional _when type timeout)
   "Notification-based handler for `reminder'.  Does not support WHEN.
 
 See URL `https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html'."
@@ -557,135 +588,193 @@ See URL `https://specifications.freedesktop.org/notification-spec/notification-s
 
 (defun reminder--notification-type-args (type)
   "Return the TYPE-specific arguments for `reminder--notification'."
-  (let* ((icondir "/usr/share/icons/Humanity/status/128/")
-         (args (cond ((eq type 'error)
-                      '( :urgency critical
-                         :app-icon "dialog-error.svg"
-                         :sound-name "dialog-warning"))
-                     ((eq type 'warning)
-                      '( :urgency normal
-                         :app-icon "dialog-warning.svg"
-                         :sound-name "dialog-warning"))
-                     (t
-                      '( :urgency low
-                         :app-icon "dialog-information.svg"
-                         :sound-name "dialog-information")))))
+  (let ((icondir "/usr/share/icons/Humanity/status/128/")
+        (args (cond ((eq type 'error)
+                     '( :urgency critical
+                        :app-icon "dialog-error.svg"
+                        :sound-name "dialog-warning"))
+                    ((eq type 'warning)
+                     '( :urgency normal
+                        :app-icon "dialog-warning.svg"
+                        :sound-name "dialog-warning"))
+                    (t
+                     '( :urgency low
+                        :app-icon "dialog-information.svg"
+                        :sound-name "dialog-information")))))
     ;; Establish the path for the icon filename.
     (plist-put args :app-icon (expand-file-name
                                (plist-get args :app-icon) icondir))
     args))
 
+
+(define-derived-mode reminder-frame-mode nil "Reminder Frame"
+  "Major mode for reminder buffers generated by `reminder--frame'."
+  (view-mode 1)
+  (visual-line-mode 1)
+  (hl-line-mode -1)
+  (setq-local global-hl-line-mode nil)
+  (when (fboundp 'hl-sexp-mode)
+    (hl-sexp-mode -1)
+    (setq-local global-hl-sexp-mode nil)))
+
 (defvar-local reminder--frame nil)
-(defun reminder--frame (what &optional _when _type _timeout)
-  "Frame-based handler for `reminder'.  Supports only the WHAT argument."
-  (interactive "sRemind me about: ")
+(defvar-local reminder--frame-timer nil)
+
+(defun reminder--frame (what &optional when type timeout)
+  "Frame-based handler for `reminder'.
+
+The WHEN argument must be a valid TIME for `run-at-time', or the string \"now\".
+\(Note that when called interactively, WHEN will be a string.)"
+  (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
+  (if (or (not when)
+          (and (stringp when) (string= when "now")))
+      (reminder--frame-1 what type timeout)
+    (run-at-time when nil #'reminder--frame-1 what type timeout)))
+
+(defun reminder--frame-1 (what type timeout)
+  "Generates the frame for `reminder--frame'."
   (let ((buf (generate-new-buffer "*reminder*"))
-        (maxcol 0) (maxrow 1)
-        (minwidth 80) (maxwidth 120)
-        (minheight 10) (maxheight 40)
-        width height pxwidth pxheight
-        vscroll hscroll)
-    (with-current-buffer buf
-      (let ((inhibit-read-only t))
-        (erase-buffer)
-        (setq header-line-format "Reminder"
-              mode-line-format '("" appt-mode-string)
-              show-trailing-whitespace nil
-              cursor-type 'hbar)
-        (save-excursion
-          (insert what)
-          (goto-char (point-min))
-          (while (not (eobp))
-            (end-of-line)
-            (setq maxcol (max maxcol (current-column)))
-            (forward-line 1)
-            (cl-incf maxrow))
-          (setq width (max minwidth (min maxwidth maxcol))
-                height (1+ (max minheight (min maxheight maxrow)))
-                ;; Added width/height pixels determined by trial-and-error.
-                ;; I don't know exactly what they are accounting for, and it
-                ;; seems odd that the number is odd; but nevertheless this
-                ;; is what got me the desired result.
-                pxwidth (+ 3 (* width (default-font-width)))
-                pxheight (+ 3 (* height (default-font-height))))
-          ;; Adjust for scroll bars.  Use the same settings as the current frame.
-          (cl-destructuring-bind (fvscroll . fhscroll)
-              (frame-current-scroll-bars)
-            (if (<= maxrow maxheight)
-                ;; Avoid scrolling if the entire buffer is (probably) visible.
-                (setq-local next-screen-context-lines 0)
-              (when fvscroll
-                (setq vscroll fvscroll
-                      pxwidth (+ pxwidth (frame-scroll-bar-width)))))
-            (when (and fhscroll (> maxcol maxwidth))
-              (setq hscroll fhscroll
-                    pxheight (+ pxheight (frame-scroll-bar-height))))))
-        ;; Use `view-mode' in the notification buffer.
-        (view-mode 1)
-        (visual-line-mode 1)
-        (goto-address-mode 1)
-        (when (fboundp 'my-bug-reference-mode-enable)
-          (my-bug-reference-mode-enable))
-        ;; Ensure that our `view-exit-action' will know which frame to
-        ;; delete, even if the buffer is no longer being displayed in
-        ;; a window at the time the custom function is called.
-        (add-hook 'window-configuration-change-hook
-                  (lambda ()
-                    (unless reminder--frame
-                      (setq reminder--frame (window-frame (selected-window)))))
-                  nil :local)
-        ;; The "q" key binding deletes the notification frame and
-        ;; kills the buffer.
-        (setq view-exit-action
-              (lambda (buf)
-                (with-current-buffer buf
-                  (when reminder--frame
-                    (delete-frame reminder--frame)))
-                (kill-buffer buf)))
-        ;; Create the notification.
-        (with-selected-frame
-            (make-frame `((name . "Notification")
-                          (visibility . nil)
-                          (fullscreen . nil)
-                          (menu-bar-lines . 0)
-                          (tool-bar-lines . 0)
-                          (tab-bar-lines . 0)
-                          ;; (left-fringe . 0)
-                          ;; (right-fringe . 0)
-                          (vertical-scroll-bars . ,vscroll)
-                          (horizontal-scroll-bars . ,hscroll)
-                          (minibuffer . nil)
-                          (width . (text-pixels . ,pxwidth)) ;; (width . ,width)
-                          (height . (text-pixels . ,pxheight)) ;; (height . ,height)
-                          (left . ,(- (/ (display-pixel-width) 2) (/ pxwidth 2)))
-                          (top . ,(- (/ (display-pixel-height) 2) (/ pxheight 2)))
-                          ))
-          ;; Wrapped lines may have caused us to miscalculate the required
-          ;; height for the window, so check how many lines we're actually
-          ;; using, and make adjustments if necessary before making the frame
-          ;; visible.
-          (when (<= maxrow maxheight)
-            ;; TODO: Needs more testing.  I'm getting a scrollbar when I'm using
-            ;; up the exact number of lines on display.  I think that was
-            ;; working before, so presumably it's a bug in the line-wrapping
-            ;; adjustments?  (although testing was without wrapped lines), and
-            ;; maybe that +1/+2 confusion I was having.  I may be conflating
-            ;; window-height and frame-height?  Needs work.
-            ;; `header-line-format' and `mode-line-format' each require a line,
-            ;; which is probably the + 2 immediately below??
-            (let* ((screenlines (+ 2 (count-screen-lines (point-min)
-                                                         (point-max))))
-                   (sheight (min screenlines maxheight)))
-              (when (> sheight (window-height))
-                (setq pxheight (+ 3 (* sheight (default-font-height))))
-                (set-frame-parameter
-                 (selected-frame) 'height (cons 'text-pixels pxheight)))
-              (when (> screenlines maxheight)
-                (set-frame-parameter
-                 (selected-frame) 'vertical-scroll-bars 'right))
-              ))
-          ;; Make the frame visible.
-          (set-frame-parameter (selected-frame) 'visibility t))))))
+        (maxcol 0) (rowcount 0)
+        (minwidth 70) (maxwidth 120)
+        (minheight 9) (maxheight 40)
+        width height pxwidth pxheight)
+    (cl-destructuring-bind (fvscroll . fhscroll)
+        (frame-current-scroll-bars)
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (reminder-frame-mode)
+          (setq header-line-format "Reminder"
+                mode-line-format '("" appt-mode-string)
+                show-trailing-whitespace nil
+                cursor-type 'hbar)
+          (save-excursion
+            (insert what)
+            (skip-chars-backward " \n\t\r")
+            (delete-region (point) (point-max))
+            (goto-char (point-min))
+            (while (not (eobp))
+              (end-of-line)
+              (setq maxcol (max maxcol (current-column)))
+              (forward-line 1)
+              (cl-incf rowcount))
+            (setq width (max minwidth (min maxwidth maxcol))
+                  ;; Add two rows (for the header line and mode line).
+                  height (+ 2 (max minheight (min maxheight rowcount)))
+                  ;; Added width/height pixels determined by trial-and-error.
+                  ;; I don't know exactly what they are accounting for, and it
+                  ;; seems odd that the number is odd; but nevertheless this
+                  ;; is what got me the desired result.
+                  pxwidth (+ 3 (* width (default-font-width)))
+                  pxheight (+ 3 (* height (default-font-height)))))
+          ;; Ensure that our `view-exit-action' will know which frame to
+          ;; delete, even if the buffer is no longer being displayed in
+          ;; a window at the time the custom function is called.
+          (add-hook 'window-configuration-change-hook
+                    (lambda ()
+                      (unless reminder--frame
+                        (setq reminder--frame (window-frame (selected-window)))))
+                    nil :local)
+          ;; The "q" key binding deletes the notification frame and
+          ;; kills the buffer.
+          (setq view-exit-action
+                (lambda (buf)
+                  (with-current-buffer buf
+                    (when (timerp reminder--frame-timer)
+                      (cancel-timer reminder--frame-timer))
+                    (when (frame-live-p reminder--frame)
+                      (set-frame-parameter reminder--frame 'visibility nil)
+                      (redisplay)
+                      (delete-frame reminder--frame)))
+                  (kill-buffer buf)))
+          ;; Create the notification.
+          (let ((fparams
+                 `((name . "Notification")
+                   (visibility . nil)
+                   (fullscreen . nil)
+                   (menu-bar-lines . 0)
+                   (tool-bar-lines . 0)
+                   (tab-bar-lines . 0)
+                   ;; (left-fringe . 0)
+                   ;; (right-fringe . 0)
+                   (vertical-scroll-bars . nil)
+                   (horizontal-scroll-bars . nil)
+                   (minibuffer . nil)
+                   (width . (text-pixels . ,pxwidth)) ;; (width . ,width)
+                   (height . (text-pixels . ,pxheight)) ;; (height . ,height)
+                   (left . ,(- (/ (display-pixel-width) 2) (/ pxwidth 2)))
+                   (top . ,(- (/ (display-pixel-height) 2) (/ pxheight 2)))
+                   )))
+            (when (memq type '(warning error))
+              ;; Add a coloured border.
+              (nconc fparams '((internal-border-width . 15)))
+              (face-remap-add-relative
+               'internal-border :background
+               (face-attribute type :foreground nil 'default)))
+            ;; Make the invisible frame, adjust as necessary, and then display.
+            (with-selected-frame (make-frame fparams)
+              (when (<= rowcount maxheight)
+                ;; Wrapped lines may have caused us to miscalculate the required
+                ;; height for the window, so check how many lines we're actually
+                ;; using at the established width, and make any necessary
+                ;; adjustments before making the frame visible.
+                (let* ((screenlines (+ 0 (count-screen-lines (point-min)
+                                                             (point-max))))
+                       ;; Visible screenlines.
+                       (vislines (min screenlines maxheight))
+                       ;; Add two rows (for the header line and mode line).
+                       (sheight (+ 2 vislines)))
+                  (when (> sheight (window-height))
+                    (setq pxheight (+ 3 (* sheight (default-font-height))))
+                    (set-frame-parameter nil 'height (cons 'text-pixels pxheight))
+                    (set-frame-parameter nil 'top (- (/ (display-pixel-height) 2)
+                                                     (/ pxheight 2))))
+                  (when (> screenlines maxheight)
+                    (set-frame-parameter nil 'vertical-scroll-bars 'right))
+                  ;; Centre the text if appropriate.
+                  (when (< vislines minheight)
+                    (let ((margin (/ (- minheight vislines) 2)))
+                      (open-line margin)))
+                  (when (< maxcol minwidth)
+                    (let ((margin (/ (- minwidth maxcol) 2)))
+                      ;; (setq left-margin-width margin
+                      ;;       right-margin-width margin)
+                      (indent-rigidly (point-min) (point-max) margin)))))
+              ;; Adjust for scroll bars.
+              (if (<= rowcount maxheight)
+                  ;; Avoid scrolling if the entire buffer is visible.
+                  (setq-local next-screen-context-lines 0)
+                (when fvscroll
+                  (set-frame-parameter nil 'vertical-scroll-bars fvscroll)
+                  (setq pxwidth (+ pxwidth (frame-scroll-bar-width)))
+                  (set-frame-parameter nil 'width (cons 'text-pixels pxwidth))
+                  (set-frame-parameter nil 'left (- (/ (display-pixel-width) 2)
+                                                    (/ pxwidth 2)))))
+              (when (and fhscroll (> maxcol maxwidth))
+                (set-frame-parameter nil 'horizontal-scroll-bars fhscroll)
+                (setq pxheight (+ pxheight (frame-scroll-bar-height)))
+                (set-frame-parameter nil 'height (cons 'text-pixels pxheight))
+                (set-frame-parameter nil 'top (- (/ (display-pixel-height) 2)
+                                                 (/ pxheight 2))))
+              ;; Make the frame's initial window dedicated to the reminder buffer.
+              (set-window-dedicated-p (selected-window) t)
+              ;; Handle the TIMEOUT argument.
+              (when timeout
+                (setq-local reminder--frame-timer
+                            (run-with-timer timeout nil (lambda (frm buf)
+                                                          (delete-frame frm)
+                                                          (kill-buffer buf))
+                                            (selected-frame)
+                                            buf)))
+              ;; Make the frame visible.
+              (set-frame-parameter nil 'visibility t))))))))
+
+(add-hook 'reminder-frame-mode-hook 'my-reminder-frame-mode-hook)
+(defun my-reminder-frame-mode-hook ()
+  "Custom `reminder-frame-mode' behaviours."
+  (goto-address-mode 1)
+  (when (fboundp 'my-bug-reference-mode-enable)
+    (my-bug-reference-mode-enable)))
 
 (defun my-interactive-ding ()
   (interactive)
