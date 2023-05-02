@@ -2036,7 +2036,7 @@ For example, to trace all ELP functions, do the following:
     (set-buffer buf)
     (setq comint-process-echoes nil)
     (pop-to-buffer buf)
-    (send-invisible "Password: ")
+    (comint-send-invisible "Password: ")
     (use-local-map
      (let ((map (make-sparse-keymap)))
        (set-keymap-parent map (current-local-map))
