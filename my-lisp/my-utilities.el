@@ -1956,6 +1956,7 @@ that frame."
 ;; as replacements for `apropos-command' and `apropos-user-option' and
 ;; ensure that only commands and user options are displayed.
 
+(defvar apropos-do-all)
 (defun my-apropos-command (pattern)
   "Show commands (interactively callable functions) that match PATTERN.
 PATTERN can be a word, a list of words (separated by spaces),
@@ -2311,7 +2312,7 @@ toggle between real end and logical end of the buffer."
 ;;   (global-set-key (kbd (format "M-g %s" (1+ n))) #'my-goto-line))
 (defun my-goto-line ()
   "Slightly faster `goto-line'."
-  (interactive "P")
+  (interactive)
   (when (and (>= last-command-event ?1)
              (<= last-command-event ?9)
              (not (numberp current-prefix-arg)))

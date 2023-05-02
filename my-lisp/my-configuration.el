@@ -171,6 +171,7 @@ when `auto-save-mode' is invoked manually.")
 (add-hook 'after-init-hook #'my-fortune-set-initial-scratch-message)
 
 ;; Restore traditional `yow' functionality.
+(defvar yow-file)
 (setq yow-file (expand-file-name "~/.emacs.d/yow.lines"))
 (autoload 'yow "yow"
   "Return or display a random Zippy quotation.  With prefix arg, insert it."
@@ -1170,6 +1171,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 ;; 28.1: `ignored-local-variable-values' is new and useful.
 
 ;; Align with spaces only
+(defvar indent-tabs-mode)
 (defadvice align-regexp (around align-regexp-with-spaces)
   "Never use tabs for alignment."
   (let ((indent-tabs-mode nil))
