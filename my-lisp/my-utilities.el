@@ -2037,11 +2037,18 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
                 (secure-hash (or algorithm domain-hash-algorithm)
                              (concat passphrase ":" domain))
                 0 domain-hash-length))
-         (dots (propertize
-                hash 'display (make-string (length hash) ?.))))
+         (dots (propertize hash 'display (make-string (length hash) ?.))))
     (if kill
-        (kill-new dots)
-      (insert dots))))
+        (cond ((eq kill :clipboard)
+               ;; Why doesn't this work?:
+               ;; (let ((select-enable-clipboard t))
+               ;;   (gui-select-text dots)))
+               (gui-backend-set-selection 'CLIPBOARD dots))
+              (t
+               (kill-new dots)))
+      (insert dots))
+    ;; Return the hash value.
+    dots))
 
 (defun domain-hash-md5 (domain passphrase &optional kill)
   "`domain-hash' using the md5 algorithm."
@@ -2054,19 +2061,41 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
   (interactive (domain-hash-arguments))
   (domain-hash-md5 domain passphrase :kill))
 
-(defun my-xmonad-domain-hash-md5-as-kill ()
-  "Create a new frame and run `domain-hash-md5-as-kill'.
+(defun domain-hash-md5-as-clipboard (domain passphrase &optional _kill)
+  (interactive (domain-hash-arguments))
+  (domain-hash-md5 domain passphrase :clipboard))
+
+(defun my-xmonad-domain-hash-md5-paste (wid)
+  "Run `domain-hash-md5-as-kill' and then send \"C-v\" to the original window.
+
+Requires that \"xdotool\" is installed.
 
 XMonad key binding for xmonad.hs:
 
 , ((modMask .|. shiftMask, xK_m), spawn \"emacsclient --eval \\
-\\\"(my-xmonad-domain-hash-md5-as-kill)\\\"\")"
+\\\"(my-xmonad-domain-hash-md5-paste $(xdotool getactivewindow))\\\"\")"
   (interactive)
-  (select-frame (make-frame '((my-xmonad-domain-hash-md5-as-kill . t))))
+  (select-frame (make-frame '((my-xmonad-domain-hash-md5-as-clipboard . t))))
   (delete-other-windows)
   (cl-letf (((symbol-function 'switch-to-buffer-other-window) #'switch-to-buffer))
     (unwind-protect
-        (and (call-interactively #'domain-hash-md5-as-kill) t)
+        (let ((hash (call-interactively #'domain-hash-md5-as-clipboard)))
+          (and hash
+               (integerp wid)
+               (call-process "xdotool" nil nil nil
+                             "key"
+                             "--clearmodifiers"
+                             "--window" (number-to-string wid)
+                             "ctrl+v")
+               t))
+      ;; We need to give the target window time to talk to the Emacs frame to
+      ;; extract the clipboard text before the frame is deleted.  This should
+      ;; only take a moment; but as we don't know for sure how long we need, we
+      ;; make the frame invisible and then sleep for a full second.  Note that
+      ;; we need to redisplay to activate the visibility change.
+      (set-frame-parameter (selected-frame) 'visibility nil)
+      (redisplay)
+      (sleep-for 1)
       (delete-frame))))
 
 (defun my-crontab-edit ()
