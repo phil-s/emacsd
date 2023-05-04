@@ -40,6 +40,9 @@
   'message-kill-buffer
   'message-send-hook)
 
+;; Use the original/old message view.
+(setq mu4e-view-use-old t)
+
 (with-eval-after-load "mu4e-view"
   (define-key mu4e-view-active-urls-keymap
     (kbd "C-c RET") #'mu4e~view-browse-url-from-binding)
