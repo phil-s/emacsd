@@ -151,6 +151,8 @@
     (add-to-list 'grep-find-ignored-directories
                  (cons drupal-sites-dir-p "files")))
 
+  ;; Ignore */build/static/*
+  (add-to-list 'grep-find-ignored-directories "build/static")
   ;; Ignore .composer/cache/*
   (add-to-list 'grep-find-ignored-directories ".composer/cache"))
 
