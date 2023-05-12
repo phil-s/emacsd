@@ -738,6 +738,11 @@
 ;;         (princ "\n")))
 ;;   (error nil))
 
+
+;; Wait to be killed at end of script:
+;; (read-event) ;; or something similar.
+;; (while (sit-for N)) ;; works too, but I think is more confusing.
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; * Tramp
