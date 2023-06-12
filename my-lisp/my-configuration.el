@@ -978,7 +978,8 @@ Advice for the `battery-status-function' function value."
 (defun my-find-file-check-make-large-file-read-only-hook ()
   "If a file is over a given size, make the buffer read only."
   (when (> (buffer-size) (* 1024 1024))
-    (setq buffer-read-only t)
+    (setq buffer-read-only t
+          isearch-lazy-count nil)
     (buffer-disable-undo)
     (message "Buffer is set to read-only because it is large.  Undo also
 disabled.")))
@@ -1019,6 +1020,13 @@ If the current search is successful, then only delete the last char."
 (setq isearch-allow-motion t
       isearch-motion-changes-direction t
       isearch-repeat-on-direction-change nil)
+
+;; Display the number of matches.
+;; Performance?  Processes `lazy-highlight-max-at-a-time' batches via timers.
+(setq isearch-lazy-count t
+      ;; lazy-count-prefix-format "%s/%s "
+      ;; lazy-count-suffix-format nil
+      )
 
 ;;;; Repeat mode.
 
