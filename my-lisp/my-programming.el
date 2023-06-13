@@ -635,8 +635,8 @@ with one."
            string
          (concat string ";"))))))
 
-;; Python / Plone / Zope
-(require 'my-python nil :noerror)
+;; ;; Python / Plone / Zope
+;; (require 'my-python nil :noerror)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

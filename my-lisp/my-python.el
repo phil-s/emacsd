@@ -4,12 +4,6 @@
   (defvar dtml-auto-insert-mode-declaration)
   )
 
-;;;; python-mode-1.0
-;;(setq load-path (append load-path (list "c:/emacs/emacs-23.1/site-lisp/python-mode-1.0")))
-;;(autoload 'python-mode "python-mode" "Python Mode." t)
-;;(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-;;(add-to-list 'interpreter-mode-alist '("python" . python-mode))
-
 ;; Zope / Plone
 (add-to-list 'auto-mode-alist '("\\.zcml\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.pt\\'" . nxml-mode))
@@ -20,14 +14,6 @@
 ;; Comments start with "#", and may ONLY appear on the first character
 ;; of a line. For details see `conf-mode'."
 ;;   (conf-mode-initialize "#"))
-
-
-;;;; python-mode.el
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-(setq interpreter-mode-alist (cons '("python" . python-mode)
-                                   interpreter-mode-alist))
-(autoload 'python-mode "python-mode" "Python editing mode." t)
-(add-hook 'python-mode-hook 'my-python-mode-hook)
 
 (defun my-python-mode-hook ()
   (setq indent-tabs-mode nil)
@@ -104,15 +90,6 @@
 ;;   (when (string-match "^([> ]) (/home)" string)
 ;;     (setq string (replace-match "\1 /scpc:phil@hnzc-dev-5:\2" t t string))))
 
-
-
-
-
-;;;; python.el
-;;(autoload 'python-mode "python" "Python Mode." t)
-;;(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-;;(add-to-list 'interpreter-mode-alist '("python" . python-mode))
-
 ;;;; Pylint
 ;;(autoload 'python-pylint "python-pylint")
 ;;(autoload 'pylint "python-pylint")
@@ -120,17 +97,17 @@
 ;;(autoload 'python-pep8 "python-pep8")
 ;;(autoload 'pep8 "python-pep8")
 
-;;;; PSGML mode (required by DTML mode)
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/psgml-1.3.2"))
-
-;;;; DTML (Zope)
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/dtml-mode"))
-(autoload 'dtml-mode "dtml-mode" "" t)
-(add-to-list 'auto-mode-alist '("\\.dtml\\'" . dtml-mode))
-(setq sgml-local-catalogs `(,(expand-file-name "~/.emacs.d/lisp/dtml-mode/dtml.catalog")))
-(setq dtml-auto-insert-mode-declaration nil)
-;;(autoload 'dtml-edit-via-ftp "dtml-mode" "" t)
-;;(autoload 'dtml-browse-via-http "dtml-mode" "" t)
+;; ;;;; PSGML mode (required by DTML mode)
+;; (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/psgml-1.3.2"))
+;;
+;; ;;;; DTML (Zope)
+;; (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/dtml-mode"))
+;; (autoload 'dtml-mode "dtml-mode" "" t)
+;; (add-to-list 'auto-mode-alist '("\\.dtml\\'" . dtml-mode))
+;; (setq sgml-local-catalogs `(,(expand-file-name "~/.emacs.d/lisp/dtml-mode/dtml.catalog")))
+;; (setq dtml-auto-insert-mode-declaration nil)
+;; ;;(autoload 'dtml-edit-via-ftp "dtml-mode" "" t)
+;; ;;(autoload 'dtml-browse-via-http "dtml-mode" "" t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
