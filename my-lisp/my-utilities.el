@@ -713,6 +713,29 @@ The WHEN argument must be a valid TIME for `run-at-time', or the string \"now\".
                (face-attribute type :foreground nil 'default)))
             ;; Make the invisible frame, adjust as necessary, and then display.
             (with-selected-frame (make-frame fparams)
+              ;; Use a child frame for the new frame's minibuffer.
+              ;; (info "(elisp) Frame Interaction Parameters")
+              ;;
+              ;; This is a funky way of getting the "no minibuffer" aesthetic
+              ;; that I want for reminders, without the perils of pre-existing
+              ;; frames ending up as minibuffer surrogates for the reminder
+              ;; frame (which prevents the surrogate frame from being deleted
+              ;; while the reminder exists).  The end result is something which
+              ;; behaves like a regular frame but with the mini window visible
+              ;; only when it's required.
+              (let ((miniframe (make-frame `((parent-frame . ,(selected-frame))
+                                             (minibuffer . only)
+                                             (minibuffer-exit . t)
+                                             (visibility . nil)
+                                             (height . 1)))))
+                (set-frame-parameter miniframe 'top '(- 0))
+                (cl-flet ((hide () (set-frame-parameter miniframe 'visibility nil)))
+                  (add-hook 'echo-area-clear-hook #'hide nil :local))
+                ;; Make the child frame contain the minibuffer for the parent.
+                (set-frame-parameter nil 'minibuffer
+                                     (with-selected-frame miniframe
+                                       (selected-window))))
+              ;; Adjust the parent frame
               (when (<= rowcount maxheight)
                 ;; Wrapped lines may have caused us to miscalculate the required
                 ;; height for the window, so check how many lines we're actually
