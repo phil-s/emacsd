@@ -161,6 +161,7 @@ here, so that group 2 has the desired value in both scenarios.")
 ;; Provide a function for use in mode hooks.
 (defun my-bug-reference-mode-enable ()
   "Enable `bug-reference-mode' using `my-bug-reference-url-format'."
+  (interactive)
   (setq-local bug-reference-url-format #'my-bug-reference-url-format)
   (bug-reference-mode 1))
 
