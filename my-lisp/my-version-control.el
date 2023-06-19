@@ -299,6 +299,11 @@ static char * data[] = {
 (setq magit-diff-paint-whitespace-lines 'all)
 (setq magit-diff-refine-ignore-whitespace nil)
 
+;; Show the unpushed commits by default.
+(with-eval-after-load "magit-section"
+  (add-to-list 'magit-section-initial-visibility-alist
+               '(unpushed . show)))
+
 ;; FIXME. (el-get is messing this up? Why?)
 (load "magit-autoloads")
 
