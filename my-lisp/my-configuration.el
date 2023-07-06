@@ -110,6 +110,9 @@
 (setq bookmark-default-file "~/.emacs.d/bookmarks.bmk"
       eshell-directory-name "~/.emacs.d/eshell/")
 
+;; Save the bookmarks file after every bookmark change.
+(setq bookmark-save-flag 1)
+
 ;; Write backups to ~/.emacs.d/backup
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying      t  ; Don't de-link hard links
