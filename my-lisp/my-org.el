@@ -33,6 +33,13 @@
 (defun my-org-configuration ()
   "General configuration for `org-mode'."
 
+  ;; Enable `org-speed-commands' when at the beginning of a headline.
+  ;; E.g. 'n', 'p' to move between headlines.  For details, see
+  ;; `org-speed-command-hook' (called by `org-self-insert-command').
+  ;; This variable may also have a function value, to test for
+  ;; appropriate locations where speed commands should be active.
+  (setq org-use-speed-commands t)
+
   ;; Prevent the demoting of a heading also shifting text within its sections.
   (setq org-adapt-indentation nil)
 
