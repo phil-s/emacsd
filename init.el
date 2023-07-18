@@ -101,6 +101,9 @@
 
 
 ;;;; * Useful links
+;; https://stackoverflow.com/questions/43987299/utf-8-bytes-to-string/43994922#43994922
+;; https://stackoverflow.com/a/43994922 - coding system conversions
+;; https://kchousos.github.io/posts/sicp-in-emacs/
 ;; http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
 ;; http://emacs-fu.blogspot.com/2009/04/dot-emacs-trickery.html
 ;; http://www.todesschaf.org/files/browse-kill-ring.el
