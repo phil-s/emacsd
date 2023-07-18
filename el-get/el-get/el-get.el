@@ -2636,7 +2636,9 @@ which defaults to installed, required and removed.  Example:
       (goto-char (1- (point-max)))
       (when (eql (char-after) ?\))
 	(insert "\n"))
-      (sort-lines nil 3 (1- (point-max))))))
+      (sort-lines nil 3 (1- (point-max)))
+      (goto-char (point-max))
+      (insert "\n"))))
 
 (defun el-get-list-package-names-with-status (&rest status)
   "Return package names that are currently in given status"
