@@ -13,6 +13,11 @@
   (declare-function vc-read-revision "vc")
   )
 
+;; Don't waste CPU and mode-line space on VC data for Git.
+;; I use Magit for basically everything to do with Git.
+;; (advice-add 'vc-git-mode-line-string :override #'ignore)
+(setq vc-display-status nil)
+
 ;; Use `read-only-mode' in `diff-mode' buffers by default, as this provides
 ;; more convenient key bindings, and actually editing a diff is uncommon.
 (add-hook 'diff-mode-hook 'read-only-mode)
