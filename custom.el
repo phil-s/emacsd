@@ -36,7 +36,7 @@
         (mode . idl-mode)
         (mode . lisp-mode))))))
  '(package-selected-packages
-   '(edit-server etags-select minibuffer-line pdf-tools project-local-variables))
+   '(edit-server minibuffer-line pdf-tools project-local-variables))
  '(safe-local-variable-values
    '((eval when
            (fboundp 'rainbow-mode)

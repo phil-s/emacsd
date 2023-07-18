@@ -18,6 +18,7 @@
 :ediff-trees "installed"
 :el-get "installed"
 :escreen "installed"
+:etags-select "installed"
 :ffip "installed"
 :fic-mode "installed"
 :find-file-in-tags "installed"

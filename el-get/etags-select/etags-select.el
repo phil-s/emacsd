@@ -5,7 +5,7 @@
 ;; Author: Scott Frazer <frazer.scott@gmail.com>
 ;; Maintainer: Scott Frazer <frazer.scott@gmail.com>
 ;; Created: 07 Jun 2007
-;; Version: 1.13
+;; Version: 1.13.1
 ;; Keywords: etags tags tag select
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -45,6 +45,8 @@
 ;;
 ;;; Change log:
 ;;
+;; 13 Oct 2016 -- v1.13.1 (phil)
+;;                Push mark before finding a tag in the current buffer
 ;; 28 Oct 2008 -- v1.13
 ;;                Add short tag name completion option
 ;;                Add go-if-tagnum-is-unambiguous option

@@ -127,6 +127,11 @@
      (:name ediff-trees
             :type emacswiki)
 
+     (:name etags-select
+            :type http
+            :url ,(my-local-repository-url-for "etags-select")
+            :features etags-select)
+
      (:name posix-manual
             :type git
             :url "https://github.com/lassik/emacs-posix-manual.git")
