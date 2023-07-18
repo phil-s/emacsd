@@ -51,8 +51,9 @@
 (defun my-wgrep-setup-hook ()
   (define-key grep-mode-map (kbd "e") 'wgrep-change-to-wgrep-mode))
 
-(with-eval-after-load "iedit"
-  (define-key isearch-mode-map (kbd "C-;") 'iedit-mode))
+;; Isearch.
+(define-key isearch-mode-map (kbd "C-;") 'iedit-mode)
+(define-key isearch-mode-map (kbd "<menu> s") 'avy-isearch)
 
 ;; Occur.
 (with-eval-after-load "occur"
