@@ -1596,7 +1596,8 @@ point. This function returns a list (string) for use in `interactive'."
 (defun my-eww (url)
   "Render URL as HTML."
   (declare (obsolete eww "24.4"))
-  (interactive "sURL: ")
+  (interactive (progn (require 'browse-url)
+                      (list (car (browse-url-interactive-arg "URL: ")))))
   (require 'shr)
   (url-retrieve
    url
@@ -1608,7 +1609,8 @@ point. This function returns a list (string) for use in `interactive'."
 
 (defun my-browse-url-emacs (url)
   "Like `browse-url-emacs', but fast."
-  (interactive "sURL: ")
+  (interactive (progn (require 'browse-url)
+                      (list (car (browse-url-interactive-arg "URL: ")))))
   (url-retrieve
    url
    (lambda (&optional status _cbargs)
