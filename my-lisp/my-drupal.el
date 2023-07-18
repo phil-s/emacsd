@@ -431,6 +431,16 @@ The update interval is set according to `drupal-tags-autoupdate-interval'."
 
 (add-hook 'drupal-mode-hook 'drupal-tags-autoupdate-init)
 
+;;; Composer.
+
+;; See my-projects.el for usage:
+(define-derived-mode my-drupal-composer-patches-mode json-mode "Patches"
+  "Major mode for a composer.patches.json file in a Drupal project."
+  (setq-local bug-reference-bug-regexp "#\\(?2:[0-9]+\\):"
+              bug-reference-url-format "https://www.drupal.org/i/%s"
+              truncate-lines t)
+  (bug-reference-mode 1))
+
 ;;; Docker containers.
 
 ;; Templates only.  Edit and add to my-local.el.

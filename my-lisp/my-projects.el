@@ -59,7 +59,9 @@
 ;; Drupal
 (dir-locals-set-class-variables
  'drupal
- '((nil . ((indent-tabs-mode . nil)
+ '((auto-mode-alist . (("\\.php\\'" . drupal-mode)
+                       ("/composer.patches.json\\'" . my-drupal-composer-patches-mode)))
+   (nil . ((indent-tabs-mode . nil)
            (tab-width . 8)
            (fill-column . 76)
            (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info"
@@ -82,12 +84,9 @@
            ;;          'grep-command
            ;;          "git --no-pager grep -H -n --no-color -I -e "))
            ))
-   (php-mode . ((eval . (unless (derived-mode-p 'drupal-mode)
-                          (drupal-mode)
-                          (hack-local-variables))) ;; Oooh.
-                (flymake-phpcs-standard . "Drupal")
-                (c-basic-offset . 2)
-                (psysh-buffer-name . "*Drush-PHP*")))
+   (drupal-mode . ((flymake-phpcs-standard . "Drupal")
+                   (c-basic-offset . 2)
+                   (psysh-buffer-name . "*Drush-PHP*")))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
    (scss-mode . ((css-indent-offset . 2)))
