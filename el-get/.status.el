@@ -54,7 +54,6 @@
 :second-sel "installed"
 :simple-wiki "installed"
 :smart-tabs-mode "installed"
-:transient "installed"
 :transpose-frame "installed"
 :unbound "installed"
 :vcl-mode "installed"
