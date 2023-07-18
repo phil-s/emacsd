@@ -5,7 +5,7 @@
 ;; Author: Scott Frazer <frazer.scott@gmail.com>
 ;; Maintainer: Scott Frazer <frazer.scott@gmail.com>
 ;; Created: 07 Jun 2007
-;; Version: 1.13.1
+;; Version: 1.13.2
 ;; Keywords: etags tags tag select
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -45,6 +45,8 @@
 ;;
 ;;; Change log:
 ;;
+;; 19 Jul 2023 -- v1.13.2 (phil)
+;;                Emacs 28 compatibility
 ;; 13 Oct 2016 -- v1.13.1 (phil)
 ;;                Push mark before finding a tag in the current buffer
 ;; 28 Oct 2008 -- v1.13
@@ -203,8 +205,7 @@ Only works with GNU Emacs."
           (setq filename (etags-select-match-string 1))
           (unless (file-name-absolute-p filename)
             (setq filename (concat tag-file-path filename))))
-        (save-excursion
-          (set-buffer etags-select-buffer-name)
+        (with-current-buffer etags-select-buffer-name
           (when (not (string= filename current-filename))
             (insert "\nIn: " filename "\n")
             (setq current-filename filename))
@@ -249,10 +250,10 @@ to do."
 
 (defun etags-select-build-completion-table ()
   "Build tag completion table."
-  (save-excursion
-    (set-buffer etags-select-source-buffer)
+  (with-current-buffer etags-select-source-buffer
     (let ((tag-files (etags-select-get-tag-files)))
-      (mapcar (lambda (tag-file) (etags-select-get-tag-table-buffer tag-file)) tag-files))))
+      (mapcar (lambda (tag-file) (etags-select-get-tag-table-buffer tag-file))
+              tag-files))))
 
 (defun etags-select-get-tag-files ()
   "Get tag files."
@@ -299,9 +300,9 @@ to do."
     (setq buffer-read-only nil)
     (erase-buffer)
     (insert "Finding tag: " tagname "\n")
-    (mapcar (lambda (tag-file)
-              (setq tag-count (etags-select-insert-matches tagname tag-file tag-count)))
-            tag-files)
+    (mapc (lambda (tag-file)
+            (setq tag-count (etags-select-insert-matches tagname tag-file tag-count)))
+          tag-files)
     (cond ((= tag-count 0)
            (message (concat "No matches for tag \"" tagname "\""))
            (ding))
@@ -357,7 +358,7 @@ Use the C-u prefix to prevent the etags-select window from closing."
         (push-mark)) ; push the mark before moving within the current buffer
       (if etags-select-use-xemacs-etags-p
           (push-tag-mark)
-        (ring-insert find-tag-marker-ring (point-marker)))
+        (xref-push-marker-stack))
       (if other-window
           (find-file-other-window filename)
         (find-file filename))
