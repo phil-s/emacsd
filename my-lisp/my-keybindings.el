@@ -259,7 +259,6 @@
   (define-key keymap (kbd "M-s C-/")   'my-multi-occur-in-visible-buffers)
   (define-key keymap (kbd "C-c c")     'clone-line)
   (define-key keymap (kbd "C-M-z")     'zap-to-char-backwards)
-  (define-key keymap (kbd "M-?")       'etags-stack-show)
   (define-key keymap (kbd "C-c i")     'imenu-ido-goto-symbol)
   (define-key keymap (kbd "C-z C-f")   'my-find-file-in-project)
   (define-key keymap (kbd "C-c m m")   'magit-status)
