@@ -309,13 +309,25 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
   "Called via `diary-mode-hook'."
   (electric-indent-local-mode 0)
   (goto-address-mode 1)
-  (bug-reference-mode 1))
+  (my-diary-bug-reference-mode-enable))
 
 (add-hook 'diary-fancy-display-mode-hook #'my-diary-fancy-display-mode-hook)
 (defun my-diary-fancy-display-mode-hook ()
   "Called via `diary-fancy-display-mode-hook'."
   (goto-address-mode 1)
-  (bug-reference-mode 1))
+  (my-diary-bug-reference-mode-enable))
+
+(defun my-diary-bug-reference-mode-enable ()
+  "Because `appt-activate' happens early."
+  ;; I could autoload my-utilities (not sure I want to do that),
+  ;; or rearrange the code (probably sensible), but for now I'll
+  ;; just do this.
+  (if (fboundp 'my-bug-reference-mode-enable)
+      (my-bug-reference-mode-enable)
+    (add-hook 'after-init-hook
+              `(lambda ()
+                 (with-current-buffer ,(current-buffer)
+                   (my-bug-reference-mode-enable))))))
 
 ;; Sort diary entries.
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)

@@ -85,6 +85,12 @@
 ;; Include diary entries in the agenda.
 (setq org-agenda-include-diary t)
 
+(add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
+
+(defun my-org-agenda-mode-hook ()
+  "Used in `org-agenda-mode-hook'."
+  (my-bug-reference-mode-enable))
+
 (with-eval-after-load "org-capture"
   ;; (setq org-capture-templates nil)
   (add-to-list 'org-capture-templates
