@@ -135,6 +135,12 @@
                     (string= (car imenu--rescan-item) name))
           (add-to-list 'symbol-names name)
           (add-to-list 'name-and-pos (cons name position))))))))
+
+;; The default 60 chars is too short for some function names.
+;; We could make this unlimited, but... for now lets err on the
+;; side of caution and simply make it Bigger.
+(setq imenu-max-item-length 256)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eldoc
