@@ -48,13 +48,13 @@
 (dir-locals-set-directory-class "/usr/local/src/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/local/share/emacs" 'emacs)
 (dir-locals-set-directory-class "/usr/share/emacs" 'emacs)
-(dir-locals-set-directory-class "~/emacs" 'emacs)
-(dir-locals-set-directory-class "~/emacs/trunk/git-repository" 'emacs)
-(when (file-directory-p "~/emacs")
+(dir-locals-set-directory-class (substitute-in-file-name "/home/$USER/emacs") 'emacs)
+(dir-locals-set-directory-class (substitute-in-file-name "/home/$USER/emacs/trunk/git-repository") 'emacs)
+(when (file-directory-p (substitute-in-file-name "/home/$USER/emacs"))
   (mapc (lambda (dir) ; Apply to every ~/emacs/XX.X/emacs-XX.X directory
           (dir-locals-set-directory-class
            (concat dir "/emacs-" (file-name-nondirectory dir)) 'emacs))
-        (directory-files "~/emacs" :full "[0-9][0-9]\.[0-9]")))
+        (directory-files (substitute-in-file-name "/home/$USER/emacs") :full "[0-9][0-9]\.[0-9]")))
 
 ;; Drupal
 (dir-locals-set-class-variables

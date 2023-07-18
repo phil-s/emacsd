@@ -44,7 +44,7 @@
 (let ((expected "/usr/local/share/php/php-chunked-xhtml"))
   (if (file-directory-p expected)
       (setq php-manual-path expected)
-    (setq expected (expand-file-name "~/php/php-chunked-xhtml"))
+    (setq expected (substitute-in-file-name "/home/$USER/php/php-chunked-xhtml"))
     (if (file-directory-p expected)
         (setq php-manual-path expected)
       (message "PHP manual not found. Attempting download.")
