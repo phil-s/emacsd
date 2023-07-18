@@ -187,14 +187,17 @@
 For Drupal <= 6, you will need to grab the developer documentation
 before generating the TAGS file:
 
-cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
+$ cvs -z6 -d:pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal-contrib \\
+      export -r DRUPAL-6--1 -d developer-docs contributions/docs/developer
 
 Universal Ctags:
-$ ctags -eR --langmap=php:+.inc.module.install.theme.engine --kinds-php=-van --language-force=php
+$ ctags -eR --langmap=php:+.inc.module.install.theme.engine \\
+        --kinds-php=-van --language-force=php
 
 Old etags:
-$ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' -o -name '*.install' -o -name '*.theme' -o -name '*.engine' \\) | etags --language=php -
-"
+$ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' \\
+       -o -name '*.install' -o -name '*.theme' -o -name '*.engine' \\) \\
+      | etags --language=php -"
   (interactive (find-tag-interactive "Hook: "))
   (let ((module (file-name-sans-extension
                  (file-name-nondirectory (buffer-file-name)))))
