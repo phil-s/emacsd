@@ -41,6 +41,9 @@
 
 ;;;; * Other key maps, etc
 
+;; Lisp.
+(define-key lisp-mode-shared-map (kbd "M-.") 'xref-find-definitions)
+
 ;; Use 'e' to enter wgrep mode (like editable occur buffers).
 (eval-when-compile
   (defvar grep-mode-map))

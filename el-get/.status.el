@@ -17,7 +17,6 @@
 :ediff-binary-hexl "installed"
 :ediff-trees "installed"
 :el-get "installed"
-:elisp-slime-nav "installed"
 :escreen "installed"
 :ffip "installed"
 :fic-mode "installed"
