@@ -261,6 +261,12 @@ when `auto-save-mode' is invoked manually.")
 ;; Retain more in the kill ring.
 (setq kill-ring-max (max kill-ring-max 255))
 
+;; Remember recent files.
+;; M-x recentf-open (29.1)
+;; M-x recentf-open-files
+;; M-x recentf-open-more-files
+(recentf-mode 1)
+
 ;; Duration of the ping-pong cursor indicator when copying text.
 (setq copy-region-blink-delay 0.5)
 
