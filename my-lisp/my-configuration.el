@@ -1221,6 +1221,16 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   "Used in `outline-minor-mode-hook'."
   (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
+;; Freedesktop notifications -- force transience.
+;; Otherwise I need to regularly run 'gnome-panel', purge its
+;; notifications, and then kill 'gnome-panel' again.
+(define-advice notifications-notify (:filter-args (params) transient)
+  "Force freedesktop notifications to be transient.
+
+Advice for `notifications-notify'.  To remove:
+\(advice-remove \\='notifications-notify \\='notifications-notify@transient)"
+  (plist-put params :transient t))
+
 ;; Sauron (keeping an eye on things)
 (setq sauron-separate-frame nil
       sauron-scroll-to-bottom nil
