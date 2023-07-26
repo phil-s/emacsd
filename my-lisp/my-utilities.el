@@ -7,6 +7,7 @@
   (defvar compare-windows-get-window-function)
   (defvar dired-mode-map)
   (defvar find-grep-options)
+  (defvar sort-fold-case)
   (defvar sql-buffer)
   (defvar sql-database)
   (defvar sql-product)
@@ -361,6 +362,18 @@ command was `winner-undo' or `winner-redo'."
   (interactive)
   (sort-lines nil (region-beginning) (region-end))
   (uniquify-region))
+
+(defun sort-lines-case-insensitive (reverse beg end)
+  "Call `sort-lines' with `sort-fold-case' non-nil."
+  (interactive "P\nr")
+  (let ((sort-fold-case t))
+    (sort-lines reverse beg end)))
+
+(defun sort-lines-case-sensitive (reverse beg end)
+  "Call `sort-lines' with `sort-fold-case' nil."
+  (interactive "P\nr")
+  (let ((sort-fold-case nil))
+    (sort-lines reverse beg end)))
 
 ;; Rename file and buffer together
 (defun rename-file-and-buffer ()
