@@ -9,6 +9,7 @@
   (defvar deft-directory)
   (defvar deft-extension)
   (defvar deft-text-mode)
+  (defvar doc-view-mupdf-use-svg)
   )
 
 ;; Intuitive word wrapping.
@@ -38,6 +39,9 @@ zero or negative, then disable both modes."
             simple)))
 
 ;; PDFs
+;; Use 'mutool' (apt-get install mupdf-tools) to generate SVGs.
+(setq doc-view-mupdf-use-svg (image-type-available-p 'svg))
+
 (defun my-pdf-tools-install ()
   "Initialise `pdf-tools' if the package is installed."
   (and (fboundp 'pdf-tools-install)
