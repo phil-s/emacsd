@@ -52,6 +52,16 @@
   (when (facep 'fill-column-indicator)
     (set-face-attribute 'fill-column-indicator nil :foreground "grey27"))
 
+  ;; Set zenburn-friendly colours for ansi-color-* faces.
+  (with-eval-after-load "ansi-color"
+    (dolist (map '((blue . "SteelBlue1")
+                   (green . "OliveDrab2")
+                   (red . "OrangeRed")))
+      (let ((face (intern (concat "ansi-color-" (symbol-name (car map)))))
+            (colour (cdr map)))
+        (set-face-foreground face colour)
+        (set-face-background face colour))))
+
   (with-eval-after-load "hl-sexp"
     (set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
 
