@@ -72,6 +72,12 @@
     (set-face-foreground 'magit-section-heading "LemonChiffon")
     (set-face-foreground 'magit-mode-line-process "yellow"))
 
+  (with-eval-after-load "visible-mark"
+    (set-face-foreground 'visible-mark-active "white")
+    (set-face-background 'visible-mark-active "firebrick3")
+    (set-face-background 'visible-mark-face1 "DarkRed")
+    (set-face-background 'visible-mark-face2 "DarkOrange4"))
+
   (with-eval-after-load "whitespace"
     (set-face-attribute 'whitespace-space nil
                         :foreground "grey30"

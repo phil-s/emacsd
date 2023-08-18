@@ -1577,6 +1577,10 @@ when the file path is too long to show on one line."
   (with-eval-after-load "enriched"
     (defun enriched-decode-display-prop (start end &optional _param)
       (list start end))))
+
+(setq visible-mark-max 2)
+(setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
+(global-visible-mark-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
