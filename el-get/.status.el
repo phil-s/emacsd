@@ -57,6 +57,7 @@
 :transpose-frame "installed"
 :unbound "installed"
 :vcl-mode "installed"
+:visible-mark "installed"
 :web-mode "installed"
 :webdriver "installed"
 :wgrep "installed"

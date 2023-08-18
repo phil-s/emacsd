@@ -305,6 +305,10 @@
             :type http
             :url ,(my-local-repository-url-for "vcl-mode"))
 
+     (:name visible-mark
+            :type git
+            :url "https://git.sr.ht/~iank/visible-mark")
+
      (:name web-mode
             :type git
             :url "https://github.com/fxbois/web-mode.git")
