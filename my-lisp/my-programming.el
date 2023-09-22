@@ -87,6 +87,30 @@
 (when (require 'so-long nil :noerror)
   (global-so-long-mode 1))
 
+;; Trigger `so-long-minor-mode' for long compile output.
+(with-eval-after-load 'compile
+  (require 'so-long))
+
+(add-hook 'compilation-mode-hook 'my-so-long-compilation-mode)
+
+(defun my-so-long-compilation-mode ()
+  "Add `my-so-long-compilation-filter' to local `compilation-filter-hook'."
+  (add-hook 'compilation-filter-hook
+            'my-so-long-compilation-filter nil :local))
+
+(defun my-so-long-compilation-filter ()
+  "Maybe call `so-long-minor-mode' during `compilation-filter-hook'."
+  (let ((start (save-excursion (goto-char compilation-filter-start)
+                               (line-beginning-position))))
+    (when (> (- (point) start) so-long-threshold)
+      (save-restriction
+        (narrow-to-region start (point))
+        (when (let (so-long-max-lines so-long-skip-leading-comments)
+                (funcall so-long-predicate))
+          (so-long-minor-mode 1)
+          (remove-hook 'compilation-filter-hook
+                       'my-so-long-compilation-filter :local))))))
+
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
   "Refresh imenu and jump to a place in the buffer using Ido."
