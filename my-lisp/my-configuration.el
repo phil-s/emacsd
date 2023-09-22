@@ -480,25 +480,6 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
 ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
 (winner-mode 1)
 
-;; Windmove.
-(windmove-default-keybindings) ;default modifier is <SHIFT>
-;; Use framemove, integrated with windmove.
-(when (require 'framemove nil :noerror)
-  (setq framemove-hook-into-windmove t))
-;; Windmove Display.  Use the indicated window for the *next* command.
-(global-set-key (kbd "<menu> <left>")   'windmove-display-left)
-(global-set-key (kbd "<menu> <right>")  'windmove-display-right)
-(global-set-key (kbd "<menu> <up>")     'windmove-display-up)
-(global-set-key (kbd "<menu> <down>")   'windmove-display-down)
-(global-set-key (kbd "<menu> <kp-insert>") 'windmove-display-same-window)
-;; Not sure which set I'll like best, so try both.
-;; (They're both a little awkward, tbh.)
-(global-set-key (kbd "<s-left>")  'windmove-display-left)
-(global-set-key (kbd "<s-right>") 'windmove-display-right)
-(global-set-key (kbd "<s-up>")    'windmove-display-up)
-(global-set-key (kbd "<s-down>")  'windmove-display-down)
-(global-set-key (kbd "<s-kp-insert>") 'windmove-display-same-window)
-
 ;; `switch-to-buffer' should display the buffer at its previous
 ;; position in the selected window, provided the buffer is currently
 ;; displayed in some other window on any visible or iconified frame.

@@ -92,6 +92,30 @@
 ;; (and `browse-kill-ring.el').  I do.  If you do that, then
 ;; load `second-sel.el' first.
 
+;; Windmove.
+(windmove-default-keybindings) ;default modifier is <SHIFT>
+;; Use framemove, integrated with windmove.
+(when (require 'framemove nil :noerror)
+  (setq framemove-hook-into-windmove t))
+;; Windmove Display.  Use the indicated window for the *next* command.
+(global-set-key (kbd "<menu> <left>")      'windmove-display-left)
+(global-set-key (kbd "<menu> <right>")     'windmove-display-right)
+(global-set-key (kbd "<menu> <up>")        'windmove-display-up)
+(global-set-key (kbd "<menu> <down>")      'windmove-display-down)
+(global-set-key (kbd "<menu> <kp-insert>") 'windmove-display-same-window)
+(global-set-key (kbd "<menu> <delete>")    'windmove-display-same-window)
+;; Not sure which set I'll like best, so try both.
+;; (They're both a little awkward, tbh.  Also, <kp-insert> depends
+;; on the state of Num Lock, and <s-insert> is bound to `org-capture'
+;; so I've now added <s-delete> which I hadn't already bound and which
+;; is still *vaguely* appropriate.)
+(global-set-key (kbd "<s-left>")      'windmove-display-left)
+(global-set-key (kbd "<s-right>")     'windmove-display-right)
+(global-set-key (kbd "<s-up>")        'windmove-display-up)
+(global-set-key (kbd "<s-down>")      'windmove-display-down)
+(global-set-key (kbd "<s-kp-insert>") 'windmove-display-same-window)
+(global-set-key (kbd "<s-delete>")    'windmove-display-same-window)
+
 ;;;; * Translation keymaps
 
 ;; I want to be able to use my <menu> key in a terminal; so I have
