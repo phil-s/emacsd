@@ -542,7 +542,7 @@ is the value of `reminder-handler')."
 (defun reminder--zenity (what when &optional type timeout)
   "Zenity-based handler for `reminder'.
 
-The WHEN argument must be a valid 'at' timespec.  See man page `at(1)'."
+The WHEN argument must be a valid \\='at\\=' timespec.  See man page `at(1)'."
   (interactive "sRemind me about: \nsRemind me at [date|time|time date|NOW]: ")
   (let ((buf (get-buffer-create " *reminder*"))
         (shell-command-dont-erase-buffer nil)
@@ -1164,7 +1164,7 @@ of the available lines."
 (defun my-relocate-buffer ()
   "Move the current buffer to a different window.
 
-Intended for use when a buffer gets displayed in the 'wrong'
+Intended for use when a buffer gets displayed in the \\='wrong\\='
 window, in order to move it to the preferred window without
 otherwise disturbing the pre-existing window configuration.
 
