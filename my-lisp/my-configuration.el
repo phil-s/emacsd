@@ -1065,8 +1065,14 @@ If the current search is successful, then only delete the last char."
 ;; Don't allow dragging and dropping files into dired
 (setq dired-dnd-protocol-alist nil)
 
-;; Guess the target directory (as prompt) when one is needed.
-(setq dired-dwim-target t)
+;; ;; Guess the target directory (as prompt) when one is needed.
+;; (setq dired-dwim-target nil)
+;; In fact, don't.  Sometimes I don't notice I have another dired
+;; window, and wind up moving a file somewhere else by accident.
+;; The DWIM target is available as future-history via M-n so I'm
+;; now disabling this option in favour of intentionally using M-n
+;; when I want that.  (Let's see how much confusion this causes
+;; me after ~12 years of having `dired-dwim-target' switched on!)
 
 ;; Make dired commands like `dired-mark-files-containing-regexp'
 ;; search the saved file content rather than unsaved buffer text.
