@@ -376,6 +376,10 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
           "\n\n")
   "Separates appointments in `my-appt-disp-window'.")
 
+;; TODO:
+;; Button-ise the notification text to visit the diary entry.
+;; Check how `diary-fancy-display-mode' and `org-agenda' do it.
+
 (defun my-appt-disp-window (min-to-app new-time appt-msg)
   "Custom `appt-disp-window-function'."
   ;; Call the standard `appt-disp-window-function'.
@@ -399,7 +403,7 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
                                                       'warning
                                                     'diary-time))
                                  (when (<= (string-to-number eta) appt-display-interval)
-                                   (setq soon t)))))
+                                   (setq soon (string-to-number eta))))))
                            (string-trim (pop appt-msg))
                            (if appt-msg my-appt-disp-window-separator "")))
                  ;; Diary format requires indentation, so remove that.
@@ -412,7 +416,80 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
     (reminder text "now"
               (if now 'error (if soon 'warning 'info))
               (unless now ;; there will be another one
-                (* 60 appt-display-interval)))))
+                ;; ;; No -- there *should* be another one; but that appt
+                ;; ;; bug with ignoring appts when the target timestamp is
+                ;; ;; *within* the interval between checks... *man* that's
+                ;; ;; a BS bug.  I need to contribute a fix for that one.
+                ;; (unless (or now soon)
+                (* 60 (or soon appt-display-interval))))))
+
+(define-advice appt-check (:after (&optional _force) my-guarantee)
+  "Advice for `appt-check'.
+
+Guarantee that appointment notifications are displayed when they are
+due, even if the previous warning was within `appt-display-interval'.
+
+Sets `appt-display-count' to zero if, after a call to `appt-check',
+there is another appointment due on the very next cycle.
+
+That means that following will be true (refer to the code for context),
+which ensures that a call to `appt-display-message' will occur.
+
+\(zerop (mod prev-appt-display-count appt-display-interval))
+
+Remove with:
+\(advice-remove \\='appt-check \\='appt-check@my-guarantee)"
+  (let* ((now (decode-time))
+         (now-mins (+ (* 60 (decoded-time-hour now))
+                      (decoded-time-minute now))))
+    (when (catch 'reset
+            (dolist (appt appt-time-msg-list)
+              (when (eql (- (caar appt) now-mins) 1)
+                (throw 'reset t))))
+      (setq appt-display-count 0))))
+
+;; (setq appt-display-interval 5
+;;       appt-message-warning-time 15)
+;;
+;; (trace-function 'appt-display-message nil
+;;                 (lambda ()
+;;                   (format " %s [%d]"
+;;                           (format-time-string "%T")
+;;                           appt-display-count)))
+;;
+;; appt-time-msg-list
+;; appt-display-count
+
+;; (appt-add "20:15" "bar" "3") ;; 12, 15
+;; (appt-add "20:16" "bar" "3") ;; 15, 16
+;; (appt-add "20:18" "bar" "3") ;; 15, 16, 18
+;; (appt-add "20:21" "bar" "3") ;; 18, 21
+;; (appt-add "20:25" "bar" "3") ;; 25 (hmm... not 22.)
+;; (appt-add "20:31" "bar" "3") ;; 28, 31
+;; (appt-add "20:40" "bar" "3") ;; 37, 40
+
+;; That was with *only* advice (i.e. without changes to appt.el), and the advice
+;; isn't tracking warning times, so that'll be why 20:25 didn't get a warning,
+;; yeah?  Explicit warntime is 3 mins for each call, but previous notification
+;; was 20:21 and there wasn't another appt ending in the following 3 mins, and
+;; I'm only looking at the end time in the advice.
+;;
+;; Do I want to do the extra calculations for that?
+
+;; Here's the traces (with context of current time + appt-display-count):
+;;
+;; (appt-display-message ("20:15 bar") (3))                              20:12:00 [0]
+;; (appt-display-message ("20:15 bar" "20:16 bar" "20:18 bar") (0 1 3))  20:15:00 [0]
+;; (appt-display-message ("20:16 bar" "20:18 bar") (0 2))                20:16:00 [0]
+;; (appt-display-message ("20:18 bar" "20:21 bar") (0 3))                20:18:00 [0]
+;; (appt-display-message ("20:21 bar") (0))                              20:21:00 [0]
+;; (appt-display-message ("20:25 bar") (0))                              20:25:00 [0]
+;; (appt-display-message ("20:31 bar") (3))                              20:28:00 [0]
+;; (appt-display-message ("20:31 bar") (0))                              20:31:00 [0]
+;; (appt-display-message ("20:40 bar") (3))                              20:37:00 [0]
+;; (appt-display-message ("20:40 bar") (0))                              20:40:00 [0]
+
+
 
 ;; Make the `zap-up-to-char' command available.
 (autoload 'zap-up-to-char "misc"
