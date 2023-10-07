@@ -202,8 +202,8 @@ here, so that group 2 has the desired value in both scenarios.")
   (defsubst svn-status-interprete-state-mode-color (stat)
     "Interpret vc-svn-state symbol to mode line color"
     (cl-case stat
-      ('edited "tomato"      )
-      ('up-to-date "#c0e0c0" )
+      (edited "tomato"      )
+      (up-to-date "#c0e0c0" )
       ;; what is missing here??
       ;; ('unknown  "gray"        )
       ;; ('added    "blue"        )
