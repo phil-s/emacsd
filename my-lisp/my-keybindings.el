@@ -364,6 +364,13 @@ does not run, and therefore no globalized modes take effect).
   :init-value t
   :keymap 'my-keys-local-minor-mode-map)
 
+;; Also make it possible to disable my keys.
+(define-globalized-minor-mode my-global-keys-local-minor-mode
+  my-keys-local-minor-mode my-keys-local-minor-mode
+  :group 'keyboard)
+
+(my-global-keys-local-minor-mode 1)
+
 (defun my-keys-minibuffer-setup-hook ()
   "Used in `minibuffer-setup-hook'."
   (my-keys-local-minor-mode -1))
