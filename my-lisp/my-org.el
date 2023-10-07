@@ -5,6 +5,7 @@
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
   (defvar org-agenda-include-diary)
+  (defvar org-agenda-time-grid)
   (defvar org-capture-templates)
   (defvar org-default-notes-file)
   (defvar org-ellipsis)
@@ -77,20 +78,37 @@
      `((,pattern 1 'org-headline-done prepend))
      'append))
 
+  ;; Default notes file.
+  (setq org-default-notes-file (expand-file-name "~/org/notes.org"))
+
+  ;; Default agenda files.
+  (setq org-agenda-files `(,org-default-notes-file
+                           ,(expand-file-name "~/org/todo.org")))
+
   ) ;; `my-org-configuration'
 
 
 ;;; Agenda / Capture
 
-;; Default notes file.
-(setq org-default-notes-file (expand-file-name "~/org/notes.org"))
+(with-eval-after-load "org-agenda"
+  (my-org-agenda-configuration))
 
-;; Default agenda files.
-(setq org-agenda-files `(,org-default-notes-file
-                         ,(expand-file-name "~/org/todo.org")))
+(defun my-org-agenda-configuration ()
+  "Configuration for `org-agenda'."
 
-;; Include diary entries in the agenda.
-(setq org-agenda-include-diary t)
+  ;; Include diary entries in the agenda.
+  (setq org-agenda-include-diary t)
+
+  ;; Fix display alignment (make this two chars shorter).
+  ;; (setf (nth 2 org-agenda-time-grid) " ┄┄┄ ")
+  ;; (setf (nth 2 org-agenda-time-grid) "       ┄ ")
+  (setf (nth 2 org-agenda-time-grid) "        ")
+  ;; Plus this hack to `org-agenda-format-item':
+  ;; (setq time (cond (s2 (concat (org-agenda-time-of-day-to-ampm-maybe s1)
+  ;;                              "-" (org-agenda-time-of-day-to-ampm-maybe s2)
+  ;;                              (when org-agenda-timegrid-use-ampm " ")
+  ;;                              "  ")) ;; <--- append these spaces.
+  ) ;; `my-org-agenda-configuration'
 
 (add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
 
