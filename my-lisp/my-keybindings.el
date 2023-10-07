@@ -420,6 +420,8 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'co   'customize-option)
 (defalias 'cf   'customize-face)
 (defalias 'sx   'sx-tab-all-questions)
+(defalias 'de   'toggle-debug-on-error)
+(defalias 'dq   'toggle-debug-on-quit)
 
 ;;;; * Miscellaneous / Helpers
 
