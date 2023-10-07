@@ -1,4 +1,69 @@
+;; (require 'emacs-gc-stats)
+;; (setq emacs-gc-stats-remind t)
+;; (setq emacs-gc-stats-inhibit-command-name-logging t)
+;; (emacs-gc-stats-mode 1)
+
+
+;; I think one could also use ! then M-n in dired (repeat to cycle), and
+;; customize mailcap-user-mime-data for anything you wanted to be added in
+;; there (which is where minibuffer-default-add-dired-shell-commands gets
+;; its suggestions from).
+
+
 ;;;; * Bug reports:
+
+;; Contribute the `my-backup-buffer-interval' functionality.
+
+;; term.el
+;;
+;; `term-reset-terminal' should use `inhibit-read-only'.  That's an oversight
+;; from my `term-char-mode-buffer-read-only' changes.  However there also seems
+;; to be another bug masking the first one, as `term-emulate-terminal' indicates
+;; that running "clear" should trigger a call to `term-reset-terminal' based on
+;; the terminal escape codes which are sent by that command, and this doesn't
+;; actually happen.
+
+;; Bad rendering of `mode-name' for mode hook docs.  E.g.:
+;; ement-room-mode-hook is a variable defined in ‘ement-room.el’.
+;; Hook run after entering ‘(Ement-Room (:eval (unless (map-elt ement-syncs ement-session) (propertize :Not-syncing ’face ’font-lock-warning-face ’help-echo Automatic syncing was interrupted; press "g" to resume)))) mode.
+;; Due to this definition (which is fine!)
+;; (define-derived-mode ement-room-mode fundamental-mode
+;; `("Ement-Room"
+;;   (:eval (unless (map-elt ement-syncs ement-session)
+;;            (propertize ":Not-syncing"
+;;                        'face 'font-lock-warning-face
+;;                        'help-echo "Automatic syncing was interrupted; press \"g\" to resume"))))
+;; "Major mode for Ement room buffers..."
+;;
+;; Can circumvent by defining the hook var explicitly.  E.g.:
+;; (defcustom emacs-lisp-mode-hook nil
+;;   "Hook run when entering Emacs Lisp mode."
+;;   :options '(eldoc-mode imenu-add-menubar-index checkdoc-minor-mode)
+;;   :type 'hook
+;;   :group 'lisp)
+
+;; appt.el
+;;
+;; Bug when multiple appointments are within `appt-display-interval'
+;; of each other.  In my testing, the notifications appeared to be
+;; scheduled based on only one of the two appointments, with the
+;; consequence that there was NO final ("0" minutes) notification for
+;; the earlier of the two appointments (and of course it also wasn't
+;; mentioned in the final notification for the later appointment,
+;; because it was now in the past).
+;;
+;; `appt-check' has the following probably-relevant comments:
+;;
+;;    TODO in the case of multiple appointments, whose interval
+;;    should we respect?  The first one that we started warning about?
+;;    That's what we do now, and this makes sense if you interpret
+;;    a-d-i as "don't remind me any more frequently than this".
+;;    But should we always show a message when a new appt becomes due?
+;;    When one appt gets removed, should we switch to the interval
+;;    of the next?
+;;
+;; `appt-check' also has notes about maybe sorting entries.
+;; `appt-make-list' does seem to do some sorting.
 
 ;; Suggest the addition of loop-collect:
 ;; https://www.reddit.com/r/emacs/comments/6ndc80/list_comprehensions_in_elisp/dk9n6ka/
@@ -101,6 +166,10 @@
 
 
 ;;;; * Useful links
+;; TOTP 2FA tokens
+;; https://old.reddit.com/r/emacs/comments/164tcnn/securely_generating_totp_tokens_with_emacs/
+;; https://www.masteringemacs.org/article/securely-generating-totp-tokens-emacs
+;; https://www.masteringemacs.org/article/keeping-secrets-in-emacs-gnupg-auth-sources
 ;; https://stackoverflow.com/questions/43987299/utf-8-bytes-to-string/43994922#43994922
 ;; https://stackoverflow.com/a/43994922 - coding system conversions
 ;; https://kchousos.github.io/posts/sicp-in-emacs/
@@ -212,7 +281,7 @@
 
 ;; Secondary build/install --with-native-compilation:
 ;;
-;; # ./configure --prefix=$(readlink -e ../native-compilation/usr/local) --with-native-compilation --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../native-compilation/config.out && cp config.log ../native-compilation/ && make 2>&1 | tee ../native-compilation/make.out && make install 2>&1 | tee ../native-compilation/install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs NC build (and installation) successful" now >/dev/null || echo "Emacs NC build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs NC" now >/dev/null || echo "Failed to build/install Emacs NC")
+;; # ./configure --prefix=$(readlink -e ../usr/local) --with-native-compilation=aot --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs NC build (and installation) successful" now >/dev/null || echo "Emacs NC build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs NC" now >/dev/null || echo "Failed to build/install Emacs NC")
 
 ;;
 ;; Configuration options:
@@ -574,6 +643,20 @@
 ;; M-x edebug-all-defs -- Toggle edebugging of all definitions
 ;; M-x edebug-all-forms -- Toggle edebugging of all forms
 ;; M-x edebug-eval-top-level-form
+
+;; Example of logging function stack (skipping any anonymous function
+;; objects, which may be very large when printed):
+;;
+;; ;;(advice-remove 'set-window-point 'set-window-point@my-debug)
+;; (define-advice set-window-point (:before (window pos) my-debug)
+;;   (and (markerp pos)
+;;        (eql (marker-position pos) 1)
+;;        (message "set-window-point(1): %S"
+;;                 (memq 'set-window-point@my-debug
+;;                       (mapcar (lambda (fun)
+;;                                 (or (and (symbolp fun) fun) 'SKIP))
+;;                               (mapcar #'backtrace-frame-fun
+;;                                       (backtrace-get-frames)))))))
 
 ;; Tracing:
 ;; M-x trace-function FUNCTION &optional BUFFER
