@@ -55,6 +55,10 @@
   ;; Use a real ellipsis character.
   (setq org-ellipsis "…")
 
+  ;; TODO keywords.
+  (setq org-todo-keywords '((sequence "TODO" "WORK" "DONE"))
+        org-todo-keyword-faces '(("WORK" . org-priority)))
+
   ;; Use the `org-headline-done' face for completed todo items.
   (setq org-fontify-done-headline t)
 
