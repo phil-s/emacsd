@@ -4,13 +4,16 @@
 (eval-when-compile
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
+  (defvar org-agenda-include-diary)
   (defvar org-capture-templates)
   (defvar org-default-notes-file)
   (defvar org-ellipsis)
   (defvar org-fontify-done-headline)
+  (defvar org-log-done)
   (defvar org-mode-map)
   (defvar org-src-fontify-natively)
   (defvar org-src-preserve-indentation)
+  (defvar org-use-speed-commands)
   )
 
 ;;; Tutorials etc

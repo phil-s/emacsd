@@ -1,6 +1,12 @@
 ;;;; * Silence compiler warnings
 
 (eval-when-compile
+  (declare-function my-goto-line "my-utilities")
+  (defvar git-commit-mode-map)
+  (defvar magit-file-section-map)
+  (defvar magit-hunk-section-map)
+  (defvar magit-mode-map)
+  (defvar magit-refs-mode-map)
   (defvar my-apropos-prefix)
   )
 

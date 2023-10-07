@@ -366,7 +366,7 @@ files are not relevant.")
 (defvar drupal-tags-autoupdate-timer nil)
 (defvar drupal-tags-autoupdate-interval 300 "Interval, in seconds.")
 
-(defun drupal-tags-sentinel (process signal)
+(defun drupal-tags-sentinel (process _signal)
   "Process signals from the TAGS update shell process."
   (when (memq (process-status process) '(exit signal))
     ;; Unlike `shell-command', the output buffer is not automatically
