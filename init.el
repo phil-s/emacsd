@@ -887,6 +887,11 @@
 (defun my-gc-cons-threshold-set-normal ()
   (setq gc-cons-threshold my-gc-cons-threshold-normal))
 (my-gc-cons-threshold-set-large)
+;; Revert that after start-up.
+(add-hook
+ 'emacs-startup-hook
+ (lambda ()
+   (my-gc-cons-threshold-set-normal)))
 
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/packed"))
@@ -1002,13 +1007,6 @@
                         (time-to-seconds (time-since before-init-time))
                         ,my-init-time
                         (file-name-nondirectory user-init-file)))))
-
-;; Revert the temporary performance measures put in place at the start
-;; of this file.
-(add-hook
- 'emacs-startup-hook
- (lambda ()
-   (my-gc-cons-threshold-set-normal)))
 
 ;;; Local Variables:
 ;;; page-delimiter: ";;;; "
