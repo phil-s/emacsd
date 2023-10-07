@@ -402,6 +402,7 @@ static char * data[] = {
 (defun my-magit-insert-tags ()
   "Insert the Tags section at the end of the current buffer."
   (interactive)
+  (eval-and-compile (require 'magit-section))
   (unless (derived-mode-p 'magit-refs-mode)
     (magit-show-refs-head))
   (widen)
@@ -436,6 +437,7 @@ static char * data[] = {
 (add-hook 'magit-refresh-buffer-hook 'my-magit-refresh-buffer-hook)
 (defun my-magit-refresh-buffer-hook ()
   "Custom `magit-refresh-buffer' behaviours."
+  (eval-and-compile (require 'magit-section))
   (when (derived-mode-p 'magit-refs-mode)
     (let ((pos (save-excursion
                  (goto-char (oref (magit-current-section) end))

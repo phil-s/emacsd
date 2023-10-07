@@ -79,10 +79,12 @@
   ;; in the original keymaps, but I am only concerned with RET here.
   ;; Note also that in a terminal, C-RET sends C-j.
   ;; Using the same key formats here as magit-diff.el
-  (define-key magit-file-section-map [return] 'magit-diff-visit-file-worktree)
+  (unless (fboundp 'magit-diff-visit-worktree-file)
+    (defalias 'magit-diff-visit-worktree-file 'magit-diff-visit-file-worktree))
+  (define-key magit-file-section-map [return] 'magit-diff-visit-worktree-file)
   (define-key magit-file-section-map [C-return] 'magit-diff-visit-file)
   (define-key magit-file-section-map (kbd "C-j") 'magit-diff-visit-file)
-  (define-key magit-hunk-section-map [return] 'magit-diff-visit-file-worktree)
+  (define-key magit-hunk-section-map [return] 'magit-diff-visit-worktree-file)
   (define-key magit-hunk-section-map [C-return] 'magit-diff-visit-file)
   (define-key magit-hunk-section-map (kbd "C-j") 'magit-diff-visit-file))
 
