@@ -318,8 +318,12 @@ Advice for `visit-tags-table'."
   ;; (add-hook 'after-save-hook 'my-auto-byte-recompile nil t)
   ;; lexbind-mode indicates `lexical-binding' value.
   (when (require 'lexbind-mode nil 'noerror)
-    (lexbind-mode 1))
-  ;; Highlight current sexp
+    (lexbind-mode 1)))
+
+;; Highlight current sexp.
+;; (remove-hook 'emacs-lisp-mode-hook 'my-hl-sexp-mode)
+(add-hook 'emacs-lisp-mode-hook 'my-hl-sexp-mode)
+(defun my-hl-sexp-mode ()
   (when (require 'hl-sexp nil 'noerror)
     (hl-sexp-mode 1)))
 
