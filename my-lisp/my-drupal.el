@@ -292,6 +292,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' \\
   (message "drupal-tags-autoupdate is now %s."
            (if drupal-tags-autoupdate-enabled "enabled" "disabled")))
 
+(defvar drupal-tags-autoupdate-dir)
+
 (defvar drupal-tags-autoupdate-command
   ;; # We can almost do this directly with an Universal Ctags command,
   ;; # but the exclusion options are not as comprehensive. A basic
@@ -315,7 +317,7 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' \\
       " && mv -f TAGS.new TAGS"
       " ; rm -f TAGS.new"
       " ; touch TAGS")
-    (shell-quote-argument dir) ;; `dir' is the function argument.
+    (shell-quote-argument drupal-tags-autoupdate-dir)
     (shell-quote-argument drupal-drush-api-php)
     (shell-quote-argument drupal-tags-autoupdate-prune)
     (shell-quote-argument drupal-tags-autoupdate-ignore)
@@ -329,7 +331,8 @@ See function `drupal-tags-autoupdate-command' for details.")
 (defun drupal-tags-autoupdate-command (dir)
   "Regenerate TAGS."
   (if (consp drupal-tags-autoupdate-command)
-      (apply 'format (mapcar 'eval drupal-tags-autoupdate-command))
+      (let ((drupal-tags-autoupdate-dir dir))
+        (apply 'format (mapcar 'eval drupal-tags-autoupdate-command)))
     drupal-tags-autoupdate-command))
 
 (defvar drupal-tags-autoupdate-tree-modified-command
@@ -341,8 +344,8 @@ See function `drupal-tags-autoupdate-command' for details.")
       "                -o -newer %s \\( -iregex %s -o -name HEAD \\)"
       "                -print \\)" ;mtime,pattern
       " | head -1")
-    (shell-quote-argument dir) ;; %s.git/HEAD -- TODO: should be another var.
-    (shell-quote-argument dir) ;; %s
+    (shell-quote-argument drupal-tags-autoupdate-dir) ;; %s.git/HEAD -- TODO: should be another var.
+    (shell-quote-argument drupal-tags-autoupdate-dir) ;; %s
     (shell-quote-argument drupal-tags-autoupdate-prune)
     (shell-quote-argument drupal-tags-autoupdate-ignore)
     (shell-quote-argument tags-file-name)
@@ -359,9 +362,10 @@ files are not relevant.")
   (not (string=
         "" (shell-command-to-string
             (if (consp drupal-tags-autoupdate-tree-modified-command)
-                (apply 'format
-                       (mapcar
-                        'eval drupal-tags-autoupdate-tree-modified-command))
+                (let ((drupal-tags-autoupdate-dir dir))
+                  (apply 'format
+                         (mapcar
+                          'eval drupal-tags-autoupdate-tree-modified-command)))
               drupal-tags-autoupdate-tree-modified-command)))))
 
 (defvar drupal-tags-autoupdate-timer nil)
