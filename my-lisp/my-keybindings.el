@@ -405,23 +405,23 @@ Called via `after-load-functions', as well as `after-init-hook'."
 
 ;;;; Custom aliases
 
-(defalias 'll   'load-dot-emacs)
-(defalias 'lll  'find-dot-emacs)
-(defalias 'llll 'find-my-lisp-dir)
+(defalias 'cf 'customize-face)
+(defalias 'cg 'customize-group)
+(defalias 'co 'customize-option)
+(defalias 'cv 'customize-variable)
+(defalias 'de 'toggle-debug-on-error)
+(defalias 'dq 'toggle-debug-on-quit)
+(defalias 'el 'emacs-lisp-mode)
+(defalias 'il 'lisp-interaction-mode)
+(defalias 'll 'load-dot-emacs)
+(defalias 'lll 'find-dot-emacs)
 (defalias 'llle 'find-el-get-dir)
-(defalias 'nm   'normal-mode) ;; Set the major mode for the current buffer.
-(defalias 'rb   'revert-buffer)
-(defalias 'rn   'rename-buffer)
-(defalias 'ws   'whitespace-mode)
-(defalias 'il   'lisp-interaction-mode)
-(defalias 'el   'emacs-lisp-mode)
-(defalias 'cg   'customize-group)
-(defalias 'cv   'customize-variable)
-(defalias 'co   'customize-option)
-(defalias 'cf   'customize-face)
-(defalias 'sx   'sx-tab-all-questions)
-(defalias 'de   'toggle-debug-on-error)
-(defalias 'dq   'toggle-debug-on-quit)
+(defalias 'llll 'find-my-lisp-dir)
+(defalias 'nm 'normal-mode) ;; Set the major mode for the current buffer.
+(defalias 'rb 'revert-buffer)
+(defalias 'rn 'rename-buffer)
+(defalias 'sx 'sx-tab-all-questions)
+(defalias 'ws 'whitespace-mode)
 
 ;;;; * Miscellaneous / Helpers
 
