@@ -405,6 +405,8 @@ Called via `after-load-functions', as well as `after-init-hook'."
 
 ;;;; Custom aliases
 
+(defalias 'ub 'browse-url)
+(defalias 'ue 'my-browse-url-emacs)
 (defalias 'cf 'customize-face)
 (defalias 'cg 'customize-group)
 (defalias 'co 'customize-option)
