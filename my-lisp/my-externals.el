@@ -111,10 +111,6 @@
      (:name dired-details
             :type emacswiki)
 
-     (:name docker-tramp
-            :type git
-            :url "https://github.com/emacs-pe/docker-tramp.el.git")
-
      (:name dtrt-indent
             :type git
             :url "git://git.sv.gnu.org/dtrt-indent.git"
