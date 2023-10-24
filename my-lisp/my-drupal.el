@@ -10,6 +10,7 @@
   (defvar tags-revert-without-query)
   (declare-function c-mark-function "cc-cmds")
   (declare-function find-tag-interactive "etags")
+  (declare-function json-mode "json-mode")
   (declare-function php-mode "php-mode")
   (declare-function term-char-mode "term")
   (declare-function term-mode "term")
@@ -439,7 +440,9 @@ The update interval is set according to `drupal-tags-autoupdate-interval'."
 ;; See my-projects.el for usage:
 (define-derived-mode my-drupal-composer-patches-mode json-mode "Patches"
   "Major mode for a composer.patches.json file in a Drupal project."
-  (setq-local bug-reference-bug-regexp "#\\(?2:[0-9]+\\):"
+  ;; `bug-reference-bug-regexp' has particular requirements wrt grouping.
+  ;; See also `my-bug-reference-bug-regexp'.
+  (setq-local bug-reference-bug-regexp "#\\(\\([0-9]+\\)\\):"
               bug-reference-url-format "https://www.drupal.org/i/%s"
               truncate-lines t)
   (bug-reference-mode 1))

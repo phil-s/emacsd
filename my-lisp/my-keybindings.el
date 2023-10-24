@@ -2,6 +2,7 @@
 
 (eval-when-compile
   (declare-function my-goto-line "my-utilities")
+  (defvar framemove-hook-into-windmove)
   (defvar git-commit-mode-map)
   (defvar magit-file-section-map)
   (defvar magit-hunk-section-map)

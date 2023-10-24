@@ -1,17 +1,22 @@
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar comint-prompt-regexp)
+  (defvar compilation-filter-start)
   (defvar context-help)
   (defvar cperl-indent-level)
   (defvar eldoc-argument-case)
   (defvar eldoc-documentation-strategy)
   (defvar eldoc-echo-area-display-truncation-message)
+  (defvar etags-xref-prefer-current-file)
   (defvar fic-highlighted-words)
   (defvar imenu--index-alist)
   (defvar imenu--rescan-item)
+  (defvar imenu-max-item-length)
   (defvar js-mode-map)
   (defvar name-and-pos)
   (defvar selected-symbol)
+  (defvar so-long-predicate)
+  (defvar so-long-threshold)
   (defvar sql-interactive-mode-map)
   (defvar sql-mode-map)
   (defvar sql-product)
@@ -21,20 +26,23 @@
   (defvar web-mode-autocompletes)
   (defvar web-mode-tag-auto-close-style)
   (defvar whitespace-style)
+  (declare-function ansi-color-apply-on-region "ansi-color")
   (declare-function comint-send-string "comint")
   (declare-function eldoc-current-symbol "eldoc")
   (declare-function elisp--current-symbol "elisp-mode")
   (declare-function fic-mode "fic-mode")
+  (declare-function global-so-long-mode "so-long")
   (declare-function hl-sexp-mode "hl-sexp")
   (declare-function idle-highlight "idle-highlight-mode")
+  (declare-function idle-highlight-mode "idle-highlight-mode")
   (declare-function imenu--cleanup "imenu")
   (declare-function imenu--make-index-alist "imenu")
   (declare-function imenu--subalist-p "imenu")
   (declare-function lexbind-mode "lexbind-mode")
   (declare-function rainbow-mode "rainbow-mode")
-  (declare-function global-so-long-mode "so-long")
   (declare-function sql-send-string "sql")
   (declare-function sql-upcase-mode "sql-upcase")
+  (declare-function winnow-mode "winnow")
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -189,6 +197,7 @@
 Advises `eldoc-print-current-symbol-info'."
   :lighter " C-h"
   :global t
+  :group 'help
   (require 'help-mode) ;; for `help-xref-interned'
   (when (eq this-command 'my-contextual-help-mode)
     (message "Contextual help is %s" (if my-contextual-help-mode "on" "off")))

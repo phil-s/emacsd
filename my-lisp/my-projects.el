@@ -153,7 +153,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-file-locals-set-directory-class (file class &optional mtime)
-  "Enable 'directory local' classes for individual files,
+  "Enable \\='directory local\\=' classes for individual files,
 by allowing non-directories in `dir-locals-directory-cache'.
 Adapted from `dir-locals-set-directory-class'."
   (setq file (expand-file-name file))
