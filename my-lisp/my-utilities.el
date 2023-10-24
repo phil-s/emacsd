@@ -1802,28 +1802,13 @@ point. This function returns a list (string) for use in `interactive'."
          (rename-buffer (file-name-nondirectory (url-filename
                                                  url-http-target-url))
                         t)
-         ;; Set the appropriate major mode.  We call `normal-mode' with a local
-         ;; `buffer-file-name' to prevent any network activity, but set the URL
-         ;; as the `buffer-file-name' afterwards for reference.
-         ;;
-         ;; n.b. Without `lexical-binding' we would need:
-         ;; (let ((url-http-target-url url-http-target-url))
-         ;;   (normal-mode)
-         ;;   (setq buffer-file-name (url-recreate-url url-http-target-url)))
+         ;; Set the appropriate major mode.  We set a local `buffer-file-name'
+         ;; instead of using `url' to avoid triggering extra network activity
+         ;; (either now or in future).
          (setq buffer-file-name (url-filename url-http-target-url))
          (normal-mode)
-         (setq buffer-file-name url)
-         ;; Allow killing the buffer despite the filename.
+         ;; Allow killing the buffer despite it having an unsaved filename.
          (set-buffer-modified-p nil)
-         ;; Exclude from recentf tracking.  This prevents a HTTP request when
-         ;; the buffer is killed.  See `url-http-find-free-connection' for the
-         ;; message which is generated on that account (and `debug-on-entry' to
-         ;; trace that to `recentf-track-closed-file' via `kill-buffer-hook')
-         (setq-local recentf-keep nil)
-         ;; We could inhibit that "Contacting host: ..." message as follows, but
-         ;; better to know if it's happening in order to eliminate the request.
-         ;; (setq-local url-show-status nil)
-         ;;
          ;; `url-http-generic-filter' is biting us by moving point *after* we've
          ;; finished, so we need to defer displaying the buffer until *after* we
          ;; have a change to rectify that :/
