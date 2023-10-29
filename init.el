@@ -727,13 +727,6 @@
 ;; There is an excellent overview at:
 ;; https://lunaryorn.com/blog/emacs-script-pitfalls/
 
-;; "n.b. secure text input by reading directly from the TTY is
-;; currently impossible in any released version from Emacs:
-;; `read-passwd' reads from standard input in batch mode and exposes the
-;; password input on the terminal. A patch to hide input on batch mode
-;; is committed to Emacs trunk, but as of now, it will not be part of
-;; upcoming Emacs 24.4. Be careful what you read from standard input!"
-
 ;; --batch vs --script
 ;; M-: (info "(emacs) Initial Options") RET
 ;; M-: (info "(elisp) Batch Mode") RET
@@ -802,6 +795,9 @@
 ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=17390
 ;; (currently `message' alone writes to stderr)
 ;;
+;; See the second example below for better error handling
+;; (differentiating EOF from other errors).
+;;
 ;; #!/usr/local/bin/emacs --script
 ;; ;;-*- mode: emacs-lisp;-*-
 ;;
@@ -823,6 +819,25 @@
 ;;         (princ (process line))
 ;;         (princ "\n")))
 ;;   (error nil))
+
+;; Gathering all of STDIN into a buffer before processing it.  (Don't do this;
+;; however it could be a basis for processing multi-line sequences.)
+;; (This example pretty-prints the timestamps in a zsh history file.)
+;;
+;; #!/bin/sh
+;; ":"; exec emacs -Q --script "$0" -- "$@" # -*-emacs-lisp-*-
+;; (setq debug-on-error t)
+;; (with-temp-buffer
+;;   (condition-case nil
+;;       (while t (insert (read-from-minibuffer "") "\n"))
+;;     (end-of-file nil)) ;; read until EOF
+;;   (goto-char (point-min))
+;;   (while (re-search-forward ": \\([0-9]\\{10\\}\\):0;" nil t)
+;;     (replace-match
+;;      (format-time-string "%Y-%m-%d %H:%M  "
+;;                          (string-to-number (match-string 1)))))
+;;   (princ (buffer-string)))
+;; (kill-emacs 0)
 
 
 ;; Wait to be killed at end of script:
@@ -954,7 +969,7 @@
 ;;  * displaying-byte-compile-warnings
 ;;  ...?
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
