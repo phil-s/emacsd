@@ -8,6 +8,11 @@
   (declare-function xml-get-children "xml")
   )
 
+;; TOTP tokens for 2FA.
+(autoload 'totp-display "totp")
+(autoload 'totp-as-clipboard "totp")
+(autoload 'totp-x-paste "totp")
+
 ;; Local occur minor mode
 ;(require 'loccur)
 
