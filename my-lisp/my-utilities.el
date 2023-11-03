@@ -45,6 +45,7 @@
   (declare-function term-char-mode "term")
   (declare-function term-mode "term")
   (declare-function term-send-raw-string "term")
+  (declare-function totp-as-clipboard "totp")
   (declare-function tramp-dissect-file-name "tramp")
   (declare-function tramp-file-name-host "tramp")
   (declare-function tramp-file-name-localname "tramp")
@@ -2310,6 +2311,94 @@ For example, to trace all ELP functions, do the following:
        (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
        map))))
 
+(defun my-x-paste (command wid &optional bufname header text)
+  "Run COMMAND and paste the result into the original X window.
+
+\(For use with programs where \"C-v\" is paste.)
+
+The value returned from COMMAND will be set in the system clipboard,
+and then the key \"C-v\" will be performed in the original X window.
+
+The pop-up frame will initially display a temporary buffer named
+BUFNAME which is displaying the `header-line-format' HEADER, and
+buffer contents TEXT.  You can use these to give the user context
+for the interaction.
+
+Requires that \"xdotool\" is installed on your system.  E.g.:
+
+ sudo apt-get install xdotool
+
+To use, trigger the following command via your window manager:
+
+ emacsclient --eval \"(my-x-paste-COMMAND $(xdotool getactivewindow))\"
+
+With \(my-x-paste-COMMAND wid) being a wrapper for calling `my-x-paste'.
+
+Example:
+
+ \(defun my-x-paste-totp (wid)
+   \"Paste `totp-as-clipboard' into X window WID (see `my-x-paste').\"
+   (interactive)
+   (my-x-paste #\\='totp-as-clipboard wid \"*TOTP\"
+               \"Time-based One-time Password (TOTP)\"))
+
+XMonad key binding (mod-T) for xmonad.hs:
+
+ , ((modMask .|. shiftMask, xK_t), spawn \"emacsclient --eval \\
+ \\\"(my-x-paste-totp $(xdotool getactivewindow))\\\"\")
+
+Also for XMonad, include the following in your manageHook to make the
+pop-up frame float over the other windows rather than being tiled:
+
+ appName =? \"EmacsXPaste\" --> doFloat"
+  (interactive)
+  (with-temp-buffer
+    (when bufname
+      (rename-buffer bufname :unique))
+    (when header
+      (setq-local header-line-format header))
+    (when text
+      (insert text))
+    (let* ((buf (current-buffer))
+           (width 80)
+           (height (max window-safe-min-height
+                        (count-lines (point-min) (point-max))))
+           (pxwidth (+ 3 (* width (default-font-width))))
+           (pxheight (+ 3 (* height (default-font-height))))
+           (fparams `((my-x-paste . t)
+                      (name . "EmacsXPaste")
+                      (fullscreen . nil)
+                      (width . ,width)
+                      (height . ,height)
+                      (left . ,(- (/ (display-pixel-width) 2) (/ pxwidth 2)))
+                      (top . ,(- (/ (display-pixel-height) 2) (/ pxheight 2)))
+                      (menu-bar-lines . 0)
+                      (tool-bar-lines . 0)
+                      (auto-raise . t))))
+      (select-frame (make-frame fparams))
+      (pop-to-buffer buf)
+      (delete-other-windows)
+      (unwind-protect
+          (let ((value (call-interactively command)))
+            (and value
+                 (integerp wid)
+                 (gui-backend-set-selection 'CLIPBOARD value)
+                 (call-process "xdotool" nil nil nil
+                               "key"
+                               "--clearmodifiers"
+                               "--window" (number-to-string wid)
+                               "ctrl+v")
+                 t))
+        ;; We need to give the target window time to talk to the Emacs frame to
+        ;; extract the clipboard text before the frame is deleted.  This should
+        ;; only take a moment; but as we don't know for sure how long we need, we
+        ;; make the frame invisible and then sleep for a full second.  Note that
+        ;; we need to redisplay to activate the visibility change.
+        (set-frame-parameter (selected-frame) 'visibility nil)
+        (redisplay)
+        (sleep-for 1)
+        (delete-frame)))))
+
 (defun my-passwd-read-insert-dots ()
   "`read-passwd' and insert in buffer using dots for display replacement."
   (interactive)
@@ -2382,38 +2471,17 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
   (interactive (domain-hash-arguments))
   (domain-hash-md5 domain passphrase :clipboard))
 
-(defun my-xmonad-domain-hash-md5-paste (wid)
-  "Run `domain-hash-md5-as-kill' and then send \"C-v\" to the original window.
-
-Requires that \"xdotool\" is installed.
-
-XMonad key binding for xmonad.hs:
-
-, ((modMask .|. shiftMask, xK_m), spawn \"emacsclient --eval \\
-\\\"(my-xmonad-domain-hash-md5-paste $(xdotool getactivewindow))\\\"\")"
+(defun my-x-paste-domain-hash-md5 (wid)
+  "Paste `domain-hash-md5-as-kill' into X window WID (see `my-x-paste')."
   (interactive)
-  (select-frame (make-frame '((my-xmonad-domain-hash-md5-as-clipboard . t))))
-  (delete-other-windows)
-  (cl-letf (((symbol-function 'switch-to-buffer-other-window) #'switch-to-buffer))
-    (unwind-protect
-        (let ((hash (call-interactively #'domain-hash-md5-as-clipboard)))
-          (and hash
-               (integerp wid)
-               (call-process "xdotool" nil nil nil
-                             "key"
-                             "--clearmodifiers"
-                             "--window" (number-to-string wid)
-                             "ctrl+v")
-               t))
-      ;; We need to give the target window time to talk to the Emacs frame to
-      ;; extract the clipboard text before the frame is deleted.  This should
-      ;; only take a moment; but as we don't know for sure how long we need, we
-      ;; make the frame invisible and then sleep for a full second.  Note that
-      ;; we need to redisplay to activate the visibility change.
-      (set-frame-parameter (selected-frame) 'visibility nil)
-      (redisplay)
-      (sleep-for 1)
-      (delete-frame))))
+  (my-x-paste #'domain-hash-md5-as-clipboard wid "*passphrase*"
+              "Domain passphrase"))
+
+(defun my-x-paste-totp (wid)
+  "Paste `totp-as-clipboard' into X window WID (see `my-x-paste')."
+  (interactive)
+  (my-x-paste #'totp-as-clipboard wid "*TOTP"
+              "Time-based One-time Password (TOTP)"))
 
 (defun my-crontab-edit ()
   "Edit crontab."
