@@ -286,7 +286,8 @@
             :url "git@github.com:jcsalomon/smarttabs.git")
 
      (:name transpose-frame
-            :type emacswiki
+            :type git
+            :url "https://github.com/emacsorphanage/transpose-frame.git"
             :features transpose-frame)
 
      (:name windcycle

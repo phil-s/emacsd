@@ -3983,6 +3983,50 @@ Add support for a language not already in the `smart-tabs-insinuate-alist'.
 
 ;;;***
 
+;;;### (autoloads nil "transpose-frame/transpose-frame" "transpose-frame/transpose-frame.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from transpose-frame/transpose-frame.el
+
+(autoload 'transpose-frame "transpose-frame/transpose-frame" "\
+Transpose windows arrangement at FRAME.
+Omitting FRAME means currently selected frame.
+
+\(fn &optional FRAME)" t)
+
+(autoload 'flip-frame "transpose-frame/transpose-frame" "\
+Flip windows arrangement vertically at FRAME.
+Omitting FRAME means currently selected frame.
+
+\(fn &optional FRAME)" t)
+
+(autoload 'flop-frame "transpose-frame/transpose-frame" "\
+Flop windows arrangement horizontally at FRAME.
+Omitting FRAME means currently selected frame.
+
+\(fn &optional FRAME)" t)
+
+(autoload 'rotate-frame "transpose-frame/transpose-frame" "\
+Rotate windows arrangement 180 degrees at FRAME.
+Omitting FRAME means currently selected frame.
+
+\(fn &optional FRAME)" t)
+
+(autoload 'rotate-frame-clockwise "transpose-frame/transpose-frame" "\
+Rotate windows arrangement 90 degrees clockwise at FRAME.
+Omitting FRAME means currently selected frame.
+
+\(fn &optional FRAME)" t)
+
+(autoload 'rotate-frame-anticlockwise "transpose-frame/transpose-frame" "\
+Rotate windows arrangement 90 degrees anti-clockwise at FRAME.
+Omitting FRAME means currently selected frame.
+
+\(fn &optional FRAME)" t)
+
+(register-definition-prefixes "transpose-frame/transpose-frame" '("transpose-frame-"))
+
+;;;***
+
 ;;;### (autoloads nil "unbound/unbound" "unbound/unbound.el" (0 0
 ;;;;;;  0 0))
 ;;; Generated autoloads from unbound/unbound.el
