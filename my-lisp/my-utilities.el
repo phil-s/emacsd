@@ -1171,12 +1171,13 @@ within the current buffer-file-name."
 
 ;; Add a 'F'ind marked files keybinding to dired
 (with-eval-after-load "dired"
-  ;; my-dired-find-file
-  (define-key dired-mode-map (kbd "F") 'my-dired-find-file)
-  (defun my-dired-find-file (&optional arg)
+  ;; my-dired-find-files
+  (define-key dired-mode-map (kbd "F") 'my-dired-find-files)
+  (defun my-dired-find-files (&optional arg)
     "Open each marked file, or the file at point, or the next ARG files."
     (interactive "P")
     (let* ((fn-list (dired-get-marked-files nil arg)))
+      ;; TODO: Call `my-dired-find-file' here?
       (mapc 'find-file fn-list)))
 
   ;; my-dired-create-file

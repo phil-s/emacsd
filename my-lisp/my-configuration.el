@@ -1231,6 +1231,16 @@ If the current search is successful, then only delete the last char."
   (with-silent-modifications
     (dired-virtual-mode)))
 
+(defun my-dired-find-file ()
+  "Open file or directory using its canonical path."
+  ;; Copied from:
+  ;; https://old.reddit.com/r/emacs/comments/17hgd7l/my_dired_symlink_hack/
+  (interactive)
+  (let ((original (dired-get-file-for-visit)))
+    (if (file-directory-p original)
+        (find-alternate-file (file-truename original))
+      (find-file original))))
+
 ;; n.b. We bind C-x C-j to `my-dired-jump' in my-keys-minor-mode, so
 ;; this won't really be used. The custom function facilitates using
 ;; C-u C-x C-j instead of typing 'a' on the '..' entry in a dired
@@ -1264,6 +1274,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   (dired-details-install)
   (customize-set-value 'dired-details-hidden-string "| ")
 
+  (define-key dired-mode-map (kbd "RET") 'my-dired-find-file)
   (define-key dired-mode-map (kbd "M-k") 'dired-kill-subdir)
   (define-key dired-mode-map (kbd "<tab>") 'dired-details-toggle))
 
