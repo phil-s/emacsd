@@ -1101,6 +1101,13 @@ If the current search is successful, then only delete the last char."
            isearch-new-message
            (mapconcat 'isearch-text-char-description isearch-new-string "")))))
 
+(define-key isearch-mode-map (kbd "M-s M-w") #'my-isearch-copy-match)
+(defun my-isearch-copy-match ()
+  "Copy the currently-matched text to the kill ring."
+  (interactive)
+  (kill-new (buffer-substring (min (point) isearch-other-end)
+                              (max (point) isearch-other-end))))
+
 ;; Make the avy library use more keys.
 (setq avy-keys
       (nconc '(?\r)
