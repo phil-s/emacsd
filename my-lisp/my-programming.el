@@ -57,6 +57,8 @@
   ;; `global-eldoc-mode' is enabled in 25.1 by default
   (when (< emacs-major-version 25)
     (eldoc-mode 1))
+  (when (>= emacs-major-version 29)
+    (elide-head-mode 1))
   (setq indent-tabs-mode nil)
   ;; Make RET smarter.  If `comment-auto-fill-only-comments' is non-nil then
   ;; `default-indent-new-line' may do nothing (if `comment-line-break-function'
