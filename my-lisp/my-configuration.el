@@ -1473,7 +1473,9 @@ Advice for `notifications-notify'.  To remove:
 (add-hook 'shell-mode-hook 'my-shell-mode-hook)
 (defun my-shell-mode-hook ()
   "Used in `shell-mode-hook'."
-  (ansi-color-for-comint-mode-on))
+  (ansi-color-for-comint-mode-on)
+  (add-hook 'comint-output-filter-functions
+            'comint-osc-process-output nil :local))
 
 ;; Don't intersperse stderr output with stdout
 (setq shell-command-default-error-buffer "*stderr*")
