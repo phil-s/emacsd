@@ -313,7 +313,9 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
 (setq diary-file (expand-file-name (locate-user-emacs-file "diary" "diary")))
 
 ;; Always open the diary file in `diary-mode'.
-(add-to-list 'auto-mode-alist (cons (rx bos (eval diary-file) eos) 'diary-mode))
+(add-to-list 'auto-mode-alist
+             (cons (rx-to-string '(: bos (eval diary-file) eos) t)
+                   'diary-mode))
 
 (add-hook 'diary-mode-hook #'my-diary-mode-hook)
 (defun my-diary-mode-hook ()
