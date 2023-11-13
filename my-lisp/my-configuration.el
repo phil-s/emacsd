@@ -211,6 +211,9 @@ when `auto-save-mode' is invoked manually.")
 (blink-cursor-mode -1)
 (setq x-stretch-cursor t)
 
+;; I use a tiling window manager, so don't attempt to resize the frame.
+(setq frame-inhibit-implied-resize t)
+
 ;; Things that I'm now doing in early-init.el in 27+.
 (when (< emacs-major-version 27)
   ;; Hide the tool bar
