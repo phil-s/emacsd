@@ -101,29 +101,22 @@
 ;; (and `browse-kill-ring.el').  I do.  If you do that, then
 ;; load `second-sel.el' first.
 
-;; Windmove.
-(windmove-default-keybindings) ;default modifier is <SHIFT>
-;; Use framemove, integrated with windmove.
+;; Windmove -- arrow-key-based directional commands.
+;; S-<(arrow)> to select the indicated window (or frame).
+(windmove-default-keybindings)
 (when (require 'framemove nil :noerror)
   (setq framemove-hook-into-windmove t))
-;; Windmove Display.  Use the indicated window for the *next* command.
-(global-set-key (kbd "<menu> <left>")      'windmove-display-left)
-(global-set-key (kbd "<menu> <right>")     'windmove-display-right)
-(global-set-key (kbd "<menu> <up>")        'windmove-display-up)
-(global-set-key (kbd "<menu> <down>")      'windmove-display-down)
-(global-set-key (kbd "<menu> <kp-insert>") 'windmove-display-same-window)
-(global-set-key (kbd "<menu> <delete>")    'windmove-display-same-window)
-;; Not sure which set I'll like best, so try both.
-;; (They're both a little awkward, tbh.  Also, <kp-insert> depends
-;; on the state of Num Lock, and <s-insert> is bound to `org-capture'
-;; so I've now added <s-delete> which I hadn't already bound and which
-;; is still *vaguely* appropriate.)
-(global-set-key (kbd "<s-left>")      'windmove-display-left)
-(global-set-key (kbd "<s-right>")     'windmove-display-right)
-(global-set-key (kbd "<s-up>")        'windmove-display-up)
-(global-set-key (kbd "<s-down>")      'windmove-display-down)
-(global-set-key (kbd "<s-kp-insert>") 'windmove-display-same-window)
-(global-set-key (kbd "<s-delete>")    'windmove-display-same-window)
+;; s-S-<(arrow)> to swap the current buffer with that of the indicated window.
+(windmove-swap-states-default-keybindings '(super shift))
+;; s-<delete> <(arrow)> to delete the indicated window.
+(windmove-delete-default-keybindings 's-delete 'none)
+;; s-<(arrow)> to use the indicated window for the *next* command; as well as:
+;; - s-0 for windmove-display-same-window
+;; - s-f for windmove-display-new-frame
+;; - s-t for windmove-display-new-tab
+(windmove-display-default-keybindings 'super)
+;; (plus my own s-<insert> binding for windmove-display-same-window)
+(global-set-key (kbd "s-<insert>") 'windmove-display-same-window)
 
 ;;;; * Translation keymaps
 
@@ -333,7 +326,7 @@
   (define-key keymap (kbd "<menu> z")  'repeat)
   (when (fboundp 'cycle-spacing) ;; replace just-one-space in Emacs 24.4
     (define-key keymap (kbd "M-SPC")   'cycle-spacing))
-  (define-key keymap (kbd "<s-insert>") 'org-capture)
+  (define-key keymap (kbd "s-<kp-add>") 'org-capture)
   (define-key keymap (kbd "<s-home>") 'org-agenda)
   (define-key keymap (kbd "<XF86Calculator>") 'calc)
   (define-key keymap (kbd "<menu> z") 'repeat)
