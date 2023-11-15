@@ -60,6 +60,7 @@
 (dir-locals-set-class-variables
  'drupal
  '((auto-mode-alist . (("\\.php\\'" . drupal-mode)
+                       ("/interdiff[^/]*\\.txt\\'" . diff-mode)
                        ("/composer.patches.json\\'" . my-drupal-composer-patches-mode)))
    (nil . ((indent-tabs-mode . nil)
            (tab-width . 8)
