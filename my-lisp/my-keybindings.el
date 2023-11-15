@@ -280,8 +280,8 @@
   (define-key keymap (kbd "C-z n")     'my-scroll-one-line-ahead-repeatable)
   (define-key keymap (kbd "C-z p")     'my-scroll-one-line-back-repeatable)
   (define-key keymap (kbd "C-z P")     'domain-hash-md5-as-kill)
-  (define-key keymap (kbd "<C-left>")  'my-backward-word-or-buffer-or-windows)
-  (define-key keymap (kbd "<C-right>") 'my-forward-word-or-buffer-or-windows)
+  (define-key keymap (kbd "C-<left>")  'my-backward-word-or-buffer-or-windows)
+  (define-key keymap (kbd "C-<right>") 'my-forward-word-or-buffer-or-windows)
   (define-key keymap (kbd "M-s /")     'my-multi-occur)
   (define-key keymap (kbd "M-s C-/")   'my-multi-occur-in-visible-buffers)
   (define-key keymap (kbd "C-c c")     'clone-line)
@@ -327,7 +327,7 @@
   (when (fboundp 'cycle-spacing) ;; replace just-one-space in Emacs 24.4
     (define-key keymap (kbd "M-SPC")   'cycle-spacing))
   (define-key keymap (kbd "s-<kp-add>") 'org-capture)
-  (define-key keymap (kbd "<s-home>") 'org-agenda)
+  (define-key keymap (kbd "s-<home>")  'org-agenda)
   (define-key keymap (kbd "<XF86Calculator>") 'calc)
   (define-key keymap (kbd "<menu> z") 'repeat)
   (dotimes (n 9) ;; Make "M-g [1-9]..." a shortcut for "M-g g [1-9]..."
