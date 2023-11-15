@@ -2,6 +2,7 @@
 
 ;;; Silence compiler warnings
 (eval-when-compile
+  (declare-function my-bug-reference-mode-enable "my-version-control")
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
   (defvar org-agenda-include-diary)
@@ -14,6 +15,8 @@
   (defvar org-mode-map)
   (defvar org-src-fontify-natively)
   (defvar org-src-preserve-indentation)
+  (defvar org-todo-keyword-faces)
+  (defvar org-todo-keywords)
   (defvar org-use-speed-commands)
   )
 
