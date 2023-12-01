@@ -90,7 +90,14 @@
                    (psysh-buffer-name . "*Drush-PHP*")))
    ;; (drupal-mode . ((drupal-p . t)))
    (css-mode . ((css-indent-offset . 2)))
-   (scss-mode . ((css-indent-offset . 2)))
+   (scss-mode . ((css-indent-offset . 2)
+                 ;; Paths in SASS 'partials/*' are relative to the parent dir.
+                 (eval . (when (equal (file-name-base (directory-file-name
+                                                       default-directory))
+                                      "partials")
+                           (setq default-directory
+                                 (expand-file-name "../" (file-name-directory
+                                                          buffer-file-name)))))))
    (js-mode . ((js-indent-level . 2)))
    (web-mode . ((web-mode-code-indent-offset . 2)
                 (web-mode-css-indent-offset . 2)
