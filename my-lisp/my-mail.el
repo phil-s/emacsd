@@ -60,6 +60,16 @@
 (with-eval-after-load "mu4e-headers"
   (define-key mu4e-headers-mode-map (kbd "`") #'mu4e-view-raw-message))
 
+(add-hook 'mu4e-headers-mode-hook 'my-mu4e-headers-mode-hook)
+(defun my-mu4e-headers-mode-hook ()
+  "Custom `mu4e-headers-mode' behaviours.  Used in `mu4e-headers-mode-hook'."
+  ;; Account for the fringe and other spacing in the header line.
+  (header-line-indent-mode 1)
+  (push (propertize " " 'display '(space :align-to header-line-indent-width))
+        header-line-format)
+  ;; Ensure the header line scales with the headers themselves.
+  (face-remap-add-relative 'header-line '(:inherit default)))
+
 (setq mu4e-bookmarks
       '(("flag:unread AND NOT flag:trashed AND NOT maildir:\"/Trash\""
          "Unread messages"      ?u)
