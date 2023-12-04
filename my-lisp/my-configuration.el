@@ -646,7 +646,9 @@ Remove with:
 ;; (add-to-list 'fill-nobreak-predicate 'fill-single-word-nobreak-p)
 
 ;; `display-fill-column-indicator-mode' (27+).
-(when (fboundp 'global-display-fill-column-indicator-mode)
+(when (require 'display-fill-column-indicator nil :noerror)
+  (dolist (mode '(term-mode))
+    (push mode (alist-get 'not global-display-fill-column-indicator-modes)))
   (global-display-fill-column-indicator-mode 1))
 
 ;; Do smart things when creating new files.
