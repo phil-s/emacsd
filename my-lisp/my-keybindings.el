@@ -262,8 +262,8 @@
   (define-key keymap (kbd "C-c w w")   (if (fboundp 'eww) 'eww 'my-eww))
 
   ;; Terminals / Shells / REPLs
-  (define-key keymap (kbd "C-c s s")   'my-shell)
-  (define-key keymap (kbd "C-c s a")   'my-ansi-terminal)
+  (define-key keymap (kbd "C-c s s")   'my-terminal)
+  (define-key keymap (kbd "C-c s S")   'my-shell)
   (define-key keymap (kbd "C-c s d")   'my-drush-console)
   (define-key keymap (kbd "C-c s q")   'my-sql-console)
   (define-key keymap (kbd "C-c s h")   'my-ssh)

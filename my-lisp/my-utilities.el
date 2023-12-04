@@ -1925,7 +1925,18 @@ instead of `browse-url-new-window-flag'."
     (delete-other-windows))
   (setq-local term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
-(defalias 'my-shell 'my-terminal)
+(defun my-shell (delete-other-windows)
+  "Switch to a `shell' buffer (creating it if necessary)."
+  (interactive "P")
+  (require 'shell)
+  (unless (when-let ((buf (get-buffer "*shell*")))
+            (get-buffer-process buf))
+    (call-interactively 'shell))
+  (pop-to-buffer "*shell*" '((display-buffer-reuse-window
+                              display-buffer-same-window)
+                             . ((reusable-frames . visible))))
+  (when delete-other-windows
+    (delete-other-windows)))
 
 (defun my-sql-console (delete-other-windows)
   "Switch to an interactive SQLi buffer (creating it if necessary)."
