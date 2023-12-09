@@ -1,10 +1,11 @@
 It's very important to understand that `'...` which means `(quote ...)`
 is not a shorthand for making lists.  It's a form which causes lisp to
-return, unevaluated, the object that was created by the lisp reader.
+return, unevaluated, the object that was created by the lisp reader
+(at read time).
 
 If you quote a list and then *modify* the quoted list, it stays
 modified.  If you want to create a list and then modify it, create it
-with `(list ...)`.
+(at eval time) with `(list ...)`.
 
 Be sure to go over the distinct `read` and `eval` phases of lisp
 execution.  Once you understand the distinction, `quote` will make
