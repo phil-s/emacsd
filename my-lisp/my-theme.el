@@ -100,19 +100,8 @@
 ;; Don't set the default font in (custom-set-faces), because it makes
 ;; things super-funky during initialisation if that font doesn't exist
 ;; on the system.
-
-;; WARNING: Is this safe? See (custom-set-faces) call in init.el:
-;; "Your init file should contain only one such instance.
-;; If there is more than one, they won't work right."
-(when (equal emacs-major-version 23) ; no longer default
-  (cond
-   ((eq system-type 'gnu/linux)
-    (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 121 :width normal :foundry "unknown" :family "Droid Sans Mono Dotted"))))))
-
-   ;; Win32 NTEmacs
-   ((eq system-type 'windows-nt)
-    (apply 'custom-theme-set-faces 'user '(default ((t (:slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New"))))))
-   ))
+(custom-set-faces
+ '(default ((t (:height 120 :family "Droid Sans Mono Dotted")))))
 
 ;; This magic means we fall back to Symbola for all missing unicode glyphs.
 ;; For Debian: apt-get install ttf-ancient-fonts
