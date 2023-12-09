@@ -127,6 +127,39 @@
   ;;   (set-face-attribute 'magit-item-highlight nil :inherit nil))
   )
 
+(defun my-replace-theme (theme &optional hl-sexp-background)
+  "Replace current theme with THEME."
+  (mapc #'disable-theme custom-enabled-themes)
+  (enable-theme theme)
+  ;; Modus theme tweaks.
+  (when (memq theme '(modus-operandi modus-vivendi))
+    (dolist (face '(hl-line))
+      (let* ((theme-face (cadr (assq theme (get face 'theme-face))))
+             (face-spec (face-spec-choose theme-face))
+             (background (plist-get face-spec :background)))
+        (set-face-attribute 'hl-line nil :background background))))
+  ;; Clobber certain unsupported faces.
+  (when hl-sexp-background
+    (set-face-attribute 'hl-sexp-face nil :background hl-sexp-background)))
+
+(defun my-theme-modus-operandi ()
+  "Replace current theme with `modus-operandi'."
+  (interactive)
+  (require 'modus-operandi-theme)
+  (my-replace-theme 'modus-operandi "#f3f3f3"))
+
+(defun my-theme-modus-vivendi ()
+  "Replace current theme with `modus-vivendi'."
+  (interactive)
+  (require 'modus-vivendi-theme)
+  (my-replace-theme 'modus-vivendi "#172031"))
+
+(defun my-theme-zenburn ()
+  "Replace current theme with `zenburn'."
+  (interactive)
+  (require 'zenburn-theme)
+  (my-replace-theme 'zenburn))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-theme)
