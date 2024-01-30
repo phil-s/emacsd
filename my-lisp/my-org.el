@@ -47,6 +47,9 @@
   ;; appropriate locations where speed commands should be active.
   (setq org-use-speed-commands t)
 
+  ;; Use a completing read UI for the `org-goto' (C-c C-j) command.
+  (setq org-goto-interface 'outline-path-completion)
+
   ;; Prevent the demoting of a heading also shifting text within its sections.
   (setq org-adapt-indentation nil)
 
