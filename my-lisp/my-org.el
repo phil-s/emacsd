@@ -53,9 +53,6 @@
   ;; ;; Set maximum indentation for description lists.
   ;; (setq org-list-description-max-indent 5)
 
-  ;; Prevent the demoting of a heading also shifting text within its sections.
-  (setq org-adapt-indentation nil)
-
   ;; Use a real ellipsis character.
   (setq org-ellipsis "…")
 
