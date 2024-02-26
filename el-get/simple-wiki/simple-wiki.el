@@ -8,7 +8,7 @@
 ;; * I have now additionally used cl-libify to convert this to cl-lib.
 ;;   (Apparently it was only the `first' .. `sixth' calls which needed
 ;;   to be changed.)
-;; * Lastly I've cleaned up the byte-compilation warnings.
+;; * Lastly I've cleaned up the byte-compilation warnings and indentation.
 
 ;; Copyright (C) 2002, 2003  Alex Schroeder
 
@@ -548,8 +548,8 @@ Return nil otherwise."
       (simple-wiki-insert-tag-string tag t))))
 
 (defun simple-wiki-insert-tag (&optional tag)
-  (interactive)
   "Insert a tag and put the cursor between the opening and closing tag."
+  (interactive)
   (unless tag
     (setq tag (simple-wiki-get-tag)))
   (simple-wiki-insert-tag-string tag)
@@ -664,8 +664,8 @@ the region."
   "Add an element to `simple-wiki-font-lock-keywords'.
 MATCH-PAIR has to be a pair with a regular expression and a
 number for the subexpression: (REGEXP . NUMBER).  FACE is the
-face used for highlighting and overwrite may be 'prepend,
-'append, 'keep, t or nil.  See `font-lock-keywords'."
+face used for highlighting and overwrite may be \\='prepend,
+\\='append, \\='keep, t or nil.  See `font-lock-keywords'."
   (add-to-list
    'simple-wiki-font-lock-keywords
    (cons (car match-pair) (list (cdr match-pair) `(quote ,face) overwrite))))
@@ -752,10 +752,10 @@ face used for highlighting and overwrite may be 'prepend,
 (defun simple-wiki-define-major-mode (mode name doc-string &rest properties)
   "Define a major mode for editing a wiki page.
 MODE has to be a symbol which is used to build the major mode command:
-e.g. 'emacswiki results in the command `simple-emacswiki-mode'. NAME
+e.g. \\='emacswiki results in the command `simple-emacswiki-mode'. NAME
 is a string which will appear in the status line (e.g. \"EmacsWiki\").
 DOC-STRING is an an optional documentation string.  See
-`definde-derived-mode'
+`define-derived-mode'
 
 To overwrite the default syntax (that should be fine for emacswiki or
 any default oddmuse installation) you can specify various properties
@@ -779,7 +779,7 @@ as a list of keywords:
         :indent............. overwrite `simple-wiki-indent-pattern'
         :deflist............ overwrite `simple-wiki-definition-pattern'
 
-Use the symbol 'none as the value if the wiki doesn't support the property."
+Use the symbol \\='none as the value if the wiki doesn't support the property."
   (eval
    `(define-derived-mode
       ,(intern (concat "simple-" (symbol-name mode) "-mode"))
@@ -832,15 +832,15 @@ Use the symbol 'none as the value if the wiki doesn't support the property."
         (setq outline-heading-end-regexp (cdr simple-wiki-outline-patterns)))
 
       (define-key ,(intern (concat "simple-" (symbol-name mode) "-mode-map"))
-        "\C-c\C-e" 'simple-wiki-insert-or-region-emph)
+                  "\C-c\C-e" 'simple-wiki-insert-or-region-emph)
       (define-key ,(intern (concat "simple-" (symbol-name mode) "-mode-map"))
-        "\C-c\C-s" 'simple-wiki-insert-or-region-strong)
+                  "\C-c\C-s" 'simple-wiki-insert-or-region-strong)
       (define-key ,(intern (concat "simple-" (symbol-name mode) "-mode-map"))
-        "\C-c\C-t" 'simple-wiki-insert-or-region-tag)
+                  "\C-c\C-t" 'simple-wiki-insert-or-region-tag)
       (define-key ,(intern (concat "simple-" (symbol-name mode) "-mode-map"))
-        "\C-c\C-n" 'simple-wiki-next)
+                  "\C-c\C-n" 'simple-wiki-next)
       (define-key ,(intern (concat "simple-" (symbol-name mode) "-mode-map"))
-        "\C-c\C-p" 'simple-wiki-prev)
+                  "\C-c\C-p" 'simple-wiki-prev)
 
       (make-local-variable 'font-lock-defaults)
       (setq font-lock-multiline t)
@@ -867,7 +867,7 @@ Use the symbol 'none as the value if the wiki doesn't support the property."
 (simple-wiki-define-major-mode
  'emacswiki
  "EmacsWiki"
-  "Simple mode to edit wiki pages at http://www.emacswiki.org/.
+ "Simple mode to edit wiki pages at http://www.emacswiki.org/.
 \\{simple-emacswiki-mode-map}")
 
 (simple-wiki-define-major-mode
