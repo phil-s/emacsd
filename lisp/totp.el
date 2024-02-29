@@ -44,6 +44,9 @@
 
 (defun totp--hex-decode-string (string)
   "Hex-decode STRING and return the result as a unibyte string."
+  ;; Pad the string with a leading zero if its length is odd.
+  (unless (zerop (logand (length string) 1))
+    (setq string (concat "0" string)))
   (apply #'unibyte-string
          (seq-map (lambda (s) (hexl-htoi (aref s 0) (aref s 1)))
                   (seq-partition string 2))))
@@ -149,7 +152,7 @@ Requires that \"xdotool\" is installed on your system.  E.g.:
 
  sudo apt-get install xdotool
 
-To use, triggering the following command via your window manager:
+To use, trigger the following command via your window manager:
 
  emacsclient --eval \"(totp-x-paste $(xdotool getactivewindow))\"
 
