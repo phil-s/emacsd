@@ -99,6 +99,10 @@
       )
 
 (with-eval-after-load "mu4e-view"
+  ;; Fix mouse bindings: `mu4e~view-browse-url-from-binding' is bound to
+  ;; [mouse-1] *and* [down-mouse-1], so clicking opens the URL twice.
+  (define-key mu4e-view-active-urls-keymap [down-mouse-1] nil)
+  ;; Actions.
   (setq mu4e-view-actions
         (remove '("view as pdf" . mu4e-action-view-as-pdf)
                 mu4e-view-actions))
