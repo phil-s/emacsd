@@ -120,6 +120,7 @@ When called interactively with a prefix argument, prompts for LIMIT also."
                      3 (or (regexp "[Ww][Rr][- ]?#?")
                            (regexp "[Rr][Mm][- ]?#?")
                            (regexp "[Ii]ssue[- ]?#?")
+                           (regexp "[Rr][Ff][Cc][- ]?#?")
                            (regexp "[Bb]ug[- ]?#?")))
                  (group-n
                      2 (seq (one-or-more digit)
@@ -153,6 +154,8 @@ here, so that group 2 has the desired value in both scenarios.")
                      "https://redmine.catalyst.net.nz/issues/%s")
                     ((string-prefix-p "Issue" type t)
                      "https://www.drupal.org/i/%s")
+                    ((string-prefix-p "RFC" type t)
+                     "https://www.rfc-editor.org/rfc/rfc%s.html")
                     ((string-prefix-p "Bug" type t)
                      "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
     (format formatstring (match-string-no-properties 2))))
@@ -169,6 +172,13 @@ here, so that group 2 has the desired value in both scenarios.")
 
 ;; Link bug references in VC log buffers.
 (add-hook 'log-view-mode-hook #'my-bug-reference-mode-enable)
+
+;; How to browse.
+(with-eval-after-load 'browse-url
+  (add-to-list 'browse-url-handlers
+               (cons (rx bos "https://www.rfc-editor.org/rfc/rfc"
+                         (one-or-more digit) ".html" eos)
+                     'eww-browse-url)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
