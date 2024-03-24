@@ -117,13 +117,10 @@ When called interactively with a prefix argument, prompts for LIMIT also."
 (defvar my-bug-reference-bug-regexp
   (rx (group-n
           1 (seq (group-n
-                     3 (or (regexp "[Ww][Rr] ?[#-]?")
-                           (regexp "[Rr][Mm] ?[#-]?")
-                           (regexp "[Ii]ssue ?#?")
-                           (regexp "[Bb]ug ?#?")
-                           (regexp "[Pp]atch ?#")
-                           (regexp "RFE ?#")
-                           (regexp "PR [a-z+-]+/")))
+                     3 (or (regexp "[Ww][Rr][- ]?#?")
+                           (regexp "[Rr][Mm][- ]?#?")
+                           (regexp "[Ii]ssue[- ]?#?")
+                           (regexp "[Bb]ug[- ]?#?")))
                  (group-n
                      2 (seq (one-or-more digit)
                             (opt "#" (one-or-more digit)))))))
