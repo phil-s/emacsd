@@ -28,6 +28,7 @@
   (defvar bookmark-default-file)
   (defvar bookmark-save-flag)
   (defvar browse-url-handlers)
+  (defvar calc-kill-line-numbering)
   (defvar calc-make-windows-dedicated)
   (defvar calendar-date-display-form)
   (defvar calendar-date-style)
@@ -1619,7 +1620,12 @@ return to the save-some-buffers minibuffer prompt."
 (add-hook 'ediff-keymap-setup-hook 'my-ediff-keymap-setup-hook)
 
 ;; Calc.
+
+;; Make windows displaying Calc buffers dedicated.
 (setq calc-make-windows-dedicated t)
+
+;; Do not include the stack position when copying a value.
+(setq calc-kill-line-numbering nil)
 
 ;; See: http://stackoverflow.com/questions/9748521
 (defadvice save-buffer (around my-save-buffer-mini-window-size)
