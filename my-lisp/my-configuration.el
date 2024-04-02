@@ -650,7 +650,7 @@ Remove with:
 
 ;; `display-fill-column-indicator-mode' (27+).
 (when (require 'display-fill-column-indicator nil :noerror)
-  (dolist (mode '(term-mode))
+  (dolist (mode '(comint-mode term-mode))
     (push mode (alist-get 'not global-display-fill-column-indicator-modes)))
   (global-display-fill-column-indicator-mode 1))
 
