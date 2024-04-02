@@ -542,6 +542,8 @@ Remove with:
       jit-lock-chunk-size 2048)
 
 ;; Highlight current line, except in certain major modes.
+(setq hl-line-sticky-flag nil)
+(setq global-hl-line-sticky-flag nil)
 (global-hl-line-mode 1)
 
 (defun my-global-hl-line-mode-inhibit ()
