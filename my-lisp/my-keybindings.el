@@ -218,6 +218,15 @@
   (define-key keymap (kbd "C-x r e")   'my-edit-rectangle)
   (define-key keymap (kbd "C-x r M-%") 'my-replace-string-rectangle)
   (define-key keymap (kbd "C-x r C-M-%") 'my-replace-regexp-rectangle)
+  (define-key keymap (kbd "C-<return>") 'cua-rectangle-mark-mode)
+  ;; - C-RET + cursor movement
+  ;; - RET to cycle corners
+  ;; - typing inserts before/after rectangle
+  ;; - C-RET to exit
+  ;; - M-n to generate sequence
+  ;; http://trey-jackson.blogspot.com/2008/10/emacs-tip-26-cua-mode-specifically.html
+  ;; For full documentation:
+  ;; (progn (finder-commentary "cua-base") (search-forward "CUA rectangle support") (recenter 0 t))
 
   ;; iedit
   (define-key keymap (kbd "C-;")       'iedit-mode)

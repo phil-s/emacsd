@@ -790,30 +790,11 @@ n.b. ffap-alternate-file is intended for interactive use only."
     ad-do-it)
   (ad-activate 'ffap-read-file-or-url))
 
-;; Use CUA selection mode (enhanced rectangle editing)
-(setq cua-delete-selection nil) ; typing should not delete the region.
-(cua-selection-mode t)
-;; C-RET + cursor movement
-;; RET to cycle corners
-;; typing inserts before/after rectangle
-;; C-RET to exit
-;; M-n to generate sequence
-;; http://trey-jackson.blogspot.com/2008/10/emacs-tip-26-cua-mode-specifically.html
-
 ;; Deleting should not delete the region.
-(delete-selection-mode 0) ;; doesn't stop cua-selection-mode :/ Undo its changes:
-(add-hook 'cua-mode-hook 'my-cua-mode-hook)
-;;(remove-hook 'cua-mode-hook 'my-cua-mode-hook)
-(defun my-cua-mode-hook ()
-  "Used in `cua-mode-hook'."
-  (define-key cua--region-keymap
-    [remap delete-backward-char] 'delete-backward-char)
-  (define-key cua--region-keymap
-    [remap backward-delete-char] 'backward-delete-char)
-  (define-key cua--region-keymap
-    [remap backward-delete-char-untabify] 'backward-delete-char-untabify)
-  (define-key cua--region-keymap
-    [remap delete-char] 'delete-char))
+(delete-selection-mode 0)
+
+;; Move point to top/bottom of buffer before signaling a scrolling error.
+(setq scroll-error-top-bottom t)
 
 ;; Set titlebar text to buffer name, along with the file/directory path
 ;; as appropriate, image dimensions, which-function, etc...
