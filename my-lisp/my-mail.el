@@ -57,6 +57,13 @@
   (my-adaptive-visual-line-mode 1)
   (delete-trailing-whitespace))
 
+(add-hook 'mu4e-compose-mode-hook 'my-mu4e-compose-mode-hook)
+(defun my-mu4e-compose-mode-hook ()
+  "Custom `mu4e-compose-mode' behaviours.  Used in `mu4e-compose-mode-hook'."
+  (when (require 'jinx nil :noerror)
+    (jinx-mode 1)
+    (local-set-key (kbd "M-$") #'jinx-correct)))
+
 (with-eval-after-load "mu4e-headers"
   (define-key mu4e-headers-mode-map (kbd "`") #'mu4e-view-raw-message))
 
