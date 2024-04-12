@@ -1,0 +1,9 @@
+*-autoloads.el
+*-pkg.el
+*.elc
+*.info
+*.so
+*.texi
+*~
+\#*\#
+/README-elpa

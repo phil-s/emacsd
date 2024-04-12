@@ -31,6 +31,7 @@
 :idle-highlight-mode "installed"
 :iedit "installed"
 :image-dimensions-minor-mode "installed"
+:jinx "installed"
 :jump-char "installed"
 :keep-buffers "installed"
 :key-chord "installed"

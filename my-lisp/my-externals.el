@@ -192,6 +192,10 @@
             :type http
             :url ,(my-local-repository-url-for "image-dimensions-minor-mode"))
 
+     (:name jinx
+            :type git
+            :url "https://github.com/minad/jinx.git")
+
      (:name jump-char
             :type git
             :url "https://github.com/lewang/jump-char")
