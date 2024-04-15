@@ -98,10 +98,12 @@
   (global-so-long-mode 1))
 
 ;; Trigger `so-long-minor-mode' for long compile output.
-(with-eval-after-load 'compile
-  (require 'so-long))
-
-(add-hook 'compilation-mode-hook 'my-so-long-compilation-mode)
+;; Emacs 29 has its own fix for this, so only target older versions.
+;; (See `compilation-max-output-line-length'.)
+(unless (>= emacs-major-version 29)
+  (with-eval-after-load 'compile
+    (require 'so-long))
+  (add-hook 'compilation-mode-hook 'my-so-long-compilation-mode))
 
 (defun my-so-long-compilation-mode ()
   "Add `my-so-long-compilation-filter' to local `compilation-filter-hook'."
