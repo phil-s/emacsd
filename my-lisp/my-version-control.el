@@ -370,20 +370,22 @@ static char * data[] = {
   (interactive (list (magit-read-branch "Delete alias")))
   (magit-run-git "branch-alias" "--delete" alias))
 
-;; ;; FIXME: Convert to transient.
-;; (with-eval-after-load "magit-diff"
-;;   (magit-define-popup-action 'magit-diff-popup
-;;     ?R "Diff range"
-;;     'magit-diff)
-;;   (magit-define-popup-action 'magit-diff-popup
-;;     ?r "Diff commit..HEAD"
-;;     'my-magit-diff-range-from-ref-to-head))
+(defun my-magit-diff-config ()
+  "Called after loading `magit-diff'."
+  (transient-append-suffix 'magit-diff "r"
+    '("R" "Diff range" magit-diff-range))
+  (transient-replace-suffix 'magit-diff "r"
+    '("r" "Diff ..HEAD" my-magit-diff-range-from-ref-to-head)))
 
-(defun my-magit-diff-range-from-ref-to-head (&optional args files)
-  "Diff the ref at point with HEAD."
-  (interactive (magit-diff-arguments))
-  (magit-diff-range (format "%s..HEAD" (magit-branch-or-commit-at-point))
-                    args files))
+(with-eval-after-load "magit-diff"
+  (my-magit-diff-config))
+
+(defun my-magit-diff-range-from-ref-to-head (rev &optional args files)
+  "Call `magit-diff-range' for REV..HEAD."
+  (interactive (cons (or (magit-branch-or-commit-at-point)
+                         (magit-read-branch-or-commit "Diff to HEAD from"))
+                     (magit-diff-arguments)))
+  (magit-diff-range (format "%s..HEAD" rev) args files))
 
 ;; ;; FIXME: Convert to transient.
 ;; (with-eval-after-load "magit-refs"
