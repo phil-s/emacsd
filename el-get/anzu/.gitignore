@@ -1,0 +1,10 @@
+/.cask/
+*.elc
+*-autoloads.*
+
+# Custom.
+/image/
+/.git/
+/.github/
+/Cask
+/Makefile

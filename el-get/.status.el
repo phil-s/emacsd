@@ -2,6 +2,7 @@
 :ace-jump-mode "installed"
 :ace-link "installed"
 :ace-window "installed"
+:anzu "installed"
 :async "installed"
 :auto-compile "installed"
 :avy "installed"

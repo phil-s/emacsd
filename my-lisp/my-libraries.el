@@ -13,6 +13,10 @@
 (autoload 'totp-as-clipboard "totp")
 (autoload 'totp-x-paste "totp")
 
+;; Anzu
+(when (require 'anzu nil :noerror)
+  (global-anzu-mode 1))
+
 ;; Local occur minor mode
 ;(require 'loccur)
 
