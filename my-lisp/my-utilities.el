@@ -1090,6 +1090,21 @@ Does not set point.  Does nothing if mark ring is empty."
   (condition-case nil
       (yank-pop arg)
     (error (insert (get-register 'jp/yank)))))
+
+;; Adapted from https://mbork.pl/2024-01-22_From_the_kill_ring_to_a_register
+(defun my-copy-kill-to-register (register n)
+  "Copy text from the kill ring to REGISTER.
+With prefix argument N, use the Nth kill ring entry, but don't
+move the last yank pointer to it."
+  (interactive (let* ((n (prefix-numeric-value current-prefix-arg)))
+                 (list (register-read-with-preview
+                        (format
+                         "Kill at position %s (%s) to register: "
+                         n
+                         (truncate-string-to-width (current-kill (1- n) t)
+                                                   40 nil nil t)))
+                       n)))
+  (set-register register (current-kill (1- n) t)))
 
 ;; Write a copy of the current buffer or region to a file.
 (defun my-write-copy-to-file ()

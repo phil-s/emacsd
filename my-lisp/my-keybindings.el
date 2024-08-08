@@ -200,6 +200,7 @@
   ;; (TODO: 'browse-kill-ring' in my-utilities)
   (define-key keymap (kbd "C-c y")     'my-yank-menu)
   (define-key keymap (kbd "C-x r M-w") 'my-copy-rectangle)
+  (define-key keymap (kbd "C-x r C-y") 'my-copy-kill-to-register)
 
   ;; Multiple cursors
   (define-key keymap (kbd "s-SPC s-SPC") 'mc/edit-lines)
