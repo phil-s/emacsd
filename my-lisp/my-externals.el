@@ -355,6 +355,10 @@
      ;;        :type git-svn
      ;;        :url "http://yasnippet.googlecode.com/svn/trunk/")
 
+     (:name yequake
+            :type git
+            :url "https://github.com/alphapapa/yequake.git")
+
      (:name zenburn-theme
             :type git
             :url "https://github.com/bbatsov/zenburn-emacs")

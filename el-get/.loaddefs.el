@@ -4781,6 +4781,19 @@ Simple mode to edit YAML.
 
 ;;;***
 
+;;;### (autoloads nil "yequake/yequake" "yequake/yequake.el" (0 0
+;;;;;;  0 0))
+;;; Generated autoloads from yequake/yequake.el
+
+(autoload 'yequake-toggle "yequake/yequake" "\
+Toggle the Yequake frame named NAME.
+
+\(fn NAME)" t)
+
+(register-definition-prefixes "yequake/yequake" '("yequake-"))
+
+;;;***
+
 ;;;### (autoloads nil "zenburn-theme/zenburn-theme" "zenburn-theme/zenburn-theme.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from zenburn-theme/zenburn-theme.el

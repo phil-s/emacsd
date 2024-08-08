@@ -68,6 +68,7 @@
 :with-editor "installed"
 :ws-trim "installed"
 :yaml-mode "installed"
+:yequake "installed"
 :zenburn-theme "installed"
 :ztree-diff "installed"
 )
