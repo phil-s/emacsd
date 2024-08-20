@@ -3616,19 +3616,27 @@ ARGS may be amongst :timeout, :icon, :urgency, :app and :category.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from php-mode/lisp/php.el
 
-(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/lisp/php" loads) nil (put 'php 'custom-loads (cons '"php-mode/lisp/php" loads))))
+(let ((loads (get 'php 'custom-loads))) (if (member '"php-mode/lisp/php" loads) nil (put 'php 'custom-loads (cons '"php-mode/lisp/php" loads)) (put 'languages 'custom-loads (cons 'php (get 'languages 'custom-loads)))))
+
+(autoload 'php-base-mode "php-mode/lisp/php" "\
+Generic major mode for editing PHP.
+
+This mode is intended to be inherited by concrete major modes.
+Currently there are `php-mode' and `php-ts-mode'.
+
+\(fn)" t)
 
 (autoload 'php-mode-maybe "php-mode/lisp/php" "\
-Select PHP mode or other major mode." t nil)
+Select PHP mode or other major mode." t)
 
 (autoload 'php-current-class "php-mode/lisp/php" "\
-Insert current class name if cursor in class context." t nil)
+Insert current class name if cursor in class context." t)
 
 (autoload 'php-current-namespace "php-mode/lisp/php" "\
-Insert current namespace if cursor in namespace context." t nil)
+Insert current namespace if cursor in namespace context." t)
 
 (autoload 'php-copyit-fqsen "php-mode/lisp/php" "\
-Copy/kill class/method FQSEN." t nil)
+Copy/kill class/method FQSEN." t)
 
 (autoload 'php-run-builtin-web-server "php-mode/lisp/php" "\
 Run PHP Built-in web server.
@@ -3640,14 +3648,14 @@ Run PHP Built-in web server.
 
 When `DOCUMENT-ROOT' is NIL, the document root is obtained from `ROUTER-OR-DIR'.
 
-\(fn ROUTER-OR-DIR HOSTNAME PORT &optional DOCUMENT-ROOT)" t nil)
+\(fn ROUTER-OR-DIR HOSTNAME PORT &optional DOCUMENT-ROOT)" t)
 
 (autoload 'php-find-system-php-ini-file "php-mode/lisp/php" "\
 Find php.ini FILE by `php --ini'.
 
-\(fn &optional FILE)" t nil)
+\(fn &optional FILE)" t)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php" '("php-")))
+(register-definition-prefixes "php-mode/lisp/php" '("php-"))
 
 ;;;***
 
@@ -3656,19 +3664,60 @@ Find php.ini FILE by `php --ini'.
 ;;; Generated autoloads from php-mode/lisp/php-align.el
 
 (autoload 'php-align-setup "php-mode/lisp/php-align" "\
-Setup alignment configuration for PHP code." nil nil)
+Setup alignment configuration for PHP code.")
 
 (autoload 'php-align-mode "php-mode/lisp/php-align" "\
 Alignment lines for PHP script.
 
-If called interactively, enable Php-Align mode if ARG is
-positive, and disable it if ARG is zero or negative.  If called
-from Lisp, also enable the mode if ARG is omitted or nil, and
-toggle it if ARG is `toggle'; disable the mode otherwise.
+This is a minor mode.  If called interactively, toggle the
+`Php-Align mode' mode.  If the prefix argument is positive,
+enable the mode, and if it is zero or negative, disable the mode.
 
-\(fn &optional ARG)" t nil)
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-align" '("php-align-")))
+To check whether the minor mode is enabled in the current buffer,
+evaluate `php-align-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+\(fn &optional ARG)" t)
+
+(register-definition-prefixes "php-mode/lisp/php-align" '("php-align-"))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-complete" "php-mode/lisp/php-complete.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-complete.el
+
+(let ((loads (get 'php-complete 'custom-loads))) (if (member '"php-mode/lisp/php-complete" loads) nil (put 'php-complete 'custom-loads (cons '"php-mode/lisp/php-complete" loads)) (put 'php-mode 'custom-loads (cons 'php-complete (get 'php-mode 'custom-loads)))))
+
+(defvar php-complete-function-modules '(bcmath core gmp libxml intl mbstring pcntl posix sodium xml xmlwriter) "\
+Module names for function names completion.")
+
+(custom-autoload 'php-complete-function-modules "php-mode/lisp/php-complete" t)
+
+(put 'php-complete-function-modules 'safe-local-variable (lambda (value) (and (listp value) (cl-loop for v in values always (assq v php-defs-functions-alist)))))
+
+(autoload 'php-complete-complete-function "php-mode/lisp/php-complete" "\
+Complete PHP keyword at point.
+
+If INTERACTIVE is nil the function acts like a capf.
+
+\(fn &optional INTERACTIVE)" t)
+
+(register-definition-prefixes "php-mode/lisp/php-complete" '("php-complete--"))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-defs" "php-mode/lisp/php-defs.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-defs.el
+
+(register-definition-prefixes "php-mode/lisp/php-defs" '("php-defs-functions-alist"))
 
 ;;;***
 
@@ -3676,9 +3725,132 @@ toggle it if ARG is `toggle'; disable the mode otherwise.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from php-mode/lisp/php-face.el
 
-(let ((loads (get 'php-faces 'custom-loads))) (if (member '"php-mode/lisp/php-face" loads) nil (put 'php-faces 'custom-loads (cons '"php-mode/lisp/php-face" loads))))
+(let ((loads (get 'php-faces 'custom-loads))) (if (member '"php-mode/lisp/php-face" loads) nil (put 'php-faces 'custom-loads (cons '"php-mode/lisp/php-face" loads)) (put 'php-mode 'custom-loads (cons 'php-faces (get 'php-mode 'custom-loads)))))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-face" '("php-annotations-annotation-face")))
+(register-definition-prefixes "php-mode/lisp/php-face" '("php-"))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-flymake" "php-mode/lisp/php-flymake.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-flymake.el
+
+(autoload 'php-flymake "php-mode/lisp/php-flymake" "\
+Flymake backend for PHP syntax check.
+
+See `flymake-diagnostic-functions' about REPORT-FN and ARGS parameters.
+
+\(fn REPORT-FN &rest ARGS)")
+
+(register-definition-prefixes "php-mode/lisp/php-flymake" '("php-flymake-"))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-format" "php-mode/lisp/php-format.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-format.el
+
+(autoload 'php-format-this-buffer-file "php-mode/lisp/php-format" "\
+Apply format this buffer file." t)
+
+(autoload 'php-format-project "php-mode/lisp/php-format" "\
+Apply format this buffer file." t)
+
+(autoload 'php-format-on-after-save-hook "php-mode/lisp/php-format" "\
+Apply format on after save hook.")
+
+(autoload 'php-format-auto-mode "php-mode/lisp/php-format" "\
+Automatically apply formatting when saving an edited file.
+
+This is a minor mode.  If called interactively, toggle the
+`Php-Format-Auto mode' mode.  If the prefix argument is positive,
+enable the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `php-format-auto-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+\(fn &optional ARG)" t)
+
+(register-definition-prefixes "php-mode/lisp/php-format" '("php-format-"))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-ide" "php-mode/lisp/php-ide.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-ide.el
+
+(defvar php-ide-features nil "\
+A set of PHP-IDE features symbol.")
+
+(custom-autoload 'php-ide-features "php-mode/lisp/php-ide" t)
+
+(put 'php-ide-features 'safe-local-variable (lambda (v) (cl-loop for feature in (if (listp v) v (list v)) always (symbolp feature))))
+
+(defvar php-ide-eglot-executable nil "\
+Command name or path to the command of Eglot LSP executable.")
+
+(custom-autoload 'php-ide-eglot-executable "php-mode/lisp/php-ide" t)
+
+(put 'php-ide-eglot-executable 'safe-local-variable (lambda (v) (cond ((stringp v) (file-exists-p v)) ((listp v) (cl-every #'stringp v)) ((assq v php-ide-lsp-command-alist)))))
+
+(autoload 'php-ide-eglot-server-program "php-mode/lisp/php-ide" "\
+Return a list of command to execute LSP Server.")
+
+(defvar php-ide-mode-functions nil "\
+Hook functions called when before activating or deactivating PHP-IDE.
+Notice that two arguments (FEATURE ACTIVATE) are given.
+
+FEATURE: A symbol, like \\='lsp-mode.
+ACTIVATE: T is given when activeting, NIL when deactivating PHP-IDE.")
+
+(custom-autoload 'php-ide-mode-functions "php-mode/lisp/php-ide" t)
+
+(put 'php-ide-mode-functions 'safe-local-variable (lambda (functions) (and (listp functions) (cl-every #'functionp functions))))
+
+(autoload 'php-ide-mode "php-mode/lisp/php-ide" "\
+Minor mode for integrate IDE-like tools.
+
+This is a minor mode.  If called interactively, toggle the
+`Php-Ide mode' mode.  If the prefix argument is positive, enable
+the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `php-ide-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+\(fn &optional ARG)" t)
+
+(autoload 'php-ide-turn-on "php-mode/lisp/php-ide" "\
+Turn on PHP IDE-FEATURES and execute `php-ide-mode'.")
+
+(register-definition-prefixes "php-mode/lisp/php-ide" '("php-ide-"))
+
+;;;***
+
+;;;### (autoloads nil "php-mode/lisp/php-ide-phpactor" "php-mode/lisp/php-ide-phpactor.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from php-mode/lisp/php-ide-phpactor.el
+
+(autoload 'php-ide-phpactor-activate "php-mode/lisp/php-ide-phpactor" "\
+Activate PHP-IDE using phpactor.el." t)
+
+(autoload 'php-ide-phpactor-deactivate "php-mode/lisp/php-ide-phpactor" "\
+Dectivate PHP-IDE using phpactor.el." t)
+
+(register-definition-prefixes "php-mode/lisp/php-ide-phpactor" '("php-ide-phpactor-"))
 
 ;;;***
 
@@ -3693,11 +3865,11 @@ exists, and nil otherwise.
 
 With a prefix argument, prompt (with completion) for a word to search for.
 
-\(fn WORD)" t nil)
+\(fn WORD)" t)
 
 (define-obsolete-function-alias 'php-search-local-documentation #'php-local-manual-search "2.0.0")
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-local-manual" '("php-local-manual-")))
+(register-definition-prefixes "php-mode/lisp/php-local-manual" '("php-local-manual-"))
 
 ;;;***
 
@@ -3705,7 +3877,7 @@ With a prefix argument, prompt (with completion) for a word to search for.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from php-mode/lisp/php-mode.el
 
-(let ((loads (get 'php-mode 'custom-loads))) (if (member '"php-mode/lisp/php-mode" loads) nil (put 'php-mode 'custom-loads (cons '"php-mode/lisp/php-mode" loads))))
+(let ((loads (get 'php-mode 'custom-loads))) (if (member '"php-mode/lisp/php-mode" loads) nil (put 'php-mode 'custom-loads (cons '"php-mode/lisp/php-mode" loads)) (put 'languages 'custom-loads (cons 'php-mode (get 'languages 'custom-loads)))))
 
 (add-to-list 'interpreter-mode-alist (cons "php\\(?:-?[34578]\\(?:\\.[0-9]+\\)*\\)?" 'php-mode))
 
@@ -3716,7 +3888,7 @@ Major mode for editing PHP code.
 
 \\{php-mode-map}
 
-\(fn)" t nil)
+\(fn)" t)
 
 (add-to-list 'auto-mode-alist '("/\\.php_cs\\(?:\\.dist\\)?\\'" . php-mode))
 
@@ -3724,7 +3896,7 @@ Major mode for editing PHP code.
 
 (add-to-list 'auto-mode-alist '("\\.\\(?:php[s345]?\\|phtml\\)\\'" . php-mode-maybe))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-mode" '("php-")))
+(register-definition-prefixes "php-mode/lisp/php-mode" '("php-"))
 
 ;;;***
 
@@ -3732,7 +3904,7 @@ Major mode for editing PHP code.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from php-mode/lisp/php-mode-debug.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-mode-debug" '("php-mode-debug")))
+(register-definition-prefixes "php-mode/lisp/php-mode-debug" '("php-mode-debug"))
 
 ;;;***
 
@@ -3772,11 +3944,6 @@ defines constants, and sets the class loaders.")
 Path to php executable file.")
 
 (put 'php-project-php-executable 'safe-local-variable #'(lambda (v) (and (stringp v) (file-executable-p v))))
-
-(defvar-local php-project-phan-executable nil "\
-Path to phan executable file.")
-
-(put 'php-project-phan-executable 'safe-local-variable #'php-project--eval-bootstrap-scripts)
 
 (defvar-local php-project-coding-style nil "\
 Symbol value of the coding style of the project that PHP major mode refers to.
@@ -3834,12 +4001,19 @@ Function name or path to server-start script.")
 (put 'php-project-server-start 'safe-local-variable #'(lambda (v) (or (functionp v) (php-project--eval-bootstrap-scripts v))))
 
 (autoload 'php-project-get-bootstrap-scripts "php-mode/lisp/php-project" "\
-Return list of bootstrap script." nil nil)
+Return list of bootstrap script.")
 
 (autoload 'php-project-get-root-dir "php-mode/lisp/php-project" "\
-Return path to current PHP project." nil nil)
+Return path to current PHP project.")
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "php-mode/lisp/php-project" '("php-project-")))
+(autoload 'php-project-project-find-function "php-mode/lisp/php-project" "\
+Return path to current PHP project from DIR.
+
+This function is compatible with `project-find-functions'.
+
+\(fn DIR)")
+
+(register-definition-prefixes "php-mode/lisp/php-project" '("php-project-"))
 
 ;;;***
 

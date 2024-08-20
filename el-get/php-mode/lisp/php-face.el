@@ -1,10 +1,10 @@
 ;;; php-face.el --- Face definitions for PHP script  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020  Friends of Emacs-PHP development
+;; Copyright (C) 2023  Friends of Emacs-PHP development
 
 ;; Author: USAMI Kenta <tadsan@zonu.me>
 ;; Created: 5 May 2019
-;; Version: 1.24.0
+;; Version: 1.25.1
 ;; Keywords: faces, php
 ;; Homepage: https://github.com/emacs-php/php-mode
 ;; License: GPL-3.0-or-later
@@ -55,20 +55,42 @@
   :group 'php-faces
   :tag "PHP Function Name")
 
-(defface php-function-call '((t ()))
+(defface php-function-call-standard `((t ,(when (eval-when-compile (get 'font-lock-function-call-face 'face-defface-spec))
+                                            '(:inherit font-lock-function-call-face))))
   "PHP Mode face used to highlight function names in calles."
   :group 'php-faces
-  :tag "PHP Function Call")
+  :tag "PHP Function Call Standard")
 
-(defface php-method-call '((t (:inherit php-function-call)))
+(defface php-function-call-traditional '((t ()))
+  "PHP Mode face used to highlight function names in calles."
+  :group 'php-faces
+  :tag "PHP Function Call Traditional")
+
+(define-obsolete-face-alias 'php-function-call 'php-function-call-traditional "1.26.0")
+
+(defface php-method-call-standard '((t (:inherit php-function-call-standard)))
   "PHP Mode face used to highlight method names in calles."
   :group 'php-faces
-  :tag "PHP Method Call")
+  :tag "PHP Method Call Standard")
 
-(defface php-static-method-call '((t (:inherit php-method-call)))
+(defface php-method-call-traditional '((t (:inherit php-function-call-traditional)))
+  "PHP Mode face used to highlight method names in calles."
+  :group 'php-faces
+  :tag "PHP Method Call Traditional")
+
+(define-obsolete-face-alias 'php-method-call 'php-method-call-traditional "1.26.0")
+
+(defface php-static-method-call-standard '((t (:inherit php-method-call-standard)))
   "PHP Mode face used to highlight static method names in calles."
   :group 'php-faces
-  :tag "PHP Static Method Call")
+  :tag "PHP Static Method Call Standard")
+
+(defface php-static-method-call-traditional '((t (:inherit php-method-call-traditional)))
+  "PHP Mode face used to highlight static method names in calles."
+  :group 'php-faces
+  :tag "PHP Static Method Call Traditional")
+
+(define-obsolete-face-alias 'php-static-method-call 'php-static-method-call-traditional "1.26.0")
 
 (defface php-variable-name '((t (:inherit font-lock-variable-name-face)))
   "PHP Mode face used to highlight variable names."
@@ -126,7 +148,8 @@
   :tag "PHP Object Op")
 
 (defface php-paamayim-nekudotayim '((t ()))
-  "PHP Mode face used to highlight \"Paamayim Nekudotayim\" scope resolution operators (::)."
+  "PHP Mode face used to highlight scope resolution operators (::).
+The operator is also knows as \"Paamayim Nekudotayim\"."
   :group 'php-faces
   :tag "PHP Paamayim Nekudotayim")
 
@@ -145,7 +168,7 @@
   :group 'php-faces
   :tag "PHP Constant")
 
-(defface php-constant-assign '((t (:inherit font-lock-type-face)))
+(defface php-constant-assign '((t (:inherit php-constant)))
   "PHP Mode face used to highlight constant assigning (\"const\" statement)."
   :group 'php-faces
   :tag "PHP Constant Assign")
@@ -155,15 +178,18 @@
   :group 'php-faces
   :tag "PHP Magical Constant")
 
-(defface php-$this '((t (:inherit php-constant)))
+(defface php-this '((t (:inherit php-constant)))
   "PHP Mode face used to highlight $this variables."
   :group 'php-faces
   :tag "PHP $this")
 
-(defface php-$this-sigil '((t (:inherit php-constant)))
+(defface php-this-sigil '((t (:inherit php-constant)))
   "PHP Mode face used to highlight sigils($) of $this variable."
   :group 'php-faces
   :tag "PHP $this Sigil")
+
+(define-obsolete-face-alias 'php-$this 'php-this "1.26.0")
+(define-obsolete-face-alias 'php-$this-sigil 'php-this-sigil "1.26.0")
 
 (defface php-errorcontrol-op '((t (:inherit font-lock-type-face)))
   "PHP Mode face used to highlight errorcontrol operators (@).."
@@ -175,7 +201,10 @@
   :group 'php-faces
   :tag "PHP php Tag")
 
-(defface php-doc-annotation-tag '((t . (:inherit font-lock-constant-face)))
+(defface php-doc-annotation-tag (eval-when-compile
+                                  (if (eval-when-compile (boundp 'font-lock-doc-markup-face))
+                                      '((t . (:inherit font-lock-doc-markup-face)))
+                                    '((t . (:inherit font-lock-constant-face)))))
   "Face used to highlight annotation tags in doc-comment."
   :group 'php-faces
   :tag "PHPDoc Annotation Tag")
@@ -206,7 +235,8 @@
   :tag "PHP Class Declaration")
 
 (defface php-class-declaration-spec '((t (:inherit php-keyword)))
-  "PHP Mode Face used to highlight class declaration specification keywords (implements, extends)."
+  "PHP Mode Face used to highlight class declaration specification keywords.
+The keywords include: implements, extends."
   :group 'php-faces
   :tag "PHP Class Declaration Specification")
 
@@ -236,7 +266,8 @@
   :tag "PHP Visibility Modifier")
 
 (defface php-control-structure '((t (:inherit php-keyword)))
-  "PHP Mode Face used to highlight control structures (if, foreach, while, switch, catch...)."
+ "PHP Mode Face used to highlight control structures.
+The control structures include: if, foreach, while, switch, catch."
   :group 'php-faces
   :tag "PHP Control Structure")
 

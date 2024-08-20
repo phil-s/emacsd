@@ -63,22 +63,25 @@ These are the ###php-mode-test### comments. Valid magics are
 listed in `php-mode-test-valid-magics'; no other directives will
 be processed."
   (cl-letf (((symbol-function 'indent)
-             (lambda (offset) (equal (current-indentation) offset))))
+             (lambda (offset)
+               (let ((current-offset (current-indentation)))
+                 (unless (eq current-offset offset)
+                   (warn "line: %d context: %s\n" (line-number-at-pos) (c-guess-basic-syntax))
+                   (list :line (line-number-at-pos)
+                         :expected offset
+                         :actual current-offset))))))
     (let (directives answers)
       (save-excursion
         (goto-char (point-min))
-        (while (re-search-forward php-mode-test-magic-regexp nil t)
-          (setq directives (read (buffer-substring (match-beginning 1)
-                                                   (match-end 1))))
-          (setq answers
-                (append (mapcar (lambda (curr)
-                                  (let ((fn (car curr))
-                                        (args (mapcar 'eval (cdr-safe curr))))
-                                    (if (memq fn php-mode-test-valid-magics)
-                                        (apply fn args))))
-                                directives)
-                        answers))))
-      answers)))
+        (cl-loop while (re-search-forward php-mode-test-magic-regexp nil t)
+                 for directives = (read (buffer-substring (match-beginning 1) (match-end 1)))
+                 for result = (mapcar (lambda (expr)
+                                        (let ((fn (car expr))
+                                              (args (mapcar 'eval (cdr-safe expr))))
+                                          (if (memq fn php-mode-test-valid-magics)
+                                              (apply fn args))))
+                                      directives)
+                 append (cl-remove-if #'null result))))))
 
 (defun php-mode-test--buffer-face-list (buffer)
   "Return list of (STRING . FACE) from `BUFFER'."
@@ -154,8 +157,9 @@ file name and check that the faces of the fonts in the buffer match."
      ,(if indent
           '(let ((inhibit-message t)) (indent-region (point-min) (point-max))))
      ,(if magic
-          '(should (cl-reduce (lambda (l r) (and l r))
-                              (php-mode-test-process-magics))))
+          `(should (equal
+                    (cons ,file nil)
+                    (cons ,file (php-mode-test-process-magics)))))
      ,(if faces
           `(should (equal
                     (cons ,file
@@ -177,6 +181,7 @@ file name and check that the faces of the fonts in the buffer match."
 The next character after \">We\" is a single quote. It should not
 have a string face."
   :expected-result :failed
+  (skip-unless (not (eq system-type darwin)))  ; TODO: Failed on macOS 28.2 or above!
   (with-php-mode-test ("issue-9.php")
     (search-forward ">We")
     (forward-char) ;; Jump to after the opening apostrophe
@@ -517,11 +522,6 @@ style from Drupal."
     (search-forward "return")
     (should (eq (current-indentation) (* 2 c-basic-offset)))))
 
-(ert-deftest php-mode-test-issue-227 ()
-  "multi-line strings indents "
-  (custom-set-variables '(php-lineup-cascaded-calls t))
-  (with-php-mode-test ("issue-227.php" :indent t :style pear :magic t)))
-
 (ert-deftest php-mode-test-issue-237 ()
   "Indent chaining method for PSR2."
   (with-php-mode-test ("issue-237.php" :indent t :style psr2 :magic t)))
@@ -533,8 +533,8 @@ style from Drupal."
     (should (eq 'php-variable-name (get-text-property (1- (point)) 'face)))
 
     (search-forward "$this")
-    (should (eq 'php-$this-sigil (get-text-property (match-beginning 0) 'face)))
-    (should (eq 'php-$this (get-text-property (1+ (match-beginning 0)) 'face)))
+    (should (eq 'php-this-sigil (get-text-property (match-beginning 0) 'face)))
+    (should (eq 'php-this (get-text-property (1+ (match-beginning 0)) 'face)))
 
     (search-forward "$x")
     (should (eq 'php-variable-sigil (get-text-property (match-beginning 0) 'face)))
@@ -592,7 +592,8 @@ style from Drupal."
 
 (ert-deftest php-mode-test-type-hints ()
   "Test highlighting of type hints and return types."
-  (with-php-mode-test ("type-hints.php" :faces t)))
+  (with-php-mode-test ("type-hints.php" :faces (cond ((version<= "29" emacs-version) ".29.faces")
+                                                     (t)))))
 
 (ert-deftest php-mode-test-static-method-calls ()
   "Test highlighting of static method calls which are named the same
@@ -614,6 +615,7 @@ as a keyword."
 (ert-deftest php-project-root ()
   "Test for detection `php-project-root' by directory."
   (dolist (root (mapcar #'car php-project-available-root-files))
+    (skip-unless (not (eq system-type windows-nt)))  ; TODO: Make test compatible to Windows!
     (with-php-mode-test ("project/1/src/functions.php")
       (let ((php-project-root root))
         (should (string= (expand-file-name "project/1/" php-mode-test-dir)
@@ -646,6 +648,11 @@ Meant for `php-mode-test-issue-503'."
   "Proper alignment object -> accessor."
   (with-php-mode-test ("indent/issue-623.php" :indent t :magic t)))
 
+(ert-deftest php-mode-test-issue-702 ()
+  "Proper alignment arglist."
+  (with-php-mode-test ("indent/issue-702.php" :indent t :magic t))
+  (with-php-mode-test ("indent/issue-726.php" :indent t :magic t)))
+
 (ert-deftest php-mode-test-php74 ()
   "Test highlighting language constructs added in PHP 7.4."
   (with-php-mode-test ("7.4/arrow-function.php" :faces t))
@@ -675,12 +682,19 @@ Meant for `php-mode-test-issue-503'."
   (with-php-mode-test ("lang/doc-comment/return-type.php" :faces t))
   (with-php-mode-test ("lang/function/calls.php" :faces t))
   (with-php-mode-test ("lang/function/closure.php" :indent t :magic t :faces t))
+  (with-php-mode-test ("lang/import/import-constant.php" :faces t))
+  (with-php-mode-test ("lang/import/import-function.php" :faces t))
   (with-php-mode-test ("lang/try-cactch/multiple.php" :faces t))
   (with-php-mode-test ("lang/types/cast.php" :faces t))
   (with-php-mode-test ("lang/types/function.php" :faces t))
   (with-php-mode-test ("lang/types/keywords.php" :faces t))
   (with-php-mode-test ("lang/errorcontrol.php" :faces t))
   (with-php-mode-test ("lang/magical-constants/echo.php" :faces t)))
+
+(ert-deftest php-mode-test-pear ()
+  "Tests for PEAR style."
+  (with-php-mode-test ("indent/issue-227.php" :indent t :magic t :style pear))
+  (with-php-mode-test ("indent/issue-774.php" :indent t :magic t :style pear)))
 
 ;; For developers: How to make .faces list file.
 ;;

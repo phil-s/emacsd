@@ -254,7 +254,7 @@
      (:name php-mode
             :load-path ("lisp")
             :type git
-            :url "git://github.com/ejmr/php-mode.git")
+            :url "https://github.com/emacs-php/php-mode.git")
 
      (:name php-eldoc
             :type git

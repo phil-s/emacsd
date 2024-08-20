@@ -6,12 +6,201 @@ All notable changes of the PHP Mode 1.19.1 release series are documented in this
 
 ### Added
 
- * Support new PHP 8.0 and 8.1 syntax hilighting and indentation
+ * Add `php-base-mode` which is the base of php related modes ([#772])
+   * `php-base-mode` is designed as a common parent mode for `php-mode` and [`php-ts-mode`](https://github.com/emacs-php/php-ts-mode).
+
+### Changed
+
+ * Make `php-mode` inherit from `php-base-mode` instead of `c-mode` ([#772])
+ * Modify indentation of [PEAR Coding Standards] ([#774], [#777])
+   * No longer overindent it by default, since we don't see any mention in the coding style that it should hang `.`. (refs [#227] and [#229])
+   * **If you have any feedback on PEAR style, please let us know in [the discussion #776][#776].**
+ * Remove `$` from face names for interoperability with treesit ([#780], [emacs-php/php-ts-mode#68])
+   * `php-$this` → `php-this`
+   * `php-$this-sigil` → `php-this-sigil`
+ * Add `php-function-call-standard` face inherit `font-lock-function-call-face` on Emacs 29.1 and above ([#782], thanks [@bricka]!)
+ * Add `-tranditional` suffix to the `php-*-call` faces.
+   * `php-function-call` → `php-function-call-traditional`
+   * `php-method-call` → `php-method-call-traditional`
+   * `php-static-method-call` → `php-static-method-call-traditional`
+ * Add variables for the `php-function-call`, `php-method-call`, and `php-static-method-call` faces, defaulting to the `-traditional` face.
+
+### Removed
+
+ * Remove `php-mode-disable-c-mode-hook` custom variable and `php-mode-neutralize-cc-mode-effect` function ([#775])
+   * `php-mode` no longer inherits `c-mode`, so this variable won't work.
+
+[#227]: https://github.com/emacs-php/php-mode/pull/227
+[#229]: https://github.com/emacs-php/php-mode/pull/229
+[#772]: https://github.com/emacs-php/php-mode/pull/772
+[#774]: https://github.com/emacs-php/php-mode/issues/774
+[#775]: https://github.com/emacs-php/php-mode/pull/775
+[#776]: https://github.com/emacs-php/php-mode/discussions/776
+[#777]: https://github.com/emacs-php/php-mode/pull/777
+[#780]: https://github.com/emacs-php/php-mode/issues/780
+[#782]: https://github.com/emacs-php/php-mode/issues/782
+[@bricka]: https://github.com/bricka
+[emacs-php/php-ts-mode#68]: https://github.com/emacs-php/php-ts-mode/pull/68
+[PEAR Coding Standards]: https://pear.php.net/manual/en/standards.php
+
+## [1.25.1] - 2023-11-24
+
+### Added
+
+ * Add `php-topsy-beginning-of-defun-with-class` to display classname with function signature. ([#766])
+ * Add missing `__DIR__` to `php-magical-constants` ([#756], thanks [@piotrkwiecinski])
+
+### Changed
+
+ * Make developer build task in Makefile now depends on Eask. ([#762], thanks [@jcs090218])
+   * This change does not affect package installation users
+   * Read [CONTRIBUTING.md] if you prefer to build it yourself from zip or tar ball
+
+### Fixed
+
+ * Fixed build failure in Emacs on master branch ([#764], [#765], [#767], thanks [@takeokunn])
+
+### Removed
+
+ * Removed Phan-specific features from `php-project` ([#754])
+ * Removed [Cask](https://cask.readthedocs.io/) and [Keg](https://github.com/conao3/keg.el) metadata files for building ([#770])
+
+[#754]: https://github.com/emacs-php/php-mode/pull/754
+[#756]: https://github.com/emacs-php/php-mode/pull/756
+[#762]: https://github.com/emacs-php/php-mode/pull/762
+[#764]: https://github.com/emacs-php/php-mode/issues/764
+[#765]: https://github.com/emacs-php/php-mode/pull/765
+[#766]: https://github.com/emacs-php/php-mode/pull/766
+[#767]: https://github.com/emacs-php/php-mode/pull/767
+[#770]: https://github.com/emacs-php/php-mode/pull/770
+[@jcs090218]: https://github.com/jcs090218
+[@piotrkwiecinski]: https://github.com/piotrkwiecinski
+[@takeokunn]: https://github.com/takeokunn
+[CONTRIBUTING.md]: https://github.com/emacs-php/php-mode/blob/master/CONTRIBUTING.md
+
+## [1.25.0] - 2023-07-24
+
+### Added
+
+ * **Support Emacs 29.1** ([#743], [#750])
+
+### Fixed
+
+ * Fixed many byte compilation errors on Emacs 29 and 30 by multiple patches contributed by [Stefan Monnier] ([#737], [#739] and [#740], thanks Stefan!)
+ * Fixed PEAR method chaining wrong indentation ([#745] and [#746], thanks [@cweiske]!)
+ * Fixed `php-mode-debug-reinstall` command ([#747], [#748])
+
+### Removed
+
+ * Drop Emacs 25 support ([#729], [736])
+
+[Stefan Monnier]: https://www.iro.umontreal.ca/~monnier/
+[#729]: https://github.com/emacs-php/php-mode/pull/729
+[#736]: https://github.com/emacs-php/php-mode/pull/736
+[#737]: https://github.com/emacs-php/php-mode/pull/737
+[#739]: https://github.com/emacs-php/php-mode/pull/739
+[#740]: https://github.com/emacs-php/php-mode/pull/740
+[#741]: https://github.com/emacs-php/php-mode/pull/741
+[#743]: https://github.com/emacs-php/php-mode/pull/743
+[#745]: https://github.com/emacs-php/php-mode/pull/745
+[#746]: https://github.com/emacs-php/php-mode/pull/746
+[#747]: https://github.com/emacs-php/php-mode/pull/747
+[#748]: https://github.com/emacs-php/php-mode/pull/748
+[#750]: https://github.com/emacs-php/php-mode/pull/750
+
+## [1.24.3] - 2023-03-19
+
+### Added
+
+ * **Net feature**: `php-format` ([#731])
+   * Add `php-format-project` and `php-format-this-buffer-file` commands
+   * Add `php-format-auto-mode` minor mode
+ * **Experimental feature: `php-ide`** ([#709])
+   * Add `php-ide-phpactor` as simple IDE feature without LSP clients
+   * Add `php-ide-mode` minor mode for binding IDE-like features
+
+### Fixed
+
+ * Fix array indentation broken by commenting out ([#726], [#732])
+
+### Removed
+
+ * No longer highlights `'link` in PHPDoc ([#724])
+   * Please use `goto-address-prog-mode` minor mode
+
+[#709]: https://github.com/emacs-php/php-mode/pull/709
+[#724]: https://github.com/emacs-php/php-mode/pull/724
+[#726]: https://github.com/emacs-php/php-mode/pull/726
+[#731]: https://github.com/emacs-php/php-mode/pull/731
+[#732]: https://github.com/emacs-php/php-mode/pull/732
+
+## [1.24.2] - 2022-11-13
+
+### Added
+
+ * **New feature: `php-complete`**
+   * Add `php-complete-complete-function` to autocomplete function names ([#708])
+ * **New feature: `php-flymake`**
+   * Add `php-flymake` as a flymake backend compatible with Emacs 26 and above ([#718])
+ * Supports PHPDoc tags and types for static analysis tools ([#710], [#715], [#716], [#717], thanks to [@takeokunn])
+     * Please refer to the article below
+       * PHPStan: [PHPDoc Types](https://phpstan.org/writing-php-code/phpdoc-types)
+       * PHPStan: [PHPDocs Basics](https://phpstan.org/writing-php-code/phpdocs-basics)
+       * Psalm: [Atomic Type Reference](https://psalm.dev/docs/annotating_code/type_syntax/atomic_types/)
+       * Psalm: [Supported Annotations](https://psalm.dev/docs/annotating_code/supported_annotations/)
+       * Psalm: [Template Annotations](https://psalm.dev/docs/annotating_code/templated_annotations/)
+ * Add `php-mode-replace-flymake-diag-function` custom variable and default activated it ([#718])
+ * Add `php-mode-debug-reinstall` command to help users who update Emacs themselves ([#721])
+
+### Changed
+
+ * Make continued expressions inside lists (arguments and arrays, etc.) have the same indent width as outside the list ([#703])
+ * (internal) Improved readability of test failures about indentation ([#707])
+ * `php-doc-annotation-tag` inherits `font-lock-doc-markup-face` if defined in Emacs 28 ([#711])
+ * Make `php-mode-version` function include a Git tag and revision ([#713])
+   * Like `"1.23.4-56-xxxxxx"` for example.
+ * Change `php-phpdoc-type-keywords` to `php-phpdoc-type-names` to avoid confusion ([#717])
+ * Make `php-flymake-php-init` append to `flymake-allowed-file-name-masks` only in legacy Flymake ([#718])
+
+### Deprecated
+
+ * Make obsolete `php-mode-version-number` contstant variable ([#712])
+   * `(php-mode-version :as-number t)` is provided for use cases comparing as versions, but generally SHOULD NOT be dependent on the PHP Mode version.
+ * Make obsolete `php-mode-disable-c-mode-hook` customize variable ([#718])
+
+### Removed
+
+ * Remove `php-mode-disable-c-auto-align-backslashes` as it doesn't make sense and is always disabled
+
+### Fixed
+
+ * Removed invalid definitions that caused errors in some expressions ([#704])
+
+[#703]: https://github.com/emacs-php/php-mode/pull/703
+[#704]: https://github.com/emacs-php/php-mode/pull/704
+[#707]: https://github.com/emacs-php/php-mode/pull/707
+[#708]: https://github.com/emacs-php/php-mode/pull/708
+[#710]: https://github.com/emacs-php/php-mode/pull/710
+[#711]: https://github.com/emacs-php/php-mode/pull/711
+[#713]: https://github.com/emacs-php/php-mode/pull/713
+[#715]: https://github.com/emacs-php/php-mode/pull/715
+[#716]: https://github.com/emacs-php/php-mode/pull/716
+[#717]: https://github.com/emacs-php/php-mode/pull/717
+[#718]: https://github.com/emacs-php/php-mode/pull/718
+[#719]: https://github.com/emacs-php/php-mode/pull/719
+[#721]: https://github.com/emacs-php/php-mode/pull/721
+
+## [1.24.1] - 2022-10-08
+
+### Added
+
+ * Support new PHP 8.0 and 8.1 syntax highlighting and indentation
     * [8.0] `#[Attributes]`
     * [8.1] `readonly` property ([#680])
  * Add `php-imenu-generic-expression-default` for default value or `php-imenu-generic-expression`
    * Add `php-imenu-generic-expression-legacy` for compatibility
    * Add `php-imenu-generic-expression-simple` for simple display
+ * Add `php-project-project-find-function` compatible with `project-find-functions` ([#693])
 
 ### Changed
 
@@ -26,9 +215,21 @@ All notable changes of the PHP Mode 1.19.1 release series are documented in this
    * Renamed `All Methods` to `Methods`
    * Removed `Public Methods`, `Protected Methods` and `Provate Methods`
    * Unified `Classes`, `Traits`, `Interfaces` into `Classes`
+ * Modified regexp patterns ([#681])
+ * Suppress compile-time warnings ([#683], [#690], [#697])
+
+### Fixed
+
+ * Fix `php-run-builtin-web-server` to expand root path (#699)
 
 [#669]: https://github.com/emacs-php/php-mode/pull/669
 [#680]: https://github.com/emacs-php/php-mode/pull/680
+[#681]: https://github.com/emacs-php/php-mode/pull/681
+[#683]: https://github.com/emacs-php/php-mode/pull/683
+[#690]: https://github.com/emacs-php/php-mode/pull/690
+[#693]: https://github.com/emacs-php/php-mode/pull/693
+[#697]: https://github.com/emacs-php/php-mode/pull/697
+[#699]: https://github.com/emacs-php/php-mode/pull/699
 
 ## [1.24.0] - 2021-03-07
 

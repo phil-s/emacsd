@@ -1,11 +1,9 @@
 EMACS ?= emacs
 CASK ?= cask
-ELS = lisp/php.el lisp/php-align.el lisp/php-face.el lisp/php-project.el lisp/php-local-manual.el lisp/php-mode.el lisp/php-mode-debug.el
-AUTOLOADS = php-mode-autoloads.el
-ELCS = $(ELS:.el=.elc)
+EASK ?= eask
 
-%.elc: %.el
-	$(EMACS) -Q -batch -L lisp/ -f batch-byte-compile $<
+compile:
+	$(EASK) compile
 
 all: autoloads $(ELCS) authors
 
@@ -16,23 +14,22 @@ AUTHORS.md: etc/git/AUTHORS.md.in .mailmap
 	@printf "Generating AUTHORS.md file..."
 	@test -d .git \
 		&& (cat $< > $@ \
-			&& git log --pretty=format:'- %aN' | LANG=C sort -u >> $@ \
+			&& git log --pretty=format:'- %aN' \
+				| cat etc/git/former-contributors - \
+				| grep -v dependabot \
+				| LANG=C sort -u >> $@ \
+			&& cat etc/git/AUTHORS2.md.in >> $@ \
 			&& printf "FINISHED\n" ; ) \
 		|| printf "FAILED (non-fatal)\n"
 
-autoloads: $(AUTOLOADS)
+autoloads:
+	$(EASK) generate autoloads
 
-$(AUTOLOADS): lisp/php.el lisp/php-align.el lisp/php-face.el lisp/php-project.el lisp/php-local-manual.el lisp/php-mode-debug.el lisp/php-mode.el
-	$(EMACS) -Q -batch -L lisp/ --eval \
-	"(progn \
-	   (require 'package) \
-	   (package-generate-autoloads \"php-mode\" (expand-file-name \"lisp\")))"
-
-.cask: Cask
-	$(CASK) install
+.eask: Eask
+	$(EASK) install
 
 clean:
-	rm -f $(ELCS) $(AUTOLOADS)
+	$(EASK) clean all
 
 # Perform any operations that will be useful for developers
 # who contribute to PHP Mode.
@@ -52,12 +49,6 @@ dev:
 # for an example of using a script like this with the 'git bisect run'
 # command.
 test: clean all
-	touch tests/project/1/.git
-	$(EMACS) -Q -batch -L lisp/ --eval \
-	"(let ((default-directory (expand-file-name \".cask\" default-directory))) \
-	   (require 'package) \
-	   (normal-top-level-add-subdirs-to-load-path))" \
-	    -f package-initialize \
-	    -l tests/php-mode-test.el -f ert-run-tests-batch-and-exit
+	$(EASK) test ert ./tests/php-mode-test.el
 
 .PHONY: all authors autoloads clean test
