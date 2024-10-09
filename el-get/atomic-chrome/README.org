@@ -1,0 +1,310 @@
+#+OPTIONS: ^:nil tags:nil num:nil
+
+* About
+
+[[./images/icon.png]]
+
+
+This fork of =atomic-chrome.el= introduces several fixes and enhancements over the original package, specifically designed to facilitate integration with the [[https://github.com/KarimAziev/chrome-emacs][chrome-emacs]] browser extension.
+
+#+CAPTION: Demo
+[[./images/chrome-emacs.gif][./images/chrome-emacs.gif]]
+
+
+While the original =atomic-chrome.el= package is compatible with the extension, not all features introduced in this fork are available in the original.
+
+** Differences Between the Original and Forked Package
+- *Handling large payloads:* Unlike the original package, which may not handle incomplete frames, this fork is equipped to manage large payloads efficiently.
+- *Cursor and scroll synchronization:* Inspired by the need for a more fluid live-coding experience during online interviews, the [[https://github.com/KarimAziev/chrome-emacs][chrome-emacs]] extension and this fork focus on editing text areas and providing seamless cursor and scroll synchronization in online editors.
+- *Flexible file handling:* This fork introduces the =atomic-chrome-create-file-strategy= variable, enabling refined control over the use of temporary files for editing—a feature not present in the original package. Recognizing that language servers often require file access for functionalities like code linting and autocompletion, this feature allows users to enable, disable, or customize file usage according to their needs. This flexibility ensures users have full control over their editing environment.
+- *Dynamic major modes:* Recognizing the diversity of programming languages within many online editors, this fork surpasses the original package's limitation of one major mode per website. It dynamically sets major modes based on file extensions extracted from the editor instance, resulting in a more responsive and tailored editing experience.
+- *Enhanced frame configuration:* Beyond the original package's limited customization of frame width and height, this fork extends customization to every frame configuration parameter. It also automatically calculates =left= and =top= positions for the frame when the Atomic Chrome client provides a =rect= with pixel dimensions and positions, offering a more adaptable and sophisticated user interface.
+
+
+** Online Editors Support
+
+Chrome Emacs works with several widely-used online editors, including:
+
+- ☒ [[https://codepen.io/][codepen.io]]
+- ☒ [[https://stackblitz.com/][stackblitz.com]]
+- ☒ [[https://jsfiddle.net/][jsfiddle.net]]
+- ☒ [[https://leetcode.com/][leetcode.com]]
+- ☒ [[https://www.hackerrank.com/][hackerrank.com]]
+- ☒ [[https://repl.it/][repl.it]]
+- ☒ [[https://glitch.com/][glitch.com]]
+- ☒ [[https://plnkr.co/][plnkr.co]]
+- ☒ [[https://codesandbox.io/][codesandbox.io]] (experimental support).
+- ☒ [[https://vscode.dev][vscode.dev]] (experimental support).
+
+
+* Table of Contents                                       :TOC_2_gh:QUOTE:
+#+BEGIN_QUOTE
+- [[#about][About]]
+  - [[#differences-between-the-original-and-forked-package][Differences Between the Original and Forked Package]]
+  - [[#online-editors-support][Online Editors Support]]
+- [[#requirements][Requirements]]
+- [[#installation][Installation]]
+  - [[#install-chrome-extension][Install Chrome extension]]
+  - [[#with-use-package-and-straightel][With use-package and straight.el]]
+  - [[#manual-installation][Manual installation]]
+  - [[#example-configuration][Example configuration]]
+- [[#usage][Usage]]
+  - [[#how-to-bind-a-shortcut][How to Bind a Shortcut?]]
+- [[#customization][Customization]]
+  - [[#position-and-selection-synchronization][Position and Selection Synchronization]]
+  - [[#fallback-major-mode-for-editing-buffer][Fallback Major Mode for Editing Buffer]]
+  - [[#file-creation][File Creation]]
+  - [[#auto-removal-of-files-after-editing][Auto-Removal of Files After Editing]]
+  - [[#maximum-filename-length][Maximum Filename Length]]
+  - [[#auto-update-mode][Auto-Update Mode]]
+#+END_QUOTE
+
+* Requirements
+
+| Name  | Version |
+|-------+---------|
+| Emacs | >= 25.1 |
+
+* Installation
+
+** Install Chrome extension
+Install the [[https://chromewebstore.google.com/detail/chrome-emacs/dabdpcafiblbndpoadckibiaojbdnpjg][Chrome extension]].
+
+** With use-package and straight.el
+#+begin_src elisp :eval no
+(use-package atomic-chrome
+  :demand t
+  :straight (atomic-chrome
+             :repo "KarimAziev/atomic-chrome"
+             :type git
+             :flavor nil
+             :host github)
+  :commands (atomic-chrome-start-server)
+  :config (atomic-chrome-start-server))
+#+end_src
+
+** Manual installation
+
+Install [[https://github.com/ahyatt/emacs-websocket/tree/main][websocket]] and =let-alist= packages. Download the source code and put it wherever you like, e.g. into =~/.emacs.d/atomic-chrome/=:
+
+#+begin_src shell :eval no
+git clone https://github.com/KarimAziev/atomic-chrome.git ~/.emacs.d/atomic-chrome/
+#+end_src
+
+Add the downloaded directory to the load path:
+
+#+begin_src elisp :eval no
+(add-to-list 'load-path "~/.emacs.d/atomic-chrome/")
+(require 'atomic-chrome)
+(atomic-chrome-start-server)
+#+end_src
+
+** Example configuration
+
+Below is the example of configuration:
+
+#+begin_src elisp
+(use-package atomic-chrome
+  :straight (atomic-chrome
+             :type git
+             :flavor nil
+             :host github
+             :repo "KarimAziev/atomic-chrome")
+  :defines atomic-chrome-create-file-strategy
+  :config
+  (setq-default atomic-chrome-buffer-open-style 'frame)
+  (setq-default atomic-chrome-auto-remove-file t)
+  (setq-default atomic-chrome-url-major-mode-alist
+                '(("ramdajs.com" . js-ts-mode)
+                  ("github.com" . gfm-mode)
+                  ("gitlab.com" . gfm-mode)
+                  ("leetcode.com" . typescript-ts-mode)
+                  ("codesandbox.io" . js-ts-mode)
+                  ("typescriptlang.org" . typescript-ts-mode)
+                  ("jsfiddle.net" . js-ts-mode)
+                  ("w3schools.com" . js-ts-mode)))
+  (add-to-list 'atomic-chrome-create-file-strategy
+               '("~/repos/ts-scratch/src/" :extension
+                 ("js" "ts" "tsx" "jsx" "cjs" "mjs"))))
+#+end_src
+
+* Usage
+
+https://github.com/KarimAziev/atomic-chrome/assets/24935940/e1f6875c-d917-4a8b-ad58-35d55eeb5cbb
+
+1. Run =M-x atomic-chrome-start-server= in Emacs. This is needed only once.
+
+2. Focus on or select from detected editable text areas, text editors, or contenteditable elements in Chrome.
+
+3. Activate Chrome Emacs. This can typically be done by clicking on the extension's icon or using a keyboard shortcut.
+
+#+CAPTION: Hints
+[[./images/hints.png][./images/hints.png]]
+
+The text will now open in an Emacs buffer, ready for you to edit.
+
+
+** How to Bind a Shortcut?
+
+#+CAPTION: Shortcuts
+[[./images/shortcuts.png][./images/shortcuts.png]]
+
+1. Navigate to =chrome://extensions=.
+2. Scroll down and click on =Keyboard shortcuts= at the bottom of the page.
+3. Assign a shortcut for activating Chrome Emacs. There are two available commands:
+
+- *Activate the extension* - default action, edit focused area. If there are no focused are, try to detect them from visible part of the page.
+- *Select and edit element* - Show key to press near editable elements to focus and start editing. To cancel, press either =ESC= or =Ctrl-g=.
+
+
+* Customization
+
+** Position and Selection Synchronization
+
+The custom variables =atomic-chrome-max-text-size-for-position-sync= and =atomic-chrome-max-text-size-for-selection-sync= provide separate controls for enabling cursor position and text selection synchronization during editing.
+
+- =atomic-chrome-max-text-size-for-position-sync= specifies the maximum buffer size (in characters) for enabling cursor position synchronization. Its default value is 300,000, which should suffice for most editing tasks.
+
+- =atomic-chrome-max-text-size-for-selection-sync= allows for specifying the maximum buffer size (in characters) for text selection synchronization. This variable supports the same default value of 300,000 characters.
+
+To completely disable synchronization of either cursor position or text selection, you can set the respective variable to nil or 0.
+
+Additionally, the command =atomic-chrome-toggle-selection= can be used to quickly toggle text selection synchronization for the current buffer, offering a convenient way to adjust synchronization without visiting the customization interface.
+
+** Fallback Major Mode for Editing Buffer
+
+The default major mode of an editing buffer is set automatically if it can be determined from the file extension or URL extension. If not, it will fall back to the mode specified in the custom variable =atomic-chrome-default-major-mode=. 
+You can change the major mode manually. If you want to use a different major mode as the default, set =atomic-chrome-default-major-mode= as shown below.
+
+#+BEGIN_SRC emacs-lisp
+(setq atomic-chrome-default-major-mode 'markdown-mode)
+#+END_SRC
+
+Additionally, you can use =atomic-chrome-url-major-mode-alist= to choose the major mode for a specific website based on the page URL as shown below.
+
+#+BEGIN_SRC emacs-lisp
+(setq atomic-chrome-url-major-mode-alist
+      '(("github\\.com" . gfm-mode)
+        ("redmine" . textile-mode)))
+#+END_SRC
+
+This is an association list of regular expressions and major mode functions. If the page URL matches one of the regular expressions, the corresponding major mode is selected.
+
+#+begin_quote
+[!NOTE]
+
+Detected mode will take precedence over =atomic-chrome-url-major-mode-alist= and =atomic-chrome-default-major-mode= , which will be used only if the mode cannot be determined automatically.
+#+end_quote
+
+You can select the style for opening the editing buffer with =atomic-chrome-buffer-open-style= as shown below.
+
+#+BEGIN_SRC emacs-lisp
+  (setq atomic-chrome-buffer-open-style 'frame)
+#+END_SRC
+
+The available values are as follows:
+
+- =full=: Opens in the selected window.
+- =split=: Opens in a new window by splitting the selected window (default).
+- =frame=: Creates a new frame and a window within it.
+
+The =frame= option is available only when using Emacs on a window system.
+
+If you select =frame=, you can set the width and height of the frame with =atomic-chrome-buffer-frame-width= and =atomic-chrome-buffer-frame-height=, and the rest of the frame parameters can be customized with =atomic-chrome-frame-parameters=.
+
+#+begin_quote
+[!TIP]
+By default, Atomic Chrome tries to automatically calculate the =left= and =top= positions of the frame based on the position of the textarea in the browser. You can disable this by adding these parameters to =atomic-chrome-frame-parameters=, which take precedence.
+#+end_quote
+
+** File Creation
+
+The =atomic-chrome-create-file-strategy= variable controls the approach for creating or managing files when editing content from a browser. It offers flexible configurations—from specifying a fixed directory, using the system's temporary directory, working directly within buffers, to dynamically determining the save location based on the file's extension or its associated URL.
+
+Customize this variable to accommodate different editing scenarios, such as solving coding challenges on LeetCode or editing Markdown files directly from GitHub.
+
+Below are some examples to configure this variable for common use cases.
+
+- *Use System Temporary Directory for All Files*
+
+  Saves all files in the system's temporary directory. =temp-directory= symbolizes this directory.
+#+begin_src elisp
+  (setq atomic-chrome-create-file-strategy '((temp-directory)))
+#+end_src
+
+- *Work Directly in Buffers When No Extension is Recognized*
+
+Opens files without an extension in buffers, avoiding saving them to a directory.
+#+begin_src elisp
+  (setq atomic-chrome-create-file-strategy '((buffer :extension (nil))))
+#+end_src
+
+- *Use a Buffer for Files Without Extension, and System Temporary Directory for All Others*
+
+  Utilizes the system's temporary directory for files with any extension and opens files without an extension in buffers.
+#+begin_src elisp
+  (setq atomic-chrome-create-file-strategy '((temp-directory) (buffer :extension (nil))))
+#+end_src
+
+- *Redirect Files From GitHub and GitLab to a Specific Directory*
+
+  Redirects files originating from GitHub and GitLab to a designated directory.
+#+begin_src elisp
+(setq atomic-chrome-create-file-strategy
+      '(("~/my-github-dir/" :url ("github.com" "gitlab.com"))))
+#+end_src
+
+- *Specify Different Directories Based on URL*
+
+  Directs files from specified URLs to designated directories.
+#+begin_src elisp
+(setq atomic-chrome-create-file-strategy
+      '(("~/my-leetcode-dir" :url ("leetcode.com" "repl.it"))
+        ("~/my-medium-dir" :url ("medium.com"))))
+#+end_src
+
+- *Specify Different Directories Based on URL and Extensions*
+
+  Assigns different directories for files.
+#+begin_src elisp
+(setq atomic-chrome-create-file-strategy
+      '(("~/my-leetcode-dir" :url ("leetcode.com"))
+        ("~/my-leetcode-dir/js/" :url ("leetcode.com") :extension ("js" "ts" "tsx" "jsx"))
+        ("~/my-medium-dir" :url ("medium.com"))))
+#+end_src
+
+- *Use Custom Function*
+
+  A custom function that specifies directories based on file extensions: files with "tsx" and "ts" extensions go to "~/my-typescript-scratch/", "org" files go to the =org-directory=, files with other non-nil extensions use the temporary directory, and files without extensions don't get created.
+#+begin_src elisp
+(setq atomic-chrome-create-file-strategy (lambda (_url extension)
+                                          (cond ((member extension '("tsx" "ts"))
+                                                 "~/my-typescript-scratch/")
+                                                ((member extension '("org"))
+                                                 org-directory)
+                                                (extension 'temp-directory))))
+#+end_src
+
+** Auto-Removal of Files After Editing
+
+The =atomic-chrome-auto-remove-file= variable decides if =atomic-chrome-close-current-buffer= should also remove the file associated with the buffer upon closing.
+
+If this variable is a function, it will be invoked with no arguments, and it should return non-nil if the file is to be removed.
+
+** Maximum Filename Length
+
+To ensure compatibility with file systems that impose limits on filename lengths, the =atomic-chrome-max-filename-size= custom variable allows you to define the maximum number of characters allowed in filenames generated by the Atomic Chrome package. This feature is crucial for avoiding "File name too long" errors, which can occur when the title of the web page being edited is excessively long.
+
+By default, this limit is set to 70 characters. However, users can adjust this setting to suit their specific needs or file system restrictions. When a page title exceeds the configured limit, its corresponding filename will be automatically truncated to comply with this maximum length specification.
+
+To modify this setting, simply set the =atomic-chrome-max-filename-size= variable to a different integer value, representing your preferred maximum filename length.
+
+** Auto-Update Mode
+
+Atomic Chrome for Emacs automatically reflects modifications to the browser by default as described above, but you can disable it by setting the variable below.
+
+#+BEGIN_SRC emacs-lisp
+  (setq atomic-chrome-enable-auto-update nil)
+#+END_SRC
+
+In this case, you can apply the modifications to the browser with =C-c C-s= (or =M-x atomic-chrome-send-buffer-text=).

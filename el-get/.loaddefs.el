@@ -387,6 +387,53 @@ Run ‘dired-do-rename’ asynchronously.
 
 ;;;***
 
+;;;### (autoloads nil "atomic-chrome/atomic-chrome" "atomic-chrome/atomic-chrome.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from atomic-chrome/atomic-chrome.el
+
+(put 'global-atomic-chrome-edit-mode 'globalized-minor-mode t)
+
+(defvar global-atomic-chrome-edit-mode nil "\
+Non-nil if Global Atomic-Chrome-Edit mode is enabled.
+See the `global-atomic-chrome-edit-mode' command
+for a description of this minor mode.
+Setting this variable directly does not take effect;
+either customize it (see the info node `Easy Customization')
+or call the function `global-atomic-chrome-edit-mode'.")
+
+(custom-autoload 'global-atomic-chrome-edit-mode "atomic-chrome/atomic-chrome" nil)
+
+(autoload 'global-atomic-chrome-edit-mode "atomic-chrome/atomic-chrome" "\
+Toggle Atomic-Chrome-Edit mode in all buffers.
+With prefix ARG, enable Global Atomic-Chrome-Edit mode if ARG is
+positive; otherwise, disable it.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.
+Enable the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+Atomic-Chrome-Edit mode is enabled in all buffers where
+`atomic-chrome-turn-on-edit-mode' would do it.
+
+See `atomic-chrome-edit-mode' for more information on
+Atomic-Chrome-Edit mode.
+
+\(fn &optional ARG)" t)
+
+(autoload 'atomic-chrome-start-server "atomic-chrome/atomic-chrome" "\
+Start websocket server for atomic-chrome.
+Fails silently if a server is already running." t)
+
+(autoload 'atomic-chrome-stop-server "atomic-chrome/atomic-chrome" "\
+Stop websocket server for atomic-chrome." t)
+
+(autoload 'atomic-chrome-toggle-server "atomic-chrome/atomic-chrome" "\
+Toggle the Atomic Chrome server between starting and stopping." t)
+
+(register-definition-prefixes "atomic-chrome/atomic-chrome" '("atomic-chrome-"))
+
+;;;***
+
 ;;;### (autoloads nil "auto-compile/auto-compile" "auto-compile/auto-compile.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from auto-compile/auto-compile.el

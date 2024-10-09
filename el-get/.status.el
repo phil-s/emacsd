@@ -4,6 +4,7 @@
 :ace-window "installed"
 :anzu "installed"
 :async "installed"
+:atomic-chrome "installed"
 :auto-compile "installed"
 :avy "installed"
 :browse-at-remote "installed"

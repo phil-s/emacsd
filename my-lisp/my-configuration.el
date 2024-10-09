@@ -17,6 +17,11 @@
   (defvar appt-message-warning-time)
   (defvar appt-time-msg-list)
   (defvar apropos-do-all)
+  (defvar atomic-chrome-auto-remove-file)
+  (defvar atomic-chrome-buffer-frame-height)
+  (defvar atomic-chrome-buffer-open-style)
+  (defvar atomic-chrome-create-file-strategy)
+  (defvar atomic-chrome-make-file-save-initial-contents)
   (defvar auth-sources)
   (defvar avy-keys)
   (defvar battery-load-critical)
@@ -84,6 +89,7 @@
   (defvar visible-mark-faces)
   (defvar visible-mark-max)
   (declare-function appt-disp-window "appt")
+  (declare-function atomic-chrome-start-server "atomic-chrome")
   (declare-function battery-format "battery")
   (declare-function delight "delight")
   (declare-function dired-details-install "dired-details")
@@ -198,6 +204,21 @@ when `auto-save-mode' is invoked manually.")
   (let ((default-directory (file-name-as-directory
                             (concat user-emacs-directory "edit-server"))))
     (auto-save-mode 1)))
+
+;; Atomic Chrome.
+(when (require 'atomic-chrome nil :noerror)
+  (atomic-chrome-start-server))
+(with-eval-after-load "atomic-chrome"
+  (setq atomic-chrome-buffer-open-style 'frame
+        atomic-chrome-buffer-frame-height 40
+        atomic-chrome-auto-remove-file nil
+        atomic-chrome-create-file-strategy (expand-file-name "~/.emacs.d/atomic-chrome")
+        atomic-chrome-make-file-save-initial-contents t
+        )
+  (mapcar (apply-partially #'add-to-list 'atomic-chrome-frame-parameters)
+          '((title . "atomic-chrome")
+            (top . 64)
+            (left . (- 16)))))
 
 ;; No splash screen or start-up message.
 (setq inhibit-startup-screen t)
