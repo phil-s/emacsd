@@ -25,6 +25,8 @@
   (defvar symbol-names)
   (defvar web-mode-autocompletes)
   (defvar web-mode-tag-auto-close-style)
+  (defvar visual-wrap-comments-column)
+  (defvar visual-wrap-comments-column-max)
   (defvar whitespace-style)
   (declare-function ansi-color-apply-on-region "ansi-color")
   (declare-function comint-send-string "comint")
@@ -42,6 +44,7 @@
   (declare-function rainbow-mode "rainbow-mode")
   (declare-function sql-send-string "sql")
   (declare-function sql-upcase-mode "sql-upcase")
+  (declare-function visual-wrap-comments-window-width-min "visual-wrap-comments")
   (declare-function winnow-mode "winnow")
   )
 
@@ -86,6 +89,11 @@
    css-mode-hook
    inferior-emacs-lisp-mode-hook
    python-mode-hook))
+
+;; Smart comment wrapping.
+(setq visual-wrap-comments-column #'visual-wrap-comments-window-width-min
+      visual-wrap-comments-column-min truncate-partial-width-windows
+      visual-wrap-comments-column-max 100) ;; 92
 
 ;; Highlighted keywords in strings and comments.
 (setq fic-highlighted-words '("TODO" "DEBUG" "FIXME" "BUG" "KLUDGE"))

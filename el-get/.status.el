@@ -60,6 +60,7 @@
 :unbound "installed"
 :vcl-mode "installed"
 :visible-mark "installed"
+:visual-wrap-comments "installed"
 :web-mode "installed"
 :webdriver "installed"
 :wgrep "installed"

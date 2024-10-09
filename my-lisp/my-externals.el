@@ -318,6 +318,10 @@
             :type git
             :url "https://git.sr.ht/~iank/visible-mark")
 
+     (:name visual-wrap-comments
+            :type http
+            :url ,(my-local-repository-url-for "visual-wrap-comments"))
+
      (:name web-mode
             :type git
             :url "https://github.com/fxbois/web-mode.git")
