@@ -1534,8 +1534,31 @@ Advice for `notifications-notify'.  To remove:
 ;; export PS1="\n\u@\h \w\n\$ "
 ;; into ~/.emacs.d/init_bash.sh
 
+;; Avoid output truncation issues.
+;;
+;; (apropos-variable "print-\\(length\\|level\\)")
+;; - `print-length'
+;; - `print-level'
+;; - `eval-expression-print-length'
+;; - `eval-expression-print-level'
+;; - `edebug-print-length'
+;; - `edebug-print-level'
+;; - `ert-batch-print-length'
+;; - `ert-batch-print-level'
+;;
 ;; Don't truncate echo area output
 ;; (setq eval-expression-print-length nil)
+;;
+;; Show more...
+(setq print-length 255
+      print-level 16
+      eval-expression-print-length 1024
+      eval-expression-print-level 16
+      edebug-print-length 1024
+      edebug-print-level 64
+      ert-batch-print-length 10
+      ert-batch-print-level 10
+      )
 
 ;; Re-format long tool-tips to make them readable
 ;; (setq x-max-tooltip-size '(80 . 40))
