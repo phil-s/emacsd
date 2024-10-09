@@ -938,6 +938,10 @@ n.b. ffap-alternate-file is intended for interactive use only."
              (my-contextual-help-mode nil my-programming)
              (rainbow-mode)
              (smart-tab-mode " \\t" smart-tab)
+             ;; (visual-wrap-comments-mode " ;⮨" visual-wrap-comments)
+             ;; (visual-wrap-comments-mode " ;⮰" visual-wrap-comments)
+             (visual-wrap-comments-mode " ;↲" visual-wrap-comments)
+             ;; (visual-wrap-comments-mode " ;↵" visual-wrap-comments)
              (which-key-mode nil which-key)
              (ws-trim-mode nil ws-trim)
              ;; Major modes

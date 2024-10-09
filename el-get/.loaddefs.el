@@ -4508,6 +4508,34 @@ See `visible-mark-mode' for more information on Visible-Mark mode.
 
 ;;;***
 
+;;;### (autoloads nil "visual-wrap-comments/visual-wrap-comments"
+;;;;;;  "visual-wrap-comments/visual-wrap-comments.el" (0 0 0 0))
+;;; Generated autoloads from visual-wrap-comments/visual-wrap-comments.el
+
+(autoload 'visual-wrap-comments-mode "visual-wrap-comments/visual-wrap-comments" "\
+Auto-refill comments without modifying the buffer.
+
+This is a minor mode.  If called interactively, toggle the
+`Visual-Wrap-Comments mode' mode.  If the prefix argument is
+positive, enable the mode, and if it is zero or negative, disable
+the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `visual-wrap-comments-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
+\(fn &optional ARG)" t)
+
+(register-definition-prefixes "visual-wrap-comments/visual-wrap-comments" '("visual-wrap-comments-"))
+
+;;;***
+
 ;;;### (autoloads nil "web-mode/web-mode" "web-mode/web-mode.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from web-mode/web-mode.el
