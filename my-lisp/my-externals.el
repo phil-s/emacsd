@@ -66,6 +66,10 @@
      ;; (:name asciidoc
      ;;        :type elpa)
 
+     (:name atomic-chrome
+            :type git
+            :url "https://github.com/KarimAziev/atomic-chrome.git")
+
      (:name auto-compile
             :depends packed
             :type git

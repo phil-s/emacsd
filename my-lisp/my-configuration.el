@@ -199,6 +199,17 @@ when `auto-save-mode' is invoked manually.")
                             (concat user-emacs-directory "edit-server"))))
     (auto-save-mode 1)))
 
+;; Atomic Chrome.
+(when (require 'atomic-chrome nil :noerror)
+  (atomic-chrome-start-server))
+(with-eval-after-load "atomic-chrome"
+  (setq atomic-chrome-buffer-open-style 'frame
+        atomic-chrome-buffer-frame-height 40)
+  (mapcar (apply-partially #'add-to-list 'atomic-chrome-frame-parameters)
+          '((title . "atomic-chrome")
+            (top . 64)
+            (left . (- 16)))))
+
 ;; No splash screen or start-up message.
 (setq inhibit-startup-screen t)
 (eval '(setq inhibit-startup-echo-area-message "phil"))
