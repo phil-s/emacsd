@@ -350,6 +350,10 @@ when `auto-save-mode' is invoked manually.")
 (advice-add 'diary-insert-entry :around #'my-diary-insert-entry-advice)
 (advice-add 'org-agenda-diary-entry :around #'my-diary-insert-entry-advice)
 
+;; Process #include directives.
+(add-hook 'diary-list-entries-hook 'diary-include-other-diary-files)
+(add-hook 'diary-mark-entries-hook 'diary-mark-included-diary-files)
+
 (defun my-diary-insert-entry-advice (orig-fun &rest args)
   "Use day/month/year format when inserting diary entries.
 Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
