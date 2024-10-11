@@ -1294,7 +1294,7 @@ If the current search is successful, then only delete the last char."
   (interactive)
   (let ((original (dired-get-file-for-visit)))
     (if (file-directory-p original)
-        (find-alternate-file (file-truename original))
+        (dired (file-truename original))
       (find-file original))))
 
 ;; n.b. We bind C-x C-j to `my-dired-jump' in my-keys-minor-mode, so
