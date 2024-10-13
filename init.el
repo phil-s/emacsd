@@ -687,6 +687,25 @@
 ;; M-x profiler-reset
 ;; M-x profiler-stop
 ;; M-x profiler-*
+;;
+;; * profiler-stop stops the profiler without clobbering the gathered
+;;   log data, which can therefore still be reported on.
+;;
+;; * profiler-report does clobber the log data gathered since the
+;;   profiler was started.  This happens in the export_log C function.
+;;
+;; * profiler-report does not stop the profiler from running, so if it
+;;   was running then it immediately starts gathering new data for a
+;;   new log/report.  (More specifically, it stops the profiler if
+;;   it's running, exports the data, and then re-starts the profiler
+;;   if it had stopped it.)
+;;
+;; * profiler-start does nothing at all if the profiler was already
+;;   running, so existing data is not clobbered.  (It does inform you
+;;   if it was already running, which may be a warning that you need
+;;   to do a reset).
+;;
+;; * profiler-reset both stops the profiler and clobbers the data.
 
 ;; Dope -- DOtemacs ProfilEr.. A per-sexp-evaltime profiler.
 ;; https://raw.github.com/emacsmirror/dope/master/dope.el
