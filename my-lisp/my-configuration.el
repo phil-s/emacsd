@@ -1379,6 +1379,23 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
   "Used in `outline-minor-mode-hook'."
   (local-set-key (kbd "<backtab>") 'outline-toggle-children))
 
+;; Selective display.
+(define-advice set-selective-display (:filter-args (_arg) my-current-column)
+  "Advice for `set-selective-display' to establish its interactive ARG.
+
+Default to `current-column'.  \\[universal-argument] to disable.  \
+A numeric prefix is used as-is.
+
+Remove with:
+\(advice-remove \\='set-selective-display \
+\\='set-selective-display@my-current-column)"
+  (list (cond ((consp current-prefix-arg)
+               nil)
+              (current-prefix-arg
+               current-prefix-arg)
+              (t
+               (1+ (current-column))))))
+
 ;; Freedesktop notifications -- force transience.
 ;; Otherwise I need to regularly run 'gnome-panel', purge its
 ;; notifications, and then kill 'gnome-panel' again.
