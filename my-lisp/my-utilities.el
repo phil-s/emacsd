@@ -1857,6 +1857,34 @@ or before point."
   (interactive (my-region-or-word "WWW search: "))
   (browse-url (format my-www-search-url (url-hexify-string string))))
 
+(defun url-hexify-region (beginning end &optional allowed-chars)
+  "Use `url-hexify-string' on the region (replacing it)."
+  (interactive "*r")
+  (require 'url-util)
+  (let ((text (url-hexify-string (buffer-substring beginning end)
+                                 allowed-chars)))
+    (save-excursion
+      (delete-region beginning end)
+      (goto-char beginning)
+      (insert text))))
+
+(defun url-unhex-region (beginning end &optional allow-newlines)
+  "Use `url-unhex-string' on the region (replacing it)."
+  (interactive "*r")
+  (require 'url-util)
+  (let ((text (url-unhex-string (buffer-substring beginning end)
+                                allow-newlines)))
+    (save-excursion
+      (delete-region beginning end)
+      (goto-char beginning)
+      (insert text))))
+
+(defalias 'url-encode-region 'url-hexify-region)
+(defalias 'url-decode-region 'url-unhex-region)
+
+(defalias 'url-encode-string 'url-hexify-string)
+(defalias 'url-decode-string 'url-unhex-string)
+
 (defcustom browse-url-palemoon-program "palemoon"
   "The name by which to invoke Palemoon."
   :type 'string
