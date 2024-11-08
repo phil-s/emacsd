@@ -1,42 +1,59 @@
-EMACS  ?= emacs
-EFLAGS ?=
-BATCH   = $(EMACS) $(EFLAGS) -batch -Q
-BATCHE  = $(BATCH) -eval
-BATCHC  = $(BATCH) -L . $(LOADPATH) -f batch-byte-compile
+-include .config.mk
 
-ELS  = auto-compile.el
-ELCS = $(ELS:.el=.elc)
+PKG = auto-compile
 
-LOADPATH ?= -L ../packed
+ELS   = $(PKG).el
+ELCS  = $(ELS:.el=.elc)
 
-lisp: $(ELCS)
+DEPS  =
+
+EMACS      ?= emacs
+EMACS_ARGS ?=
+
+LOAD_PATH  ?= $(addprefix -L ../,$(DEPS))
+LOAD_PATH  += -L .
+
+all: lisp
+
+help:
+	$(info make all          - generate byte-code and autoloads)
+	$(info make lisp         - generate byte-code and autoloads)
+	$(info make redo         - re-generate byte-code and autoloads)
+	$(info make clean        - remove generated files)
+	@printf "\n"
+
+redo: clean lisp
+
+lisp: $(ELCS) loaddefs check-declare
+
+loaddefs: $(PKG)-autoloads.el
+
 %.elc: %.el
-	@$(BATCHC) $<
+	@printf "Compiling $<\n"
+	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) -f batch-byte-compile $<
 
-.PHONY: clean
+check-declare:
+	@printf " Checking function declarations\n"
+	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) \
+	--eval "(check-declare-directory default-directory)"
+
+CLEAN  = $(ELCS) $(PKG)-autoloads.el
+
 clean:
-	@echo "Cleaning..."
-	@rm -f $(ELCS)
+	@printf " Cleaning...\n"
+	@rm -rf $(CLEAN)
 
-.PHONY: README.md
-README.md:
-	@echo "Generating README.md..."
-	@$(BATCHE) "\
-(let (start end commentary)\
-  (with-temp-buffer\
-    (insert-file \"auto-compile.el\")\
-    (re-search-forward \"^;;; Commentary:\n\n\")\
-    (setq start (point))\
-    (re-search-forward \"^;;; Code:\")\
-    (forward-line -1)\
-    (setq end (point-marker))\
-    (replace-regexp \"^;; ?\" \"\"  nil start end)\
-    (replace-regexp \"^- \" \"* \"  nil start end)\
-    (replace-regexp \"\\\\(\`[^']+\\\\)'\" \"\\\\1\`\" nil start end)\
-    (setq commentary (buffer-substring start end)))\
-  (with-current-buffer (find-file-noselect \"README.md\")\
-    (erase-buffer)\
-    (insert \"Automatically compile Emacs Lisp libraries\n\")\
-    (insert \"------------------------------------------\n\n\")\
-    (insert commentary ?\n)\
-    (save-buffer)))"
+$(PKG)-autoloads.el: $(ELS)
+	@printf " Creating $@\n"
+	@$(EMACS) -Q --batch -l autoload -l cl-lib --eval "\
+(let ((file (expand-file-name \"$@\"))\
+      (autoload-timestamps nil) \
+      (backup-inhibited t)\
+      (version-control 'never)\
+      (coding-system-for-write 'utf-8-emacs-unix))\
+  (write-region (autoload-rubric file \"package\" nil) nil file nil 'silent)\
+  (cl-letf (((symbol-function 'progress-reporter-do-update) (lambda (&rest _)))\
+            ((symbol-function 'progress-reporter-done) (lambda (_))))\
+    (let ((generated-autoload-file file))\
+      (update-directory-autoloads default-directory))))" \
+	2>&1 | sed "/^Package autoload is deprecated$$/d"

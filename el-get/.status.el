@@ -44,7 +44,6 @@
 :multiple-cursors "installed"
 :noflet "installed"
 :notify "installed"
-:packed "installed"
 :php-eldoc "installed"
 :php-mode "installed"
 :posix-manual "installed"

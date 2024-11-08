@@ -1,3 +1,13 @@
+;; Recompile .elc files automatically whenever necessary. Enable this early.
+;; (Note that init.el does this too, in case it hasn't happened here.)
+(require 'compile) ;; Keep for paranoia, while bug#69467 is open.  See also:
+;; (browse-url (concat "https://" "github.com/emacscollective/auto-compile/issues/33"))
+(setq load-prefer-newer t)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
+(require 'auto-compile)
+(auto-compile-on-save-mode 1)
+(auto-compile-on-load-mode 1)
+
 ;; Hide the tool bar
 (tool-bar-mode -1)
 

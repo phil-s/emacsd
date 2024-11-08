@@ -70,7 +70,6 @@
             :url "https://github.com/KarimAziev/atomic-chrome.git")
 
      (:name auto-compile
-            :depends packed
             :type git
             :url "https://github.com/tarsius/auto-compile")
 
@@ -241,10 +240,6 @@
             :type http
             :url "http://gist.github.com/raw/519635/yank-visible.el"
             :loads "outline-copy-visible")
-
-     (:name packed
-            :type git
-            :url "https://github.com/tarsius/packed")
 
      (:name php-mode
             :load-path ("lisp")
