@@ -374,6 +374,21 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
 ;; (It's right there in the name: WeekEND.)
 (setq calendar-week-start-day 1)
 
+;; Holidays.  See also my-holidays.el.
+(setq calendar-mark-holidays-flag nil
+      diary-show-holidays-flag t)
+
+;; Bring back Groundhog Day :)
+(with-eval-after-load "my-holidays"
+  (add-to-list 'holiday-other-holidays
+               '(holiday-fixed 2 2 "Groundhog Day")))
+
+;; See `solar-setup'.
+;; (Note that `calendar-time-zone' should be set already.)
+(setq calendar-latitude -41.257083
+      calendar-longitude 174.865611)
+;; 41°15'25.5"S 174°51'56.2"E
+
 ;; Hard-code the standard `diary-file' value for `file-exists-p' tests.
 (setq diary-file (expand-file-name (locate-user-emacs-file "diary" "diary")))
 

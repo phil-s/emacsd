@@ -1058,6 +1058,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Local holidays.  Load this early, as we need to set some variables
+;; before holidays.el gets loaded, and my-configuration.el will do
+;; that (via `appt-activate' which causes the whole appt, diary-lib,
+;; calendar, and holidays suite to be loaded...)
+(require 'my-holidays)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Initialise third-party libraries and ELPA packages
 (require 'my-externals)
 
