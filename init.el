@@ -1126,6 +1126,11 @@
                         ,my-init-time
                         (file-name-nondirectory user-init-file)))))
 
+;; Replicate --debug-init (see also the start of early-init.el).
+;; I think this gets a let-binding on account of the support for
+;; --debug-init and so we need to do this instead of plain setq:
+(set-default-toplevel-value 'debug-on-error nil)
+
 ;;; Local Variables:
 ;;; page-delimiter: ";;;; "
 ;;; outline-regexp: ";;;; "

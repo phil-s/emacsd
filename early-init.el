@@ -1,3 +1,6 @@
+;; Replicate --debug-init (see also the end of init.el).
+(setq debug-on-error t)
+
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
 ;; (Note that init.el does this too, in case it hasn't happened here.)
 (require 'compile) ;; Keep for paranoia, while bug#69467 is open.  See also:
