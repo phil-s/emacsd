@@ -60,8 +60,7 @@
      ;; ;; support ack as a replacement for rgrep
      ;; (:name ack
      ;;        :type http
-     ;;        :url "http://repo.or.cz/w/ShellArchive.git?a=blob_plain&hb=HEAD&f=ack.el"
-     ;;        :features ack)
+     ;;        :url "http://repo.or.cz/w/ShellArchive.git?a=blob_plain&hb=HEAD&f=ack.el")
 
      ;; (:name asciidoc
      ;;        :type elpa)
@@ -81,20 +80,17 @@
 
      (:name browse-at-remote
             :type git
-            :url "https://github.com/rmuslimov/browse-at-remote.git"
-            :features browse-at-remote)
+            :url "https://github.com/rmuslimov/browse-at-remote.git")
 
      (:name browse-kill-ring
             :type http
-            :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el"
-            :features browse-kill-ring)
+            :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el")
 
      (:name csv-mode
             :type git
             :url "https://git.savannah.gnu.org/git/emacs/elpa.git"
             :branch "externals/csv-mode"
-            :extra-args ("--single-branch")
-            :features csv-mode)
+            :extra-args ("--single-branch"))
 
      (:name dash
             :type git
@@ -121,8 +117,7 @@
 
      (:name dtrt-indent
             :type git
-            :url "git://git.sv.gnu.org/dtrt-indent.git"
-            :features dtrt-indent)
+            :url "git://git.sv.gnu.org/dtrt-indent.git")
 
      (:name ediff-binary-hexl
             :type http
@@ -133,8 +128,7 @@
 
      (:name etags-select
             :type http
-            :url ,(my-local-repository-url-for "etags-select")
-            :features etags-select)
+            :url ,(my-local-repository-url-for "etags-select"))
 
      (:name posix-manual
             :type git
@@ -149,8 +143,7 @@
      ;; highlight FIXME TODO BUG and KLUDGE in comments and strings
      (:name fic-mode
             :type http
-            :url ,(my-local-repository-url-for "fic-mode")
-            :features fic-mode)
+            :url ,(my-local-repository-url-for "fic-mode"))
 
      (:name find-file-in-tags
             :type emacswiki)
@@ -210,8 +203,7 @@
 
      (:name keep-buffers
             :type http
-            :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el"
-            :features keep-buffers)
+            :url "https://raw.github.com/lewang/le_emacs_libs/master/keep-buffers.el")
 
      (:name key-chord)
 
@@ -237,8 +229,7 @@
 
      (:name multiple-cursors
             :type git
-            :url "https://github.com/magnars/multiple-cursors.el.git"
-            :features multiple-cursors)
+            :url "https://github.com/magnars/multiple-cursors.el.git")
 
      (:name noflet
             :type git
@@ -272,8 +263,7 @@
 
      (:name sauron
             :type git
-            :url "git://github.com/djcb/sauron.git"
-            :features sauron)
+            :url "git://github.com/djcb/sauron.git")
 
      (:name scratch
             :type git
@@ -282,16 +272,14 @@
 
      (:name sdcv-mode
             :type git
-            :url "https://github.com/gucong/emacs-sdcv.git"
-            :features sdcv-mode)
+            :url "https://github.com/gucong/emacs-sdcv.git")
 
      (:name second-sel
             :type emacswiki)
 
      (:name simple-wiki
             :type http
-            :url ,(my-local-repository-url-for "simple-wiki")
-            :features simple-wiki)
+            :url ,(my-local-repository-url-for "simple-wiki"))
 
      (:name smart-tabs-mode
             :type git
@@ -299,13 +287,11 @@
 
      (:name transpose-frame
             :type git
-            :url "https://github.com/emacsorphanage/transpose-frame.git"
-            :features transpose-frame)
+            :url "https://github.com/emacsorphanage/transpose-frame.git")
 
      (:name windcycle
             :type http
-            :url ,(my-local-repository-url-for "windcycle")
-            :features windcycle)
+            :url ,(my-local-repository-url-for "windcycle"))
 
      (:name unbound
             :type emacswiki)
