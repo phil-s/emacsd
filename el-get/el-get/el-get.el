@@ -144,7 +144,7 @@
 
 (require 'dired)
 (require 'package nil t) ; that's ELPA, but you can use el-get to install it
-(require 'cl)            ; needed for `remove-duplicates'
+(require 'cl-lib)
 (require 'simple)        ; needed for `apply-partially'
 (require 'bytecomp)
 (require 'autoload)
@@ -191,7 +191,8 @@ recipe contains a :build rule (using a Makefile for example)."
   :type 'boolean)
 
 (defcustom el-get-verbose nil
-  "Non-nil means print messages describing progress of el-get even for fast operations."
+  "Non-nil means print messages describing progress of el-get
+even for fast operations."
   :group 'el-get
   :type 'boolean)
 
@@ -425,9 +426,9 @@ when this custom is nil."
   "Return the elements of el-get-recipe-path that actually exist.
 
 Used to avoid errors when exploring the path for recipes"
-  (reduce (lambda (dir result)
-            (if (file-directory-p dir) (cons dir result) result))
-          el-get-recipe-path :from-end t :initial-value nil))
+  (cl-reduce (lambda (dir result)
+               (if (file-directory-p dir) (cons dir result) result))
+             el-get-recipe-path :from-end t :initial-value nil))
 
 ;; recipe files are elisp data, you can't byte-compile or eval them on their
 ;; own, but having elisp indenting and colors make sense
@@ -436,7 +437,8 @@ Used to avoid errors when exploring the path for recipes"
 
 (defcustom el-get-status-file
   (concat (file-name-as-directory el-get-dir) ".status.el")
-  "Define where to store and read the package statuses")
+  "Define where to store and read the package statuses"
+  :type 'string)
 
 (defvar el-get-autoload-file
   (concat (file-name-as-directory el-get-dir) ".loaddefs.el")
@@ -547,9 +549,9 @@ being sent to the underlying shell."
   "Return the installation state of PACKAGE.
 
 - nil indicates that installation of the package has not been requested
-- 'installing indicates that the package's installation is in progress
-- 'init indicates that the package has been initialized
-- ('error . <data>) indicates that there was an installation error"
+- \\='installing indicates that the package's installation is in progress
+- \\='init indicates that the package has been initialized
+- (\\='error . <data>) indicates that there was an installation error"
   (gethash (el-get-as-symbol package) el-get-pkg-state))
 
 (defun el-get-currently-installing-p (package)
@@ -557,7 +559,7 @@ being sent to the underlying shell."
 
 (defun el-get-currently-installing-packages ()
   "Return the packages that are currently installing"
-  (loop
+  (cl-loop
    for pkg being the hash-keys of el-get-pkg-state
    if (el-get-currently-installing-p pkg)
    collect pkg))
@@ -674,7 +676,7 @@ definition provided by `el-get' recipes locally.
     The type of the package, currently el-get offers support for
     `apt-get', `elpa', `git', `emacsmirror', `git-svn', `bzr' `svn',
     `cvs', `darcs', `fink', `ftp', `emacswiki', `http-tar', `pacman',
-    `hg' and `http'. You can easily support your own types here, 
+    `hg' and `http'. You can easily support your own types here,
     see the variable `el-get-methods'.
 
 :branch
@@ -728,7 +730,7 @@ definition provided by `el-get' recipes locally.
 :info
 
     This string allows you to setup a directory where to find a
-    'package.info' file, or a path/to/whatever.info file. It will
+    `package.info' file, or a path/to/whatever.info file. It will
     even run `ginstall-info' for you to create the `dir' entry so
     that C-h i will be able to list the newly installed
     documentation. Note that you might need to kill (C-x k) your
@@ -870,7 +872,7 @@ this is the name to fetch in that system"
                           )
                  ;; A sorted list of method names
                  (sort
-                  (reduce
+                  (cl-reduce
                    (lambda (r e)
                      (if (symbolp e)
                          (cons
@@ -956,8 +958,8 @@ platforms where this recipe should apply"
 (defun el-get-flatten (arg)
   "Return a version of ARG as a one-level list
 
- (el-get-flatten 'x) => '(x)
- (el-get-flatten '(a (b c (d)) e)) => '(a b c d e)"
+ (el-get-flatten \\='x) => \\='(x)
+ (el-get-flatten \\='(a (b c (d)) e)) => \\='(a b c d e)"
   (if (listp arg)
       (apply 'append (mapcar 'el-get-flatten arg))
     (list arg)))
@@ -1041,7 +1043,7 @@ passing DATA"
   ;; If this action finalizes the package state, first cancel other
   ;; final actions
   (let* ((final-actions '(init error))
-         (found (position action final-actions)))
+         (found (cl-position action final-actions)))
     (when found
       (el-get-clear-generic-event-tasks
        (el-get-event-id package (elt final-actions (- 1 found))))))
@@ -1080,8 +1082,8 @@ PACKAGE, a symbol"
 (defun el-get-dependency-installed (package dependency)
   "Install the given PACKAGE (a symbol) iff all its dependencies
 are now installed"
-  (when (every 'el-get-package-initialized-p
-               (el-get-dependencies package))
+  (when (cl-every 'el-get-package-initialized-p
+                  (el-get-dependencies package))
     (el-get-demand1 package)))
 
 (defun el-get-dependency-error (package dependency data)
@@ -1110,8 +1112,8 @@ PACKAGE may be either a string or the corresponding symbol."
 	    (el-get-set-package-state psym 'installing)
 
 	    (let ((non-installed-dependencies
-		   (remove-if 'el-get-package-initialized-p
-			      (el-get-dependencies psym))))
+		   (cl-remove-if 'el-get-package-initialized-p
+			         (el-get-dependencies psym))))
 
 	      ;;
 	      ;; demand all non-installed dependencies with appropriate
@@ -1142,7 +1144,8 @@ PACKAGE may be either a string or the corresponding symbol."
        (el-get-installation-failed package err)))))
 
 (defun el-get-installation-failed (package signal-data)
-  "Run all the failure hooks for PACKAGE and `signal' the car and cdr of SIGNAL-DATA."
+  "Run all the failure hooks for PACKAGE and `signal' the car and
+cdr of SIGNAL-DATA."
   (run-hook-with-args 'el-get-post-error-hooks package signal-data)
   (signal (car signal-data) (cdr signal-data)))
 
@@ -2006,9 +2009,9 @@ into the package :localname option or its `file-name-nondirectory' part."
       (url-retrieve-synchronously el-get-emacswiki-elisp-index-url)
     (goto-char (point-min))
     (re-search-forward "pages found.</h2>" nil 'move)
-    (remove-if-not
+    (cl-remove-if-not
      (lambda (p) (string-match "el$" (cdr p)))
-     (loop
+     (cl-loop
       with offset = (length el-get-emacswiki-elisp-index-base-url)
       ;; <a class="local" href="http://www.emacswiki.org/emacs/thingatpt%2b.el">thingatpt+.el</a>
       while (re-search-forward el-get-emacswiki-elisp-index-base-url nil 'move)
@@ -2029,7 +2032,7 @@ into a local recipe file set"
 			(car command-line-args-left)
 			el-get-recipe-path-emacswiki)))
     (unless (file-directory-p target-dir) (make-directory target-dir))
-    (loop
+    (cl-loop
      for (url . package) in (el-get-emacswiki-retrieve-package-list)
      for recipe = (replace-regexp-in-string "el$" "rcp" package)
      for rfile  = (expand-file-name recipe target-dir)
@@ -2060,10 +2063,10 @@ that"
     (message "%s %s" el-get-emacs args)
     (set-process-sentinel
      process
-     '(lambda (proc event)
-	(when (eq (process-status proc) 'exit)
-	  (el-get-notify "el-get: EmacsWiki"
-			 "EmacsWiki local recipe list refreshed"))))))
+     (lambda (proc event)
+       (when (eq (process-status proc) 'exit)
+	 (el-get-notify "el-get: EmacsWiki"
+			"EmacsWiki local recipe list refreshed"))))))
 
 
 ;;
@@ -2080,14 +2083,14 @@ the files up."
     ;; if there's only one directory, move its content up and get rid of it
     (el-get-verbose-message "el-get: tar cleanup %s [%s]: %S" package pdir files)
     (unless (cdr files)
-      (loop for fname in (directory-files
-			  (expand-file-name dir pdir) nil "[^.]$")
-	    for fullname = (expand-file-name fname (expand-file-name dir pdir))
-	    for newname  = (expand-file-name pdir fname)
-	    do (progn
-		 (el-get-verbose-message "%S %S %S" pdir dir fname)
-		 (el-get-verbose-message "mv %S %S" fullname newname)
-		 (rename-file fullname newname)))
+      (cl-loop for fname in (directory-files
+			     (expand-file-name dir pdir) nil "[^.]$")
+	       for fullname = (expand-file-name fname (expand-file-name dir pdir))
+	       for newname  = (expand-file-name pdir fname)
+	       do (progn
+		    (el-get-verbose-message "%S %S %S" pdir dir fname)
+		    (el-get-verbose-message "mv %S %S" fullname newname)
+		    (rename-file fullname newname)))
       (el-get-verbose-message "delete-directory: %s" (expand-file-name dir pdir))
       (delete-directory (expand-file-name dir pdir)))))
 
@@ -2235,8 +2238,8 @@ the files up."
 
 (defun el-get-install-or-init-info (package build-or-init)
   "Call `el-get-install-info' to create the necessary \"dir\"
-  file when build-or-init is 'build, or `el-get-set-info-path'
-  when build-or-init is 'init "
+  file when build-or-init is \\='build, or `el-get-set-info-path'
+  when build-or-init is \\='init "
   (let* ((source   (el-get-package-def package))
 	 (method   (el-get-package-method source))
 	 (infodir  (plist-get source :info))
@@ -2358,13 +2361,13 @@ el-get-byte-compile` command and with the file list as stdin,
 written by `prin1-to-string' so that `read' is able to process
 it."
   (let ((files (read)))
-    (loop for f in files
-	  do (progn
-	       (message "el-get-byte-compile-from-stdin: %s" f)
-	       (el-get-byte-compile-file-or-directory f)))))
+    (cl-loop for f in files
+	     do (progn
+	          (message "el-get-byte-compile-from-stdin: %s" f)
+	          (el-get-byte-compile-file-or-directory f)))))
 
 (defun el-get-byte-compile-process (package buffer working-dir sync files)
-  "return the 'el-get-start-process-list' entry to byte compile PACKAGE"
+  "return the `el-get-start-process-list' entry to byte compile PACKAGE"
   (let ((bytecomp-command
 	 (list el-get-emacs
 	       "-Q" "-batch" "-f" "toggle-debug-on-error"
@@ -2512,11 +2515,11 @@ recursion.
   "Return the name of the file that contains the recipe for PACKAGE, if any."
   (let ((package-el  (concat (el-get-as-string package) ".el"))
 	(package-rcp (concat (el-get-as-string package) ".rcp")))
-    (loop for dir in el-get-recipe-path
-	  for recipe-el  = (expand-file-name package-el dir)
-	  for recipe-rcp = (expand-file-name package-rcp dir)
-	  if (file-exists-p recipe-el)  return recipe-el
-	  if (file-exists-p recipe-rcp) return recipe-rcp)))
+    (cl-loop for dir in el-get-recipe-path
+	     for recipe-el  = (expand-file-name package-el dir)
+	     for recipe-rcp = (expand-file-name package-rcp dir)
+	     if (file-exists-p recipe-el)  return recipe-el
+	     if (file-exists-p recipe-rcp) return recipe-rcp)))
 
 (defun el-get-read-recipe (package)
   "Return the source definition for PACKAGE, from the recipes."
@@ -2535,19 +2538,21 @@ each directory listed in `el-get-recipe-path' in order."
   (let ((packages (mapcar 'el-get-source-name el-get-sources)))
     (append
      el-get-sources
-     (loop for dir in (el-get-recipe-dirs)
-	   nconc (loop for recipe in (directory-files dir nil "^[^.].*\.\\(rcp\\|el\\)$")
-		       for filename = (concat (file-name-as-directory dir) recipe)
-		       for package = (file-name-sans-extension (file-name-nondirectory recipe))
-		       unless (member package packages)
-		       do (push package packages)
-                       and collect (ignore-errors (el-get-read-recipe-file filename)))))))
+     (cl-loop
+      for dir in (el-get-recipe-dirs)
+      nconc (cl-loop
+             for recipe in (directory-files dir nil "^[^.].*\.\\(rcp\\|el\\)$")
+	     for filename = (concat (file-name-as-directory dir) recipe)
+	     for package = (file-name-sans-extension (file-name-nondirectory recipe))
+	     unless (member package packages)
+	     do (push package packages)
+             and collect (ignore-errors (el-get-read-recipe-file filename)))))))
 
 (defun el-get-package-def (package)
   "Return a single `el-get-sources' entry for PACKAGE."
-  (let ((source (loop for src in el-get-sources
-		      when (string= package (el-get-source-name src))
-		      return src)))
+  (let ((source (cl-loop for src in el-get-sources
+		         when (string= package (el-get-source-name src))
+		         return src)))
 
     (cond ((or (null source) (symbolp source))
 	   ;; not in `el-get-sources', or only mentioned by name
@@ -2556,10 +2561,10 @@ each directory listed in `el-get-recipe-path' in order."
 
 	  ((null (plist-get source :type))
 	   ;; we got a list with no :type, that's an override plist
-	   (loop with def = (el-get-read-recipe package)
-		 for (prop override) on source by 'cddr
-		 do (plist-put def prop override)
-		 finally return def))
+	   (cl-loop with def = (el-get-read-recipe package)
+		    for (prop override) on source by 'cddr
+		    do (plist-put def prop override)
+		    finally return def))
 
 	  ;; none of the previous, must be a full definition
 	  (t source))))
@@ -2579,16 +2584,16 @@ each directory listed in `el-get-recipe-path' in order."
 Only consider packages whose status is `member' of STATUSES,
 which defaults to installed, required and removed.  Example:
 
-  (el-get-package-types-alist \"installed\" 'http 'cvs)
+  (el-get-package-types-alist \"installed\" \\='http \\='cvs)
 "
-  (loop for src in (apply 'el-get-list-package-names-with-status
-			  (cond ((stringp statuses) (list statuses))
-				((null statuses) '("installed" "required" "removed"))
-				(t statuses)))
-	for name = (el-get-as-symbol src)
-	for type = (el-get-package-type name)
-	when (or (null types) (memq 'all types) (memq type types))
-	collect (cons name type)))
+  (cl-loop for src in (apply 'el-get-list-package-names-with-status
+			     (cond ((stringp statuses) (list statuses))
+				   ((null statuses) '("installed" "required" "removed"))
+				   (t statuses)))
+	   for name = (el-get-as-symbol src)
+	   for type = (el-get-package-type name)
+	   when (or (null types) (memq 'all types) (memq type types))
+	   collect (cons name type)))
 
 
 ;;
@@ -2642,8 +2647,8 @@ which defaults to installed, required and removed.  Example:
 
 (defun el-get-list-package-names-with-status (&rest status)
   "Return package names that are currently in given status"
-  (loop for (p s) on (el-get-read-all-packages-status) by 'cddr
-	if (member s status) collect (el-get-package-name p)))
+  (cl-loop for (p s) on (el-get-read-all-packages-status) by 'cddr
+	   if (member s status) collect (el-get-package-name p)))
 
 (defun el-get-read-package-with-status (action &rest status)
   "Read a package name in given status"
@@ -2652,8 +2657,8 @@ which defaults to installed, required and removed.  Example:
 
 (defun el-get-count-package-with-status (&rest status)
   "Return how many packages are currently in given status"
-  (loop for (p s) on (el-get-read-all-packages-status) by 'cddr
-	if (member s status) sum 1))
+  (cl-loop for (p s) on (el-get-read-all-packages-status) by 'cddr
+	   if (member s status) sum 1))
 
 (defun el-get-package-status (package &optional package-status-plist)
   "Return current status of package from given list"
@@ -2664,26 +2669,26 @@ which defaults to installed, required and removed.  Example:
   "Return installed or required packages that are not in given package list"
   (let ((packages
 	 ;; &rest could contain both symbols and lists
-	 (loop for p in packages
-	       when (listp p) append (mapcar 'el-get-as-symbol p)
-	       else collect (el-get-as-symbol p))))
+	 (cl-loop for p in packages
+	          when (listp p) append (mapcar 'el-get-as-symbol p)
+	          else collect (el-get-as-symbol p))))
     (when packages
-	(loop for (p s) on (el-get-read-all-packages-status) by 'cddr
-	      for x = (el-get-as-symbol (el-get-package-name p))
-	      unless (member x packages)
-	      unless (equal s "removed")
-	      collect (list x s)))))
+      (cl-loop for (p s) on (el-get-read-all-packages-status) by 'cddr
+	       for x = (el-get-as-symbol (el-get-package-name p))
+	       unless (member x packages)
+	       unless (equal s "removed")
+	       collect (list x s)))))
 
 ;;
 ;; Get list duplicates
 ;;
 (defun el-get-duplicates (list)
   "Return duplicates found in list."
-  (loop with dups and once
-	for elt in list
-	if (member elt once) collect elt into dups
-	else collect elt into once
-	finally return dups))
+  (cl-loop with dups and once
+	   for elt in list
+	   if (member elt once) collect elt into dups
+	   else collect elt into once
+	   finally return dups))
 
 
 ;;
@@ -2721,7 +2726,7 @@ Completions are offered from all known package names, after
 removing any packages in FILTERED."
   (let ((packages   (el-get-read-all-recipe-names)))
     (completing-read (format "%s package: " action)
-		     (set-difference packages filtered :test 'string=) nil t)))
+		     (cl-set-difference packages filtered :test 'string=) nil t)))
 
 (defun el-get-read-recipe-name (action)
   "Ask user for a recipe name, with completion from the list of known recipe files.
@@ -2992,7 +2997,7 @@ called by `el-get' (usually at startup) for each installed package."
 
         ;; return the package
         package)
-    (debug error
+    ((debug error)
      (el-get-installation-failed package err))))
 
 (defun el-get-post-install-build (package)
@@ -3123,10 +3128,10 @@ called by `el-get' (usually at startup) for each installed package."
 entry which is not a symbol and is not already a known recipe."
   (interactive "Dsave recipes in directory: ")
   (let* ((all (mapcar 'el-get-source-name (el-get-read-all-recipes)))
-	 (new (loop for r in el-get-sources
-		    when (and (not (symbolp r))
-			      (not (member (el-get-source-name r) all)))
-		    collect r)))
+	 (new (cl-loop for r in el-get-sources
+		       when (and (not (symbolp r))
+			         (not (member (el-get-source-name r) all)))
+		       collect r)))
     (dolist (r new)
       (message "el-get: preparing recipe file for %s" (el-get-source-name r))
       (el-get-write-recipe r dir)))
@@ -3303,10 +3308,10 @@ matching REGEX with TYPE and ARGS as parameter."
       (if (listp depends)
           (progn
             (princ "Dependencies: ")
-            (loop for i in depends
-                  do (el-get-describe-princ-button
-                      (format "`%s'" i) "`\\([^`']+\\)"
-                      'el-get-help-describe-package i)))
+            (cl-loop for i in depends
+                     do (el-get-describe-princ-button
+                         (format "`%s'" i) "`\\([^`']+\\)"
+                         'el-get-help-describe-package i)))
         (princ "Dependency: ")
         (el-get-describe-princ-button
          (format "`%s'" depends) "`\\([^`']+\\)"
@@ -3577,28 +3582,28 @@ considered \"required\"."
   (let* ((required    (el-get-list-package-names-with-status "required"))
 	 (installed   (el-get-list-package-names-with-status "installed"))
 	 (to-init     (if packages
-			  (loop for p in packages
-				when (member (el-get-as-string p) installed)
-				collect (el-get-as-string p))
+			  (cl-loop for p in packages
+				   when (member (el-get-as-string p) installed)
+				   collect (el-get-as-string p))
 			installed))
-	 (init-deps   (loop for p in to-init
-			    append (mapcar 'el-get-as-string
-					   (el-get-dependencies
-					    (el-get-as-symbol p)))))
+	 (init-deps   (cl-loop for p in to-init
+			       append (mapcar 'el-get-as-string
+					      (el-get-dependencies
+					       (el-get-as-symbol p)))))
 	 (to-install  (if packages
-			  (loop for p in packages
-				unless (member (el-get-as-string p) to-init)
-				collect (el-get-as-string p))
+			  (cl-loop for p in packages
+				   unless (member (el-get-as-string p) to-init)
+				   collect (el-get-as-string p))
 			required))
 	 done)
     (el-get-verbose-message "el-get-init-and-install: install %S" to-install)
     (el-get-verbose-message "el-get-init-and-install: init %S" to-init)
     (el-get-verbose-message "el-get-init-and-install: deps %S" init-deps)
 
-    (loop for p in to-install do (el-get-install p) collect p into done)
-    (loop for p in init-deps  do (el-get-init p)    collect p into done)
-    (loop for p in to-init
-	  unless (member p done) do (el-get-init p) collect p into done)
+    (cl-loop for p in to-install do (el-get-install p) collect p into done)
+    (cl-loop for p in init-deps  do (el-get-init p)    collect p into done)
+    (cl-loop for p in to-init
+	     unless (member p done) do (el-get-init p) collect p into done)
     done))
 
 (defun el-get (&optional sync &rest packages)
@@ -3611,15 +3616,15 @@ This will not update the sources by using `apt-get install' or
 * load-path is set so their elisp files can be found
 * Info-directory-list is set so their info files can be found
 * Autoloads have been prepared and evaluated for each package
-* Any post-installation setup (e.g. `(require 'feature)') happens
+* Any post-installation setup (e.g. `(require \\='feature)') happens
 
 When SYNC is nil (the default), all installations run
 concurrently, in the background.
 
-When SYNC is 'sync, each package will be installed synchronously,
+When SYNC is \\='sync, each package will be installed synchronously,
 and any error will stop it all.
 
-When SYNC is 'wait, then `el-get' will enter a wait-loop and only
+When SYNC is \\='wait, then `el-get' will enter a wait-loop and only
 let you use Emacs once it has finished with its job. That's
 useful an option to use in your `user-init-file'. Note that each
 package in the list gets installed in parallel with this option.
@@ -3654,23 +3659,24 @@ already installed packages is considered."
     (prog1
 	(let ((packages
 	       ;; (el-get 'sync 'a 'b my-package-list)
-	       (loop for p in packages when (listp p) append p else collect p)))
+	       (cl-loop for p in packages when (listp p) append p else collect p)))
 	  (el-get-init-and-install packages))
 
       ;; el-get-do-install is async, that's now ongoing.
       (when progress
         (let* ((newly-installing
-               (set-difference (el-get-currently-installing-packages)
-                               previously-installing))
-              (still-installing newly-installing))
+                (cl-set-difference (el-get-currently-installing-packages)
+                                   previously-installing))
+               (still-installing newly-installing))
 
           (while (> (length still-installing) 0)
             (sleep-for 0.2)
-            (setq still-installing (delete-if-not 'el-get-currently-installing-p still-installing))
+            (setq still-installing (cl-delete-if-not 'el-get-currently-installing-p
+                                                     still-installing))
             (progress-reporter-update
              progress
              (/ (* 100.0 (- newly-installing still-installing)) newly-installing)))
-        (progress-reporter-done progress)))
+          (progress-reporter-done progress)))
 
       ;; unless we have autoloads to update, just load them now
       (unless el-get-outdated-autoloads
