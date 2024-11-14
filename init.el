@@ -255,8 +255,10 @@
 ;; Installation:
 ;; mkdir -p ~/.fonts/truetype
 ;; xzcat ~/.emacs.d/DroidSansMonoDotted.ttf.xz >~/.fonts/truetype/DroidSansMonoDotted.ttf
+;; tar -C ~/.fonts/truetype -Jxf ~/.emacs.d/Atkinson-Hyperlegible-Font-OTF.txz
+;; fc-cache -f -v # refresh the user font cache
 ;; # or system-wide in: /usr/share/fonts/truetype/
-;; sudo fc-cache -f -v # refresh the system font cache
+;; # and then: sudo fc-cache -f -v # refresh the system font cache
 ;;
 ;; Other unicode glyphs are in Symbola: sudo apt-get install ttf-ancient-fonts
 ;; eterm-color support: sudo apt-get install ncurses-term

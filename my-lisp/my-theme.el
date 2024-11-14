@@ -101,7 +101,9 @@
 ;; things super-funky during initialisation if that font doesn't exist
 ;; on the system.
 (custom-set-faces
- '(default ((t (:height 120 :family "Droid Sans Mono Dotted")))))
+ '(default ((t (:height 120 :family "Droid Sans Mono Dotted"))))
+ '(variable-pitch ((t (:family "Atkinson Hyperlegible"))))
+ '(variable-pitch-text ((t (:inherit variable-pitch :height 1.25)))))
 
 ;; This magic means we fall back to Symbola for all missing unicode glyphs.
 ;; For Debian: apt-get install ttf-ancient-fonts
