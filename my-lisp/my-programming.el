@@ -102,6 +102,13 @@
       visual-wrap-comments-column-min truncate-partial-width-windows
       visual-wrap-comments-column-max 100) ;; 92
 
+(defun my-align-comments (beginning end)
+  "Align comments within marked region."
+  (interactive "*r")
+  (let (indent-tabs-mode align-to-tab-stop)
+    (align-regexp beginning end (concat "\\(\\s-*\\)"
+                                        (regexp-quote comment-start)))))
+
 ;; Highlighted keywords in strings and comments.
 (setq fic-highlighted-words '("TODO" "DEBUG" "FIXME" "BUG" "KLUDGE"))
 
