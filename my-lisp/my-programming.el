@@ -489,6 +489,10 @@ Advice for `visit-tags-table'."
   ;; Ensure that case clauses in switch statements are indented.
   (c-set-offset 'case-label '+))
 
+;; Java
+(add-to-list 'auto-mode-alist '("\\.jar\\'" . archive-mode))
+(add-to-list 'auto-coding-alist '("\\.jar\\'" . no-conversion))
+
 ;; Javascript
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 
