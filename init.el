@@ -686,7 +686,7 @@
 ;; CPU & Memory ('Native Profiler')
 ;; M-x profiler-start
 ;; M-x profiler-report
-;; M-x profiler-reset
+;; M-x profiler-reset / profiler-quit
 ;; M-x profiler-stop
 ;; M-x profiler-*
 ;;
@@ -708,6 +708,8 @@
 ;;   to do a reset).
 ;;
 ;; * profiler-reset both stops the profiler and clobbers the data.
+;; * profiler-quit is a custom alias for profiler-reset, as I think
+;;   I'll find that more intuitive.
 
 ;; Dope -- DOtemacs ProfilEr.. A per-sexp-evaltime profiler.
 ;; https://raw.github.com/emacsmirror/dope/master/dope.el

@@ -432,6 +432,8 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'rn 'rename-buffer)
 (defalias 'sx 'sx-tab-all-questions)
 (defalias 'ws 'whitespace-mode)
+(defalias 'profiler-quit 'profiler-reset
+  "Stop the profiler and purge the report data.")
 
 ;;;; * Miscellaneous / Helpers
 
