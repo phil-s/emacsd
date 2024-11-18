@@ -329,6 +329,9 @@ static char * data[] = {
 ;; Include timestamps in the process buffer.
 (setq magit-process-timestamp-format "%F %R")
 
+;; Process ansi colour escape codes.
+(setq magit-process-finish-apply-ansi-colors t)
+
 ;; Make the refs buffer show the remote name for remote branches.
 (setq magit-refs-show-remote-prefix t)
 
