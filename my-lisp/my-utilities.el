@@ -2748,6 +2748,42 @@ toggle between real end and logical end of the buffer."
              (not (numberp current-prefix-arg)))
     (push last-command-event unread-command-events))
   (call-interactively #'goto-line))
+
+;; Alternative to C-x ! `delete-other-windows-vertically'
+;;
+;; https://emacs.stackexchange.com/a/82116
+
+(defun my/window-side (win)
+  "Checks if the left edge of a given window is on the LHS or RHS
+of the frame and returns a symbol (lhs or rhs)."
+  (let ((left (car (window-edges win))))
+    (if (< left (/ (frame-width) 2))
+        'lhs
+      'rhs)))
+
+(defun my/window-list-apply-filter (window filter)
+  "Takes a window and a filter as argument and maps the filter
+across the window list, deleting the given window from the
+resulting list (if the window was specified as nil, using the
+convention described above, we explicitly replace it by the
+selected window)."
+  (let* ((window (or window (selected-window))))
+    (delq window (mapcar (lambda (w) (funcall filter w))
+                         (window-list)))))
+
+(defun my/delete-other-windows-on-same-side-as (&optional window)
+  "Determine the side of the selected window and define a filter
+that checks whether any given window is on the same side. We then
+call the function that returns the filtered list, clean up nils
+and map delete-window across the resulting list."
+  (interactive)
+  (let* ((side (my/window-side window))
+         (filter (lambda (w) (when (eq (my/window-side w) side) w))))
+    (mapc #'delete-window
+          (delq nil (my/window-list-apply-filter window filter)))))
+
+(advice-add 'delete-other-windows-vertically
+            :override #'my/delete-other-windows-on-same-side-as)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
