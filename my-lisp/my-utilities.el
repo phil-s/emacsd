@@ -1717,6 +1717,9 @@ See also `my-copy-region-as-kill'."
         (and (executable-find "fortune")
              (with-temp-buffer
                (shell-command "fortune" t)
+               (goto-char (point-min))
+               (while (search-forward "_" nil t)
+                 (replace-match ""))
                (let ((comment-start ";;")
                      (comment-empty-lines t)
                      (tab-width 4)
