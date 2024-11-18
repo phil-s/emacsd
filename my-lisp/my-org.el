@@ -29,13 +29,6 @@
 ;; http://www.star.bris.ac.uk/bjm/emacs.html
 
 
-;;; Deferred configuration
-(with-eval-after-load "org"
-  (require 'org-tempo)
-  (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
-  (my-org-babel-do-load-languages)
-  (my-org-configuration))
-
 ;;; General configuration
 
 (defun my-org-configuration ()
@@ -94,9 +87,6 @@
 
 ;;; Agenda / Capture
 
-(with-eval-after-load "org-agenda"
-  (my-org-agenda-configuration))
-
 (defun my-org-agenda-configuration ()
   "Configuration for `org-agenda'."
 
@@ -113,6 +103,9 @@
   ;;                              (when org-agenda-timegrid-use-ampm " ")
   ;;                              "  ")) ;; <--- append these spaces.
   ) ;; `my-org-agenda-configuration'
+
+(with-eval-after-load "org-agenda"
+  (my-org-agenda-configuration))
 
 (add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
 
@@ -144,7 +137,8 @@
               (throw 'update-required t))))
     (org-agenda-to-appt)))
 
-(with-eval-after-load "org-capture"
+(defun my-org-capture-configuration ()
+  "Configuration for `org-capture'."
   ;; (setq org-capture-templates nil)
   (add-to-list 'org-capture-templates
                `("t" "Todo" entry
@@ -155,7 +149,10 @@ SCHEDULED: %T
 %i
   %a
   Added: %U"))
-  )
+  ) ;; `my-org-capture-configuration'
+
+(with-eval-after-load "org-capture"
+  (my-org-capture-configuration))
 
 ;; https://cestlaz.github.io/posts/using-emacs-24-capture-2/
 ;; Bind Key to: emacsclient --eval "(my-org-capture)"
@@ -302,6 +299,18 @@ SCHEDULED: %T
 ;; n.b. Org also conflicts with shift-selection, but I don't use that:
 ;; ([(control shift right)] . [(meta shift +)])
 ;; ([(control shift left)] . [(meta shift -)])
+
+
+;;; Deferred configuration
+
+(defun my-org-deferred-config ()
+  (require 'org-tempo)
+  (define-key org-mode-map (kbd "C-M-<") 'my-org-structure-template)
+  (my-org-babel-do-load-languages)
+  (my-org-configuration))
+
+(with-eval-after-load "org"
+  (my-org-deferred-config))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
