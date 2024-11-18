@@ -197,3 +197,14 @@ s|</head>
   ;; Save the drush shell command history.
   (setq psysh-history-file (locate-user-emacs-file
                             ".psysh-history")))
+
+;; Debugger.
+(require 'dape)
+(dape-breakpoint-global-mode 1)
+;; Set 'xdebugSettings' for the xdebug adapter.
+;; https://github.com/xdebug/vscode-php-debug#supported-launchjson-settings
+(let ((xdebug-config (alist-get 'xdebug dape-configs)))
+  (plist-put xdebug-config :xdebugSettings
+             '( :max_children 128
+                :max_data 65536
+                :max_depth 16 )))

@@ -74,6 +74,7 @@
       '(calendar
         cfw:calendar
         completion-list
+        dape-repl
         ediff-meta
         elfeed-search
         erc
