@@ -2749,6 +2749,30 @@ toggle between real end and logical end of the buffer."
     (push last-command-event unread-command-events))
   (call-interactively #'goto-line))
 
+(defun hexl-me-this ()
+  "Open a copy of the current buffer in `hexl-mode'."
+  (interactive)
+  (display-buffer
+   (let* ((buf (current-buffer))
+          (mode major-mode)
+          (coding buffer-file-coding-system)
+          (file (or buffer-file-name
+                    dired-directory
+                    (expand-file-name (buffer-name) default-directory)))
+          (tmp (concat temporary-file-directory "hexl" file))
+          (hexlbuf (or (get-file-buffer tmp) (create-file-buffer tmp))))
+     (with-current-buffer hexlbuf
+       (setq buffer-file-name tmp)
+       (buffer-disable-undo)
+       (erase-buffer)
+       (remove-hook 'change-major-mode-hook #'hexl-maybe-dehexlify-buffer t)
+       (funcall mode)
+       (set-buffer-file-coding-system coding)
+       (insert-buffer-substring buf)
+       (hexl-mode)
+       (set-buffer-modified-p nil))
+     hexlbuf)))
+
 ;; Alternative to C-x ! `delete-other-windows-vertically'
 ;;
 ;; https://emacs.stackexchange.com/a/82116
