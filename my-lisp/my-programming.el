@@ -276,6 +276,30 @@ Advises `eldoc-print-current-symbol-info'."
 (my-contextual-help-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devdocs package.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-advice devdocs--render (:around (orig-fun &rest args) my-render-tweaks)
+  "Customise the rendering to account for some known shr-vs-devdocs issues.
+
+Advice for `devdocs--render'.  Remove with:
+
+\(advice-remove \\='devdocs--render \\='devdocs--render@my-render-tweaks)"
+  (eval-and-compile ;; both macros and functions
+    (require 'shr))
+  (cl-letf (((symbol-function 'shr-tag-span)
+             (lambda (dom)
+               ;; Handle known-to-be-floated <span class="..."> cases.
+               (if (member (dom-attr dom 'class)
+                           '("name" "version-details" "returns"))
+                   (progn
+                     (shr-ensure-newline)
+                     (shr-generic dom)
+                     (shr-ensure-newline))
+                 (shr-generic dom)))))
+    (apply orig-fun args)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compilation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
