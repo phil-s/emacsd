@@ -144,7 +144,7 @@
              (background (plist-get face-spec :background)))
         (set-face-attribute 'hl-line nil :background background))))
   ;; Clobber certain unsupported faces.
-  (when hl-sexp-background
+  (when (and hl-sexp-background (facep 'hl-sexp-face))
     (set-face-attribute 'hl-sexp-face nil :background hl-sexp-background)))
 
 (defun my-theme-modus-operandi ()
@@ -163,7 +163,7 @@
   "Replace current theme with `zenburn'."
   (interactive)
   (require 'zenburn-theme)
-  (my-replace-theme 'zenburn))
+  (my-replace-theme 'zenburn "#383838"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
