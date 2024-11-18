@@ -466,6 +466,8 @@ Advice for `visit-tags-table'."
   (when (boundp 'whitespace-style)
     (set (make-local-variable 'whitespace-style)
          (remq 'lines-tail (remq 'lines whitespace-style))))
+  ;; Highlight !important
+  (setq-local font-lock-builtin-face 'warning)
   ;; Show colours
   (rainbow-mode 1))
 
