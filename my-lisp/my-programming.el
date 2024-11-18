@@ -349,6 +349,16 @@ Advice for `visit-tags-table'."
 ;; Show the matches in the current file first.
 (setq etags-xref-prefer-current-file t)
 
+;; Invert prefix arg behaviour for `xref-find-definitions'.
+;; (define-advice xref-find-definitions (:around (orig-fun &rest args) force-prompt)
+;;   (let ((current-prefix-arg (if current-prefix-arg nil '(4))))
+;;     (apply orig-fun args)))
+;; (advice-remove 'xref-find-definitions 'xref-find-definitions@force-prompt)
+(define-advice xref--read-identifier (:around (orig-fun &rest args) force-prompt)
+  (let ((current-prefix-arg (if current-prefix-arg nil '(4))))
+    (apply orig-fun args)))
+;; (advice-remove 'xref--read-identifier 'xref-find-definitions@force-prompt)
+
 ;; Occur
 (add-hook 'occur-mode-hook #'winnow-mode)
 
