@@ -120,6 +120,30 @@
   "Used in `org-agenda-mode-hook'."
   (my-bug-reference-mode-enable))
 
+(add-hook 'org-agenda-finalize-hook 'my-org-agenda-finalize-hook)
+
+(defvar my-org-agenda--daily-reset nil
+  "Used to ensure that org-agenda arranges appt notifications daily.")
+
+(defun my-org-agenda-finalize-hook ()
+  "Called in `org-agenda-finalize-hook'."
+  (hide-trailing-whitespace)
+  ;; Include org-agenda entries in appt.el notifications.
+  ;;
+  ;; Only process the changes if an agenda file has been modified.
+  ;; This still risks re-adding appts that I previously deleted
+  ;; manually, but I'm not sure if I can easily do anything more
+  ;; about that.
+  (when (catch 'update-required
+          (let ((today (time-to-days (current-time))))
+            (unless (eql my-org-agenda--daily-reset today)
+              (setq my-org-agenda--daily-reset today)
+              (throw 'update-required t)))
+          (dolist (file (org-agenda-files))
+            (when (file-has-changed-p file)
+              (throw 'update-required t))))
+    (org-agenda-to-appt)))
+
 (with-eval-after-load "org-capture"
   ;; (setq org-capture-templates nil)
   (add-to-list 'org-capture-templates
@@ -163,8 +187,6 @@ SCHEDULED: %T
 ;; (ad-activate 'org-capture-finalize)
 ;; (ad-remove-advice 'org-capture-destroy 'after 'my-delete-capture-frame)
 ;; (ad-activate 'org-capture-destroy)
-
-(add-hook 'org-agenda-finalize-hook 'hide-trailing-whitespace)
 
 
 ;;; Babel
