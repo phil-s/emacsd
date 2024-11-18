@@ -82,6 +82,21 @@
   (setq org-agenda-files `(,org-default-notes-file
                            ,(expand-file-name "~/org/todo.org")))
 
+  ;; Calendar keys conflict with windmove.
+  (let ((map org-read-date-minibuffer-local-map)) ;; see which.
+    (org-defkey map (kbd "M-<up>")
+                (lambda () (interactive)
+                  (org-eval-in-calendar '(calendar-backward-week 1))))
+    (org-defkey map (kbd "M-<down>")
+                (lambda () (interactive)
+                  (org-eval-in-calendar '(calendar-forward-week 1))))
+    (org-defkey map (kbd "M-<left>")
+                (lambda () (interactive)
+                  (org-eval-in-calendar '(calendar-backward-day 1))))
+    (org-defkey map (kbd "M-<right>")
+                (lambda () (interactive)
+                  (org-eval-in-calendar '(calendar-forward-day 1)))))
+
   ) ;; `my-org-configuration'
 
 
