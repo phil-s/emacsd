@@ -27,6 +27,9 @@
 ;; terminals.
 
 
+;; Prot's notes on customizing theme faces:
+;; https://old.reddit.com/r/emacs/comments/1auhjpb/how_to_set_faces_using_dynamic_colors/
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar hl-line-face)

@@ -44,7 +44,7 @@
 ;; character after hyphens, which makes copying and pasting from email
 ;; liable to cause invisible problems :( e.g. glyphless-⁠char
 ;;
-;; This makes any such characters apparent!
+;; This makes any such zero-width/thin characters apparent!
 (set-face-background 'glyphless-char "red")
 
 ;; Use ws-trim mode to strip trailing whitespace automatically

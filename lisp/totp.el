@@ -17,7 +17,8 @@
 ;; The ... secret should (most likely) NOT contain spaces, and its length
 ;; in characters must be a multiple of 8.  E.g. gitlab.com will provide a
 ;; 32-character secret but displays it in blocks of 4, so you will need to
-;; remove those spaces.
+;; remove those spaces.  Strings of other lengths may be padded out to a
+;; valid length by appending any number of ?= characters.
 ;;
 ;; Save .authinfo.gpg and M-x auth-source-forget-all-cached and then you
 ;; can use M-x totp-display whenever a 2FA verification code is requested,

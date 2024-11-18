@@ -1,6 +1,8 @@
 ;; See my-externals for php-mode source.
 (load "php-mode") ;load the real php-mode
 
+;; https://old.reddit.com/r/emacs/comments/1eyrc23/what_are_you_using_for_php_development/
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar c-electric-flag)

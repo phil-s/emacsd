@@ -946,6 +946,8 @@
 ;;; Face remapping: C-h i g (elisp) Face Remapping RET
 ;;; e.g.: (face-remap-add-relative 'default :family "Monospace")
 ;;;
+;;; Font scaling.  E.g.:
+;;; (push `("Sarasa Mono hc" . ,(/ 16.0 13.0)) face-font-rescale-alist)
 ;;;
 ;;; Never forget that modifying a (quote)d argument == self-modifying code!
 ;;; http://stackoverflow.com/q/16670989/324105
@@ -953,7 +955,6 @@
 ;;; hideshow.el seems really useful!  I ought to know how to use it.
 ;;;
 ;;; Look into http://nullprogram.com/tags/elfeed/
-;;; And Email solutions for Emacs. (mu4e? notmuch? wanderlust? gnus?? mew??)
 ;;;
 ;;; (set-)terminal-parameter is a thing.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

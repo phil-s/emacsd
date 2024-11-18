@@ -56,6 +56,11 @@
            (concat dir "/emacs-" (file-name-nondirectory dir)) 'emacs))
         (directory-files (substitute-in-file-name "/home/$USER/emacs") :full "[0-9][0-9]\.[0-9]")))
 
+;; 29.1 adds `find-sibling-file' and `find-sibling-rules'.
+;; These are documented at (emacs-index-search "find-sibling-file")
+;; How does that differ to `ff-find-other-file' and `ff-other-file-alist'
+;; in practice?  (Check S.O. -- I've dug into the latter in the past.)
+
 ;; Drupal
 (dir-locals-set-class-variables
  'drupal
