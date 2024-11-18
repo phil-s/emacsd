@@ -206,6 +206,9 @@ SCHEDULED: %T
 ;; Syntax highlighting for source code blocks.
 (setq org-src-fontify-natively t)
 
+;; Don't introduce extra indentation within the block.
+(setq org-edit-src-content-indentation 0)
+
 ;; Preserve source code indentation upon export
 (setq org-src-preserve-indentation t)
 
