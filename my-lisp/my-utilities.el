@@ -1801,7 +1801,7 @@ point. This function returns a list (string) for use in `interactive'."
       (replace-match "-"))))
 
 (defcustom my-www-search-url
-  "http://google.com/search?num=100&q=%s"
+  "https://duckduckgo.com/?t=ffab&ia=web&q=%s"
   "URL for WWW search, with %s placeholder for search string"
   :type 'string
   :group 'www)
