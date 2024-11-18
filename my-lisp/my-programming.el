@@ -275,6 +275,68 @@ Advises `eldoc-print-current-symbol-info'."
 
 (my-contextual-help-mode 1)
 
+;; (eww "https://raw.githubusercontent.com/Konubinix/Devel/master/elfiles/config/after-loads/KONIX_AL-ement.el")
+
+(define-minor-mode paren-pardon-mode
+  "A stay of execution for hanging parens."
+  :init-value nil
+  :lighter " …⸩"
+  ;; Still need this, but am hoping to work around it. as I anticipate
+  ;; it will conflict with other potential uses of invisibility.
+  (make-local-variable 'font-lock-extra-managed-props)
+  (add-to-list 'font-lock-extra-managed-props 'invisible)
+  ;; Currently experimenting with (a) avoiding comments, and (b)
+  ;; the possibility of /multiple/ `invisible' specs being present
+  ;; at the same time.  Ideally we would support that, and /only/
+  ;; add/remove our specific symbol without affecting the others.
+  ;; This initial test seems to clobber one face with the other,
+  ;; such that only one of the `invisible' specs is present when
+  ;; I use `text-property-search-forward'.
+  (let* ((face '(face nil invisible paren-pardon-mode))
+         ;; (face2 '(face nil invisible wibble))
+         (keywords `(("^[^\n;]*\\(\n[ \t]*\\))" 1 ',face prepend)
+                     ("(\\([ \t]*\n[ \t]*\\)" 1 ',face prepend)
+                     ;; ("\\(\n[ \t]*\\))" 1 ',face2 prepend)
+                     ;; ("(\\(\n[ \t]*\\)" 1 ',face2 prepend)
+                     )))
+    (if paren-pardon-mode
+        (progn
+          (add-to-invisibility-spec 'paren-pardon-mode)
+          (font-lock-add-keywords nil keywords))
+      (remove-from-invisibility-spec 'paren-pardon-mode)
+      (font-lock-remove-keywords nil keywords))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (font-lock-flush)
+        (goto-char (point-min))
+        ;; (with-silent-modifications
+        ;;   (while-let ((match (text-property-search-forward
+        ;;                       'invisible 'paren-pardon-mode t)))
+        ;;     ;; Bah... this ignores the values and removes the entire
+        ;;     ;; property, just like `font-lock-extra-managed-props'
+        ;;     ;; was doing (and which I was trying to avoid!):
+        ;;     (remove-text-properties
+        ;;      (prop-match-beginning match)
+        ;;      (prop-match-end match) '(invisible nil))
+        ;;     ;; I guess I'll need to read the property, manipulate
+        ;;     ;; the value, and set the property back again if it
+        ;;     ;; still contains any other value.
+        ;;     ;;
+        ;;     ;; That said, maybe font-lock is just going to clobber any
+        ;;     ;; existing `invisible' specs with the 'paren-pardon-mode
+        ;;     ;; value?  In which case, it's a lost cause?  Or would I
+        ;;     ;; need to write some custom callback to (again) process
+        ;;     ;; the property in a more detailed manner.
+        ;;     ;;
+        ;;     ;; All a lot of effort for a little toy mode.  So probably
+        ;;     ;; don't bother.
+        ;;     ;;
+        ;;     ;; MAYBE: Try using `jit-lock-register' instead?
+        ;;     ))
+        )
+      (font-lock-ensure))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devdocs package.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
