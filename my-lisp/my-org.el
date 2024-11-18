@@ -11,6 +11,7 @@
   (defvar org-default-notes-file)
   (defvar org-ellipsis)
   (defvar org-fontify-done-headline)
+  (defvar org-goto-interface)
   (defvar org-log-done)
   (defvar org-mode-map)
   (defvar org-src-fontify-natively)
