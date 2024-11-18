@@ -138,6 +138,15 @@
           (remove-hook 'compilation-filter-hook
                        'my-so-long-compilation-filter :local))))))
 
+;; We don't care about the `line-number-mode' display limits nowadays.
+;; Possibly the Emacs 29 improvements have rendered them unnecessary?
+;; decode_mode_spec() in src/xdisp.c multiplies this limit-width by
+;; the window's (height * 2 + 30) (in lines).  My normal full-sized
+;; window height is 53 lines, so a factor of 1000 seems safe to avoid
+;; bignum calculations (which I'm assuming would be a little slower).
+(setq line-number-display-limit nil
+      line-number-display-limit-width (/ most-positive-fixnum 1000))
+
 ;; Provide nice keyboard access to imenu, using Ido.
 (defun imenu-ido-goto-symbol (&optional symbol-list)
   "Refresh imenu and jump to a place in the buffer using Ido."
