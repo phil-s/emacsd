@@ -4,7 +4,7 @@
 
 ;; Author: Phil Sainty
 ;; Inspired by visual-fill.el by Stefan Monnier
-;; Version: 0.5.4
+;; Version: 0.6.1
 ;; Keywords: convenience
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -86,6 +86,8 @@ the related functions `visual-wrap-comments-window-width-min' and
                      (seq "@var" (one-or-more (any " \t"))
                           (group (one-or-more (not (any " \t\n")))
                                  (one-or-more (any " \t"))))
+                     (seq (one-or-more (not (any "\n:")))
+                          ":" (one-or-more (any " \t")))
                      (seq (any "a-z") "." (one-or-more (any " \t"))))))
        ;; /** @var foo <comment>
        ;;              [continues] */
