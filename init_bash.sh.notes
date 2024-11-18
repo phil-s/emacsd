@@ -1,0 +1,34 @@
+# Comment lines are still sent to the shell, producing screeds of
+# newline-plus-shell-prompt output in the shell, so I've trimmed
+# the actual init_bash.sh file to just the un-commented command.
+
+# better shell colours for my emacs colour scheme
+#PS1="\n\[\e[32m\]\u@\h \[\e[34m\]\w\[\e[0m\]\n\$ "
+
+# with Zenburn (far from ideal, but better than the above)
+# PS1="\n\[\e[33m\]\u@\h \[\e[36m\]\w\[\e[0m\]\n\$ "
+
+# With Date.
+PS1="\n\[\e[33m\]\u@\h: \d, \t\n\[\e[36m\]\w\[\e[0m\]\n\$ "
+
+# ANSI colour escape codes.
+
+# Color     Example   FG   BG   Bright FG   Bright BG
+# ---------------------------------------------------
+# Black     Black     30   40          90         100
+# Red       Red       31   41          91         101
+# Green     Green     32   42          92         102
+# Yellow    Yellow    33   43          93         103
+# Blue      Blue      34   44          94         104
+# Magenta   Magenta   35   45          95         105
+# Cyan      Cyan      36   46          96         106
+# White     White     37   47          97         107
+# Default             39   49          99         109
+
+# 30–37  Set foreground color       See color table below
+# 38     Set foreground color       Next arguments are 5;<n> or 2;<r>;<g>;<b>
+# 39     Default foreground color   implementation defined (according to standard)
+#
+# 40–47  Set background color       See color table below
+# 48     Set background color       Next arguments are 5;<n> or 2;<r>;<g>;<b>
+# 49     Default background color   implementation defined (according to standard)
