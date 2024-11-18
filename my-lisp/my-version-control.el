@@ -574,6 +574,7 @@ Advice to `magit-push-current-to-upstream' triggers this query."
         (add-to-list 'ref-list (match-string 1)))
       ref-list)))
 
+(eval-when-compile (require 'pcomplete))
 (defun pcomplete/git ()
   "Completion for `git'"
   ;; Completion for the command argument.

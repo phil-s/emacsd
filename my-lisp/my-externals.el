@@ -12,6 +12,7 @@
   (package-initialize))
 ;; Add extra package archives.
 ;; The nongnu ELPA archive is standard starting from Emacs 28.
+(eval-when-compile (require 'package))
 (add-to-list 'package-archives
              '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (add-to-list 'package-archives

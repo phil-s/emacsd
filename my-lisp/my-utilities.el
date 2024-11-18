@@ -1919,7 +1919,7 @@ Non-interactively, this uses the optional second argument NEW-WINDOW
 instead of `browse-url-new-window-flag'."
   (interactive (browse-url-interactive-arg "URL: "))
   ;; `browse-url-maybe-new-window' is a macro.
-  (eval-when-compile (require 'browse-url))
+  (eval-and-compile (require 'browse-url))
   (setq url (browse-url-encode-url url))
   (let* ((process-environment (browse-url-process-environment)))
     (apply 'start-process
@@ -1944,6 +1944,7 @@ instead of `browse-url-new-window-flag'."
   ;;         "ssh " my-ssh-history nil nil nil 'my-ssh-history)))
   (interactive
    (list (read-from-minibuffer "ssh " nil nil nil 'my-ssh-history)))
+  (eval-and-compile (require 'term))
   (let* ((switches (split-string-and-unquote args))
          (name (concat "ssh " args))
          (termbuf (apply 'make-term name "ssh" nil switches)))
@@ -2060,6 +2061,7 @@ With C-u prefix arg, always creates a new buffer."
   "Runs COMMAND in a `term' buffer."
   (interactive
    (list (read-from-minibuffer "$ " nil nil nil 'my-terminal-run-history)))
+  (require 'term)
   (let* ((name (or name command))
          (switches (split-string-and-unquote command))
          (command (pop switches))
@@ -2075,6 +2077,7 @@ With C-u prefix arg, always creates a new buffer."
   "Runs \"watch COMMAND\" in a `term' buffer.  \"q\" to exit."
   (interactive
    (list (read-from-minibuffer "watch " nil nil nil 'watch-history)))
+  (require 'term)
   (let* ((name (or name (concat "watch " command)))
          (switches (split-string-and-unquote command))
          (termbuf (apply 'make-term name "watch" nil switches))
@@ -2221,17 +2224,19 @@ HOSTSPEC is a tramp host specification such as \"localhost\"
 or \"user@example.com\""
   ;; http://stackoverflow.com/a/21006365/324105
   (interactive
-   (let ((hosts (mapcar (lambda (x)
-                          (cond ((stringp x) x)
-                                ((null (car x)) (cadr x))
-                                (t (concat (car x) "@" (cadr x)))))
-                        (apply 'append
-                               (mapcar
-                                (lambda (x)
-                                  (cl-remove-if-not 'identity
-                                                    (apply (car x) (cdr x))))
-                                (tramp-get-completion-function "ssh"))))))
-     (list (completing-read "Hostname: " hosts nil 'confirm nil nil hosts nil))))
+   (progn
+     (require 'tramp)
+     (let ((hosts (mapcar (lambda (x)
+                            (cond ((stringp x) x)
+                                  ((null (car x)) (cadr x))
+                                  (t (concat (car x) "@" (cadr x)))))
+                          (apply 'append
+                                 (mapcar
+                                  (lambda (x)
+                                    (cl-remove-if-not 'identity
+                                                      (apply (car x) (cdr x))))
+                                  (tramp-get-completion-function "ssh"))))))
+       (list (completing-read "Hostname: " hosts nil 'confirm nil nil hosts nil)))))
   (let ((destdir (format "/ssh:%s:~/.terminfo/e/" hostspec)))
     (unless (file-directory-p destdir)
       (dired-create-directory destdir))
@@ -2354,6 +2359,7 @@ For example, to trace all ELP functions, do the following:
 (defun password-composer (domain)
   "Run password-composer."
   (interactive "sDomain: ")
+  (eval-and-compile (require 'comint))
   (let ((buf (make-comint-in-buffer
               "password-composer" nil "password-composer" nil domain)))
     (set-buffer buf)
@@ -2541,7 +2547,7 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
 (defun my-crontab-edit ()
   "Edit crontab."
   (interactive)
-  (require 'with-editor)
+  (eval-and-compile (require 'with-editor))
   (with-editor-async-shell-command "crontab -e"))
 
 ;; https://fuco1.github.io/2017-05-06-Enhanced-beginning--and-end-of-buffer-in-special-mode-buffers-%28dired-etc.%29.html
@@ -2731,7 +2737,6 @@ toggle between real end and logical end of the buffer."
   (require 'cl-macs)
   `(cl-loop ,@loop collect ,item))
 
-
 ;; Make "M-g [1-9] ... RET" a shortcut for "M-g g [1-9] ... RET"
 ;; (dotimes (n 9)
 ;;   (global-set-key (kbd (format "M-g %s" (1+ n))) #'my-goto-line))
