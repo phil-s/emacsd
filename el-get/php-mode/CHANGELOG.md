@@ -2,12 +2,14 @@
 
 All notable changes of the PHP Mode 1.19.1 release series are documented in this file using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
-## Unreleased
+<!-- ## Unreleased -->
+
+## [1.26.1] - 2024-09-13
 
 ### Added
 
  * Add `php-base-mode` which is the base of php related modes ([#772])
-   * `php-base-mode` is designed as a common parent mode for `php-mode` and [`php-ts-mode`](https://github.com/emacs-php/php-ts-mode).
+   * `php-base-mode` is designed as a common parent mode for `php-mode` ~~and [`php-ts-mode`](https://github.com/emacs-php/php-ts-mode)~~.
 
 ### Changed
 
@@ -24,6 +26,8 @@ All notable changes of the PHP Mode 1.19.1 release series are documented in this
    * `php-method-call` → `php-method-call-traditional`
    * `php-static-method-call` → `php-static-method-call-traditional`
  * Add variables for the `php-function-call`, `php-method-call`, and `php-static-method-call` faces, defaulting to the `-traditional` face.
+ * Changes how php-syntax-propertize-rules are applied for the first time. ([#785] and [#786])
+   * This change is expected to make heredoc and attribute coloring more stable and reduce flicker.
 
 ### Removed
 
@@ -39,9 +43,16 @@ All notable changes of the PHP Mode 1.19.1 release series are documented in this
 [#777]: https://github.com/emacs-php/php-mode/pull/777
 [#780]: https://github.com/emacs-php/php-mode/issues/780
 [#782]: https://github.com/emacs-php/php-mode/issues/782
+[#785]: https://github.com/emacs-php/php-mode/issues/785
+[#786]: https://github.com/emacs-php/php-mode/pull/786
 [@bricka]: https://github.com/bricka
 [emacs-php/php-ts-mode#68]: https://github.com/emacs-php/php-ts-mode/pull/68
 [PEAR Coding Standards]: https://pear.php.net/manual/en/standards.php
+
+## [1.26.0] - 2024-09-13
+
+> [!NOTE]
+> This version was cancelled due to a release error.
 
 ## [1.25.1] - 2023-11-24
 

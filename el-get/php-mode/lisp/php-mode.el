@@ -1,6 +1,6 @@
 ;;; php-mode.el --- Major mode for editing PHP code  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023  Friends of Emacs-PHP development
+;; Copyright (C) 2024  Friends of Emacs-PHP development
 ;; Copyright (C) 1999, 2000, 2001, 2003, 2004 Turadg Aleahmad
 ;;               2008 Aaron S. Hawley
 ;;               2011, 2012, 2013, 2014, 2015, 2016, 2017 Eric James Michael Ritz
@@ -9,13 +9,13 @@
 ;; Maintainer: USAMI Kenta <tadsan@zonu.me>
 ;; URL: https://github.com/emacs-php/php-mode
 ;; Keywords: languages php
-;; Version: 1.25.1
-;; Package-Requires: ((emacs "26.1"))
+;; Version: 1.26.1
+;; Package-Requires: ((emacs "27.1"))
 ;; License: GPL-3.0-or-later
 
 (eval-and-compile
   (make-obsolete-variable
-   (defconst php-mode-version-number "1.25.1" "PHP Mode version number.")
+   (defconst php-mode-version-number "1.26.1" "PHP Mode version number.")
    "Please call (php-mode-version :as-number t) for compatibility." "1.24.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -191,7 +191,7 @@ Turning this on will open it whenever `php-mode' is loaded."
                        #'php-flymake))
   "Flymake function to replace, if NIL do not replace."
   :tag "PHP Mode Replace Flymake Diag Function"
-  :type '(choice 'function
+  :type '(choice function
                  (const :tag "Disable to replace" nil)))
 
 (define-obsolete-variable-alias 'php-do-not-use-semantic-imenu 'php-mode-do-not-use-semantic-imenu "1.20.0")
@@ -253,7 +253,7 @@ mumamo-mode turned on.  Detects if there are any HTML tags in the
 buffer before warning, but this is is not very smart; e.g. if you
 have any tags inside a PHP string, it will be fooled."
   :tag "PHP Mode Warn If MuMaMo Off"
-  :type '(choice (const :tag "Warn" t) (const "Don't warn" nil)))
+  :type '(choice (const :tag "Warn" t) (const :tag "Don't warn" nil)))
 
 (defcustom php-mode-coding-style 'pear
   "Select default coding style to use with `php-mode'.
@@ -1038,17 +1038,24 @@ HEREDOC-START."
       (unwind-protect
           (let (new-start new-end)
             (goto-char start)
+            ;; Consider bounding this backwards search by `beginning-of-defun'.
+            ;; (Benchmarking for a wide range of cases may be needed to decide
+            ;; whether that's an improvement, as `php-beginning-of-defun' also
+            ;; uses `re-search-backward'.)
             (when (re-search-backward php-heredoc-start-re nil t)
               (let ((maybe (point)))
                 (when (and (re-search-forward (php-heredoc-end-re (match-string 0)) nil t)
                            (> (point) start))
-                  (setq new-start maybe))))
-            (goto-char end)
-            (when (re-search-backward php-heredoc-start-re nil t)
-              (if (re-search-forward (php-heredoc-end-re (match-string 0)) nil t)
+                  (setq new-start maybe)
                   (when (> (point) end)
-                    (setq new-end (point)))
-                (setq new-end (point-max))))
+                    (setq new-end (point))))))
+            (unless new-end
+              (goto-char end)
+              (when (re-search-backward php-heredoc-start-re start t)
+                (if (re-search-forward (php-heredoc-end-re (match-string 0)) nil t)
+                    (when (> (point) end)
+                      (setq new-end (point)))
+                  (setq new-end (point-max)))))
             (when (or new-start new-end)
               (cons (or new-start start) (or new-end end))))
         ;; Cleanup
@@ -1242,12 +1249,7 @@ After setting the stylevars run hook `php-mode-STYLENAME-hook'."
               :filter-args #'php-acm-backend-tabnine-candidate-expand-filter-args)
 
   (when (eval-when-compile (>= emacs-major-version 25))
-    (with-silent-modifications
-      (save-excursion
-        (let* ((start (point-min))
-               (end (min (point-max)
-                         (+ start syntax-propertize-chunk-size))))
-          (php-syntax-propertize-function start end))))))
+    (syntax-ppss-flush-cache (point-min))))
 
 (declare-function semantic-create-imenu-index "semantic/imenu" (&optional stream))
 
