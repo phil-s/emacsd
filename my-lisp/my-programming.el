@@ -71,7 +71,14 @@
   ;; like it only affects `auto-fill-mode', which I never use.  Here's hoping
   ;; that I remember this if it turns out to be a problem :)
   (setq-local comment-auto-fill-only-comments nil)
-  (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
+  ;; Make RET do whatever C-M-j or M-j does.  Note that there are libraries
+  ;; which bind only C-M-j (e.g. fortran.el and octave.el), which I'm guessing
+  ;; is the older key sequence, even though the manual mostly refers to M-j.
+  ;; As such, I'm giving C-M-j precedence.
+  ;; (info "(emacs)Comment Commands")
+  ;; (info "(emacs)Options for Comments")
+  (local-set-key (kbd "RET") (or (key-binding (kbd "C-M-j"))
+                                 (key-binding (kbd "M-j"))))
   (local-set-key (kbd "<S-return>") 'newline)
   ;; Make "C-o" smarter as well.
   (local-set-key (kbd "C-o") 'my-open-line-and-indent)
