@@ -202,18 +202,18 @@
   (define-key keymap (kbd "C-x r M-w") 'my-copy-rectangle)
   (define-key keymap (kbd "C-x r C-y") 'my-copy-kill-to-register)
 
-  ;; Multiple cursors
-  (define-key keymap (kbd "s-SPC s-SPC") 'mc/edit-lines)
-  (define-key keymap (kbd "s-SPC C-e") 'mc/edit-ends-of-lines)
-  (define-key keymap (kbd "s-SPC C-a") 'mc/edit-beginnings-of-lines)
+  ;; ;; Multiple cursors
+  ;; (define-key keymap (kbd "s-SPC s-SPC") 'mc/edit-lines)
+  ;; (define-key keymap (kbd "s-SPC C-e") 'mc/edit-ends-of-lines)
+  ;; (define-key keymap (kbd "s-SPC C-a") 'mc/edit-beginnings-of-lines)
   ;; Rectangular region mode
   (define-key keymap (kbd "C-x r s-SPC") 'set-rectangular-region-anchor)
-  ;; Mark more like this
-  (define-key keymap (kbd "C->")       'mc/mark-next-like-this)
-  (define-key keymap (kbd "C-<")       'mc/mark-previous-like-this)
-  (define-key keymap (kbd "s-SPC h")   'mc/mark-all-like-this)
-  (define-key keymap (kbd "s-SPC x")   'mc/mark-more-like-this-extended)
-  (define-key keymap (kbd "s-SPC r")   'mc/mark-all-in-region)
+  ;; ;; Mark more like this
+  ;; (define-key keymap (kbd "C->")       'mc/mark-next-like-this)
+  ;; (define-key keymap (kbd "C-<")       'mc/mark-previous-like-this)
+  ;; (define-key keymap (kbd "s-SPC h")   'mc/mark-all-like-this)
+  ;; (define-key keymap (kbd "s-SPC x")   'mc/mark-more-like-this-extended)
+  ;; (define-key keymap (kbd "s-SPC r")   'mc/mark-all-in-region)
 
   ;; Rectangle editing
   (define-key keymap (kbd "C-x r e")   'my-edit-rectangle)
