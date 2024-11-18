@@ -38,6 +38,13 @@ zero or negative, then disable both modes."
             (adaptive-wrap-prefix-mode " AWrap" " Wrap")
             simple)))
 
+;; Check spelling.
+(defun my-spell-check-enable ()
+  "Enable spell-checking in in the current buffer."
+  (when (require 'jinx nil :noerror)
+    (jinx-mode 1)
+    (local-set-key (kbd "M-$") #'jinx-correct)))
+
 ;; PDFs
 ;; Use 'mutool' (apt-get install mupdf-tools) to generate SVGs.
 (setq doc-view-mupdf-use-svg (image-type-available-p 'svg))
