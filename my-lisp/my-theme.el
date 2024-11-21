@@ -42,10 +42,13 @@
 ;; Color theme - Zenburn
 ;; https://www.emacswiki.org/emacs/ColorThemeZenburn
 (when (require 'zenburn-theme nil t)
-
   ;; Initialise zenburn
   (load-theme 'zenburn t)
   ;; Custom changes to Zenburn defaults...
+  (my-zenburn-theme-config))
+
+(defun my-zenburn-theme-config ()
+  "Custom changes to Zenburn defaults."
   (setq frame-background-mode 'dark)
 
   ;; Make errors slightly less red for a nicer zenburn contrast.
@@ -163,7 +166,8 @@
   "Replace current theme with `zenburn'."
   (interactive)
   (require 'zenburn-theme)
-  (my-replace-theme 'zenburn "#383838"))
+  (my-replace-theme 'zenburn) ;; "#383838"
+  (my-zenburn-theme-config))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
