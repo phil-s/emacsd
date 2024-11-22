@@ -1340,16 +1340,19 @@ of the available lines."
          (size (and proportion (round (* proportion (window-height))))))
     (split-window-below size)))
 
-;; Toggle window dedication
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not"
-  (interactive)
-  (message (if (let* ((window (selected-window))
-                      (toggle (not (window-dedicated-p window))))
-                 (set-window-dedicated-p window toggle))
-               "Window '%s' is dedicated"
-             "Window '%s' is normal")
-           (current-buffer)))
+;; Toggle window dedication.
+;; Emacs 30 introduces a similar command by the same name.
+(when (< emacs-major-version 30)
+  (defun toggle-window-dedicated ()
+    "Toggle whether the current active window is dedicated or not"
+    (interactive)
+    (message (if (let* ((window (selected-window))
+                        (toggle (not (window-dedicated-p window))))
+                   (set-window-dedicated-p window toggle))
+                 "Window '%s' is dedicated"
+               "Window '%s' is normal")
+             (current-buffer))
+    (force-mode-line-update)))
 
 (defun my-new-buffer-to-other-window ()
   "Relocate the current buffer to the other window."
