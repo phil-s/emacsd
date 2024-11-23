@@ -10,6 +10,8 @@
   (defvar deft-extension)
   (defvar deft-text-mode)
   (defvar doc-view-mupdf-use-svg)
+  (declare-function jinx-correct "jinx")
+  (declare-function jinx-mode "jinx")
   )
 
 ;; Intuitive word wrapping.

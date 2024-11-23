@@ -16,6 +16,7 @@
   (defvar psysh-history-file)
   (defvar psysh-mode-map)
   (declare-function php-local-manual-search "php-local-manual")
+  (declare-function php-syntax-propertize-extend-region "php-mode")
   (declare-function web-mode "web-mode")
   )
 

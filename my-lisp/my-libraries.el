@@ -2,6 +2,7 @@
 (eval-when-compile
   (defvar framemove-hook-into-windmove)
   (defvar sudo-clear-password-always)
+  (declare-function global-anzu-mode "anzu")
   (declare-function sudo-chown-file "sudo")
   (declare-function sudo-kill-password-timeout "sudo")
   (declare-function sudo-quoting "sudo")
