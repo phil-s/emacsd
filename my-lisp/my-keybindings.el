@@ -258,6 +258,7 @@
   (define-key keymap (kbd "C-M-=")     'compare-windows)
   (define-key keymap (kbd "C-z =")     'my-diff-buffer-with-file)
   (define-key keymap (kbd "C-z C-=")   'ediff-current-file)
+  (define-key keymap (kbd "s-=")       'my-ediff-regions)
   (define-key keymap (kbd "C-x v C-=") 'vc-ediff)
   (define-key keymap (kbd "C-x v C-f") 'my-vc-visit-file-revision)
   (define-key keymap (kbd "C-x v C-l") 'my-vc-print-revision-log)

@@ -1455,6 +1455,43 @@ Otherwise call `ediff-buffers' interactively."
               (ediff-files filea fileb))))
       (call-interactively 'ediff-buffers))))
 
+(defvar my-ediff-regions nil)
+(defun my-ediff-regions (beginning end &optional startup-hooks)
+  (interactive "r")
+  (if (not my-ediff-regions)
+      (progn
+        (setq my-ediff-regions (cons (copy-marker beginning) end))
+        (message "Region A stored"))
+    (unwind-protect
+        (let ((buffer-A (marker-buffer (car my-ediff-regions)))
+              (reg-A-beg (car my-ediff-regions))
+              (reg-A-end (cdr my-ediff-regions))
+              (buffer-B (current-buffer))
+              (reg-B-beg beginning)
+              (reg-B-end end))
+          (unless (buffer-live-p buffer-A)
+            (user-error "Buffer %S doesn't exist" buffer-A))
+          (let ((buffer-A (with-current-buffer
+                              (ediff-make-cloned-buffer buffer-A "-Region.A-")
+                            (setq ediff-temp-indirect-buffer t)
+                            (goto-char reg-A-beg)
+                            (set-mark reg-A-end)
+                            (current-buffer)))
+                (buffer-B (with-current-buffer
+                              (ediff-make-cloned-buffer buffer-B "-Region.B-")
+                            (setq ediff-temp-indirect-buffer t)
+                            (goto-char reg-B-beg)
+                            (set-mark reg-B-end)
+                            (current-buffer))))
+            (ediff-regions-internal
+             buffer-A reg-A-beg reg-A-end
+             buffer-B reg-B-beg reg-B-end
+             startup-hooks 'ediff-regions-wordwise 'word-mode nil)))
+      ;; Reset state.
+      (when (markerp (car my-ediff-regions))
+        (set-marker (car my-ediff-regions) nil))
+      (setq my-ediff-regions nil))))
+
 (defvar compare-windows-highlight)
 (defun my-compare-windows-complete (&optional ignore-whitespace)
   "Highlight all differences between two windows.
