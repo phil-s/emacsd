@@ -386,20 +386,22 @@ Advice for `devdocs--render'.  Remove with:
     (winnow-mode 1)))
 
 ;; Handle ansi colour codes in compile command output.
-(with-eval-after-load "compile"
-  (require 'ansi-color))
+(if (>= emacs-major-version 28)
+    (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+  ;; Otherwise, for Emacs < 28:
+  (with-eval-after-load "compile"
+    (require 'ansi-color))
 
-(defun colorize-compilation-output ()
-  "Process any ansi colour codes in `compile' command output.
+  (defun my-colorize-compilation-output ()
+    "Process any ansi colour codes in `compile' command output.
 
 We deal only with `compilation-mode' itself, ignoring derivatives such as
 `grep-mode' (which tend to support colour already)."
-  (when (eq major-mode 'compilation-mode)
-    (let ((inhibit-read-only t))
-      (ansi-color-apply-on-region compilation-filter-start (point)))))
+    (when (eq major-mode 'compilation-mode)
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region compilation-filter-start (point)))))
 
-(add-hook 'compilation-filter-hook 'colorize-compilation-output)
-
+  (add-hook 'compilation-filter-hook 'my-colorize-compilation-output))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TAGS
