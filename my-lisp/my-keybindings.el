@@ -426,6 +426,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'il 'lisp-interaction-mode)
 (defalias 'll 'load-dot-emacs)
 (defalias 'lll 'find-dot-emacs)
+(defalias 'llc 'find-custom-file)
 (defalias 'llle 'find-el-get-dir)
 (defalias 'llll 'find-my-lisp-dir)
 (defalias 'nm 'normal-mode) ;; Set the major mode for the current buffer.

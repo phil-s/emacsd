@@ -933,6 +933,12 @@
   "Visit init file."
   (interactive)
   (find-file user-init-file))
+(defun find-custom-file ()
+  "Visit init file."
+  (interactive)
+  (if custom-file
+      (find-file custom-file)
+    (user-error "No `custom-file'.")))
 (defun find-my-lisp-dir ()
   "Dired ~/.emacs.d/my-lisp"
   (interactive)
