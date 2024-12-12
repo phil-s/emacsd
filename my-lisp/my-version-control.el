@@ -276,6 +276,7 @@ static char * data[] = {
   (defvar magit-section-initial-visibility-alist)
   (require 'eieio)
   (declare-function eieio-oref "eieio-core")
+  (declare-function git-commit-setup-check-buffer "git-commit")
   (declare-function global-git-commit-mode "git-commit")
   (declare-function magit-branch-or-commit-at-point "magit-git")
   (declare-function magit-branch-p "magit-git")
@@ -297,25 +298,68 @@ static char * data[] = {
   (declare-function magit-wip-mode "magit-wip")
   )
 
-;; Refer to: (info "(magit) Wip Modes")
-(magit-wip-mode 1)
+(defun my-magit-config ()
+  "Called after loading `magit'."
+  (my-magit-wip-mode-ensure))
 
-;; No, I really don't want Emacs to complain that my summary line is
-;; long enough to be useful (no matter what the git book recommends).
-(with-eval-after-load "git-commit"
+(with-eval-after-load "magit"
+  (my-magit-config))
+
+(defun my-magit-wip-mode-ensure ()
+  "Ensure that `magit-wip-mode' is protecting us.
+
+Refer to info node `(magit) Wip Modes'.
+
+We want to defer loading Magit sooner than necessary, but we also
+want the `after-save-hook' behaviour of `magit-wip-mode' to happen
+even if Magit hasn't been loaded, and so we use `before-save-hook'
+to ensure that this has happened."
+  (remove-hook 'before-save-hook #'my-magit-wip-mode-ensure)
+  (unless (bound-and-true-p magit-wip-mode)
+    (magit-wip-mode 1)))
+
+(add-hook 'before-save-hook #'my-magit-wip-mode-ensure)
+
+(defun my-git-commit-config ()
+  "Called after loading `git-commit'."
+  ;; No, I really don't want Emacs to complain that my summary line is
+  ;; long enough to be useful (no matter what the git book recommends).
   (setq git-commit-finish-query-functions
         (delq 'git-commit-check-style-conventions
-              git-commit-finish-query-functions)))
+              git-commit-finish-query-functions))
+  ;; My `bug-reference-mode' settings.
+  (remove-hook 'git-commit-setup-hook #'bug-reference-mode)
+  (add-hook 'git-commit-setup-hook #'my-bug-reference-mode-enable)
+  ;; Enable spell-checking for commit messages.
+  (add-hook 'git-commit-setup-hook #'my-spell-check-enable)
+  ;; Actually call `global-git-commit-mode' (see workaround below).
+  (global-git-commit-mode 1))
+
+(with-eval-after-load "git-commit"
+  (my-git-commit-config))
+
+;; Whenever Git uses emacsclient as the editor for a commit message,
+;; (regardless of Magit), we want to edit in `git-commit-mode'; but
+;; in order to avoid loading the library up-front, we need to mimic
+;; some of its behaviour.
+(add-hook 'find-file-hook 'my-git-commit-setup-check-buffer)
+
+;; This might change, but it should be pretty much fine in practice.
+(defconst git-commit-filename-regexp "/\\(\
+\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
+\\|\\(BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'")
+
+(defun my-git-commit-setup-check-buffer ()
+  (when (and buffer-file-name
+             (string-match-p git-commit-filename-regexp buffer-file-name))
+    (require 'git-commit)
+    (git-commit-setup-check-buffer)))
 
 ;; Highlighting of too-long summary lines.
 ;; The default 50 chars is tiny, but let's still highlight summary lines
 ;; that exceed the standard maximum 72 chars for other log message lines
 ;; (as the standard formatting will add 8 chars of padding).
 (setq git-commit-summary-max-length 72)
-
-;; Whenever Git uses emacsclient as the editor for a commit message,
-;; (regardless of Magit), we want to edit in `git-commit-mode'.
-(global-git-commit-mode 1)
 
 ;; Make log and diff commands from `magit-file-popup' use separate
 ;; buffers to show the specific-file log/diff. This avoids un/setting
@@ -517,11 +561,6 @@ Advice to `magit-push-current-to-upstream' triggers this query."
           (open-line 1))))))
 
 (setq git-commit-major-mode 'my-git-commit-mode)
-
-;; Use the following regardless of the value of `git-commit-major-mode'.
-(remove-hook 'git-commit-setup-hook #'bug-reference-mode)
-(add-hook 'git-commit-setup-hook #'my-bug-reference-mode-enable)
-(add-hook 'git-commit-setup-hook #'my-spell-check-enable)
 
 (add-hook 'magit-mode-hook 'my-magit-mode-hook)
 (defun my-magit-mode-hook ()
