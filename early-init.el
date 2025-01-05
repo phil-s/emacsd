@@ -23,6 +23,16 @@
 (when (fboundp 'horizontal-scroll-bar-mode)
   (horizontal-scroll-bar-mode 0))
 
+;; Setting the default font in early-init.el improves start time by ~200ms.
+;;
+;; Don't set the default font in (custom-set-faces), because it makes
+;; things super-funky during initialisation if that font doesn't exist
+;; on the system.
+(custom-set-faces
+ '(default ((t (:height 120 :family "Droid Sans Mono Dotted"))))
+ '(variable-pitch ((t (:family "Atkinson Hyperlegible"))))
+ '(variable-pitch-text ((t (:inherit variable-pitch :height 1.25)))))
+
 ;; Per-frame/terminal configuration.
 (defun my-frame-behaviours (&optional frame)
   "Make frame- and/or terminal-local changes."
