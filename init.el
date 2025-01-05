@@ -1137,13 +1137,16 @@
 (add-hook 'kill-emacs-hook 'my-log-emacs-uptime)
 
 ;; Display the time taken to start Emacs.
+(defvar my-early-init-time-elapsed)
 (let ((my-init-time (time-to-seconds (time-since my-init-load-start))))
   (add-hook 'after-init-hook
             `(lambda ()
-               (message "Init time was %.2fs (%.2fs in %s)."
+               (message "Init time was %.2fs (%.2fs in %s) (%.2fs in %s)."
                         (time-to-seconds (time-since before-init-time))
                         ,my-init-time
-                        (file-name-nondirectory user-init-file)))))
+                        (file-name-nondirectory user-init-file)
+                        ,my-early-init-time-elapsed
+                        (file-name-nondirectory early-init-file)))))
 
 ;; Replicate --debug-init (see also the start of early-init.el).
 ;; I think this gets a let-binding on account of the support for

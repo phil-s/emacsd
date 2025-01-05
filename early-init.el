@@ -1,3 +1,5 @@
+(defvar my-early-init-load-start (current-time))
+
 ;; Replicate --debug-init (see also the end of init.el).
 (setq debug-on-error t)
 
@@ -64,3 +66,7 @@
     "Icon for closing the clicked tab."
     :version "29.1"
     :help-echo "Click to close tab"))
+
+(defvar my-early-init-time-elapsed
+  (time-to-seconds (time-since my-early-init-load-start))
+  "Seconds spent processing early-init.el")
