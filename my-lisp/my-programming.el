@@ -93,14 +93,16 @@
   ;;(imenu-add-menubar-index)
   )
 
-(mapc
- (lambda (language-mode-hook)
-   (add-hook language-mode-hook 'my-coding-config))
- '(prog-mode-hook
-   ;; plus anything not derived from prog-mode:
-   css-mode-hook
-   inferior-emacs-lisp-mode-hook
-   python-mode-hook))
+(mapc (lambda (mode-hook)
+        (add-hook mode-hook 'my-coding-config))
+      '(prog-mode-hook
+        ;; plus anything not derived from prog-mode:
+        css-mode-hook
+        inferior-emacs-lisp-mode-hook
+        python-mode-hook
+        tks-mode-hook
+        yaml-mode-hook
+        ))
 
 ;; Smart comment wrapping.
 (setq visual-wrap-comments-column #'visual-wrap-comments-window-width-min
