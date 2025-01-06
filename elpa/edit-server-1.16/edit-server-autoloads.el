@@ -1,4 +1,4 @@
-;;; edit-server-autoloads.el --- automatically extracted autoloads
+;;; edit-server-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: t -*-
 ;;
 ;;; Code:
 
@@ -18,7 +18,11 @@ will cause it to be verbose.
 
 \(fn &optional VERBOSE)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "edit-server" '("edit-server-" "global-edit-server-edit-mode" "turn-on-edit-server-edit-mode-if-server")))
+(register-definition-prefixes "edit-server" '("edit-server-" "global-edit-server-edit-mode" "turn-on-edit-server-edit-mode-if-server"))
+
+;;;***
+
+;;;### (autoloads nil nil ("edit-server-pkg.el") (0 0 0 0))
 
 ;;;***
 

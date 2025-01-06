@@ -6,7 +6,6 @@
 ;; Author: Alex Bennée <alex@bennee.com>
 ;; Maintainer: Alex Bennée <alex@bennee.com>
 ;; Version: 1.14
-;; Package-Version: 1.15
 ;; Homepage: https://github.com/stsquad/emacs_chrome
 
 ;; This file is not part of GNU Emacs.
@@ -77,6 +76,10 @@
 
 ;;; Customization
 
+(defgroup edit-server nil
+  "Edit web browser textareas with Emacs."
+  :group 'external)
+
 (defcustom edit-server-port 9292
   "Local port the edit server listens to."
   :group 'edit-server
@@ -128,8 +131,11 @@ edit-server-start-hook instead."
     (height . 25)
     (minibuffer . t)
     (menu-bar-lines . t))
-  "Frame parameters for new frames.  See `default-frame-alist' for examples.
-If nil, the new frame will use the existing `default-frame-alist' values."
+  "Frame parameters for new frames.  See `make-frame' for examples.
+You will want to look at the VALUE of \\='window-system\\=', \\='display\\='
+and \\='terminal\\=' if you want to force any particular display type
+and not default to whatever is currently open. If nil, the new
+frame will use the existing `default-frame-alist' values."
   :group 'edit-server
   :type '(repeat (cons :format "%v"
 		       (symbol :tag "Parameter")
@@ -466,14 +472,8 @@ non-nil, then STRING is also echoed to the message line."
 
 (defun edit-server-make-frame ()
   "Create a frame for editing and return it."
-  (let ((disp (getenv "DISPLAY")))
-    (edit-server-log nil "Creating frame for %s/%s" window-system disp)
-    (if (or (memq window-system '(ns mac))
-            (= 0 (length disp)))
-      ;; Aquamacs, Emacs NS, Emacs (experimental) Mac port, termcap.
-      ;; matching (nil) avoids use of DISPLAY from TTY environments.
-      (make-frame edit-server-new-frame-alist)
-    (make-frame-on-display disp))))
+  (edit-server-log nil "Creating frame for %s" window-system)
+  (make-frame edit-server-new-frame-alist))
 
 (defun edit-server-foreground-request (buffer)
   "Bring Emacs into the foreground after a request from Chrome.
@@ -481,7 +481,7 @@ non-nil, then STRING is also echoed to the message line."
 to be passed into the kill ring.
 
 The new frame will have a specific frame parameter of
-  `edit-server-forground-frame' set to 't"
+  `edit-server-forground-frame' set to t."
   (when (bufferp buffer)
     (with-current-buffer buffer
       (kill-ring-save (point-min) (point-max))))
@@ -645,7 +645,7 @@ When called interactively, use prefix arg to abort editing."
         ;; don't run abort twice in a row.
         (remove-hook 'kill-buffer-hook 'edit-server-abort*)
 	(kill-buffer buffer)
-	(unless edit-server-frame
+	(unless edit-server-new-frame
 	  (delete-window)))
       (edit-server-kill-client proc))))
 
