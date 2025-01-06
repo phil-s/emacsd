@@ -159,11 +159,14 @@ here, so that group 2 has the desired value in both scenarios.")
                     ((string-prefix-p "RM" type t)
                      "https://redmine.catalyst.net.nz/issues/%s")
                     ((string-prefix-p "Issue" type t)
-                     "https://www.drupal.org/i/%s")
+                     (or (bound-and-true-p my-bug-reference-url-for-issues)
+                         "https://git.mahara.org/catalyst/mahara/-/issues/%s"))
                     ((string-prefix-p "RFC" type t)
                      "https://www.rfc-editor.org/rfc/rfc%s.html")
                     ((string-prefix-p "Bug" type t)
-                     "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))))
+                     (or (bound-and-true-p my-bug-reference-url-for-bugs)
+                         "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))
+                    )))
     (format formatstring (match-string-no-properties 2))))
 
 ;; Make that safe for use in the Local Variables section of a file.
@@ -450,6 +453,14 @@ to ensure that this has happened."
 ;;   ;; ...but add a new Tags option to the popup, which does so. (y t)
 ;;   (magit-define-popup-action 'magit-show-refs-popup ?t
 ;;     "Insert tags section" 'my-magit-insert-tags))
+
+(defun my-magit-push-config ()
+  "Called after loading `magit-push'."
+  (transient-append-suffix 'magit-push "-f"
+    '("-I" "Force if includes" (nil "--force-if-includes"))))
+
+(with-eval-after-load "magit-push"
+  (my-magit-push-config))
 
 (defun my-magit-push-timestamp-tag-to-origin ()
   (interactive)

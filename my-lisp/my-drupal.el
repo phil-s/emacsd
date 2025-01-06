@@ -1,4 +1,9 @@
 ;; -*- lexical-binding: nil; -*-
+;; Refactoring still needed?  This is now fixed:
+;; At present I depend on dynamic binding of these `dir' function args:
+;; (defun drupal-tags-autoupdate-command (dir)
+;; (defun drupal-tags-autoupdate-tree-modified (dir)
+
 ;; See my-project.el for directory local variables for Drupal projects.
 
 ;; Silence compiler warnings
@@ -60,6 +65,7 @@
          (eww-after-render-hook '(eww-readable)))
     (eww phrase)))
 
+;; This is (harmlessly) copied in my-mahara.el.
 (defun my-compilation-relative-paths-filter ()
   "Make paths relative to `default-directory'."
   (save-excursion
@@ -259,6 +265,8 @@ $ find . -type f \\( -name '*.php' -o -name '*.inc' -o -name '*.module' \\
 (defcustom drupal-tags-autoupdate-prune
   (concat
    "^.*/\\("
+   "contrib/drupal\\|"
+   "web/sites/[^/]+/files\\|"
    "sites/[^/]+/files\\|"
    (mapconcat 'regexp-quote
               (delq nil (mapcar
@@ -450,6 +458,13 @@ The update interval is set according to `drupal-tags-autoupdate-interval'."
   (setq-local bug-reference-bug-regexp "#\\(\\([0-9]+\\)\\):"
               bug-reference-url-format "https://www.drupal.org/i/%s"
               truncate-lines t)
+  ;; (face-remap-add-relative 'link :foreground 'unspecified)
+  ;; (face-remap-add-relative 'link :foreground (face-attribute 'default :foreground))
+  ;; (face-remap-add-relative 'link :foreground (face-attribute 'default :foreground))
+  (face-remap-add-relative 'link :underline nil :weight 'normal)
+  (face-remap-add-relative 'font-lock-keyword-face
+                           :inherit 'font-lock-string-face
+                           :weight 'normal)
   (bug-reference-mode 1))
 
 ;;; Docker containers.

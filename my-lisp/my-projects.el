@@ -63,10 +63,87 @@
 ;; How does that differ to `ff-find-other-file' and `ff-other-file-alist'
 ;; in practice?  (Check S.O. -- I've dug into the latter in the past.)
 
+;; Mahara
+(dir-locals-set-class-variables
+ 'mahara
+ '((auto-mode-alist . (("\\.php\\'" . mahara-mode)
+                       ("\\.inc\\'" . mahara-mode)
+                       ("/interdiff[^/]*\\.txt\\'" . diff-mode)
+                       ("/composer.patches.json\\'" . my-mahara-composer-patches-mode)))
+   (nil . ((indent-tabs-mode . nil)
+           (tab-width . 8)
+           (fill-column . 76)
+           (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info"
+                             "*.js" "*.css" ".htaccess" "*.engine" "*.txt"
+                             "*.profile" "*.xml" "*.test" "*.theme" "*.ini"
+                             "*.make"))
+           ;; (mahara-p . t)
+           (ff-search-directories . ("."))
+           ;; Cycle between these files with <f5>
+           (ff-other-file-alist . (("\\.module$" (".install" ".info"))
+                                   ("\\.install$" (".info"))
+                                   ("\\.info$" (".module"))))
+           (my-sql-db-name-getter . my-mahara-db-name)
+           (my-sql-db-user-getter . my-mahara-db-user)
+           (eval . (when (and buffer-file-name
+                              (string-match "\\.make\\'" buffer-file-name))
+                     (unless (derived-mode-p 'conf-mode)
+                       (conf-mode))))
+           ;; (eval . (grep-apply-setting ; Make M-x grep use git-grep:
+           ;;          'grep-command
+           ;;          "git --no-pager grep -H -n --no-color -I -e "))
+           ;; See `my-bug-reference-url-format'.
+           (my-bug-reference-url-for-bugs . "https://bugs.launchpad.net/mahara/+bug/%s")
+           (my-bug-reference-url-for-issues . "https://git.mahara.org/catalyst/mahara/-/issues/%s")
+           ))
+   (mahara-mode . ((c-basic-offset . 4)
+                   (psysh-buffer-name . "*Mahara-PHP*")
+                   ;; (flymake-phpcs-standard . "Mahara")
+                   ))
+   (css-mode . ((css-indent-offset . 4)))
+   (scss-mode . ((css-indent-offset . 4)
+                 ;; Paths in SASS 'partials/*' are relative to the parent dir.
+                 (eval . (when (equal (file-name-base (directory-file-name
+                                                       default-directory))
+                                      "partials")
+                           (setq default-directory
+                                 (expand-file-name "../" (file-name-directory
+                                                          buffer-file-name)))))))
+   (js-mode . ((js-indent-level . 4)))
+   (web-mode . ((web-mode-code-indent-offset . 4)
+                (web-mode-css-indent-offset . 4)
+                (web-mode-markup-indent-offset . 4)
+                (web-mode-sql-indent-offset . 4)))
+   (makefile-gmake-mode . ((eval . (when (string= "make" (file-name-extension
+                                                          buffer-file-name))
+                                     (progn (conf-mode)
+                                            (hack-local-variables))))))
+   (dired-mode . ((dired-omit-mode . t)))
+   ))
+
+;; Mahara-performant PHP.
+;; See also ~/code/.dir-locals.el
+(dir-locals-set-class-variables
+ 'mahara-performant
+ '((auto-mode-alist . (("\\.php\\'" . php-mode) ;; No `mahara-mode' as yet.
+                       ("\\.inc\\'" . php-mode)))
+   (php-mode . ((c-basic-offset . 4)
+                (indent-tabs-mode . nil)
+                (fill-column . 80)
+                (eval . (progn (require 'visual-wrap-comments)
+                               (visual-wrap-comments-mode 1)))
+                (psysh-buffer-name . "*Mahara-PHP*")
+                ;; Performance.
+                (eval . (setq-local syntax-propertize-function #'ignore))
+                (eval . (remove-hook 'syntax-propertize-extend-region-functions
+                                     #'php-syntax-propertize-extend-region t))
+                ))))
+
 ;; Drupal
 (dir-locals-set-class-variables
  'drupal
  '((auto-mode-alist . (("\\.php\\'" . drupal-mode)
+                       ("\\.inc\\'" . drupal-mode)
                        ("/interdiff[^/]*\\.txt\\'" . diff-mode)
                        ("/composer.patches.json\\'" . my-drupal-composer-patches-mode)))
    (nil . ((indent-tabs-mode . nil)
@@ -91,6 +168,8 @@
            ;; (eval . (grep-apply-setting ; Make M-x grep use git-grep:
            ;;          'grep-command
            ;;          "git --no-pager grep -H -n --no-color -I -e "))
+           ;; See `my-bug-reference-url-format'.
+           (my-bug-reference-url-for-issues . "https://www.drupal.org/i/%s")
            ))
    (drupal-mode . ((flymake-phpcs-standard . "Drupal")
                    (c-basic-offset . 2)
