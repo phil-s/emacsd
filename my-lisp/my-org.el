@@ -58,6 +58,9 @@
   ;; ;; Set maximum indentation for description lists.
   ;; (setq org-list-description-max-indent 5)
 
+  ;; Number of empty lines needed to keep an empty line between collapsed trees.
+  ;; (setq org-cycle-separator-lines 2)
+
   ;; Use a real ellipsis character.
   (setq org-ellipsis "…")
 
