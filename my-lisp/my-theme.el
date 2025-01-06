@@ -31,6 +31,13 @@
 ;; Prot's notes on customizing theme faces:
 ;; https://old.reddit.com/r/emacs/comments/1auhjpb/how_to_set_faces_using_dynamic_colors/
 
+
+;; Not this.  Needs to be repeated after enabling the theme.
+;; (custom-theme-set-faces 'modus-operandi '(hl-line ((t :background "cyan")) t "Mine"))
+;; (custom-theme-set-faces 'modus-vivendi '(hl-line ((t :background "darkgreen")) t "Mine"))
+;; (custom-theme-recalc-face 'hl-line)
+
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar hl-line-face)
@@ -39,14 +46,6 @@
 
 ;; Disable mumamo chunk background colours
 (setq mumamo-background-colors nil)
-
-;; Color theme - Zenburn
-;; https://www.emacswiki.org/emacs/ColorThemeZenburn
-(when (require 'zenburn-theme nil t)
-  ;; Initialise zenburn
-  (load-theme 'zenburn t)
-  ;; Custom changes to Zenburn defaults...
-  (my-zenburn-theme-config))
 
 (defun my-zenburn-theme-config ()
   "Custom changes to Zenburn defaults."
@@ -70,7 +69,11 @@
         (set-face-background face colour))))
 
   (with-eval-after-load "hl-sexp"
-    (set-face-background 'hl-sexp-face "#383838")) ;; "#090909"
+    (set-face-background 'hl-sexp-face "#383838") ;; "#090909"
+    (with-eval-after-load "paren"
+      (set-face-attribute 'show-paren-match-expression nil
+                          :background "#384848"
+                          :extend t)))
 
   (with-eval-after-load "hl-line"
     (set-face-background hl-line-face "#333333"))
@@ -104,6 +107,13 @@
   ;; end of zenburn-theme config
   )
 
+;; Color theme - Zenburn
+;; https://github.com/bbatsov/zenburn-emacs
+(when (require 'zenburn-theme nil t)
+  ;; Initialise zenburn
+  (load-theme 'zenburn t)
+  ;; Custom changes to Zenburn defaults...
+  (my-zenburn-theme-config))
 
 ;; This magic means we fall back to Symbola for all missing unicode glyphs.
 ;; For Debian: apt-get install ttf-ancient-fonts
