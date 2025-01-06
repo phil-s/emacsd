@@ -926,13 +926,17 @@
 ;; See also: custom aliases in my-keybindings.el
 
 (defun load-dot-emacs ()
-  "Load and evaluate init file."
+  "Load and evaluate `user-init-file'."
   (interactive)
   (load user-init-file))
 (defun find-dot-emacs ()
   "Visit init file."
   (interactive)
   (find-file user-init-file))
+(defun find-early-init ()
+  "Visit `early-init-file'."
+  (interactive)
+  (find-file early-init-file))
 (defun find-custom-file ()
   "Visit init file."
   (interactive)

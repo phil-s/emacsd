@@ -426,6 +426,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'il 'lisp-interaction-mode)
 (defalias 'll 'load-dot-emacs)
 (defalias 'lll 'find-dot-emacs)
+(defalias 'lle 'find-early-init)
 (defalias 'llc 'find-custom-file)
 (defalias 'llle 'find-el-get-dir)
 (defalias 'llll 'find-my-lisp-dir)
