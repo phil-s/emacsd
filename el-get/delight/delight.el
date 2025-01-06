@@ -8,7 +8,7 @@
 ;; Package-Requires: ((cl-lib "0.5") (nadvice "0.3"))
 ;; Keywords: convenience
 ;; Created: 25 Jun 2013
-;; Version: 1.7
+;; Version: 1.8.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -169,6 +169,9 @@
 
 ;;; Change Log:
 ;;
+;; 1.8 (2024-05-02)
+;;   - Support delighting minor modes with no initial lighter text.
+;;   - Fix `assq-delete-all' edge-case (no practical change).
 ;; 1.7 (2020-07-11)
 ;;   - Add `delight-version'.
 ;;   - Support loading newer versions over the top of older versions.
@@ -199,7 +202,7 @@
 (eval-when-compile (require 'cl-lib))
 (require 'nadvice)
 
-(defconst delight--latest-version "1.7")
+(defconst delight--latest-version "1.8")
 
 ;; Check whether a newer version is being loaded over an older one.
 ;;
@@ -207,9 +210,11 @@
 ;; `delight--latest-version', then an earlier version was already loaded,
 ;; and we must perform any necessary updates (see "Live upgrades" below).
 ;;
-;; If `delight-version' is unbound then most likely there was no older
-;; version loaded; however, prior to version 1.7 `delight-version' was not
-;; defined at all, and so we need to detect that scenario too.
+;; If `delight-version' is unbound then we define it now.  Most likely
+;; there was no older version loaded; however, prior to version 1.7
+;; `delight-version' was not defined at all, and so we also need to
+;; detect that scenario, which we can do by testing for added or renamed
+;; functions and variables.
 (defvar delight-version
   (if (not (featurep 'delight))
       ;; The normal case: delight was not already loaded.
@@ -264,7 +269,8 @@ to prevent the mode being treated as a minor mode."
   (let ((glum (if (consp spec) spec (list (list spec value file)))))
     (while glum
       (cl-destructuring-bind (mode &optional value file) (pop glum)
-        (assq-delete-all mode delight-delighted-modes)
+        (setq delight-delighted-modes
+              (assq-delete-all mode delight-delighted-modes))
         (add-to-list 'delight-delighted-modes (list mode value file))
         ;; Major modes are handled in `after-change-major-mode-hook'.
         ;; Minor modes are handled at load time:
@@ -272,9 +278,10 @@ to prevent the mode being treated as a minor mode."
           (eval-after-load (if (eq file t) 'emacs (or file mode))
             `(when (featurep 'delight)
                (let ((minor-delight (assq ',mode minor-mode-alist)))
-                 (when minor-delight
-                   (setcar (cdr minor-delight) ',value)
-                   (delight-mode-line-mode-menu ',mode ',value))))))))))
+                 (if minor-delight
+                     (setcar (cdr minor-delight) ',value)
+                   (push (list ',mode ',value) minor-mode-alist))
+                 (delight-mode-line-mode-menu ',mode ',value)))))))))
 
 (defun delight-mode-line-mode-menu (mode value)
   "Delight `mode-line-mode-menu' (the \"Toggle minor modes\" menu)
@@ -318,7 +325,7 @@ If the delighted VALUE is not a string and not nil, we do nothing."
 (add-hook 'after-change-major-mode-hook #'delight-major-mode)
 
 (defun delight-major-mode ()
-  "Delight the 'pretty name' of the current buffer's major mode
+  "Delight the \"pretty\" name of the current buffer's major mode
 when displayed in the mode line.
 
 When `mode-name' is displayed in other contexts (such as in the
@@ -436,7 +443,7 @@ Delighted major modes should exhibit their original `mode-name' when
   ;; Perform each update in sequence, as necessary.
   ;; Update to version 1.6 from earlier versions:
   (when (version< delight-version "1.6")
-    ;; Old advice was replaced by nadvice.
+    ;; Remove the old advice (which has been replaced by nadvice).
     (eval-and-compile (require 'advice)) ;; Both macros and functions.
     (declare-function ad-find-advice "advice")
     (declare-function ad-remove-advice "advice")
