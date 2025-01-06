@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil; -*-
+
 ;; See my-externals for php-mode source.
 (load "php-mode") ;load the real php-mode
 

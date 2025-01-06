@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil; -*-
+
 ;; (require 'emacs-gc-stats)
 ;; (setq emacs-gc-stats-remind t)
 ;; (setq emacs-gc-stats-inhibit-command-name-logging t)

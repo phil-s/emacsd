@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; General VCS
 
 ;; Silence compiler warnings

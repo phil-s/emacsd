@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; See my-project.el for directory local variables for Drupal projects.
 
 ;; Silence compiler warnings

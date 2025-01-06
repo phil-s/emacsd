@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (require 'rect)
 
 (define-derived-mode my-edit-rectangle-mode nil "Rectangle-Edit"

@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil; -*-
+
 ;; Require this library for NT Emacs only, using the following:
 
 ;;;; Win32 / Cygwin

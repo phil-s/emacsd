@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil; -*-
+
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar sgml-local-catalogs)

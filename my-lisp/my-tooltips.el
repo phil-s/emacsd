@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; http://stackoverflow.com/questions/2601120/do-overlays-tooltips-work-correctly-in-emacs-for-windows
 
 ;; Reforms a single-line string ARG to a multi-line string with a max

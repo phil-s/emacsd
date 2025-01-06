@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar ecomplete-auto-select)

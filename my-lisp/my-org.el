@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil; -*-
+
 ;; I don't really know what I'm doing yet.
 
 ;;; Silence compiler warnings
