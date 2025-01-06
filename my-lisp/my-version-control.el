@@ -569,7 +569,7 @@ Advice to `magit-push-current-to-upstream' triggers this query."
     (unless (looking-at "\\`[^#\n]")
       (let ((wr "^# On branch \\(?:[^/]+/\\)?[wW][rR]#?\\([0-9]+\\)"))
         (when (save-excursion (re-search-forward wr nil :noerror))
-          (insert (format "WR#%s - " (match-string 1)))
+          (insert (format "WR %s: " (match-string 1)))
           (open-line 1))))))
 
 (setq git-commit-major-mode 'my-git-commit-mode)
