@@ -1195,7 +1195,7 @@ If the current search is successful, then only delete the last char."
 
 ;; Make the avy library use more keys.
 (setq avy-keys
-      (nconc '(?\r)
+      (nconc (list ?\r)
              (number-sequence ?a ?z)
              (number-sequence ?1 ?9)
              '(?0)))
@@ -1761,9 +1761,9 @@ when the file path is too long to show on one line."
           ;; If an element is a cons cell, the car is called on the search
           ;; directory to determine whether cdr should not be excluded.
           (nconc grep-find-ignored-files
-                 '("*.vmdk" "*.box") ;; Virtual Machine disks
-                 '("*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff") ;; Images
-                 '("*.pdf" "*.doc" "*.css.map" "*.js.map") ;; Binary documents
+                 (list "*.vmdk" "*.box") ;; Virtual Machine disks
+                 (list "*.png" "*.gif" "*.jpg" "*.jpeg" "*.tiff") ;; Images
+                 (list "*.pdf" "*.doc" "*.css.map" "*.js.map") ;; Binary documents
                  ))))
 
 ;; ;; www / web / eww
