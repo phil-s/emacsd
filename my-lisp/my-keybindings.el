@@ -421,6 +421,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'cto 'my-theme-modus-operandi)
 (defalias 'ctv 'my-theme-modus-vivendi)
 (defalias 'ctz 'my-theme-zenburn)
+(defalias 'del 'delete-region)
 (defalias 'de 'toggle-debug-on-error)
 (defalias 'dq 'toggle-debug-on-quit)
 (defalias 'el 'emacs-lisp-mode)
@@ -435,6 +436,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'rb 'revert-buffer)
 (defalias 'rn 'rename-buffer)
 (defalias 'sx 'sx-tab-all-questions)
+(defalias 'tb 'tool-bar-mode)
 (defalias 'ws 'whitespace-mode)
 (defalias 'profiler-quit 'profiler-reset
   "Stop the profiler and purge the report data.")
