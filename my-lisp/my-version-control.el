@@ -439,11 +439,11 @@ to ensure that this has happened."
   (my-magit-diff-config))
 
 (defun my-magit-diff-range-from-ref-to-head (rev &optional args files)
-  "Call `magit-diff-range' for REV..HEAD."
+  "Call `magit-diff-range' for REV^..HEAD."
   (interactive (cons (or (magit-branch-or-commit-at-point)
                          (magit-read-branch-or-commit "Diff to HEAD from"))
                      (magit-diff-arguments)))
-  (magit-diff-range (format "%s..HEAD" rev) args files))
+  (magit-diff-range (format "%s^..HEAD" rev) args files))
 
 ;; ;; FIXME: Convert to transient.
 ;; (with-eval-after-load "magit-refs"
