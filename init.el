@@ -1010,6 +1010,13 @@
 
 (defvar my-init-load-start (current-time))
 
+;; Log the elapsed time between calls to `my-init-time-elapsed'.
+(defvar my-init-time-marker my-init-load-start)
+(defsubst my-init-time-elapsed (id)
+  (message "%02d: Elapsed: %.2fs"
+           id (time-to-seconds (time-since my-init-time-marker)))
+  (setq my-init-time-marker (current-time)))
+
 ;; Temporary performance measures, to reduce start-up time.
 ;; Avoid garbage collection during start-up.
 ;; (defvar my-gc-cons-threshold-normal gc-cons-threshold) ;; Currently 800K.
