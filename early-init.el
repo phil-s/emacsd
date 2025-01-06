@@ -77,6 +77,10 @@
     :version "29.1"
     :help-echo "Click to close tab"))
 
-(defvar my-early-init-time-elapsed
-  (time-to-seconds (time-since my-early-init-load-start))
-  "Seconds spent processing early-init.el")
+(defvar my-early-init-load-end (current-time))
+
+(defvar my-elpa-time)
+(define-advice package-activate-all (:around (orig-fun &rest args) my-timer)
+  (let ((before (current-time)))
+    (apply orig-fun args)
+    (setq my-elpa-time (time-to-seconds (time-since before)))))
