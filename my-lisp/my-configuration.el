@@ -417,10 +417,11 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
   ;; just do this.
   (if (fboundp 'my-bug-reference-mode-enable)
       (my-bug-reference-mode-enable)
-    (add-hook 'after-init-hook
+    (add-hook 'emacs-startup-hook
               `(lambda ()
                  (with-current-buffer ,(current-buffer)
-                   (my-bug-reference-mode-enable))))))
+                   (my-bug-reference-mode-enable)))
+              t)))
 
 ;; Sort diary entries.
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
@@ -431,7 +432,8 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
 
 ;; Activate diary/appointment notifications.
 (when (file-exists-p diary-file)
-  (appt-activate 1))
+  (add-hook 'emacs-startup-hook (lambda ()
+                                  (appt-activate 1))))
 
 ;; Configure diary/appointment notifications.
 (setq appt-message-warning-time 30
