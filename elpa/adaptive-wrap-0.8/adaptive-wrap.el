@@ -1,10 +1,10 @@
 ;;; adaptive-wrap.el --- Smart line-wrapping with wrap-prefix
 
-;; Copyright (C) 2011-2018  Free Software Foundation, Inc.
+;; Copyright (C) 2011-2021  Free Software Foundation, Inc.
 
 ;; Author: Stephen Berman <stephen.berman@gmx.net>
 ;;         Stefan Monnier <monnier@iro.umontreal.ca>
-;; Version: 0.7
+;; Version: 0.8
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@
 ;; adaptive-fill-mode, but without actually changing the buffer's text.
 
 ;;; Code:
-
-(require 'easymenu)
 
 (defcustom adaptive-wrap-extra-indent 0
   "Number of extra spaces to indent in `adaptive-wrap-prefix-mode'.
@@ -57,7 +55,53 @@ extra indent = 2
   :type 'integer
   :safe 'integerp
   :group 'visual-line)
-(make-variable-buffer-local 'adaptive-wrap-extra-indent)
+
+(defun adaptive-wrap--face-extend-p (face)
+  ;; Before Emacs 27, faces always extended beyond EOL, so we check for a
+  ;; non-default background instead.
+  (cond
+   ((listp face)
+    (plist-get face (if (fboundp 'face-extend-p) :extend :background)))
+   ((symbolp face)
+    (if (fboundp 'face-extend-p)
+        (face-extend-p face nil t)
+      (face-background face nil t)))))
+
+(defun adaptive-wrap--prefix-face (fcp _beg end)
+  ;; If the fill-context-prefix already specifies a face, just use that.
+  (cond ((get-text-property 0 'face fcp))
+        ;; Else, if the last character is a newline and has a face that
+        ;; extends beyond EOL, assume that this face spans the whole
+        ;; line and apply it to the prefix to preserve the "block"
+        ;; visual effect.
+        ;; NB: the face might not actually span the whole line: see for
+        ;; example removed lines in diff-mode, where the first character
+        ;; has the diff-indicator-removed face, while the rest of the
+        ;; line has the diff-removed face.
+        ((= (char-before end) ?\n)
+         (let ((eol-face (get-text-property (1- end) 'face)))
+           ;; `eol-face' can be a face, a "face value"
+           ;; (plist of face properties) or a list of one of those.
+           (if (or (not (consp eol-face)) (keywordp (car eol-face)))
+               ;; A single face.
+               (if (adaptive-wrap--face-extend-p eol-face) eol-face)
+             ;; A list of faces.  Keep the ones that extend beyond EOL.
+             (delq nil (mapcar (lambda (f) (if (adaptive-wrap--face-extend-p f) f))
+                               eol-face)))))))
+
+(defun adaptive-wrap--prefix (fcp)
+  (let ((fcp-len (string-width fcp)))
+    (cond
+     ((= 0 adaptive-wrap-extra-indent)
+      fcp)
+     ((< 0 adaptive-wrap-extra-indent)
+      (concat fcp (make-string adaptive-wrap-extra-indent ?\s)))
+     ((< 0 (+ adaptive-wrap-extra-indent fcp-len))
+      (substring fcp
+                 0
+                 (+ adaptive-wrap-extra-indent fcp-len)))
+     (t
+      ""))))
 
 (defun adaptive-wrap-fill-context-prefix (beg end)
   "Like `fill-context-prefix', but with length adjusted by `adaptive-wrap-extra-indent'."
@@ -72,23 +116,12 @@ extra indent = 2
                     (fill-context-prefix beg end))
                   ;; Note: fill-context-prefix may return nil; See:
                   ;; http://article.gmane.org/gmane.emacs.devel/156285
-                  ""))
-         (fcp-len (string-width fcp))
-         (fill-char (if (< 0 fcp-len)
-                        (string-to-char (substring fcp -1))
-                      ?\ )))
-    (cond
-     ((= 0 adaptive-wrap-extra-indent)
-      fcp)
-     ((< 0 adaptive-wrap-extra-indent)
-      (concat fcp
-              (make-string adaptive-wrap-extra-indent fill-char)))
-     ((< 0 (+ adaptive-wrap-extra-indent fcp-len))
-      (substring fcp
-                 0
-                 (+ adaptive-wrap-extra-indent fcp-len)))
-     (t
-      ""))))
+              ""))
+         (prefix (adaptive-wrap--prefix fcp))
+         (face (adaptive-wrap--prefix-face fcp beg end)))
+    (if face
+        (propertize prefix 'face face)
+      prefix)))
 
 (defun adaptive-wrap-prefix-function (beg end)
   "Indent the region between BEG and END with adaptive filling."
@@ -154,87 +187,6 @@ extra indent = 2
 	      :help "Show wrapped long lines with an adjustable prefix"
 	      :button (:toggle . (bound-and-true-p adaptive-wrap-prefix-mode)))
   word-wrap)
-
-;;;; ChangeLog:
-
-;; 2018-10-16  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* adaptive-wrap.el (adaptive-wrap-fill-context-prefix): Ignore
-;; 	paragraph-start
-;; 
-;; 	(and rename 'en' to 'end'). Reported by Dmitry Safronov
-;; 	<saf.dmitry@gmail.com>
-;; 
-;; 2018-10-15  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* adaptive-wrap/adaptive-wrap.el: Fix interaction with visual-fill
-;; 
-;; 	(adaptive-wrap-prefix-function): Remove problematic 'display' properties 
-;; 	as well.
-;; 
-;; 2018-03-12  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* adaptive-wrap/adaptive-wrap.el: Fix use without font-lock
-;; 
-;; 	(adaptive-wrap-prefix-function): Work on whole lines. Fix a kind of
-;; 	memory leak.
-;; 
-;; 2017-05-04  Noam Postavsky  <npostavs@users.sourceforge.net>
-;; 
-;; 	Mark adaptive-wrap-extra-indent as safe if integerp (Bug#23816)
-;; 
-;; 	* packages/adaptive-wrap/adaptive-wrap.el: Bump version, copyright.
-;; 	(adaptive-wrap-extra-indent): Mark as safe if integerp.
-;; 
-;; 2013-08-24  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* adaptive-wrap.el (adaptive-wrap-mode): Move after font-lock
-;; 	(bug#15155).
-;; 
-;; 2013-07-31  Stephen Berman  <stephen.berman@gmx.net>
-;; 
-;; 	* adaptive-wrap.el: Fix bug#14974 by using define-key-after instead of
-;; 	easy-menu-add-item.
-;; 	(adaptive-wrap-unload-function): Remove.
-;; 
-;; 2013-07-29  Stephen Berman  <stephen.berman@gmx.net>
-;; 
-;; 	* adaptive-wrap.el: Require easymenu (bug#14974).
-;; 
-;; 2013-07-19  Rüdiger Sonderfeld  <ruediger@c-plusplus.de>
-;; 
-;; 	* adaptive-wrap.el (menu-bar-options-menu): Add checkbox for Adaptive
-;; 	Wrap to the Line Wrapping submenu.
-;; 	(adaptive-wrap-unload-function): New function.
-;; 
-;; 2013-02-01  Stephen Berman  <stephen.berman@gmx.net>
-;; 
-;; 	Fix error during redisplay: (wrong-type-argument stringp nil)
-;; 
-;; 2012-12-05  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* adaptive-wrap.el (adaptive-wrap-extra-indent): Fix buffer-localness. 
-;; 	Reported by Jonathan Kotta <jpkotta@gmail.com>.
-;; 
-;; 2012-10-30  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	Clean up copyright notices.
-;; 
-;; 2012-05-21  Jonathan Kotta  <jpkotta@gmail.com>
-;; 
-;; 	Add adaptive-wrap-extra-indent.
-;; 	* adaptive-wrap/adaptive-wrap.el (adaptive-wrap-extra-indent): New var.
-;; 	(adaptive-wrap-fill-context-prefix): New function.
-;; 	(adaptive-wrap-prefix-function): Use it.
-;; 	(adaptive-wrap-prefix-mode): Add to visual-line custom group.
-;; 
-;; 2012-01-05  Chong Yidong  <cyd@gnu.org>
-;; 
-;; 	Rename adaptive-wrap-prefix to adaptive-wrap.
-;; 
-;; 	The old name overflowed the column in list-packages.
-;; 
-
 
 (provide 'adaptive-wrap)
 ;;; adaptive-wrap.el ends here
