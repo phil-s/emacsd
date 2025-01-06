@@ -368,7 +368,7 @@ does not run, and therefore no globalized modes take effect).
 
 \\{my-keys-local-minor-mode-map}"
   :init-value t
-  :keymap 'my-keys-local-minor-mode-map)
+  :keymap my-keys-local-minor-mode-map)
 
 ;; Also make it possible to disable my keys.
 (define-globalized-minor-mode my-global-keys-local-minor-mode
