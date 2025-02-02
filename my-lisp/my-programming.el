@@ -796,14 +796,20 @@ custom output filter.  (See `my-sql-comint-preoutput-filter-prompts'.)"
        proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
 
 (defun my-sqli-restart (&optional arg)
-  "Restart `sql-product-interactive' using existing settings.
+  "Restart inferior SQL process using existing settings.
 
-With a prefix argument, prompt for the connection settings."
+If `sql-connection; is non-nil, use `sql-connect', otherwise use
+`sql-product-interactive'.
+
+With a prefix argument, prompt for the connection settings using
+`sql-product-interactive'."
   (interactive "P")
   (if arg
       (call-interactively 'sql-product-interactive)
-    (cl-letf (((symbol-function 'sql-get-login) #'ignore))
-      (call-interactively 'sql-product-interactive))))
+    (if sql-connection
+        (sql-connect sql-connection)
+      (cl-letf (((symbol-function 'sql-get-login) #'ignore))
+        (call-interactively 'sql-product-interactive)))))
 
 (defun my-sql-send-region (start end &optional arg)
   "Send a region to the SQL process.
