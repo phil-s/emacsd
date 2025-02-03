@@ -9,6 +9,10 @@
   (declare-function org-agenda-files "org")
   (declare-function org-defkey "org-keys")
   (declare-function org-eval-in-calendar "org")
+  (declare-function org-timer--get-timer-title "org-timer")
+  (declare-function org-timer-set-timer "org-timer")
+  (declare-function org-timer-value-string "org-timer")
+
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
   (defvar org-agenda-include-diary)
@@ -22,8 +26,11 @@
   (defvar org-log-done)
   (defvar org-mode-map)
   (defvar org-read-date-minibuffer-local-map)
+  (defvar org-show-notification-handler)
   (defvar org-src-fontify-natively)
   (defvar org-src-preserve-indentation)
+  (defvar org-timer-mode-line-string)
+  (defvar org-timer-pause-time)
   (defvar org-todo-keyword-faces)
   (defvar org-todo-keywords)
   (defvar org-use-speed-commands)
@@ -108,7 +115,49 @@
                 (lambda () (interactive)
                   (org-eval-in-calendar '(calendar-forward-day 1)))))
 
+  ;; Notifications.
+  (when (fboundp 'reminder--frame)
+    (setq org-show-notification-handler #'reminder--frame))
+
   ) ;; `my-org-configuration'
+
+
+;;; Clock / timer / notification
+
+(defvar my-pomodoro-history nil
+  "History of purpose strings for `my-pomodoro'.")
+
+(defun my-pomodoro (minutes &optional purpose)
+  "Start a count-down timer lasting MINUTES for working on PURPOSE."
+  ;; (interactive "nMinutes: \nsPurpose: ")
+  (interactive (let (title)
+                 (require 'org-timer)
+                 (setq title (or (org-timer--get-timer-title)
+                                 "Pomodoro"))
+                 (list (read-number "Minutes: ")
+                       (read-string (format "Purpose [%s]: " title)
+                                    nil 'my-pomodoro-history title))))
+  ;; This is a hack to make `org-timer--get-timer-title' default to
+  ;; the title of our choosing, rather than the selected buffer name
+  ;; (by making the buffer name the message of our choosing).
+  (let ((buf (get-buffer-create
+              (if purpose (format "Pomodoro: %s" purpose) "Pomodoro")
+              t)))
+    (unwind-protect
+        (with-current-buffer buf
+          (org-timer-set-timer minutes))
+      (when (buffer-live-p buf)
+        (kill-buffer buf)))))
+
+;; This is the standard definition with the space at the end instead
+;; of at the start.
+(define-advice org-timer-update-mode-line (:override () my-spacing)
+  "Update the timer time in the mode line."
+  (if org-timer-pause-time
+      nil
+    (setq org-timer-mode-line-string
+          (concat "<" (substring (org-timer-value-string) 0 -1) "> "))
+    (force-mode-line-update)))
 
 
 ;;; Agenda / Capture
