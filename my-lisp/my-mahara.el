@@ -260,6 +260,9 @@ files are not relevant.")
 (defun mahara-tags-sentinel (process _signal)
   "Process signals from the TAGS update shell process."
   (when (memq (process-status process) '(exit signal))
+    ;; If the TAGS file has changed, invalidate it.
+    (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
+      (setq tags-completion-table nil))
     ;; Unlike `shell-command', the output buffer is not automatically
     ;; killed if it is empty upon `async-shell-command' completion.
     (let ((buf (get-buffer mahara-tags-autoupdate-buffer)))
@@ -269,31 +272,36 @@ files are not relevant.")
 (defun mahara-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
   (when (and mahara-tags-autoupdate-enabled tags-file-name)
-    (let ((tags-file-local-name (if (not (file-remote-p tags-file-name))
-                                    tags-file-name
-                                  (require 'tramp)
-                                  (tramp-file-local-name tags-file-name))))
-      ;; Verify that the TAGS file actually exists on the server the
-      ;; shell commands will be running on.  We can be called in a
-      ;; buffer with a tramp default-directory, in which case all of
-      ;; our shell commands will be running on the remote server, and
-      ;; that may not be the intended server.
-      (when (let ((max-mini-window-height 1))
-              (eq 0 (shell-command
-                     (format "stat --printf='' %s >/dev/null 2>&1"
-                             (shell-quote-argument tags-file-local-name)))))
-        (let ((dir (file-name-directory tags-file-local-name)))
-          (when (mahara-tags-autoupdate-tree-modified dir)
-            (save-window-excursion
-              (let ((message-truncate-lines t))
-                (async-shell-command (mahara-tags-autoupdate-command dir)
-                                     mahara-tags-autoupdate-buffer)))
-            (let ((proc (get-buffer-process mahara-tags-autoupdate-buffer)))
-              (when proc
-                (set-process-sentinel proc 'mahara-tags-sentinel)))
-            (bury-buffer mahara-tags-autoupdate-buffer)
-            (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
-              (setq tags-completion-table nil))))))))
+    ;; Error handling is important for timer callbacks, else we can end up with
+    ;; non-functional timers with a negative 'Next' time which can't trigger:
+    ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39824#53
+    (with-demoted-errors "Error: %S"
+      (let ((debug-on-error nil)
+            (tags-file-local-name (if (not (file-remote-p tags-file-name))
+                                      tags-file-name
+                                    (require 'tramp)
+                                    (tramp-file-local-name tags-file-name))))
+        ;; Verify that the TAGS file actually exists on the server the
+        ;; shell commands will be running on.  We can be called in a
+        ;; buffer with a tramp default-directory, in which case all of
+        ;; our shell commands will be running on the remote server, and
+        ;; that may not be the intended server.
+        (when (let ((max-mini-window-height 1))
+                (eq 0 (shell-command
+                       (format "stat --printf='' %s >/dev/null 2>&1"
+                               (shell-quote-argument tags-file-local-name)))))
+          (let ((dir (file-name-directory tags-file-local-name)))
+            (when (mahara-tags-autoupdate-tree-modified dir)
+              (save-window-excursion
+                (let ((message-truncate-lines t))
+                  (async-shell-command (mahara-tags-autoupdate-command dir)
+                                       mahara-tags-autoupdate-buffer)))
+              (let ((proc (get-buffer-process mahara-tags-autoupdate-buffer)))
+                (when proc
+                  (set-process-sentinel proc 'mahara-tags-sentinel)))
+              (bury-buffer mahara-tags-autoupdate-buffer)
+              (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
+                (setq tags-completion-table nil)))))))))
 
 (defun mahara-tags-autoupdate-start ()
   "Start (or re-start) the TAGS file autoupdate mechanism.
