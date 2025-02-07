@@ -641,9 +641,14 @@ Remove with:
 ;; Streamline parent directory creation when saving files.
 (add-hook 'before-save-hook 'my-before-save-create-directory-maybe)
 
-;; Enable winner mode
-;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
-(winner-mode 1)
+;; ;; Enable winner mode
+;; ;; "C-c <left>" and "C-c <right>" undo and re-do window changes.
+;; (winner-mode 1)
+;; Replace with:
+;; C-c <left>		tab-bar-history-back
+;; C-c <right>		tab-bar-history-forward
+(setq tab-bar-history-limit 64) ;; winner-ring-size is 200
+(tab-bar-history-mode 1)
 
 ;; `switch-to-buffer' should display the buffer at its previous
 ;; position in the selected window, provided the buffer is currently

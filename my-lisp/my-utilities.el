@@ -41,6 +41,8 @@
   (declare-function shr-render-buffer "shr")
   (declare-function sql-buffer-live-p "sql")
   (declare-function sql-highlight-product "sql")
+  (declare-function tab-bar-history-back "tab-bar")
+  (declare-function tab-bar-history-forward "tab-bar")
   (declare-function tags--compat-files "etags")
   (declare-function term-char-mode "term")
   (declare-function term-mode "term")
@@ -55,8 +57,6 @@
   (declare-function tramp-get-completion-function "tramp")
   (declare-function tramp-tramp-file-p "tramp")
   (declare-function url-filename "url-parse")
-  (declare-function winner-redo "winner")
-  (declare-function winner-undo "winner")
   (declare-function with-editor-async-shell-command "with-editor")
   )
 
@@ -303,17 +303,19 @@ any numeric prefix argument is passed to `occur' as nlines."
   (declare-function term-char-mode "term" ())
   (require 'term) ;; `term-in-char-mode' is a macro.
   )
+
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call `next-buffer' if the last command was
-`next-buffer' or `previous-buffer', and `winner-redo' if the last
-command was `winner-undo' or `winner-redo'."
+`next-buffer' or `previous-buffer', and `tab-bar-history-forward' if the
+last command was `tab-bar-history-back' or `tab-bar-history-forward'."
   (interactive "p")
-  (cond ((memq last-command (list 'next-buffer 'previous-buffer))
+  (cond ((memq last-command '(next-buffer previous-buffer))
          (progn (next-buffer)
                 (setq this-command 'next-buffer)))
-        ((memq last-command (list 'winner-redo 'winner-undo))
-         (progn (winner-redo)
-                (setq this-command 'winner-redo)))
+        ((memq last-command '(tab-bar-history-forward
+                              tab-bar-history-back))
+         (progn (tab-bar-history-forward)
+                (setq this-command 'tab-bar-history-forward)))
         ((and (derived-mode-p 'term-mode)
               (require 'term)      ; for byte-compilation
               (term-in-char-mode)) ; <- macro expansion
@@ -324,15 +326,16 @@ command was `winner-undo' or `winner-redo'."
 
 (defun my-backward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call `previous-buffer' if the last command was
-`next-buffer' or `previous-buffer', and `winner-undo' if the last
-command was `winner-undo' or `winner-redo'."
+`next-buffer' or `previous-buffer', and `tab-bar-history-back' if the
+last command was `tab-bar-history-back' or `tab-bar-history-forward'."
   (interactive "p")
-  (cond ((memq last-command (list 'next-buffer 'previous-buffer))
+  (cond ((memq last-command '(next-buffer previous-buffer))
          (progn (previous-buffer)
                 (setq this-command 'previous-buffer)))
-        ((memq last-command (list 'winner-redo 'winner-undo))
-         (progn (winner-undo)
-                (setq this-command 'winner-undo)))
+        ((memq last-command '(tab-bar-history-forward
+                              tab-bar-history-back))
+         (progn (tab-bar-history-back)
+                (setq this-command 'tab-bar-history-back)))
         ((and (derived-mode-p 'term-mode)
               (require 'term)      ; for byte-compilation
               (term-in-char-mode)) ; <- macro expansion

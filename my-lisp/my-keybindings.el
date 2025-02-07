@@ -233,10 +233,13 @@
   ;; iedit
   (define-key keymap (kbd "C-;")       'iedit-mode)
 
-  ;; winner-mode. Add to default bindings, and integrate with
-  ;; my-(backward|forward)-word-or-buffer-or-windows.
-  (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
-  (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
+  ;; ;; winner-mode. Add to default bindings, and integrate with
+  ;; ;; my-(backward|forward)-word-or-buffer-or-windows.
+  ;; (define-key keymap (kbd "C-c <C-left>") 'winner-undo)
+  ;; (define-key keymap (kbd "C-c <C-right>") 'winner-redo)
+  ;; Replace with:
+  (define-key keymap (kbd "C-c <C-left>") 'tab-bar-history-back)
+  (define-key keymap (kbd "C-c <C-right>") 'tab-bar-history-forward)
 
   ;; Miscellaneous frame/window/buffer manipulation
   (define-key keymap (kbd "M-o")       'expand-other-window)
