@@ -302,6 +302,17 @@ when `auto-save-mode' is invoked manually.")
 ;; Retain point when scrolling off-screen and back
 (setq scroll-preserve-screen-position t)
 
+;; Try to prevent things being displayed in iconified frames.
+;;
+;; When XMonad hides an Emacs frame (whether because another frame is
+;; maximised, or because the frame is in a different workspace entirely),
+;; Emacs sees the hidden frame as "iconified" (see `frame-visible-p').
+;;
+;; I want these frames to be treated as if they were invisible; but some
+;; commands pass (reusable-frames . 0) to `display-buffer', which allows
+;; it to select windows in iconified frames.
+(push '(reusable-frames . visible) (cdr display-buffer-base-action))
+
 ;; Disable bi-directional display support for performance reasons.
 ;; The performance implications of this feature are probably very
 ;; minor in most cases; but the likes of bug #23801, when combined
