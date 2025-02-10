@@ -1672,6 +1672,48 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
         (unless (memq (char-before) '(?\) ?\"))
           (forward-sexp)))
       (mark-sexp -1))))
+
+(defun my-read-thing-at-point-thing (&optional prompt all)
+  "Read a Thing."
+  (let* ((allthings (nconc
+                     (cl-loop for sym being the symbols
+                              if (or (get sym 'thing-at-point)
+                                     (get sym 'bounds-of-thing-at-point))
+                              collect sym)
+                     (mapcar #'car thing-at-point-provider-alist)))
+         (things (if all
+                     allthings
+                   (cl-loop for sym in allthings
+                            if (bounds-of-thing-at-point sym)
+                            collect sym))))
+    (cond ((null things) (user-error "No thing at point"))
+          ((eql 1 (length things)) (car things))
+          (t (intern (completing-read
+                      (format (or prompt "Thing (default %s): ") (car things))
+                      things nil :require-match nil nil
+                      (symbol-name (car things))))))))
+
+(defun my-narrow-to-thing-at-point (thing &optional all)
+  "Narrow to THING at point."
+  (interactive (list (my-read-thing-at-point-thing nil current-prefix-arg)))
+  (if-let ((bounds (bounds-of-thing-at-point thing)))
+      (narrow-to-region (car bounds) (cdr bounds))
+    (user-error "No %s at point" thing)))
+
+(defun my-narrow-to-thing-at-point-indirect ()
+  "`my-narrow-to-thing-at-point' in a cloned indirect buffer in the other window.
+
+See `clone-indirect-buffer'."
+  (interactive)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (call-interactively 'my-narrow-to-thing-at-point))
+    (pop-to-buffer buf)))
+
+(defun my-narrow-to-sexp-at-point ()
+  "Narrow to sexp at point."
+  (interactive)
+  (my-narrow-to-thing-at-point 'sexp))
 
 (defun my-copy-region-unindented (pad beginning end &optional func)
   "Copy the region, un-indented by the length of its minimum indent.

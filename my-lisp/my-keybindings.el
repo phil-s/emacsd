@@ -257,6 +257,9 @@
   (define-key keymap (kbd "C-x 4 n n") 'my-narrow-to-region-indirect)
   (define-key keymap (kbd "C-x 4 n p") 'my-narrow-to-page-indirect)
   (define-key keymap (kbd "C-x 4 n d") 'my-narrow-to-defun-indirect)
+  (define-key keymap (kbd "C-x 4 n t") 'my-narrow-to-thing-at-point-indirect)
+  (define-key keymap (kbd "C-x n t")   'my-narrow-to-thing-at-point)
+  (define-key keymap (kbd "C-x n (")   'my-narrow-to-sexp-at-point)
 
   ;; Diff / Comparison, and Version control
   (define-key keymap (kbd "C-M-=")     'compare-windows)
