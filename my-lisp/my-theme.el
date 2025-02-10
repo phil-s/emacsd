@@ -124,14 +124,15 @@
 (defun my-alt-theme ()
   "A really obviously-different theme, for when I need it."
   (interactive)
-  (disable-theme 'zenburn)
+  (mapc #'disable-theme custom-enabled-themes)
   ;;(load-theme 'light-blue t)
   (load-theme 'deeper-blue t)
   (with-eval-after-load "whitespace"
     (custom-theme-set-faces
      'deeper-blue
      '(whitespace-space ((t . (:foreground "grey16"))) t)
-     '(whitespace-newline ((t . (:foreground "grey16"))) t)))
+     '(whitespace-newline ((t . (:foreground "grey16"))) t)
+     ))
   ;; (with-eval-after-load "magit"
   ;;   (set-face-background 'magit-item-highlight "blue4")
   ;;   (set-face-foreground 'magit-item-highlight nil)
@@ -139,8 +140,9 @@
   ;;   (set-face-attribute 'magit-item-highlight nil :inherit nil))
   )
 
-(defun my-replace-theme (theme &optional hl-sexp-background)
-  "Replace current theme with THEME."
+(defun my-replace-theme (theme &optional faces)
+  "Replace current theme with THEME.
+FACES is a list of face specs for `custom-theme-set-faces'."
   (mapc #'disable-theme custom-enabled-themes)
   (enable-theme theme)
   ;; Modus theme tweaks.
@@ -150,21 +152,28 @@
              (face-spec (face-spec-choose theme-face))
              (background (plist-get face-spec :background)))
         (set-face-attribute 'hl-line nil :background background))))
-  ;; Clobber certain unsupported faces.
-  (when (and hl-sexp-background (facep 'hl-sexp-face))
-    (set-face-attribute 'hl-sexp-face nil :background hl-sexp-background)))
+  ;; Override certain faces.
+  (when faces
+    (apply #'custom-theme-set-faces theme faces)))
 
 (defun my-theme-modus-operandi ()
   "Replace current theme with `modus-operandi'."
   (interactive)
   (require 'modus-operandi-theme)
-  (my-replace-theme 'modus-operandi "#f3f3f3"))
+  (my-replace-theme 'modus-operandi
+                    '((hl-sexp-face ((t . (:background "#f3f3f3"))) t)
+                      (tks-comment-face ((t . (:foreground "#3548cf"))) t)
+                      (tks-date-face ((t . (:foregreound "#dc0c93"))) t)
+                      (tks-description-face ((t . (:foregreound ""))) t)
+                      (tks-time-face ((t . (:foregreound "#9c6903"))) t)
+                      (tks-wr-face ((t . (:foregreound "#603f9f"))) t))))
 
 (defun my-theme-modus-vivendi ()
   "Replace current theme with `modus-vivendi'."
   (interactive)
   (require 'modus-vivendi-theme)
-  (my-replace-theme 'modus-vivendi "#172031"))
+  (my-replace-theme
+   'modus-vivendi '((hl-sexp-face ((t . (:background "#172031"))) t))))
 
 (defun my-theme-zenburn ()
   "Replace current theme with `zenburn'."
