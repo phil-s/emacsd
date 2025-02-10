@@ -2458,6 +2458,16 @@ For example, to trace all ELP functions, do the following:
        (define-key map "q" `(lambda () (interactive) (kill-buffer ,buf)))
        map))))
 
+
+(defun my-x-paste-example (wid)
+   (interactive)
+   (my-x-paste #'my-example wid "*Example*" "Testing"))
+
+(defun my-example ()
+  (interactive)
+  (gui-backend-set-selection
+   'CLIPBOARD (completing-read "Choose: " '(one two three))))
+
 (defun my-x-paste (command wid &optional bufname header text)
   "Run COMMAND and paste the result into the original X window.
 
@@ -2486,7 +2496,7 @@ Example:
  \(defun my-x-paste-totp (wid)
    \"Paste `totp-as-clipboard' into X window WID (see `my-x-paste').\"
    (interactive)
-   (my-x-paste #\\='totp-as-clipboard wid \"*TOTP\"
+   (my-x-paste #\\='totp-as-clipboard wid \"*TOTP*\"
                \"Time-based One-time Password (TOTP)\"))
 
 XMonad key binding (mod-T) for xmonad.hs:
@@ -2627,7 +2637,7 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
 (defun my-x-paste-totp (wid)
   "Paste `totp-as-clipboard' into X window WID (see `my-x-paste')."
   (interactive)
-  (my-x-paste #'totp-as-clipboard wid "*TOTP"
+  (my-x-paste #'totp-as-clipboard wid "*TOTP*"
               "Time-based One-time Password (TOTP)"))
 
 (defun my-crontab-edit ()
