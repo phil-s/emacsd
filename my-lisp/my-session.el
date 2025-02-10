@@ -66,6 +66,22 @@
         ;; list, all minibuffer histories will be saved automatically
         ;; as long as `savehist-save-minibuffer-history' is non-nil.
         ))
+
+(define-advice savehist-autosave (:around (orig-fun &rest args) my-no-debug-repeating-timer)
+  "Advice for `savehist-autosave'.
+
+Error handling is important for timer callbacks, else we can end up with
+non-functional timers with a negative \\='Next\\=' time which can't trigger:
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39824#53
+
+We let-bind `debug-on-error' to nil around `savehist-autosave' calls.
+
+Remove with:
+\(advice-remove \\='savehist-autosave \\='savehist-autosave@my-no-debug-repeating-timer)"
+  (with-demoted-errors "Error: %S"
+    (let ((debug-on-error nil))
+      (apply orig-fun args))))
+
 (savehist-mode 1)
 ;; n.b. Code elsewhere should use:
 ;; (with-eval-after-load "savehist"

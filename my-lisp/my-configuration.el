@@ -520,6 +520,21 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
                 ;; (unless (or now soon)
                 (* 60 (or soon appt-display-interval))))))
 
+(define-advice appt-check (:around (orig-fun &rest args) my-no-debug-repeating-timer)
+  "Advice for `appt-check'.
+
+Error handling is important for timer callbacks, else we can end up with
+non-functional timers with a negative \\='Next\\=' time which can't trigger:
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=39824#53
+
+We let-bind `debug-on-error' to nil around `appt-check' calls.
+
+Remove with:
+\(advice-remove \\='appt-check \\='appt-check@my-no-debug-repeating-timer)"
+  (with-demoted-errors "Error: %S"
+    (let ((debug-on-error nil))
+      (apply orig-fun args))))
+
 (define-advice appt-check (:after (&optional _force) my-guarantee)
   "Advice for `appt-check'.
 
