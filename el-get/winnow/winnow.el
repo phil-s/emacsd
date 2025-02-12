@@ -54,7 +54,7 @@
   "Find the start position of the compilation output."
   (save-excursion
     (goto-char (point-min))
-    (when (derived-mode-p 'compilation-mode)
+    (when (compilation-buffer-p (current-buffer))
       (compilation-next-error 1))
     (point-at-bol 1)))
 
@@ -62,7 +62,7 @@
   "Find the end position of the compilation output."
   (save-excursion
     (goto-char (point-max))
-    (when (derived-mode-p 'compilation-mode)
+    (when (compilation-buffer-p (current-buffer))
       (compilation-next-error -1))
     (point-at-bol 2)))
 
