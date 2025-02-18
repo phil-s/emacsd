@@ -587,6 +587,15 @@ Advice to `magit-push-current-to-upstream' triggers this query."
   (setq left-fringe-width 20)
   )
 
+(add-hook 'magit-status-mode-hook 'my-magit-status-mode-hook)
+(defun my-magit-status-mode-hook ()
+  "Called in `magit-status-mode-hook'."
+  ;; Why does a nil `search-invisible' and/or `isearch-invisible' not
+  ;; prevent sections being displayed?
+  ;; Check behaviour regarding `magit-section--open-temporarily'...
+  ;; In the mean time.,..
+  (setq-local isearch-lazy-highlight nil))
+
 ;; Always open magit windows in the current frame.
 (add-to-list 'display-buffer-alist
              (cons "^magit[-:]"
