@@ -701,7 +701,7 @@ handle input from `sql-mode' buffers as well as comint prompt input."
             'my-sql-comint-preoutput-filter-prompts :append :local))
 
 (defun my-sql-comint-preoutput-filter-table-cruft (output)
-  "Filter 'Indexes' and 'Check constrints' lines from psql '\d' output.
+  "Filter \"Indexes\" and \"Check constrints\" lines from psql \"\\d\" output.
 
 Runs after `my-sql-comint-preoutput-filter-prompts' in
 `comint-preoutput-filter-functions'."
