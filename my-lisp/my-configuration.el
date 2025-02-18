@@ -73,6 +73,7 @@
   (defvar ert-batch-print-length)
   (defvar ert-batch-print-level)
   (defvar eshell-directory-name)
+  (defvar eww-mode-map)
   (defvar ffap-url-regexp)
   (defvar global-hl-line-sticky-flag)
   (defvar goto-address-mail-regexp)
@@ -1802,6 +1803,10 @@ when the file path is too long to show on one line."
 (defun my-eww-mode-hook ()
   "Used in `eww-mode-hook'."
   (my-adaptive-visual-line-mode 1))
+
+(with-eval-after-load "eww"
+  (define-key eww-mode-map (kbd "]") 'eww-next-url)
+  (define-key eww-mode-map (kbd "[") 'eww-previous-url))
 
 ;; Show image dimensions in the mode line. See also frame-title-format.
 (with-eval-after-load 'image-mode
