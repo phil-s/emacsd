@@ -126,6 +126,7 @@ s|</head>
 
 ;; Custom php-mode configuration
 (add-hook 'php-mode-hook 'my-php-mode-hook t)
+(add-hook 'php-ts-mode-hook 'my-php-ts-mode-hook t)
 
 (defconst my-php-style
   ;; Check the `c-offsets-alist' variable and `c-set-offset' function.
@@ -184,6 +185,11 @@ s|</head>
   ;; Configure imenu
   ;; (php-imenu-setup)
   )
+
+(defun my-php-ts-mode-hook ()
+  "My php-mode customisations."
+  ;; Fix this annoyance / inconsistency with `php-mode'.
+  (modify-syntax-entry ?_ "_"))
 
 (eval-when-compile
   (declare-function php-imenu-create-index "php-imenu"))
