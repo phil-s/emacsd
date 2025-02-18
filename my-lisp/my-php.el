@@ -212,6 +212,9 @@ s|</head>
 ;; Debugger.
 (require 'dape)
 (dape-breakpoint-global-mode 1)
+;; Allow more space for variable names (20 => 50).
+(setq dape-info-variable-table-row-config
+      '((name . 50) (value . 50) (type . 20)))
 ;; Set 'xdebugSettings' for the xdebug adapter.
 ;; https://github.com/xdebug/vscode-php-debug#supported-launchjson-settings
 (let ((xdebug-config (alist-get 'xdebug dape-configs)))
