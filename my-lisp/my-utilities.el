@@ -1461,6 +1461,7 @@ Otherwise call `ediff-buffers' interactively."
 (defvar my-ediff-regions nil)
 (defun my-ediff-regions (beginning end &optional startup-hooks)
   (interactive "r")
+  (require 'ediff)
   (if (not my-ediff-regions)
       (progn
         (setq my-ediff-regions (cons (copy-marker beginning) end))
