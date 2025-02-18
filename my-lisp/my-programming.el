@@ -60,7 +60,6 @@
 (defun my-coding-config ()
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
-  (if window-system (hl-line-mode t))
   (idle-highlight-mode 1)
   ;; `global-eldoc-mode' is enabled in 25.1 by default
   (when (< emacs-major-version 25)
@@ -498,7 +497,6 @@ Advice for `visit-tags-table'."
 (defun my-xml-hook ()
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
-  (if window-system (hl-line-mode t))
   (idle-highlight-mode 1)
   (setq indent-tabs-mode nil)
   (local-set-key (kbd "<C-M-right>") 'nxml-forward-element)
