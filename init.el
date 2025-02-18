@@ -1123,9 +1123,6 @@
 ;; Email.
 (require 'my-mail)
 
-;; Configure visual theme
-(require 'my-theme)
-
 ;; Session management
 (require 'my-session)
 

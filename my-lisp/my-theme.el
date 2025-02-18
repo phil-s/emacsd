@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: nil; -*-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Colour theme and faces
+;;
+;; (Loaded in early-init.el!)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Notes on "light" and "dark" terminal themes
@@ -109,10 +111,10 @@
 
 ;; Color theme - Zenburn
 ;; https://github.com/bbatsov/zenburn-emacs
-(when (require 'zenburn-theme nil t)
-  ;; Initialise zenburn
+(add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/el-get/zenburn-theme"))
+(when (require-theme 'zenburn-theme t)
+  ;; (mapc #'disable-theme custom-enabled-themes) ;; will be nil
   (load-theme 'zenburn t)
-  ;; Custom changes to Zenburn defaults...
   (my-zenburn-theme-config))
 
 ;; This magic means we fall back to Symbola for all missing unicode glyphs.

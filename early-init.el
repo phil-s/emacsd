@@ -77,6 +77,9 @@
     :version "29.1"
     :help-echo "Click to close tab"))
 
+;; Configure visual theme.
+(require 'my-theme (expand-file-name "~/.emacs.d/my-lisp/my-theme"))
+
 (defvar my-early-init-load-end (current-time))
 
 (defvar my-elpa-time)
