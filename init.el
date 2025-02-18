@@ -1010,9 +1010,11 @@
 ;;;; Initialisation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar my-init-load-start (current-time))
+;; Require first, and call (my-startup-log) last.
+(load-file "~/.emacs.d/my-lisp/my-startup-log.el")
 
 ;; Log the elapsed time between calls to `my-init-time-elapsed'.
+(defvar my-init-load-start)
 (defvar my-init-time-marker my-init-load-start)
 (defsubst my-init-time-elapsed (id)
   (message "%02d: Elapsed: %.2fs"
@@ -1153,61 +1155,8 @@
 (my-log-emacs-start-time)
 (add-hook 'kill-emacs-hook 'my-log-emacs-uptime)
 
-;; Display the time taken to start Emacs.
-(defvar my-early-init-load-start)
-(defvar my-early-init-load-end)
-(defvar my-elpa-time)
-(defvar my-after-init-hook-time)
-(defvar my-after-init-hook-duration)
-(let (;; Time between `before-init-time' and early-init.el.  [Near zero]
-      ;; (before-early (time-to-seconds (time-subtract my-early-init-load-start
-      ;;                                               before-init-time)))
-      ;; Time to process early-init.el.
-      (early-el (time-to-seconds (time-subtract my-early-init-load-end
-                                                my-early-init-load-start)))
-      ;; Time between early-init.el and init.el, excluding time for
-      ;; `package-activate-all' (see early-init.el).
-      (early-to-init (- (time-to-seconds (time-subtract my-init-load-start
-                                                        my-early-init-load-end))
-                        my-elpa-time))
-      ;; Time to process init.el.
-      (init-el (time-to-seconds (time-since my-init-load-start)))
-      ;; End of init.el (now).
-      (after-init-el (current-time)))
-  ;; Note the end of `after-init-hook'.
-  (add-hook 'after-init-hook
-            `(lambda ()
-               (setq my-after-init-hook-time (current-time)
-                     my-after-init-hook-duration (time-to-seconds
-                                                  (time-since ',after-init-el))))
-            100)
-  ;; Report all times after `emacs-startup-hook'.
-  (add-hook 'emacs-startup-hook
-            `(lambda ()
-               ;; (message "Init time was %.2fs (%.2fs before) (%.2fs in %s) \
-               ;; (%.2fs elpa etc) (%.2fs in %s) (%.2fs after)."
-               ;;                (message "Init time was %.2fs (%.2fs %s) (%.2fs elpa) \
-               ;; (%.2fs other) (%.2fs %s) (%.2fs after-init) (%.2fs startup)"
-               (let ((inhibit-message t))
-                 (message "Init time was %.2fs comprising:
-- %.2fs %s
-- %.2fs elpa (package-activate-all)
-- %.2fs other (between early-init.el and init.el)
-- %.2fs %s
-- %.2fs after init.el / after-init-hook
-- %.2fs final startup (and emacs-startup-hook)"
-                          ;; Total time.
-                          (time-to-seconds (time-since before-init-time))
-                          ;; ,before-early [~zero]
-                          ,early-el (file-name-nondirectory early-init-file)
-                          ,my-elpa-time
-                          ,early-to-init ;; "other" time between early-init.el and
-                          ;; init.el, not accounted for by `package-activate-all'.
-                          ,init-el (file-name-nondirectory user-init-file)
-                          my-after-init-hook-duration
-                          (time-to-seconds (time-since my-after-init-hook-time))
-                          )))
-            100))
+;; Log (and break down) the time taken to start Emacs.
+(my-startup-log)
 
 ;; Replicate --debug-init (see also the start of early-init.el).
 ;; I think this gets a let-binding on account of the support for

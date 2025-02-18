@@ -82,7 +82,7 @@
 
 (defvar my-early-init-load-end (current-time))
 
-(defvar my-elpa-time)
+(defvar my-elpa-time -0.0)
 (define-advice package-activate-all (:around (orig-fun &rest args) my-timer)
   (let ((before (current-time)))
     (apply orig-fun args)
