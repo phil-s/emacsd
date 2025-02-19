@@ -25,11 +25,21 @@
 
 ;; Setting the default font in early-init.el improves start time by ~200ms.
 ;;
-;; Don't set the default font in (custom-set-faces), because it makes
+;; Note that setting the default font in (custom-set-faces) makes
 ;; things super-funky during initialisation if that font doesn't exist
-;; on the system.
+;; on the system.  I can possibly check for it with the following, but
+;; in practice I install my fonts when I install Emacs, and shouldn't
+;; need to waste time checking for this every time I start Emacs...
+;;
+;; (not (null (member "Droid Sans Mono Dotted" (font-family-list))))
+;; (not (null (member "Atkinson Hyperlegible" (font-family-list))))
+;;
+;; N.b. The following end up saved to ~/.emacs.d/custom.el as well.
 (custom-set-faces
  '(default ((t (:height 120 :family "Droid Sans Mono Dotted"))))
+ ;; TODO: Decide whether to use the default font as the fixed-pitch
+ ;; font, or if they should remain visibly distinct.
+ ;; '(fixed-pitch ((t (:family "Droid Sans Mono Dotted"))))
  '(variable-pitch ((t (:family "Atkinson Hyperlegible"))))
  '(variable-pitch-text ((t (:inherit variable-pitch :height 1.25)))))
 
