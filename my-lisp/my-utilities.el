@@ -35,8 +35,6 @@
   (declare-function dired-nondirectory-p "dired-aux")
   (declare-function dired-virtual-mode "dired-x")
   (declare-function fileloop-continue "fileloop")
-  (declare-function he-reset-string "hippie-exp")
-  (declare-function he-substitute-string "hippie-exp")
   (declare-function ibuffer-quit "ibuffer")
   (declare-function notifications-notify "notifications")
   (declare-function shr-render-buffer "shr")
@@ -91,7 +89,9 @@ Use `set-region-read-only' to set this property."
 (eval-when-compile
   (defvar he-num)
   (defvar he-search-string)
+  (defvar he-substitute-string)
   (defvar he-tried-table)
+  (declare-function he-reset-string "hippie-exp")
   (declare-function he-substitute-string "hippie-exp"))
 
 (defun my-hippie-expand-completions (&optional hippie-expand-function)
@@ -108,47 +108,61 @@ The optional argument can be generated with `make-hippie-expand-function'."
         (while (progn
                  (funcall hippie-expand-function nil)
                  (setq last-command 'my-hippie-expand-completions)
-                 (not (equal he-num -1))))))
+                 (when (not (equal he-num -1))
+                   (let ((str (car he-tried-table)))
+                     (unless (get-text-property 0 'my-group str)
+                       (let ((func (nth he-num hippie-expand-try-functions-list)))
+                         (add-text-properties 0 (length str) `(my-group ,func) str)))
+                     'loop))))))
     ;; Provide the options in the order in which they are normally generated.
     (delete he-search-string (reverse he-tried-table))))
 
 (declare-function he-substitute-string "hippie-exp" (STR &optional TRANS-CASE))
-(defmacro my-ido-hippie-expand-with (hippie-expand-function)
-  "Generate an interactively-callable function that offers ido-based completion
+(defmacro my-hippie-expand-menu-with (hippie-expand-function)
+  "Generate an interactively-callable function that offers menu-based completion
 using the specified hippie-expand function."
   `(lambda (&optional selection)
      (interactive
-      (let ((options (my-hippie-expand-completions ,hippie-expand-function)))
-        (when options
-          (let ((old-fm (if fido-mode 1 0))
-                (old-fvm (if fido-vertical-mode 1 0)))
-            (unwind-protect
-                (progn
-                  (unless fido-mode
-                    (fido-mode 1))
-                  (unless fido-vertical-mode
-                    (fido-vertical-mode 1))
-                  ;; Return interactive spec.
-                  (list (completing-read "Completions: " options)))
-              ;; Unwind forms.
-              (fido-vertical-mode old-fvm)
-              (fido-mode old-fm))))))
+      (when-let ((options (my-hippie-expand-completions ,hippie-expand-function)))
+        (list (let ((minibuffer-visible-completions t)
+                    (completion-auto-help 'always)
+                    (completion-extra-properties
+                     '( :display-sort-function identity
+                        :group-function my-hippie-expand-menu-group)))
+                ;; Open the completions buffer immediately, unless we're not
+                ;; using the normal `completing-read-function'.
+                (minibuffer-with-setup-hook
+                    (if (or (not (eq completing-read-function 'completing-read-default))
+                            ;; How irritating that vertico uses advice.  It
+                            ;; means that we have to test for it explicitly!
+                            (bound-and-true-p vertico-mode))
+                        #'ignore
+                      #'minibuffer-completion-help)
+                  (completing-read "Completions: " options nil nil
+                                   he-search-string))))))
      (if selection
          (progn
            (undo-boundary)
            (he-substitute-string selection t))
        (message "No expansion found"))))
 
-(defun my-ido-hippie-expand ()
-  "Offer ido-based completion for the word at point."
-  (interactive)
-  (call-interactively (my-ido-hippie-expand-with 'hippie-expand)))
+(defun my-hippie-expand-menu-group (completion transform)
+  (if transform
+      completion
+    (if-let ((group (get-text-property 0 'my-group completion)))
+        (symbol-name group)
+      "ungrouped")))
 
-(defun my-ido-hippie-expand-filename ()
-  "Offer ido-based completion for the filename at point."
+(defun my-hippie-expand-menu ()
+  "Offer menu-based completion for the word at point."
+  (interactive)
+  (call-interactively (my-hippie-expand-menu-with 'hippie-expand)))
+
+(defun my-hippie-expand-menu-filename ()
+  "Offer menu-based completion for the filename at point."
   (interactive)
   (call-interactively
-   (my-ido-hippie-expand-with
+   (my-hippie-expand-menu-with
     (make-hippie-expand-function '(try-complete-file-name)))))
 
 (defun my-hippie-expand (&optional arg)
@@ -157,7 +171,7 @@ using the specified hippie-expand function."
   (cond ((consp current-prefix-arg)
          (when (eq last-command 'my-hippie-expand)
            (he-reset-string))
-         (my-ido-hippie-expand))
+         (my-hippie-expand-menu))
         (t
          (hippie-expand arg))))
 
