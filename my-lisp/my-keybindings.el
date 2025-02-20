@@ -24,7 +24,8 @@
 
 ;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
-(global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
+;; (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
+(global-set-key (kbd "M-/") 'my-hippie-expand) ; In place of dabbrev-expand
 (global-set-key (kbd "M-.") 'etags-select-find-tag)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 (with-eval-after-load "my-utilities"

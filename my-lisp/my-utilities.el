@@ -35,6 +35,7 @@
   (declare-function dired-nondirectory-p "dired-aux")
   (declare-function dired-virtual-mode "dired-x")
   (declare-function fileloop-continue "fileloop")
+  (declare-function he-reset-string "hippie-exp")
   (declare-function he-substitute-string "hippie-exp")
   (declare-function ibuffer-quit "ibuffer")
   (declare-function notifications-notify "notifications")
@@ -99,7 +100,7 @@ The optional argument can be generated with `make-hippie-expand-function'."
   (let ((this-command 'my-hippie-expand-completions)
         (last-command last-command)
         (hippie-expand-function (or hippie-expand-function 'hippie-expand)))
-    ;; avoid the (ding) when hippie-expand exhausts its options.
+    ;; Avoid the (ding) when hippie-expand exhausts its options.
     (cl-letf (((symbol-function 'ding) 'ignore))
       ;; Evaluating the completions modifies the buffer, however we
       ;; will finish up in the same state that we began.
@@ -119,7 +120,19 @@ using the specified hippie-expand function."
      (interactive
       (let ((options (my-hippie-expand-completions ,hippie-expand-function)))
         (when options
-          (list (ido-completing-read "Completions: " options)))))
+          (let ((old-fm (if fido-mode 1 0))
+                (old-fvm (if fido-vertical-mode 1 0)))
+            (unwind-protect
+                (progn
+                  (unless fido-mode
+                    (fido-mode 1))
+                  (unless fido-vertical-mode
+                    (fido-vertical-mode 1))
+                  ;; Return interactive spec.
+                  (list (completing-read "Completions: " options)))
+              ;; Unwind forms.
+              (fido-vertical-mode old-fvm)
+              (fido-mode old-fm))))))
      (if selection
          (progn
            (undo-boundary)
@@ -137,6 +150,16 @@ using the specified hippie-expand function."
   (call-interactively
    (my-ido-hippie-expand-with
     (make-hippie-expand-function '(try-complete-file-name)))))
+
+(defun my-hippie-expand (&optional arg)
+  "Like `hippie-expand' but offers a menu with \\[universal-argument]."
+  (interactive "P")
+  (cond ((consp current-prefix-arg)
+         (when (eq last-command 'my-hippie-expand)
+           (he-reset-string))
+         (my-ido-hippie-expand))
+        (t
+         (hippie-expand arg))))
 
 ;; Functions/keys for moving within and switching between
 ;; buffers and windows
