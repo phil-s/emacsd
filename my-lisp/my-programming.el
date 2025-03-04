@@ -14,7 +14,6 @@
   (defvar imenu--rescan-item)
   (defvar imenu-max-item-length)
   (defvar js-mode-map)
-  (defvar name-and-pos)
   (defvar selected-symbol)
   (defvar so-long-predicate)
   (defvar so-long-threshold)
@@ -23,7 +22,6 @@
   (defvar sql-product)
   (defvar sql-prompt-cont-regexp)
   (defvar sql-prompt-regexp)
-  (defvar symbol-names)
   (defvar web-mode-autocompletes)
   (defvar web-mode-tag-auto-close-style)
   (defvar visual-wrap-comments-column)
@@ -161,36 +159,49 @@
       line-number-display-limit-width (/ most-positive-fixnum 1000))
 
 ;; Provide nice keyboard access to imenu, using Ido.
+(defvar my-icomplete--fido-mode-setup)
+(defvar name-and-pos)
+(defvar symbol-names)
 (defun imenu-ido-goto-symbol (&optional symbol-list)
   "Refresh imenu and jump to a place in the buffer using Ido."
   (interactive)
-  (unless (featurep 'imenu)
-    (require 'imenu nil t))
+  (require 'icomplete)
+  (require 'imenu)
   (cond
    ((not symbol-list)
-    (let ((ido-mode ido-mode)
-          (ido-enable-flex-matching
-           (if (boundp 'ido-enable-flex-matching)
-               ido-enable-flex-matching t))
+    (let ((x-fido-mode fido-mode)
+          (x-fido-vertical-mode fido-vertical-mode)
+          (my-icomplete--fido-mode-setup t)
+          (default (symbol-at-point))
           name-and-pos symbol-names position)
-      (unless ido-mode
-        (ido-mode 1)
-        (setq ido-enable-flex-matching t))
-      (while (progn
-               (imenu--cleanup)
-               (setq imenu--index-alist nil)
-               (imenu-ido-goto-symbol (imenu--make-index-alist))
-               (setq selected-symbol
-                     (ido-completing-read "Symbol? " symbol-names))
-               (string= (car imenu--rescan-item) selected-symbol)))
-      (unless (and (boundp 'mark-active) mark-active)
-        (push-mark nil t nil))
-      (setq position (cdr (assoc selected-symbol name-and-pos)))
-      (cond
-       ((overlayp position)
-        (goto-char (overlay-start position)))
-       (t
-        (goto-char position)))))
+      (unwind-protect
+          (progn
+            (unless fido-mode
+              (fido-mode 1)
+              (fido-vertical-mode 1))
+            (while (progn
+                     (imenu--cleanup)
+                     (setq imenu--index-alist nil)
+                     (imenu-ido-goto-symbol (imenu--make-index-alist))
+                     (setq selected-symbol
+                           (if default
+                               (completing-read
+                                (format "Symbol (default %s): " default)
+                                symbol-names nil nil nil nil
+                                (symbol-name default))
+                             (completing-read "Symbol: " symbol-names)))
+                     (string= (car imenu--rescan-item) selected-symbol)))
+            (unless (and (boundp 'mark-active) mark-active)
+              (push-mark nil t nil))
+            (setq position (cdr (assoc selected-symbol name-and-pos)))
+            (cond
+             ((overlayp position)
+              (goto-char (overlay-start position)))
+             (t
+              (goto-char position))))
+        ;; unwind forms
+        (fido-vertical-mode (if x-fido-vertical-mode 1 0))
+        (fido-mode (if x-fido-mode 1 0)))))
    ((listp symbol-list)
     (dolist (symbol symbol-list)
       (let (name position)
@@ -208,6 +219,17 @@
                     (string= (car imenu--rescan-item) name))
           (add-to-list 'symbol-names name)
           (add-to-list 'name-and-pos (cons name position))))))))
+
+;; Fido uses only (flex) as its `completion-styles', which I don't
+;; much like, so we change that.
+(defvar icomplete-mode)
+(declare-function icomplete-simple-completing-p "icomplete")
+(define-advice icomplete--fido-mode-setup (:after () my-completion-styles)
+  "Advice for `icomplete--fido-mode-setup'."
+  (when (and (bound-and-true-p my-icomplete--fido-mode-setup)
+             icomplete-mode (icomplete-simple-completing-p))
+    (setq-local completion-styles
+                '(substring partial-completion initials))))
 
 ;; The default 60 chars is too short for some function names.
 ;; We could make this unlimited, but... for now lets err on the
