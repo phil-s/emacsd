@@ -261,20 +261,15 @@ SCHEDULED: %T
       (error (when (equal err '(error "Abort"))
                (delete-frame))))))
 
-(defadvice org-capture-finalize (after my-delete-capture-frame activate)
+(define-advice org-capture-finalize (:after (&rest _args) my-delete-capture-frame)
   "Delete the frame after `capture-finalize'."
   (when (frame-parameter nil 'my-org-capture)
     (delete-frame)))
 
-(defadvice org-capture-destroy (after my-delete-capture-frame activate)
+(define-advice org-capture-destroy (:after (&rest _args) my-delete-capture-frame)
   "Delete the frame after `capture-destroy'."
   (when (frame-parameter nil 'my-org-capture)
     (delete-frame)))
-
-;; (ad-remove-advice 'org-capture-finalize 'after 'my-delete-capture-frame)
-;; (ad-activate 'org-capture-finalize)
-;; (ad-remove-advice 'org-capture-destroy 'after 'my-delete-capture-frame)
-;; (ad-activate 'org-capture-destroy)
 
 
 ;;; Babel
