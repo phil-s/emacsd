@@ -9,6 +9,7 @@
   (declare-function org-agenda-files "org")
   (declare-function org-defkey "org-keys")
   (declare-function org-eval-in-calendar "org")
+  (declare-function org-open-at-mouse "org")
   (declare-function org-timer--get-timer-title "org-timer")
   (declare-function org-timer-set-timer "org-timer")
   (declare-function org-timer-value-string "org-timer")
@@ -16,6 +17,7 @@
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
   (defvar org-agenda-include-diary)
+  (defvar org-agenda-mode-map)
   (defvar org-agenda-time-grid)
   (defvar org-capture-templates)
   (defvar org-default-notes-file)
@@ -162,6 +164,17 @@
 
 ;;; Agenda / Capture
 
+(defun my-org-open-at-mouse (ev)
+  "Used in org-agenda buffers."
+  ;; We do this because of: Warning (org-element):
+  ;; `org-element-at-point' cannot be used in non-Org buffer #<buffer
+  ;; *Org Agenda*> (org-agenda-mode) (found in org-mouse-map) which
+  ;; happen when `org-open-at-point' calls `org-element-context' if it
+  ;; doesn't have any success trying `org-open-at-point-functions'.
+  (interactive "e")
+  (let ((warning-suppress-log-types '((org-element org-element-parser))))
+    (org-open-at-mouse ev)))
+
 (defun my-org-agenda-configuration ()
   "Configuration for `org-agenda'."
 
@@ -177,6 +190,9 @@
   ;;                              "-" (org-agenda-time-of-day-to-ampm-maybe s2)
   ;;                              (when org-agenda-timegrid-use-ampm " ")
   ;;                              "  ")) ;; <--- append these spaces.
+
+  ;; Prevent warning when following links in Agenda buffers.
+  (define-key org-agenda-mode-map [remap org-open-at-mouse] #'my-org-open-at-mouse)
   ) ;; `my-org-agenda-configuration'
 
 (with-eval-after-load "org-agenda"
