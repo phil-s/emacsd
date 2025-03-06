@@ -56,6 +56,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-coding-config ()
+  (completion-preview-mode 1)
   (make-local-variable 'column-number-mode)
   (column-number-mode t)
   (idle-highlight-mode 1)

@@ -64,6 +64,13 @@
 (define-key isearch-mode-map (kbd "C-;") 'iedit-mode)
 (define-key isearch-mode-map (kbd "<menu> s") 'avy-isearch)
 
+;; Completion preview.
+(with-eval-after-load "completion-preview"
+  (define-key completion-preview-active-mode-map
+              (kbd "M-n") #'completion-preview-next-candidate)
+  (define-key completion-preview-active-mode-map
+              (kbd "M-p") #'completion-preview-prev-candidate))
+
 ;; Occur.
 (with-eval-after-load "occur"
   (define-key occur-mode-map (kbd "n") #'next-error-no-select)
