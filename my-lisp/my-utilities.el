@@ -2555,7 +2555,8 @@ pop-up frame float over the other windows rather than being tiled:
     (when text
       (insert text))
     (let* ((buf (current-buffer))
-           (width 80)
+           (width (max window-safe-min-width
+                       80))
            (height (max window-safe-min-height
                         (count-lines (point-min) (point-max))))
            (pxwidth (+ 3 (* width (default-font-width))))
@@ -2675,8 +2676,10 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
 (defun my-x-paste-totp (wid)
   "Paste `totp-as-clipboard' into X window WID (see `my-x-paste')."
   (interactive)
-  (my-x-paste #'totp-as-clipboard wid "*TOTP*"
-              "Time-based One-time Password (TOTP)"))
+  (let ((window-safe-min-height 10)
+        (window-safe-min-width 120))
+    (my-x-paste #'totp-as-clipboard wid "*TOTP*"
+                "Time-based One-time Password (TOTP)")))
 
 (defun my-crontab-edit ()
   "Edit crontab."
