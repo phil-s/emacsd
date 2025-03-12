@@ -584,16 +584,24 @@ it is disabled.
 ;;;### (autoloads nil "avy/avy" "avy/avy.el" (0 0 0 0))
 ;;; Generated autoloads from avy/avy.el
 
+(autoload 'avy-process "avy/avy" "\
+Select one of CANDIDATES using `avy-read'.
+Use OVERLAY-FN to visualize the decision overlay.
+CLEANUP-FN should take no arguments and remove the effects of
+multiple OVERLAY-FN invocations.
+
+\(fn CANDIDATES &optional OVERLAY-FN CLEANUP-FN)")
+
 (autoload 'avy-goto-char "avy/avy" "\
 Jump to the currently visible CHAR.
 The window scope is determined by `avy-all-windows' (ARG negates it).
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-char-in-line "avy/avy" "\
 Jump to the currently visible CHAR in the current line.
 
-\(fn CHAR)" t nil)
+\(fn CHAR)" t)
 
 (autoload 'avy-goto-char-2 "avy/avy" "\
 Jump to the currently visible CHAR1 followed by CHAR2.
@@ -601,7 +609,7 @@ The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 BEG and END narrow the scope where candidates are searched.
 
-\(fn CHAR1 CHAR2 &optional ARG BEG END)" t nil)
+\(fn CHAR1 CHAR2 &optional ARG BEG END)" t)
 
 (autoload 'avy-goto-char-2-above "avy/avy" "\
 Jump to the currently visible CHAR1 followed by CHAR2.
@@ -610,7 +618,7 @@ the visible part of the current buffer up to point.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR1 CHAR2 &optional ARG)" t nil)
+\(fn CHAR1 CHAR2 &optional ARG)" t)
 
 (autoload 'avy-goto-char-2-below "avy/avy" "\
 Jump to the currently visible CHAR1 followed by CHAR2.
@@ -619,12 +627,10 @@ the visible part of the current buffer following point.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR1 CHAR2 &optional ARG)" t nil)
+\(fn CHAR1 CHAR2 &optional ARG)" t)
 
 (autoload 'avy-isearch "avy/avy" "\
-Jump to one of the current isearch candidates.
-
-\(fn)" t nil)
+Jump to one of the current isearch candidates." t)
 
 (autoload 'avy-goto-word-0 "avy/avy" "\
 Jump to a word start.
@@ -632,7 +638,15 @@ The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 BEG and END narrow the scope where candidates are searched.
 
-\(fn ARG &optional BEG END)" t nil)
+\(fn ARG &optional BEG END)" t)
+
+(autoload 'avy-goto-whitespace-end "avy/avy" "\
+Jump to the end of a whitespace sequence.
+The window scope is determined by `avy-all-windows'.
+When ARG is non-nil, do the opposite of `avy-all-windows'.
+BEG and END narrow the scope where candidates are searched.
+
+\(fn ARG &optional BEG END)" t)
 
 (autoload 'avy-goto-word-1 "avy/avy" "\
 Jump to the currently visible CHAR at a word start.
@@ -641,7 +655,7 @@ When ARG is non-nil, do the opposite of `avy-all-windows'.
 BEG and END narrow the scope where candidates are searched.
 When SYMBOL is non-nil, jump to symbol start instead of word start.
 
-\(fn CHAR &optional ARG BEG END SYMBOL)" t nil)
+\(fn CHAR &optional ARG BEG END SYMBOL)" t)
 
 (autoload 'avy-goto-word-1-above "avy/avy" "\
 Jump to the currently visible CHAR at a word start.
@@ -650,7 +664,7 @@ the visible part of the current buffer up to point.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-word-1-below "avy/avy" "\
 Jump to the currently visible CHAR at a word start.
@@ -659,14 +673,14 @@ the visible part of the current buffer following point.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-symbol-1 "avy/avy" "\
 Jump to the currently visible CHAR at a symbol start.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-symbol-1-above "avy/avy" "\
 Jump to the currently visible CHAR at a symbol start.
@@ -675,7 +689,7 @@ the visible part of the current buffer up to point.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-symbol-1-below "avy/avy" "\
 Jump to the currently visible CHAR at a symbol start.
@@ -684,30 +698,29 @@ the visible part of the current buffer following point.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-subword-0 "avy/avy" "\
 Jump to a word or subword start.
-
 The window scope is determined by `avy-all-windows' (ARG negates it).
 
 When PREDICATE is non-nil it's a function of zero parameters that
 should return true.
 
-\(fn &optional ARG PREDICATE)" t nil)
+BEG and END narrow the scope where candidates are searched.
+
+\(fn &optional ARG PREDICATE BEG END)" t)
 
 (autoload 'avy-goto-subword-1 "avy/avy" "\
 Jump to the currently visible CHAR at a subword start.
 The window scope is determined by `avy-all-windows' (ARG negates it).
 The case of CHAR is ignored.
 
-\(fn CHAR &optional ARG)" t nil)
+\(fn CHAR &optional ARG)" t)
 
 (autoload 'avy-goto-word-or-subword-1 "avy/avy" "\
 Forward to `avy-goto-subword-1' or `avy-goto-word-1'.
-Which one depends on variable `subword-mode'.
-
-\(fn)" t nil)
+Which one depends on variable `subword-mode'." t)
 
 (autoload 'avy-goto-line "avy/avy" "\
 Jump to a line start in current buffer.
@@ -720,29 +733,40 @@ When ARG is 4, negate the window scope determined by
 
 Otherwise, forward to `goto-line' with ARG.
 
-\(fn &optional ARG)" t nil)
+\(fn &optional ARG)" t)
 
 (autoload 'avy-goto-line-above "avy/avy" "\
 Goto visible line above the cursor.
+OFFSET changes the distance between the closest key to the cursor and
+the cursor
+When BOTTOM-UP is non-nil, display avy candidates from top to bottom
 
-\(fn)" t nil)
+\(fn &optional OFFSET BOTTOM-UP)" t)
 
 (autoload 'avy-goto-line-below "avy/avy" "\
 Goto visible line below the cursor.
+OFFSET changes the distance between the closest key to the cursor and
+the cursor
+When BOTTOM-UP is non-nil, display avy candidates from top to bottom
 
-\(fn)" t nil)
+\(fn &optional OFFSET BOTTOM-UP)" t)
+
+(autoload 'avy-goto-end-of-line "avy/avy" "\
+Call `avy-goto-line' and move to the end of the line.
+
+\(fn &optional ARG)" t)
 
 (autoload 'avy-copy-line "avy/avy" "\
 Copy a selected line above the current line.
 ARG lines can be used.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-move-line "avy/avy" "\
 Move a selected line above the current line.
 ARG lines can be used.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-copy-region "avy/avy" "\
 Select two lines and copy the text between them to point.
@@ -750,12 +774,10 @@ Select two lines and copy the text between them to point.
 The window scope is determined by `avy-all-windows' or
 `avy-all-windows-alt' when ARG is non-nil.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-move-region "avy/avy" "\
-Select two lines and move the text between them above the current line.
-
-\(fn)" t nil)
+Select two lines and move the text between them above the current line." t)
 
 (autoload 'avy-kill-region "avy/avy" "\
 Select two lines and kill the region between them.
@@ -763,14 +785,14 @@ Select two lines and kill the region between them.
 The window scope is determined by `avy-all-windows' or
 `avy-all-windows-alt' when ARG is non-nil.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-kill-ring-save-region "avy/avy" "\
 Select two lines and save the region between them to the kill ring.
 The window scope is determined by `avy-all-windows'.
 When ARG is non-nil, do the opposite of `avy-all-windows'.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-kill-whole-line "avy/avy" "\
 Select line and kill the whole selected line.
@@ -787,7 +809,7 @@ starting from the selected line.  \\[universal-argument] -3
 \\[avy-kill-whole-line] kill three lines backward including the
 selected line.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-kill-ring-save-whole-line "avy/avy" "\
 Select line and save the whole selected line as if killed, but don’t kill it.
@@ -801,20 +823,21 @@ selected line.  If ARG is negative, kill backward.
 If ARG is zero, kill the selected line but exclude the trailing
 newline.
 
-\(fn ARG)" t nil)
+\(fn ARG)" t)
 
 (autoload 'avy-setup-default "avy/avy" "\
-Setup the default shortcuts.
-
-\(fn)" nil nil)
+Setup the default shortcuts.")
 
 (autoload 'avy-goto-char-timer "avy/avy" "\
 Read one or many consecutive chars and jump to the first one.
 The window scope is determined by `avy-all-windows' (ARG negates it).
 
-\(fn &optional ARG)" t nil)
+\(fn &optional ARG)" t)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "avy/avy" '("avy-")))
+(autoload 'avy-transpose-lines-in-region "avy/avy" "\
+Transpose lines in the active region." t)
+
+(register-definition-prefixes "avy/avy" '("avy-"))
 
 ;;;***
 

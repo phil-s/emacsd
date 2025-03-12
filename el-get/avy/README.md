@@ -1,3 +1,7 @@
+[![GNU ELPA](https://elpa.gnu.org/packages/avy.svg)](https://elpa.gnu.org/packages/avy.html)
+[![MELPA](https://melpa.org/packages/avy-badge.svg)](https://melpa.org/#/avy)
+[![MELPA Stable](https://stable.melpa.org/packages/avy-badge.svg)](https://stable.melpa.org/#/avy)
+
 ## Introduction
 
 `avy` is a GNU Emacs package for jumping to visible text using a char-based decision tree.  See also [ace-jump-mode](https://github.com/winterTTr/ace-jump-mode) and [vim-easymotion](https://github.com/Lokaltog/vim-easymotion) - `avy` uses the same idea.
@@ -38,7 +42,8 @@ After <kbd>C-' bu</kbd>:
 
 > Input an arbitrary amount of consecutive chars, jump to the first one with a tree.
 
-This is a more flexible version of `avy-goto-char-2`. First part works similarly to `isearch`: you type a query and it's highlighted dynamically on the screen.  When you stop typing for `avy-timeout-seconds` (0.5s by default), you'll be able to select one of the candidates with `avy`.
+This is a more flexible version of `avy-goto-char-2`. First part works similarly to `isearch`: you type a query and it's highlighted dynamically on the screen.  When you stop typing for `avy-timeout-seconds` (0.5s by default), you'll be able to select one of the candidates with `avy`. As you're inputting characters, you can use `C-h` (backspace) or `DEL` (delete) to
+forget the last typed character and `RET` to end the input sequence immediately and select a candidate.
 
 ### `avy-goto-line`
 
