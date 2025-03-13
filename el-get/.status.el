@@ -26,6 +26,7 @@
 :font-lock-studio "installed"
 :geben "installed"
 :ghub "installed"
+:git-link "installed"
 :git-modes "installed"
 :gpicker "installed"
 :htmlr "installed"

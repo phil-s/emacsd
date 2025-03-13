@@ -1554,6 +1554,62 @@ has to provide several values including their password.
 
 ;;;***
 
+;;;### (autoloads nil "git-link/git-link" "git-link/git-link.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from git-link/git-link.el
+
+(autoload 'git-link "git-link/git-link" "\
+Create a URL representing the current buffer's location in its
+GitHub/Bitbucket/GitLab/... repository at the current line number
+or active region. The URL will be added to the kill ring.  If
+`git-link-open-in-browser' is non-nil also call `browse-url'.
+
+With a prefix argument of - generate a link without line number(s).
+Also see `git-link-use-single-line-number'.
+
+With a single prefix argument prompt for the remote's name.
+Defaults to \"origin\".
+
+With a double prefix argument invert the value of
+`git-link-use-commit'.
+
+\(fn REMOTE START END)" t)
+
+(autoload 'git-link-commit "git-link/git-link" "\
+Create a URL representing the commit for the hash under point
+in the current buffer's GitHub/Bitbucket/GitLab/...
+repository. The URL will be added to the kill ring.
+
+With a prefix argument prompt for the remote's name.
+Defaults to \"origin\".
+
+\(fn REMOTE)" t)
+
+(autoload 'git-link-homepage "git-link/git-link" "\
+Create a URL representing the homepage of the current
+buffer's GitHub/Bitbucket/GitLab/... repository.  The URL will be
+added to the kill ring.  If `git-link-open-in-browser' is non-nil
+or if you pass the double prefix (Ctrl-u Ctrl-u), then also call
+`browse-url'.
+
+With a prefix argument prompt for the remote's name.
+Defaults to \"origin\".
+
+\(fn REMOTE)" t)
+
+(register-definition-prefixes "git-link/git-link" '("git-link-"))
+
+;;;***
+
+;;;### (autoloads nil "git-link/git-link-transient" "git-link/git-link-transient.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from git-link/git-link-transient.el
+ (autoload 'git-link-dispatch "git-link-transient" nil t)
+
+(register-definition-prefixes "git-link/git-link-transient" '("git-link-"))
+
+;;;***
+
 ;;;### (autoloads nil "git-modes/gitattributes-mode" "git-modes/gitattributes-mode.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from git-modes/gitattributes-mode.el

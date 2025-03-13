@@ -170,6 +170,10 @@
             :branch "master"
             :url "git@github.com:magit/git-modes.git")
 
+     (:name git-link
+            :type git
+            :url "https://github.com/sshaw/git-link.git")
+
      (:name gpicker
             :type http
             :url "http://git.savannah.gnu.org/cgit/gpicker.git/plain/gpicker.el"
