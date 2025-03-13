@@ -418,8 +418,9 @@ every time we `load' a library.
 Called via `after-load-functions', as well as `after-init-hook'."
   (unless (eq (caar minor-mode-map-alist) 'my-keys-local-minor-mode)
     (let ((mykeys (assq 'my-keys-local-minor-mode minor-mode-map-alist)))
-      (assq-delete-all 'my-keys-local-minor-mode minor-mode-map-alist)
-      (add-to-list 'minor-mode-map-alist mykeys))))
+      (setq minor-mode-map-alist
+            (cons mykeys (assq-delete-all 'my-keys-local-minor-mode
+                                          minor-mode-map-alist))))))
 
 (add-hook 'after-load-functions 'my-keys-have-priority)
 (add-hook 'after-init-hook      'my-keys-have-priority)
