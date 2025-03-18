@@ -2576,6 +2576,28 @@ pop-up frame float over the other windows rather than being tiled:
       (delete-other-windows)
       (unwind-protect
           (let ((value (call-interactively command)))
+            ;; Since Emacs 30 (?) we need to introduce a delay between asking
+            ;; the system to set the clipboard, and invoking xdotool, which
+            ;; makes me think that some kind of asynchronous behaviour is
+            ;; happening, but it makes *no* sense to me...
+            ;;
+            ;; I accidentally put the (sleep-for 0.25) *HERE* at first, and it
+            ;; 'worked' and yet `gui-backend-set-selection' hasn't been set yet.
+            ;; Surely `command' was synchronous though, so why on earth did that
+            ;; help??
+            ;;
+            ;; Moreover, it /only/ helps if it's here -- when I tried moving it
+            ;; inbetween the `gui-backend-set-selection' and the `call-process',
+            ;; which is where I'd thought it /might/ have an effect, I ended up
+            ;; with the bug again).
+            ;;
+            ;; This fix makes absolutely no sense to me.  The only thing I can
+            ;; think of is that there's another `gui-backend-set-selection'
+            ;; pending for some reason, and they happen in reverse order, and
+            ;; introducing a sleep flushes the one we didn't want before we
+            ;; do the one we wanted.  I don't know why that would be happening,
+            ;; though.
+            (sleep-for 0.25) ;; This fix makes no sense.
             (and value
                  (integerp wid)
                  (gui-backend-set-selection 'CLIPBOARD value)
