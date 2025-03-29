@@ -1021,28 +1021,6 @@
            id (time-to-seconds (time-since my-init-time-marker)))
   (setq my-init-time-marker (current-time)))
 
-;; Temporary performance measures, to reduce start-up time.
-;; Avoid garbage collection during start-up.
-;; (defvar my-gc-cons-threshold-normal gc-cons-threshold) ;; Currently 800K.
-(defvar my-gc-cons-threshold-normal 8000000) ;; 8M (10x default).  Experimental.
-(defvar my-gc-cons-threshold-large 10000000) ;; 10M; default is 0.8M
-(defun my-gc-cons-threshold-set-large ()
-  (setq gc-cons-threshold my-gc-cons-threshold-large))
-(defun my-gc-cons-threshold-set-normal ()
-  (setq gc-cons-threshold my-gc-cons-threshold-normal))
-(my-gc-cons-threshold-set-large)
-;; Revert that after start-up.
-(add-hook
- 'emacs-startup-hook
- (lambda ()
-   (my-gc-cons-threshold-set-normal)))
-;; The outcome of https://emacsconf.org/2023/talks/gc/ was:
-(setq gc-cons-percentage 0.2) ;; so just do that permanently.
-;; Although Stefan says:
-;; "FWIW, Emacs uses 0.5 for gc-cons-percentage when run in batch
-;; mode, and I use that same value in my init file." (!)
-
-
 ;; This should have happened in early-init.el, but just in case...
 (unless (featurep 'auto-compile)
   (require 'compile) ;; Keep for paranoia, while bug#69467 is open.

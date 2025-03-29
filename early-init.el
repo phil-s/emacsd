@@ -3,6 +3,24 @@
 ;; Replicate --debug-init (see also the end of init.el).
 (setq debug-on-error t)
 
+;; Temporary performance measures, to reduce start-up time.
+;; Avoid garbage collection during start-up.
+;; (defvar my-gc-cons-threshold-normal gc-cons-threshold) ;; Currently 800K.
+(defvar my-gc-cons-threshold-normal 8000000) ;; 8M (10x default).  Experimental.
+(defvar my-gc-cons-threshold-large 10000000) ;; 10M; default is 0.8M
+(defun my-gc-cons-threshold-set-large ()
+  (setq gc-cons-threshold my-gc-cons-threshold-large))
+(defun my-gc-cons-threshold-set-normal ()
+  (setq gc-cons-threshold my-gc-cons-threshold-normal))
+(my-gc-cons-threshold-set-large)
+;; Revert that after start-up.
+(add-hook 'emacs-startup-hook #'my-gc-cons-threshold-set-normal)
+;; The outcome of https://emacsconf.org/2023/talks/gc/ was:
+(setq gc-cons-percentage 0.2) ;; so just do that permanently.
+;; Although Stefan says:
+;; "FWIW, Emacs uses 0.5 for gc-cons-percentage when run in batch
+;; mode, and I use that same value in my init file." (!)
+
 ;; Recompile .elc files automatically whenever necessary. Enable this early.
 ;; (Note that init.el does this too, in case it hasn't happened here.)
 (require 'compile) ;; Keep for paranoia, while bug#69467 is open.  See also:
@@ -13,10 +31,10 @@
 (auto-compile-on-save-mode 1)
 (auto-compile-on-load-mode 1)
 
-;; Hide the tool bar
+;; Hide the tool bar.
 (tool-bar-mode -1)
 
-;; Scroll-bar on the right-hand side
+;; Scroll-bar on the right-hand side.
 (set-scroll-bar-mode 'right)
 
 ;; No horizontal scroll bars.
