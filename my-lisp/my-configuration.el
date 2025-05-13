@@ -220,9 +220,9 @@ when `auto-save-mode' is invoked manually.")
 (with-eval-after-load "atomic-chrome"
   (setq atomic-chrome-buffer-open-style 'frame
         atomic-chrome-buffer-frame-height 40
-        atomic-chrome-auto-remove-file nil
         atomic-chrome-create-file-strategy (expand-file-name "~/.emacs.d/atomic-chrome")
         atomic-chrome-make-file-save-initial-contents t
+        atomic-chrome-auto-remove-file nil
         )
   (mapcar (apply-partially #'add-to-list 'atomic-chrome-frame-parameters)
           '((title . "atomic-chrome")
