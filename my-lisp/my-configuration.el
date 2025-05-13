@@ -117,6 +117,7 @@
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function minibuffer-line-mode "minibuffer-line")
   (declare-function my-adaptive-visual-line-mode "my-text")
+  (declare-function my-clobber-tool-bar-map "my-configuration")
   (declare-function my-fortune-set-initial-scratch-message "my-utilities")
   (declare-function my-frame-behaviours "early-init")
   (declare-function my-gc-cons-threshold-set-large "init")
@@ -299,6 +300,29 @@ when `auto-save-mode' is invoked manually.")
   ;; ...and later, for new frames / emacsclient
   (add-hook 'after-make-frame-functions 'my-frame-behaviours)
   ) ;; End of early-init.el code for Emacs 26 and earlier.
+
+;; Show the tool bar when it has a custom value -- but not the ones we
+;; know we're not interested in.
+(when (>= emacs-major-version 30) ;; Emacs 30+
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              ;; We have to clobber the default `tool-bar-map' for
+              ;; this to have the desired effect -- and it has to be
+              ;; `nil' rather than (make-sparse-keymap), which is
+              ;; unfortunate.  Hopefully once `emacs-startup-hook' has
+              ;; run, nothing will try to add something to the default
+              ;; tool bar!
+              (defvar my-tool-bar-map-default-value tool-bar-map
+                "The original value of `tool-bar-map'.")
+              (setq tool-bar-map nil)
+              (global-window-tool-bar-mode 1)))
+  ;; Clobber other tool bars we don't want to see.
+  (defun my-clobber-tool-bar-map ()
+    (setq-local tool-bar-map nil))
+  (dolist (mode '(emacs-lisp-compilation-mode
+                  help-mode
+                  isearch-mode))
+    (add-hook (intern (format "%s-hook" mode)) #'my-clobber-tool-bar-map)))
 
 ;; Retain point when scrolling off-screen and back
 (setq scroll-preserve-screen-position t)
