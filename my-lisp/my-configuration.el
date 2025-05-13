@@ -706,6 +706,9 @@ Remove with:
 ;; Make `describe-bindings' (C-h b) sections collapsible (TAB, S-TAB, M-TAB).
 (setq describe-bindings-outline t)
 
+;; Show character names in `what-cursor-position' (C-x =).
+(setq what-cursor-show-names t)
+
 ;; Recursive minibuffers lets us do neat things such as interactively
 ;; building command arguments using other commands.
 (setq enable-recursive-minibuffers t)
