@@ -112,7 +112,8 @@
 ;; Color theme - Zenburn
 ;; https://github.com/bbatsov/zenburn-emacs
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/el-get/zenburn-theme"))
-(when (require-theme 'zenburn-theme t)
+(with-demoted-errors "Error: %S"
+  ;; (when (require-theme 'zenburn-theme t) ;; we would be loading it twice
   ;; (mapc #'disable-theme custom-enabled-themes) ;; will be nil
   (load-theme 'zenburn t)
   (my-zenburn-theme-config))
