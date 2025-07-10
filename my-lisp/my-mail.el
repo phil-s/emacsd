@@ -325,3 +325,86 @@ only a single completion option available."
 
 
 (provide 'my-mail)
+
+
+
+
+
+;; I added highlighting to the marking, because it's unnecessarily
+;; hard to see which lines are marked, otherwise.  This is naively
+;; using the same face -- 'error -- for all mark types, but mostly
+;; I'm only marking things in one way (and usually to trash or delete
+;; them), so as a quick workaround this is absolutely fine.
+;;
+;; (defun mu4e-mark-at-point (mark target)
+;;   "Mark (or unmark) message at point.
+;; MARK specifies the mark-type. For `move'-marks and `trash'-marks
+;; the TARGET argument is non-nil and specifies to which
+;; maildir the message is to be moved/trashed. The function works in
+;; both headers buffers and message buffers.
+;;
+;; The following marks are available, and the corresponding props:
+;;
+;;    MARK       TARGET    description
+;;    ----------------------------------------------------------
+;;    `refile'    y        mark this message for archiving
+;;    `something' n        mark this message for *something* (decided later)
+;;    `delete'    n        remove the message
+;;    `flag'      n        mark this message for flagging
+;;    `move'      y        move the message to some folder
+;;    `read'      n        mark the message as read
+;;    `trash'     y        trash the message to some folder
+;;    `unflag'    n        mark this message for unflagging
+;;    `untrash'   n        remove the `trashed' flag from a message
+;;    `unmark'    n        unmark this message
+;;    `unread'    n        mark the message as unread
+;;    `action'    y        mark the message for some action."
+;;   (interactive)
+;;   (let* ((msg (mu4e-message-at-point))
+;;          (docid (mu4e-message-field msg :docid))
+;;          ;; get a cell with the mark char and the 'target' 'move' already has a
+;;          ;; target (the target folder) the other ones get a pseudo "target", as
+;;          ;; info for the user.
+;;          (markdesc (cdr (or (assq mark mu4e-marks)
+;;                             (mu4e-error "Invalid mark %S" mark))))
+;;          (get-markkar
+;;           (lambda (char)
+;;             (if (listp char)
+;;                 (if mu4e-use-fancy-chars (cdr char) (car char))
+;;               char)))
+;;          (markkar (funcall get-markkar (plist-get markdesc :char)))
+;;          (target (mu4e~mark-get-dyn-target mark target))
+;;          (show-fct (plist-get markdesc :show-target))
+;;          (shown-target (if show-fct
+;;                            (funcall show-fct target)
+;;                          (if target (format "%S" target)))))
+;;     (unless docid (mu4e-warn "No message on this line"))
+;;     (unless (eq major-mode 'mu4e-headers-mode)
+;;       (mu4e-error "Not in headers-mode"))
+;;     (save-excursion
+;;       (when (mu4e~headers-mark docid markkar)
+;;         ;; update the hash -- remove everything current, and if add the new
+;;         ;; stuff, unless we're unmarking
+;;         (remhash docid mu4e~mark-map)
+;;         ;; remove possible mark overlays
+;;         (remove-overlays (line-beginning-position) (line-end-position) 'mu4e-mark t)
+;;         (remove-overlays (line-beginning-position) (line-end-position) 'face 'error)
+;;         ;; now, let's set a mark (unless we were unmarking)
+;;         (unless (eql mark 'unmark)
+;;           (puthash docid (cons mark target) mu4e~mark-map)
+;;           ;; when we have a target (ie., when moving), show the target folder in
+;;           ;; an overlay
+;;           (when (and shown-target mu4e-headers-show-target)
+;;             (let* ((targetstr (propertize (concat "-> " shown-target " ")
+;;                                           'face 'mu4e-system-face))
+;;                    ;; mu4e~headers-goto-docid docid t \will take us just after
+;;                    ;; the docid cookie and then we skip the mu4e~mark-fringe
+;;                    (start (+ (length mu4e~mark-fringe)
+;;                              (mu4e~headers-goto-docid docid t)))
+;;                    (overlay (make-overlay start (+ start (length targetstr)))))
+;;               (overlay-put overlay 'display targetstr)
+;;               (overlay-put overlay 'mu4e-mark t)
+;;               (overlay-put overlay 'evaporate t)
+;;               (overlay-put (make-overlay start (line-end-position))
+;;                            'face 'error)
+;;               docid)))))))
