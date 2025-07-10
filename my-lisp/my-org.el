@@ -193,6 +193,10 @@
 
   ;; Prevent warning when following links in Agenda buffers.
   (define-key org-agenda-mode-map [remap org-open-at-mouse] #'my-org-open-at-mouse)
+  ;; Move between days.
+  ;; See also `my-org-agenda--ensure-visible'.
+  (define-key org-agenda-mode-map (kbd "M-p") #'org-agenda-previous-date-line)
+  (define-key org-agenda-mode-map (kbd "M-n") #'org-agenda-next-date-line)
   ) ;; `my-org-agenda-configuration'
 
 (with-eval-after-load "org-agenda"
@@ -227,6 +231,32 @@
             (when (file-has-changed-p file)
               (throw 'update-required t))))
     (org-agenda-to-appt)))
+
+(defvar my-org-agenda--ensure-visible)
+(defun my-org-agenda--ensure-visible (&rest args)
+  "Ensure that all of the current day is visible in the buffer.
+
+Used as :after advice for `org-agenda-next-date-line' and
+`org-agenda-previous-date-line'.
+
+Remove with:
+\(advice-remove \\='org-agenda-next-date-line
+                #\\='my-org-agenda--ensure-visible)
+\(advice-remove \\='org-agenda-previous-date-line
+                #\\='my-org-agenda--ensure-visible)"
+  (unless (bound-and-true-p my-org-agenda--ensure-visible)
+    (let ((my-org-agenda--ensure-visible t))
+      (save-excursion
+        (or (ignore-errors (org-agenda-next-date-line))
+            (goto-char (point-max)))
+        (unless (pos-visible-in-window-p (point))
+          (let ((scroll-conservatively 101))
+            (recenter -1))))
+      (unless (pos-visible-in-window-p (point))
+        (recenter 0)))))
+
+(advice-add 'org-agenda-next-date-line :after #'my-org-agenda--ensure-visible)
+(advice-add 'org-agenda-previous-date-line :after #'my-org-agenda--ensure-visible)
 
 (defun my-org-capture-configuration ()
   "Configuration for `org-capture'."
