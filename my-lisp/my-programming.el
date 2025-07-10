@@ -31,6 +31,7 @@
   (declare-function ansi-color-apply-on-region "ansi-color")
   (declare-function comint-send-string "comint")
   (declare-function dom-attr "dom")
+  (declare-function eglot--maybe-activate-editing-mode "eglot")
   (declare-function eldoc-current-symbol "eldoc")
   (declare-function elisp--current-symbol "elisp-mode")
   (declare-function fic-mode "fic-mode")
@@ -54,6 +55,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming language support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(with-eval-after-load "eglot"
+  (my-after-load-eglot))
+
+(defun my-after-load-eglot ()
+  "Called via (with-eval-after-load \"eglot\" ...)"
+  ;; I don't use eglot, but if it gets loaded it adds a function to
+  ;; `after-change-major-mode-hook' at load time, which isn't very
+  ;; friendly.  This will unquestionably screw up eglot if I ever
+  ;; start using it, but for now this is causing me problems, so I
+  ;; don't want it.  Sorry, future-me.
+  (remove-hook 'after-change-major-mode-hook
+               #'eglot--maybe-activate-editing-mode)
+  (message "Warning (workaround): Removed eglot from \
+`after-change-major-mode-hook'."))
 
 (defun my-coding-config ()
   (completion-preview-mode 1)
