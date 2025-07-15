@@ -23,6 +23,7 @@
 :ffip "installed"
 :fic-mode "installed"
 :find-file-in-tags "installed"
+:fold-this "installed"
 :font-lock-studio "installed"
 :geben "installed"
 :ghub "installed"

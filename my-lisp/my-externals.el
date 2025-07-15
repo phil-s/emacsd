@@ -153,6 +153,10 @@
             :type git
             :url "git://github.com/technomancy/find-file-in-project.git")
 
+     (:name fold-this
+            :type git
+            :url "https://github.com/magnars/fold-this.el.git")
+
      (:name font-lock-studio
             :type git
             :url "git@github.com:Lindydancer/font-lock-studio.git")
