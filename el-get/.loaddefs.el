@@ -4993,13 +4993,13 @@ commands to use the current Emacs instance as \"the editor\".
 This works in `shell-mode', `term-mode', `eshell-mode' and
 `vterm'.
 
-\(fn &optional (ENVVAR \"EDITOR\"))" t nil)
+\(fn &optional (ENVVAR \"EDITOR\"))" t)
 
 (autoload 'with-editor-export-git-editor "with-editor/lisp/with-editor" "\
-Like `with-editor-export-editor' but always set `$GIT_EDITOR'." t nil)
+Like `with-editor-export-editor' but always set `$GIT_EDITOR'." t)
 
 (autoload 'with-editor-export-hg-editor "with-editor/lisp/with-editor" "\
-Like `with-editor-export-editor' but always set `$HG_EDITOR'." t nil)
+Like `with-editor-export-editor' but always set `$HG_EDITOR'." t)
 
 (defvar shell-command-with-editor-mode nil "\
 Non-nil if Shell-Command-With-Editor mode is enabled.
@@ -5010,11 +5010,6 @@ for a description of this minor mode.")
 
 (autoload 'shell-command-with-editor-mode "with-editor/lisp/with-editor" "\
 Teach `shell-command' to use current Emacs instance as editor.
-
-If called interactively, enable Shell-Command-With-Editor mode if
-ARG is positive, and disable it if ARG is zero or negative.  If
-called from Lisp, also enable the mode if ARG is omitted or nil,
-and toggle it if ARG is `toggle'; disable the mode otherwise.
 
 Teach `shell-command', and all commands that ultimately call that
 command, to use the current Emacs instance as editor by executing
@@ -5030,7 +5025,22 @@ Alternatively you can use the `with-editor-async-shell-command',
 which also allows the use of another variable instead of
 \"EDITOR\".
 
-\(fn &optional ARG)" t nil)
+This is a global minor mode.  If called interactively, toggle the
+`Shell-Command-With-Editor mode' mode.  If the prefix argument is
+positive, enable the mode, and if it is zero or negative, disable the
+mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `(default-value \\='shell-command-with-editor-mode)'.
+
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
+
+\(fn &optional ARG)" t)
 
 (autoload 'with-editor-async-shell-command "with-editor/lisp/with-editor" "\
 Like `async-shell-command' but with `$EDITOR' set.
@@ -5049,16 +5059,16 @@ with arguments, or a script which also works over Tramp.
 
 Also see `async-shell-command' and `shell-command'.
 
-\(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER ENVVAR)" t nil)
+\(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER ENVVAR)" t)
 
 (autoload 'with-editor-shell-command "with-editor/lisp/with-editor" "\
 Like `shell-command' or `with-editor-async-shell-command'.
 If COMMAND ends with \"&\" behave like the latter,
 else like the former.
 
-\(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER ENVVAR)" t nil)
+\(fn COMMAND &optional OUTPUT-BUFFER ERROR-BUFFER ENVVAR)" t)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "with-editor/lisp/with-editor" '("server-" "shell-command--shell-command-with-editor-mode" "start-file-process--with-editor-process-filter" "with-editor")))
+(register-definition-prefixes "with-editor/lisp/with-editor" '("server-" "shell-command" "start-file-process" "with-editor"))
 
 ;;;***
 

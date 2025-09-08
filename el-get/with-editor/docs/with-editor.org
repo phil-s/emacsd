@@ -1,13 +1,13 @@
 #+title: With-Editor User Manual
 :PREAMBLE:
 #+author: Jonas Bernoulli
-#+email: jonas@bernoul.li
+#+email: emacs.with-editor@jonas.bernoulli.dev
 #+date: 2015-{{{year}}}
 
 #+texinfo_dir_category: Emacs
 #+texinfo_dir_title: With-Editor: (with-editor).
 #+texinfo_dir_desc: Using the Emacsclient as $EDITOR
-#+subtitle: for version 3.2.0
+#+subtitle: for version 3.4.6
 
 #+setupfile: .orgconfig
 
@@ -27,21 +27,9 @@ additional functionality which makes it useful even for end-users, who
 don't use Magit or another package which uses it internally.
 
 #+texinfo: @noindent
-This manual is for With-Editor version 3.2.0.
+This manual is for With-Editor version 3.4.6.
 
-#+begin_quote
-Copyright (C) 2015-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
-
-You can redistribute this document and/or modify it under the terms
-of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any
-later version.
-
-This document is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-#+end_quote
+#+texinfo: @insertcopying
 :END:
 * Using the With-Editor package
 
@@ -50,7 +38,7 @@ commit messages and rebase sequences.  It also provides some commands
 and features which are useful by themselves, even if you don't use
 Magit.
 
-For information about using this library in you own package, see
+For information about using this library in your own package, see
 [[*Using With-Editor as a library]].
 
 ** Configuring With-Editor
@@ -64,7 +52,7 @@ and we have to add another kludge to find it anyway.
 
 - User Option: with-editor-emacsclient-executable ::
 
-  The ~emacsclient~ executable used as the editor by child process of
+  The ~emacsclient~ executable used as the editor by child processes of
   this Emacs instance.  By using this executable, child processes can
   call home to their parent process.
 
@@ -77,10 +65,10 @@ and we have to add another kludge to find it anyway.
   it, then you should consider that a temporary kludge and inform the
   Magit maintainer as described in [[*Debugging][Debugging]].
 
-  If With-Editor fails to find a suitable ~emacsclient~ on you system,
+  If With-Editor fails to find a suitable ~emacsclient~ on your system,
   then this should be fixed for all users at once, by teaching
   ~with-editor-locate-emacsclient~ how to do so on your system and
-  system like yours. Doing it this way has the advantage, that you
+  systems like yours. Doing it this way has the advantage, that you
   won't have do it again every time you update Emacs, and that other
   users who have installed Emacs the same way as you have, won't have
   to go through the same trouble.
@@ -88,8 +76,8 @@ and we have to add another kludge to find it anyway.
   Note that there also is a nuclear option; setting this variable to
   ~nil~ causes the "sleeping editor" described below to be used even for
   local child processes.  Obviously we don't recommend that you use
-  this except in "emergencies", i.e. before we had a change to add a
-  kludge appropriate for you setup.
+  this except in "emergencies", i.e., before we had a change to add a
+  kludge appropriate for your setup.
 
 - Function: with-editor-locate-emacsclient ::
 
@@ -111,7 +99,7 @@ it receives a signal.
   The sleeping editor is a shell script used as the editor of child
   processes when the ~emacsclient~ executable cannot be used.
 
-  This fallback is used for asynchronous process started inside the
+  This fallback is used for asynchronous processes started inside the
   macro ~with-editor~, when the process runs on a remote machine or for
   local processes when ~with-editor-emacsclient-executable~ is ~nil~.
 
@@ -125,14 +113,14 @@ it receives a signal.
   child process, but by default we do use such a blocking child
   process.
 
-  If you use such a shell (e.g. ~csh~ on FreeBSD, but not Debian), then
+  If you use such a shell (e.g., ~csh~ on FreeBSD, but not Debian), then
   you have to edit this option.  You can either replace ~sh~ with ~bash~
   (and install that), or you can use the older, less performant
   implementation:
 
   #+BEGIN_SRC emacs-lisp
     "sh -c '\
-    echo \"WITH-EDITOR: $$ OPEN $0 IN $(pwd)\"; \
+    echo \"WITH-EDITOR: $$ OPEN $0$1 IN $(pwd)\"; \
     trap \"exit 0\" USR1; \
     trap \"exit 1\" USR2; \
     while true; do sleep 1; done'"
@@ -170,13 +158,13 @@ prompt for an alternative environment variable such as ~$GIT_EDITOR~.
   with ~&~ and is therefore run asynchronously, then the current Emacs
   instance is exported as ~$EDITOR~.
 
-To always use these variants add this to you init file:
+To always use these variants add this to your init file:
 
 #+begin_src emacs-lisp
-  (define-key (current-global-map)
-    [remap async-shell-command] 'with-editor-async-shell-command)
-  (define-key (current-global-map)
-    [remap shell-command] 'with-editor-shell-command)
+  (keymap-global-set "<remap> <async-shell-command>"
+                     #'with-editor-async-shell-command)
+  (keymap-global-set "<remap> <shell-command>"
+                     #'with-editor-shell-command)
 #+end_src
 
 Alternatively use the global ~shell-command-with-editor-mode~.
@@ -199,7 +187,7 @@ mode hooks:
   (add-hook 'shell-mode-hook  'with-editor-export-editor)
   (add-hook 'eshell-mode-hook 'with-editor-export-editor)
   (add-hook 'term-exec-hook   'with-editor-export-editor)
-  (add-hook 'vterm-exec-hook  'with-editor-export-editor)
+  (add-hook 'vterm-mode-hook  'with-editor-export-editor)
 #+end_src
 
 Some variants of this function exist; these two forms are equivalent:
@@ -253,9 +241,9 @@ package]].
   If BODY begins with a literal string, then that variable is set
   instead of ~EDITOR~.
 
-- Macro: with-editor envvar &rest body ::
+- Macro: with-editor* envvar &rest body ::
 
-  This macro is like ~with-editor~ instead that the ENVVAR argument is
+  This macro is like ~with-editor~, except that the ENVVAR argument is
   required and that it is evaluated at run-time.
 
 - Function: with-editor-set-process-filter process filter ::
@@ -265,7 +253,7 @@ package]].
   done by wrapping the two filter functions using a lambda, which
   becomes the actual filter.  It calls FILTER first, which may or
   may not insert the text into the PROCESS's buffer.  Then it calls
-  ~with-editor-process-filter~, passing t as NO-STANDARD-FILTER.
+  ~with-editor-process-filter~, passing ~t~ as NO-STANDARD-FILTER.
 
 * Debugging
 
@@ -276,7 +264,7 @@ the most likely reason is that someone found yet another way to
 package Emacs (most likely on macOS) without putting the executable on
 ~$PATH~, and we have to add another kludge to find it anyway.
 
-If you are having problems using ~with-editor~, e.g. you cannot commit
+If you are having problems using ~with-editor~, e.g., you cannot commit
 in Magit, then please open a new issue at
 https://github.com/magit/with-editor/issues and provide information
 about your Emacs installation.  Most importantly how did you install
@@ -298,7 +286,7 @@ Emacs and what is the output of ~M-x with-editor-debug RET~.
 :END:
 
 #+begin_quote
-Copyright (C) 2015-{{{year}}} Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2015-{{{year}}} Jonas Bernoulli <emacs.with-editor@jonas.bernoulli.dev>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
