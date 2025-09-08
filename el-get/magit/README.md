@@ -5,9 +5,7 @@
   <a href="https://magit.vc/manual"><b>manual</b></a> |
   <a href="https://magit.vc/manual/magit/FAQ.html"><b>faq</b></a> |
   <a href="https://github.com/magit/magit/wiki"><b>wiki</b></a> |
-  <a href="https://groups.google.com/forum/?fromgroups#!forum/magit"><b>mailing list</b></a> |
-  <a href="https://emacs.stackexchange.com/questions/tagged/magit"><b>forum</b></a> |
-  <a href="https://twitter.com/magit_emacs"><b>news</b></a>
+  <a href="https://emacs.ch/@tarsius"><b>mastodon</b></a>
 </p>
 <hr>
 
@@ -25,8 +23,8 @@
 <hr>
 
 <div align="center">
-  Keeping its users <a href= "https://magit.vc/quotes">this excited</a> is
-  <a href="https://magit.vc/stats/authors.html#cumulated_added_lines_of_code_per_author">
+  Keeping its users <a href= "https://magit.vc/quotes/">this excited</a> is
+  <a href="https://magit.vc/stats/magit/authors.html#cumulated_added_lines_of_code_per_author">
     a lot of work
   </a>.
   If Magit makes you <br> more productive too,
@@ -37,126 +35,111 @@
 </div>
 <br>
 <div align="center">
-  <a href="https://github.com/sponsors/tarsius">
-    <img title="Donate using Github Sponsors"
-         alt="Donate using Github Sponsors"
-         src="https://magit.vc/assets/github-sponsors-50px.png"></a>
+  <a href="https://github.com/sponsors/tarsius/">
+    <img title="Sponsor my work using Github Sponsors"
+         alt="Sponsor my work using Github Sponsors"
+         src="https://magit.vc/assets/donate/github-sponsors-50px.png"></a>
   &nbsp;&nbsp;
-  <a href="https://magit.vc/donate/#iban">
-     <img title="Donate using IBAN"
-          alt="Donate using IBAN"
-          src="https://magit.vc/assets/iban-50px.png"></a>
+  <a href="https://liberapay.com/magit/">
+    <img title="Sponsor my work using Liberapay"
+         alt="Sponsor my work using Liberapay"
+         src="https://magit.vc/assets/donate/liberapay-50px.png"></a>
+  <br>
+  <a href="https://opencollective.com/magit/">
+    <img title="Sponsor my work using Opencollective"
+         alt="Sponsor my work using Opencollective"
+         src="https://magit.vc/assets/donate/opencollective-50px.png"></a>
   &nbsp;&nbsp;
-  <a href="https://magit.vc/donate/#zelle">
-     <img title="Donate using Zelle (USA bank transfer)"
-          alt="Donate using Zelle (USA bank transfer)"
-          src="https://magit.vc/assets/zelle-50px.png"></a>
-  &nbsp;&nbsp;
-  <a href="https://www.paypal.me/JonasBernoulli/20">
-    <img title="Donate using PayPal"
-         alt="Donate using PayPal"
-         src="https://magit.vc/assets/paypal.png"></a>
+  <a href="https://magit.vc/donate/paypal.html">
+    <img title="Sponsor my work using PayPal"
+         alt="Sponsor my work using PayPal"
+         src="https://magit.vc/assets/donate/paypal-50px.png"></a>
 </div>
 <br>
 <div align="center">
-  Some alternative donation methods are <a href="https://magit.vc/donate">available</a>.
+  Some alternative donation methods are <a href="https://magit.vc/donate/">available</a>.
 </div>
 <hr>
 
-Getting Started
-===============
+### Getting Started
 
 If you are new to Magit, then either one of the following two
 articles should help understanding how it differs from other Git
 clients.
 
-- [Visual Magit walk-through](https://emacsair.me/2017/09/01/magit-walk-through)
+#### [Visual Magit walk-through](https://emacsair.me/2017/09/01/magit-walk-through)
 
-  If you are completely new to Magit, then this article is a good
-  visual introduction.
+If you are completely new to Magit, then this article is a good
+visual introduction.
 
-  Almost everything that you see in Magit can be acted on by pressing
-  some key, but that's not obvious from just seeing how Magit looks.
-  The screenshots and accompanying text of this article explain how to
-  perform a variety of actions on Magit's output.
+Almost everything that you see in Magit can be acted on by pressing
+some key, but that's not obvious from just seeing how Magit looks.
+The screenshots and accompanying text of this article explain how to
+perform a variety of actions on Magit's output.
 
-- [Magit, the magical Git interface](https://emacsair.me/2017/09/01/the-magical-git-interface)
+#### [Magit, the magical Git interface](https://emacsair.me/2017/09/01/the-magical-git-interface)
 
-  Magit differs significantly from other Git interfaces, and its
-  advantages are not immediately obvious simply from looking at a few
-  screenshots as presented in the preceding article.
+Magit differs significantly from other Git interfaces, and its
+advantages are not immediately obvious simply from looking at a few
+screenshots as presented in the preceding article.
 
-  This article discusses Magit's properties in somewhat more abstract
-  terms.
+This article discusses Magit's properties in somewhat more abstract
+terms.
 
-Support
-=======
+#### Video introductions
 
-When something doesn't work as expected then please first see the
-[FAQ][faq].  Then also try the list of [open issues][issues] and use
-the search box at the top of that page to find older related issues.
-You should also consult the [manual][manual] and ask a general-purpose
-search engine.
+If you prefer [video](https://magit.vc/screencasts/) introductions,
+head over to that page, where find a collection of such introductions
+and other videos about Magit, by various creators.
 
-If that doesn't answer your question, then ask for help on the
-**[Emacs Stackexchange site][forum]** or the [mailing list][list].
-We only use the GitHub issue tracker for feature requests and bug
-reports, so please don't ask for help there.
+***
+### Support and Contributing
 
-Contributing
-============
+Magit has many users and very few maintainers, so we kindly ask to read
+the appropriate guidelines before getting in contact. &mdash; Thanks!
 
-To report bugs and suggest new feature use the
-[issue tracker][issues].  If you have some code which you would like
-to be merged, then open a [pull request][pulls]. Please also see
-[CONTRIBUTING.md][contrib].
+- 🆘 [How to ask for help](https://github.com/magit/magit/discussions/4630)
+- 🪳 [How to report a bug](https://github.com/magit/magit/wiki/How-to-report-a-bug)
+- 💡 [How to suggest a feature](https://github.com/magit/magit/discussions/4631)
+- 🏗️ [Pull request guidelines](https://github.com/magit/magit/wiki/Pull-request-guidelines)
+- ℹ️ [FAQ](https://magit.vc/manual/magit/FAQ.html)
+- ℹ️ [Manual](https://magit.vc/manual/magit)
 
-Acknowledgments
-===============
+TL;DR We now use discussions for feature requests (not issues) and prefer
+if you ask the community for support instead of the overworked maintainers.
 
-Magit was started by [Marius Vollmer][marius], and is now maintained
-by [Jonas Bernoulli][jonas], [Kyle Meyer][kyle], and
-[Noam Postavsky][noam].  Other former maintainers are
-[Nicolas Dudebout][nicolas], [Peter J. Weisberg][peter],
-[Phil Jackson][phil], [Rémi Vanicat][remi], and [Yann Hodique][yann].
-Many more people have [contributed code][authors] and suggested
-features.
+Please also consider to contribute by supporting other users or by making
+a [monetary donation](https://magit.vc/donate). &mdash; Thanks!
 
-Over the years a lot of people supported development financially,
-including the [1987 backers][backers] of the 2017 crowdfunding
-campaign.
+***
+### Acknowledgments
+
+Magit was started by [Marius Vollmer][marius], and is now maintained by
+[Jonas Bernoulli][jonas] and [Kyle Meyer][kyle].  Former maintainers are
+[Nicolas Dudebout][nicolas], [Noam Postavsky][noam],
+[Peter J. Weisberg][peter], [Phil Jackson][phil], [Rémi Vanicat][remi] and
+[Yann Hodique][yann].  Many more people have [contributed code][authors],
+suggested features or made monetary contributions.
 
 Thanks to all of you, may (the history of) the source be with you!
 
 ***
-[![Paren Xkcb](https://img.shields.io/badge/%28-%20%20%20-red.svg)](https://xkcd.com/859)
-[![GPL v3](https://img.shields.io/badge/license-GPL_v3-green.svg)](http://www.gnu.org/licenses/gpl-3.0.txt)
-[![Build Status](https://github.com/magit/magit/workflows/test/badge.svg?branch=master)](https://github.com/magit/magit/actions)
+[![Compile](https://github.com/magit/magit/actions/workflows/compile.yml/badge.svg)](https://github.com/magit/magit/actions/workflows/compile.yml)
+[![Test](https://github.com/magit/magit/actions/workflows/test.yml/badge.svg)](https://github.com/magit/magit/actions/workflows/test.yml)
+[![Manual](https://github.com/magit/magit/actions/workflows/manual.yml/badge.svg)](https://github.com/magit/magit/actions/workflows/manual.yml)
+[![NonGNU ELPA](https://emacsair.me/assets/badges/nongnu-elpa.svg)](https://elpa.nongnu.org/nongnu/magit.html)
 [![Melpa](https://melpa.org/packages/magit-badge.svg)](https://melpa.org/#/magit)
 [![Melpa Stable](https://stable.melpa.org/packages/magit-badge.svg)](https://stable.melpa.org/#/magit)
-[![Eierlegende Wollmilchsau](https://img.shields.io/badge/eierlegende-Wollmilchsau-green.svg)](https://magit.vc/manual/magit)
-[![Swiss Made](https://img.shields.io/badge/swiss-made-red.svg?colorA=E11A27&colorB=555555)](https://magit.vc/stats/authors.html#commits_per_author)
-[![Netscape](https://magit.vc/assets/netscape-20px.png)](https://en.wikipedia.org/wiki/Browser_wars)
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/emacs%3Amagit.svg?header=&columns=4&minversion=4&exclude_unsupported=1)](https://repology.org/project/emacs%3Amagit/versions)
 
-[backers]: https://github.com/magit/magit/blob/master/Documentation/BACKERS.md
-[contrib]: https://github.com/magit/magit/blob/master/.github/CONTRIBUTING.md
-[issues]:  https://github.com/magit/magit/issues
-[pulls]:   https://github.com/magit/magit/pulls
-
-[authors]: https://magit.vc/stats/authors.html
-[faq]:     https://magit.vc/manual/magit/FAQ.html
-[manual]:  https://magit.vc/manual
-
-[forum]:   https://emacs.stackexchange.com/questions/tagged/magit
-[list]:    https://groups.google.com/forum/?fromgroups#!forum/magit
-
+[authors]: https://magit.vc/stats/magit/authors.html
 [jonas]:   https://emacsair.me
-[kyle]:    https://github.com/kyleam
+[kyle]:    https://kyleam.com
 [marius]:  https://github.com/mvollmer
 [nicolas]: http://dudebout.com
 [noam]:    https://github.com/npostavs
 [peter]:   https://github.com/pjweisberg
 [phil]:    https://github.com/philjackson
 [remi]:    https://github.com/vanicat
-[yann]:    http://www.hodique.info
+[yann]:    https://yann.hodique.info

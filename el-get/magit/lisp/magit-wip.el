@@ -1,19 +1,16 @@
-;;; magit-wip.el --- commit snapshots to work-in-progress refs  -*- lexical-binding: t -*-
+;;; magit-wip.el --- Commit snapshots to work-in-progress refs  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2010-2021  The Magit Project Contributors
-;;
-;; You should have received a copy of the AUTHORS.md file which
-;; lists all contributors.  If not, see http://magit.vc/authors.
+;; Copyright (C) 2008-2025 The Magit Project Contributors
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
+;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Magit is free software; you can redistribute it and/or modify it
+;; Magit is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Magit is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -21,7 +18,7 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with Magit.  If not, see http://www.gnu.org/licenses.
+;; along with Magit.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -43,39 +40,10 @@
   :group 'magit-modes
   :group 'magit-essentials)
 
-(defgroup magit-wip-legacy nil
-  "It is better to not use these modes individually."
-  :link '(info-link "(magit)Legacy Wip Modes")
-  :group 'magit-wip)
-
 (defcustom magit-wip-mode-lighter " Wip"
   "Lighter for Magit-Wip mode."
   :package-version '(magit . "2.90.0")
   :group 'magit-wip
-  :type 'string)
-
-(defcustom magit-wip-after-save-local-mode-lighter ""
-  "Lighter for Magit-Wip-After-Save-Local mode."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-wip-legacy
-  :type 'string)
-
-(defcustom magit-wip-after-apply-mode-lighter ""
-  "Lighter for Magit-Wip-After-Apply mode."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-wip-legacy
-  :type 'string)
-
-(defcustom magit-wip-before-change-mode-lighter ""
-  "Lighter for Magit-Wip-Before-Change mode."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-wip-legacy
-  :type 'string)
-
-(defcustom magit-wip-initial-backup-mode-lighter ""
-  "Lighter for Magit-Wip-Initial Backup mode."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-wip-legacy
   :type 'string)
 
 (defcustom magit-wip-merge-branch nil
@@ -106,11 +74,14 @@ is used as `branch-ref'."
 
 ;;; Modes
 
+(defvar magit--wip-activation-cache nil)
+(defvar magit--wip-inhibit-autosave nil)
+
 ;;;###autoload
 (define-minor-mode magit-wip-mode
   "Save uncommitted changes to work-in-progress refs.
 
-Whenever appropriate (i.e. when dataloss would be a possibility
+Whenever appropriate (i.e., when dataloss would be a possibility
 otherwise) this mode causes uncommitted changes to be committed
 to dedicated work-in-progress refs.
 
@@ -122,7 +93,8 @@ but that is discouraged."
   :lighter magit-wip-mode-lighter
   :global t
   (let ((arg (if magit-wip-mode 1 -1)))
-    (magit-wip-after-save-mode arg)
+    (let ((magit--wip-activation-cache (list t)))
+      (magit-wip-after-save-mode arg))
     (magit-wip-after-apply-mode arg)
     (magit-wip-before-change-mode arg)
     (magit-wip-initial-backup-mode arg)))
@@ -137,19 +109,42 @@ the current branch.
 This mode should be enabled globally by turning on the globalized
 variant `magit-wip-after-save-mode'."
   :package-version '(magit . "2.1.0")
-  :lighter magit-wip-after-save-local-mode-lighter
   (if magit-wip-after-save-local-mode
       (if (and buffer-file-name (magit-inside-worktree-p t))
-          (add-hook 'after-save-hook 'magit-wip-commit-buffer-file t t)
+          (add-hook 'after-save-hook #'magit-wip-commit-buffer-file t t)
         (setq magit-wip-after-save-local-mode nil)
         (user-error "Need a worktree and a file"))
-    (remove-hook 'after-save-hook 'magit-wip-commit-buffer-file t)))
+    (remove-hook 'after-save-hook #'magit-wip-commit-buffer-file t)))
 
 (defun magit-wip-after-save-local-mode-turn-on ()
-  (and buffer-file-name
-       (magit-inside-worktree-p t)
-       (magit-file-tracked-p buffer-file-name)
-       (magit-wip-after-save-local-mode)))
+  (when (cond-let
+          ((not buffer-file-name)
+           nil)
+          ((not magit--wip-activation-cache)
+           (and (magit-inside-worktree-p t)
+                (magit-file-tracked-p buffer-file-name)))
+          ([elt (assoc default-directory
+                       magit--wip-activation-cache)]
+           (and-let ((top (cadr elt)))
+             (member (file-relative-name buffer-file-name top)
+                     (cddr elt))))
+          ([top (magit-toplevel)]
+           (let (files)
+             (if-let ((elt (assoc top magit--wip-activation-cache)))
+                 (setq files (cddr elt))
+               (setq files (let ((default-directory top))
+                             (magit-tracked-files)))
+               (push `(,top ,top ,@files)
+                     magit--wip-activation-cache)
+               (unless (eq default-directory top)
+                 (push `(,default-directory ,top ,@files)
+                       magit--wip-activation-cache)))
+             (member (file-relative-name buffer-file-name) files)))
+          (t
+           (push (list default-directory nil)
+                 magit--wip-activation-cache)
+           nil))
+    (magit-wip-after-save-local-mode)))
 
 ;;;###autoload
 (define-globalized-minor-mode magit-wip-after-save-mode
@@ -162,18 +157,14 @@ variant `magit-wip-after-save-mode'."
 
 Also see `magit-wip-after-save-mode' which calls this function
 automatically whenever a buffer visiting a tracked file is saved."
-  (interactive)
-  (--when-let (magit-wip-get-ref)
+  (interactive (list "wip-save %s after save"))
+  (when-let ((_(not magit--wip-inhibit-autosave))
+             (ref (magit-wip-get-ref)))
     (magit-with-toplevel
       (let ((file (file-relative-name buffer-file-name)))
         (magit-wip-commit-worktree
-         it (list file)
-         (format (cond (msg)
-                       ((called-interactively-p 'any)
-                        "wip-save %s after save")
-                       (t
-                        "autosave %s after save"))
-                 file))))))
+         ref (list file)
+         (format (or msg "autosave %s after save") file))))))
 
 ;;;###autoload
 (define-minor-mode magit-wip-after-apply-mode
@@ -187,7 +178,6 @@ in the worktree and the other contains snapshots of the entries
 in the index."
   :package-version '(magit . "2.1.0")
   :group 'magit-wip
-  :lighter magit-wip-after-apply-mode-lighter
   :global t)
 
 (defun magit-wip-commit-after-apply (&optional files msg)
@@ -209,7 +199,6 @@ Only changes to files which could potentially be affected by the
 command which is about to be called are committed."
   :package-version '(magit . "2.1.0")
   :group 'magit-wip
-  :lighter magit-wip-before-change-mode-lighter
   :global t)
 
 (defun magit-wip-commit-before-change (&optional files msg)
@@ -221,11 +210,10 @@ command which is about to be called are committed."
   "Before saving a buffer for the first time, commit to a wip ref."
   :package-version '(magit . "2.90.0")
   :group 'magit-wip
-  :lighter magit-wip-initial-backup-mode-lighter
   :global t
   (if magit-wip-initial-backup-mode
-      (add-hook  'before-save-hook 'magit-wip-commit-initial-backup)
-    (remove-hook 'before-save-hook 'magit-wip-commit-initial-backup)))
+      (add-hook  'before-save-hook #'magit-wip-commit-initial-backup)
+    (remove-hook 'before-save-hook #'magit-wip-commit-initial-backup)))
 
 (defun magit--any-wip-mode-enabled-p ()
   "Return non-nil if any global wip mode is enabled."
@@ -276,9 +264,9 @@ commit message."
   (interactive (list nil (if current-prefix-arg
                              (magit-read-string "Wip commit message")
                            "wip-save tracked files")))
-  (--when-let (magit-wip-get-ref)
-    (magit-wip-commit-index it files msg)
-    (magit-wip-commit-worktree it files msg)))
+  (when-let ((ref (magit-wip-get-ref)))
+    (magit-wip-commit-index ref files msg)
+    (magit-wip-commit-worktree ref files msg)))
 
 (defun magit-wip-commit-index (ref files msg)
   (let* ((wipref (magit--wip-index-ref ref))
@@ -299,19 +287,9 @@ commit message."
                        ;; Note: `update-index' is used instead of `add'
                        ;; because `add' will fail if a file is already
                        ;; deleted in the temporary index.
-                       (magit-call-git
-                        "update-index" "--add" "--remove"
-                        (and (pcase (magit-repository-local-get
-                                     'update-index-has-ignore-sw-p 'unset)
-                               (`unset
-                                (let ((val (version<= "2.25.0"
-                                                      (magit-git-version))))
-                                  (magit-repository-local-set
-                                   'update-index-has-ignore-sw-p val)
-                                  val))
-                               (val val))
-                             "--ignore-skip-worktree-entries")
-                        "--" files)
+                       (magit-call-git "update-index" "--add" "--remove"
+                                       "--ignore-skip-worktree-entries"
+                                       "--" files)
                      (magit-with-toplevel
                        (magit-call-git "add" "-u" ".")))
                    (magit-git-string "write-tree"))))
@@ -348,9 +326,9 @@ commit message."
         (setq msg (concat
                    (cond ((= len 0) "autosave tracked files")
                          ((> len 1) (format "autosave %s files" len))
-                         (t (concat "autosave "
-                                    (file-relative-name (car files)
-                                                        (magit-toplevel)))))
+                         ((concat "autosave "
+                                  (file-relative-name (car files)
+                                                      (magit-toplevel)))))
                    msg))))
     (magit-update-ref wipref msg
                       (magit-git-string "commit-tree" "--no-gpg-sign"
@@ -377,15 +355,15 @@ commit message."
 (defun magit--wip-ref (namespace &optional ref)
   (concat magit-wip-namespace namespace
           (or (and ref (string-prefix-p "refs/" ref) ref)
-              (when-let ((branch (and (not (equal ref "HEAD"))
-                                      (or ref (magit-get-current-branch)))))
+              (and-let ((_(not (equal ref "HEAD")))
+                        (branch (or ref (magit-get-current-branch))))
                 (concat "refs/heads/" branch))
               "HEAD")))
 
 (defun magit-wip-maybe-add-commit-hook ()
   (when (and magit-wip-merge-branch
              (magit-wip-any-enabled-p))
-    (add-hook 'git-commit-post-finish-hook 'magit-wip-commit nil t)))
+    (add-hook 'git-commit-post-finish-hook #'magit-wip-commit nil t)))
 
 (defun magit-wip-any-enabled-p ()
   (or magit-wip-mode
@@ -426,7 +404,8 @@ many \"branches\" of each wip ref are shown."
   (interactive
    (nconc (list (magit-completing-read
                  "Log branch and its wip refs"
-                 (-snoc (magit-list-local-branch-names) "HEAD")
+                 (nconc (magit-list-local-branch-names)
+                        (list "HEAD"))
                  nil t nil 'magit-revision-history
                  (or (magit-branch-at-point)
                      (magit-get-current-branch)
@@ -444,21 +423,53 @@ many \"branches\" of each wip ref are shown."
                           args files))
 
 (defun magit-wip-log-get-tips (wipref count)
-  (when-let ((reflog (magit-git-lines "reflog" wipref)))
+  (and-let ((reflog (magit-git-lines "reflog" wipref)))
     (let (tips)
       (while (and reflog (> count 1))
         ;; "start autosaving ..." is the current message, but it used
         ;; to be "restart autosaving ...", and those messages may
-        ;; still be around (e.g., if gc.reflogExpire is to "never").
+        ;; still be around (e.g., if gc.reflogExpire is set to "never").
         (setq reflog (cl-member "^[^ ]+ [^:]+: \\(?:re\\)?start autosaving"
                                 reflog :test #'string-match-p))
         (when (and (cadr reflog)
                    (string-match "^[^ ]+ \\([^:]+\\)" (cadr reflog)))
-          (push (match-string 1 (cadr reflog)) tips))
+          (push (match-str 1 (cadr reflog)) tips))
         (setq reflog (cddr reflog))
         (cl-decf count))
       (cons wipref (nreverse tips)))))
 
+(defun magit-wip-purge ()
+  "Ask to delete all wip-refs that no longer have a corresponding ref."
+  (interactive)
+  (cond-let
+    ([wiprefs (thread-last
+                (cl-set-difference (magit-list-refs "refs/wip/")
+                                   (magit-list-refs)
+                                   :test (##equal (substring %1 15) %2))
+                (delete "refs/wip/index/HEAD")
+                (delete "refs/wip/wtree/HEAD"))]
+     (magit-confirm 'purge-dangling-wiprefs
+       "Delete wip-ref %s without corresponding ref"
+       "Delete %d wip-refs without corresponding ref"
+       nil wiprefs)
+     (message "Deleting wip-refs...")
+     (dolist (wipref wiprefs)
+       (magit-call-git "update-ref" "-d" wipref))
+     (message "Deleting wip-refs...done")
+     (magit-refresh))
+    ((message "All wip-refs have a corresponding ref"))))
+
 ;;; _
 (provide 'magit-wip)
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and$"         . "cond-let--and$")
+;;   ("and>"         . "cond-let--and>")
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let")
+;;   ("match-string" . "match-string")
+;;   ("match-str"    . "match-string-no-properties"))
+;; End:
 ;;; magit-wip.el ends here

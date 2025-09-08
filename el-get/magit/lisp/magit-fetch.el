@@ -1,19 +1,16 @@
-;;; magit-fetch.el --- download objects and refs  -*- lexical-binding: t -*-
+;;; magit-fetch.el --- Download objects and refs  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2021  The Magit Project Contributors
-;;
-;; You should have received a copy of the AUTHORS.md file which
-;; lists all contributors.  If not, see http://magit.vc/authors.
+;; Copyright (C) 2008-2025 The Magit Project Contributors
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
+;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Magit is free software; you can redistribute it and/or modify it
+;; Magit is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Magit is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -21,7 +18,7 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with Magit.  If not, see http://www.gnu.org/licenses.
+;; along with Magit.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -30,15 +27,6 @@
 ;;; Code:
 
 (require 'magit)
-
-;;; Options
-
-(defcustom magit-fetch-modules-jobs 4
-  "Number of submodules to fetch in parallel.
-Ignored for Git versions before v2.8.0."
-  :package-version '(magit . "2.12.0")
-  :group 'magit-commands
-  :type '(choice (const :tag "one at a time" nil) number))
 
 ;;; Commands
 
@@ -49,7 +37,8 @@ Ignored for Git versions before v2.8.0."
   ["Arguments"
    ("-p" "Prune deleted branches" ("-p" "--prune"))
    ("-t" "Fetch all tags" ("-t" "--tags"))
-   (7 "-u" "Fetch full history" "--unshallow")]
+   ("-u" "Fetch full history" "--unshallow" :level 7)
+   ("-F" "Force" ("-f" "--force"))]
   ["Fetch from"
    ("p" magit-fetch-from-pushremote)
    ("u" magit-fetch-from-upstream)
@@ -76,7 +65,7 @@ Ignored for Git versions before v2.8.0."
 With a prefix argument or when the push-remote is either not
 configured or unusable, then let the user first configure the
 push-remote."
-  :description 'magit-fetch--pushremote-description
+  :description #'magit-fetch--pushremote-description
   (interactive (list (magit-fetch-arguments)))
   (let ((remote (magit-get-push-remote)))
     (when (or current-prefix-arg
@@ -95,8 +84,7 @@ push-remote."
      ((member remote (magit-list-remotes)) remote)
      (remote
       (format "%s, replacing invalid" v))
-     (t
-      (format "%s, setting that" v)))))
+     ((format "%s, setting that" v)))))
 
 ;;;###autoload (autoload 'magit-fetch-from-upstream "magit-fetch" nil t)
 (transient-define-suffix magit-fetch-from-upstream (remote args)
@@ -110,8 +98,8 @@ Otherwise if a remote named \"origin\" exists, then use that.
 If no remote can be determined, then this command is not available
 from the `magit-fetch' transient prefix and invoking it directly
 results in an error."
-  :if          (lambda () (magit-get-current-remote t))
-  :description (lambda () (magit-get-current-remote t))
+  :if          (##magit-get-current-remote t)
+  :description (##magit-get-current-remote t)
   (interactive (list (magit-get-current-remote t)
                      (magit-fetch-arguments)))
   (unless remote
@@ -167,23 +155,42 @@ removed on the respective remote."
   (run-hooks 'magit-credential-hook)
   (magit-run-git-async "remote" "update"))
 
-;;;###autoload
-(defun magit-fetch-modules (&optional all)
-  "Fetch all submodules.
+;;;###autoload (autoload 'magit-fetch-modules "magit-fetch" nil t)
+(transient-define-prefix magit-fetch-modules (&optional transient args)
+  "Fetch all populated submodules.
 
-Option `magit-fetch-modules-jobs' controls how many submodules
-are being fetched in parallel.  Also fetch the super-repository,
-because `git-fetch' does not support not doing that.  With a
-prefix argument fetch all remotes."
-  (interactive "P")
-  (magit-with-toplevel
-    (magit-run-git-async
-     "fetch" "--verbose" "--recurse-submodules"
-     (and magit-fetch-modules-jobs
-          (version<= "2.8.0" (magit-git-version))
-          (list "-j" (number-to-string magit-fetch-modules-jobs)))
-     (and all "--all"))))
+Fetching is done using \"git fetch --recurse-submodules\", which
+means that the super-repository and recursively all submodules
+are also fetched.
+
+To set and potentially save other arguments invoke this command
+with a prefix argument."
+  :man-page "git-fetch"
+  :value (list "--verbose" "--jobs=4")
+  ["Arguments"
+   ("-v" "verbose"        "--verbose")
+   ("-j" "number of jobs" "--jobs=" :reader transient-read-number-N+)]
+  ["Action"
+   ("m" "fetch modules" magit-fetch-modules)]
+  (interactive (if current-prefix-arg
+                   (list t)
+                 (list nil (transient-args 'magit-fetch-modules))))
+  (if transient
+      (transient-setup 'magit-fetch-modules)
+    (magit-with-toplevel
+      (magit-run-git-async "fetch" "--recurse-submodules" args))))
 
 ;;; _
 (provide 'magit-fetch)
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and$"         . "cond-let--and$")
+;;   ("and>"         . "cond-let--and>")
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let")
+;;   ("match-string" . "match-string")
+;;   ("match-str"    . "match-string-no-properties"))
+;; End:
 ;;; magit-fetch.el ends here

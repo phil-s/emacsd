@@ -1,19 +1,16 @@
-;;; magit-subtree.el --- subtree support for Magit  -*- lexical-binding: t -*-
+;;; magit-subtree.el --- Subtree support for Magit  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2011-2021  The Magit Project Contributors
-;;
-;; You should have received a copy of the AUTHORS.md file which
-;; lists all contributors.  If not, see http://magit.vc/authors.
+;; Copyright (C) 2008-2025 The Magit Project Contributors
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
+;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Magit is free software; you can redistribute it and/or modify it
+;; Magit is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Magit is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -21,7 +18,14 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with Magit.  If not, see http://www.gnu.org/licenses.
+;; along with Magit.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This library implements support for "git subtree".
+;; The entry point is the `magit-subtree' menu command.
+
+;; See (info "(magit)Subtree").
 
 ;;; Code:
 
@@ -33,7 +37,7 @@
 (transient-define-prefix magit-subtree ()
   "Import or export subtrees."
   :man-page "git-subtree"
-  ["Actions"
+  ["Subtree actions"
    ("i" "Import" magit-subtree-import)
    ("e" "Export" magit-subtree-export)])
 
@@ -45,7 +49,7 @@
    (magit-subtree:--prefix)
    (magit-subtree:--message)
    ("-s" "Squash" "--squash")]
-  ["Actions"
+  ["Subtree import actions"
    [("a" "Add"        magit-subtree-add)
     ("c" "Add commit" magit-subtree-add-commit)]
    [("m" "Merge"      magit-subtree-merge)
@@ -62,7 +66,7 @@
    (magit-subtree:--onto)
    ("-i" "Ignore joins" "--ignore-joins")
    ("-j" "Rejoin"       "--rejoin")]
-  ["Actions"
+  ["Subtree export actions"
    ("p" "Push"          magit-subtree-push)
    ("s" "Split"         magit-subtree-split)])
 
@@ -71,14 +75,13 @@
   :class 'transient-option
   :shortarg "-P"
   :argument "--prefix="
-  :reader 'magit-subtree-read-prefix)
+  :reader #'magit-subtree-read-prefix)
 
 (defun magit-subtree-read-prefix (prompt &optional default _history)
   (let* ((insert-default-directory nil)
          (topdir (magit-toplevel))
          (prefix (read-directory-name (concat prompt ": ") topdir default)))
     (if (file-name-absolute-p prefix)
-        ;; At least `ido-mode's variant is not compatible.
         (if (string-prefix-p topdir prefix)
             (file-relative-name prefix topdir)
           (user-error "%s isn't inside the repository at %s" prefix topdir))
@@ -107,17 +110,17 @@
   :class 'transient-option
   :key "-o"
   :argument "--onto="
-  :reader 'magit-transient-read-revision)
+  :reader #'magit-transient-read-revision)
 
 (defun magit-subtree-prefix (transient prompt)
-  (--if-let (--first (string-prefix-p "--prefix=" it)
-                     (transient-args transient))
-      (substring it 9)
+  (if-let ((arg (seq-find (##string-prefix-p "--prefix=" %)
+                          (transient-args transient))))
+      (substring arg 9)
     (magit-subtree-read-prefix prompt)))
 
 (defun magit-subtree-arguments (transient)
-  (--remove (string-prefix-p "--prefix=" it)
-            (transient-args transient)))
+  (seq-remove (##string-prefix-p "--prefix=" %)
+              (transient-args transient)))
 
 (defun magit-git-subtree (subcmd prefix &rest args)
   (magit-run-git-async "subtree" subcmd (concat "--prefix=" prefix) args))
@@ -181,4 +184,15 @@
 
 ;;; _
 (provide 'magit-subtree)
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and$"         . "cond-let--and$")
+;;   ("and>"         . "cond-let--and>")
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let")
+;;   ("match-string" . "match-string")
+;;   ("match-str"    . "match-string-no-properties"))
+;; End:
 ;;; magit-subtree.el ends here

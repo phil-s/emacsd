@@ -1,19 +1,16 @@
-;;; magit-core.el --- core functionality  -*- lexical-binding: t -*-
+;;; magit-core.el --- Core functionality  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2010-2021  The Magit Project Contributors
-;;
-;; You should have received a copy of the AUTHORS.md file which
-;; lists all contributors.  If not, see http://magit.vc/authors.
+;; Copyright (C) 2008-2025 The Magit Project Contributors
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
+;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Magit is free software; you can redistribute it and/or modify it
+;; Magit is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Magit is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -21,7 +18,7 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with Magit.  If not, see http://www.gnu.org/licenses.
+;; along with Magit.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -32,8 +29,7 @@
 
 ;;; Code:
 
-(require 'magit-utils)
-(require 'magit-section)
+(require 'magit-base)
 (require 'magit-git)
 (require 'magit-mode)
 (require 'magit-margin)
@@ -41,13 +37,7 @@
 (require 'magit-transient)
 (require 'magit-autorevert)
 
-(when (magit--libgit-available-p)
-  (condition-case err
-      (require 'magit-libgit)
-    (error
-     (setq magit-inhibit-libgit 'error)
-     (message "Error while loading `magit-libgit': %S" err)
-     (message "That is not fatal.  The `libegit2' module just won't be used."))))
+;;; Options
 
 (defgroup magit nil
   "Controlling Git from Emacs."
@@ -96,6 +86,9 @@ Each of these options falls into one or more of these categories:
   :group 'magit
   :group 'faces)
 
+(custom-add-to-group 'magit-faces 'diff-refine-added   'custom-face)
+(custom-add-to-group 'magit-faces 'diff-refine-removed 'custom-face)
+
 (defgroup magit-extensions nil
   "Extensions to Magit."
   :group 'magit)
@@ -127,4 +120,15 @@ Each of these options falls into one or more of these categories:
 
 ;;; _
 (provide 'magit-core)
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and$"         . "cond-let--and$")
+;;   ("and>"         . "cond-let--and>")
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let")
+;;   ("match-string" . "match-string")
+;;   ("match-str"    . "match-string-no-properties"))
+;; End:
 ;;; magit-core.el ends here

@@ -1,19 +1,16 @@
-;;; magit-autorevert.el --- revert buffers when files in repository change  -*- lexical-binding: t -*-
+;;; magit-autorevert.el --- Revert buffers when files in repository change  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2010-2021  The Magit Project Contributors
-;;
-;; You should have received a copy of the AUTHORS.md file which
-;; lists all contributors.  If not, see http://magit.vc/authors.
+;; Copyright (C) 2008-2025 The Magit Project Contributors
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
+;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Magit is free software; you can redistribute it and/or modify it
+;; Magit is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Magit is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -21,11 +18,18 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with Magit.  If not, see http://www.gnu.org/licenses.
+;; along with Magit.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This library implements support for automatically reverting buffers
+;; when visited files in the repository change.
+
+;; See (info "(magit)Automatic Reverting of File-Visiting Buffers").
 
 ;;; Code:
 
-(require 'magit-git)
+(require 'magit-process)
 
 (require 'autorevert)
 
@@ -61,9 +65,9 @@ is enabled."
   :group 'auto-revert
   :group 'magit-auto-revert
   :group 'magit-related
-  :type '(radio (const :tag "No filter" nil)
-                (function-item magit-auto-revert-buffer-p)
-                (function-item magit-auto-revert-repository-buffer-p)
+  :type `(radio (const :tag "No filter" nil)
+                (function-item ,#'magit-auto-revert-buffer-p)
+                (function-item ,#'magit-auto-revert-repository-buffer-p)
                 function))
 
 (defcustom magit-auto-revert-tracked-only t
@@ -101,23 +105,21 @@ seconds of user inactivity.  That is not desirable."
 ;;; Mode
 
 (defun magit-turn-on-auto-revert-mode-if-desired (&optional file)
-  (if file
-      (--when-let (find-buffer-visiting file)
-        (with-current-buffer it
-          (magit-turn-on-auto-revert-mode-if-desired)))
-    (when (and buffer-file-name
-               (file-readable-p buffer-file-name)
-               (or (< emacs-major-version 27)
-                   (with-no-warnings
-                     (condition-case nil
-                         (executable-find magit-git-executable t) ; see #3684
-                       (wrong-number-of-arguments t)))) ; very old 27 built
-               (magit-toplevel)
-               (or (not magit-auto-revert-tracked-only)
-                   (magit-file-tracked-p buffer-file-name))
-               (not auto-revert-mode)         ; see #3014
-               (not global-auto-revert-mode)) ; see #3460
-      (auto-revert-mode 1))))
+  (cond (file
+         (when-let ((buffer (find-buffer-visiting file)))
+           (with-current-buffer buffer
+             (magit-turn-on-auto-revert-mode-if-desired))))
+        ((and (not auto-revert-mode)        ; see #3014
+              (not global-auto-revert-mode) ; see #3460
+              buffer-file-name
+              (or auto-revert-remote-files  ; see #5422
+                  (not (file-remote-p buffer-file-name)))
+              (file-readable-p buffer-file-name)
+              (compat-call executable-find (magit-git-executable) t)
+              (magit-toplevel)
+              (or (not magit-auto-revert-tracked-only)
+                  (magit-file-tracked-p buffer-file-name)))
+         (auto-revert-mode 1))))
 
 ;;;###autoload
 (define-globalized-minor-mode magit-auto-revert-mode auto-revert-mode
@@ -140,26 +142,30 @@ seconds of user inactivity.  That is not desirable."
 ;; - If the user has set the variable `magit-auto-revert-mode' to nil
 ;;   after loading magit (instead of doing so before loading magit or
 ;;   by using the function), then we should still respect that setting.
-;; - If the user sets one of these variables after loading magit and
-;;   after `after-init-hook' has run, then that won't have an effect
-;;   and there is nothing we can do about it.
+;; - If the user enables `global-auto-revert-mode' after loading magit
+;;   and after `after-init-hook' has run, then `magit-auto-revert-mode'
+;;   remains enabled; and there is nothing we can do about it.
+;; - However if the init file causes `magit-autorevert' to be loaded
+;;   and only later it enables `global-auto-revert-mode', then we can
+;;   and should leave `magit-auto-revert-mode' disabled.
 (defun magit-auto-revert-mode--init-kludge ()
   "This is an internal kludge to be used on `after-init-hook'.
 Do not use this function elsewhere, and don't remove it from
 the `after-init-hook'.  For more information see the comments
 and code surrounding the definition of this function."
-  (if magit-auto-revert-mode
-      (let ((start (current-time)))
-        (magit-message "Turning on magit-auto-revert-mode...")
-        (magit-auto-revert-mode 1)
-        (magit-message
-         "Turning on magit-auto-revert-mode...done%s"
-         (let ((elapsed (float-time (time-subtract nil start))))
-           (if (> elapsed 0.2)
-               (format " (%.3fs, %s buffers checked)" elapsed
-                       (length (buffer-list)))
-             ""))))
-    (magit-auto-revert-mode -1)))
+  (if (or (not magit-auto-revert-mode)
+          (and global-auto-revert-mode (not after-init-time)))
+      (magit-auto-revert-mode -1)
+    (let ((start (current-time)))
+      (magit-message "Turning on magit-auto-revert-mode...")
+      (magit-auto-revert-mode 1)
+      (magit-message
+       "Turning on magit-auto-revert-mode...done%s"
+       (let ((elapsed (float-time (time-since start))))
+         (if (> elapsed 0.2)
+             (format " (%.3fs, %s buffers checked)" elapsed
+                     (length (buffer-list)))
+           ""))))))
 (if after-init-time
     ;; Since `after-init-hook' has already been
     ;; run, turn the mode on or off right now.
@@ -247,22 +253,30 @@ defaults to nil) for any BUFFER."
              ;; ^ `tramp-handle-file-in-directory-p' lacks this optimization.
              (file-in-directory-p dir top))))))
 
-(defun auto-revert-buffers--buffer-list-filter (fn)
+(define-advice auto-revert-buffers (:around (fn) buffer-list-filter)
   (cl-incf magit-auto-revert-counter)
   (if (or global-auto-revert-mode
           (not auto-revert-buffer-list)
           (not auto-revert-buffer-list-filter))
       (funcall fn)
     (let ((auto-revert-buffer-list
-           (-filter auto-revert-buffer-list-filter
-                    auto-revert-buffer-list)))
+           (seq-filter auto-revert-buffer-list-filter
+                       auto-revert-buffer-list)))
       (funcall fn))
     (unless auto-revert-timer
       (auto-revert-set-timer))))
 
-(advice-add 'auto-revert-buffers :around
-            'auto-revert-buffers--buffer-list-filter)
-
 ;;; _
 (provide 'magit-autorevert)
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and$"         . "cond-let--and$")
+;;   ("and>"         . "cond-let--and>")
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let")
+;;   ("match-string" . "match-string")
+;;   ("match-str"    . "match-string-no-properties"))
+;; End:
 ;;; magit-autorevert.el ends here

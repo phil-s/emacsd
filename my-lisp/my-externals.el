@@ -240,12 +240,12 @@
      (:name magit
             :type git
             :url "git://github.com/magit/magit.git"
-            ;; :branch "master" ;; bleeding edge
-            :branch "2.13.0" ;; install a specific release
+            :branch "master" ;; bleeding edge
+            ;; :branch "4.3.8" ;; install a specific release
             :load-path ("lisp")
             :build ("make") ;; builds documentation.
             ;; :build ("make lisp") ;; just the code; fewer dependencies.
-            :depends (dash ghub git-modes with-editor))
+            :depends (compat cond-let ghub git-modes llama transient with-editor))
 
      (:name mo-git-blame)
 

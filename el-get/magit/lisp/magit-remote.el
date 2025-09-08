@@ -1,19 +1,16 @@
-;;; magit-remote.el --- transfer Git commits  -*- lexical-binding: t -*-
+;;; magit-remote.el --- Transfer Git commits  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2021  The Magit Project Contributors
-;;
-;; You should have received a copy of the AUTHORS.md file which
-;; lists all contributors.  If not, see http://magit.vc/authors.
+;; Copyright (C) 2008-2025 The Magit Project Contributors
 
-;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
+;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
+;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; Magit is free software; you can redistribute it and/or modify it
+;; Magit is free software: you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Magit is distributed in the hope that it will be useful, but WITHOUT
 ;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -21,7 +18,7 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with Magit.  If not, see http://www.gnu.org/licenses.
+;; along with Magit.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -43,10 +40,10 @@ the name of the added remote is equal to that string and the
 variable isn't already set."
   :package-version '(magit . "2.4.0")
   :group 'magit-commands
-  :type '(choice (const  :tag "ask if unset" ask-if-unset)
-                 (const  :tag "always ask" ask)
-                 (string :tag "set if named")
-                 (const  :tag "don't set")))
+  :type '(choice (const  :tag "Ask if unset" ask-if-unset)
+                 (const  :tag "Always ask" ask)
+                 (string :tag "Set if named")
+                 (const  :tag "Don't set")))
 
 (defcustom magit-remote-direct-configure t
   "Whether the command `magit-remote' shows Git variables.
@@ -71,9 +68,7 @@ has to be used to view and change remote related variables."
   :man-page "git-remote"
   :value '("-f")
   ["Variables"
-   :if (lambda ()
-         (and magit-remote-direct-configure
-              (oref transient--prefix scope)))
+   :if (##and magit-remote-direct-configure (transient-scope))
    ("u" magit-remote.<remote>.url)
    ("U" magit-remote.<remote>.fetch)
    ("s" magit-remote.<remote>.pushurl)
@@ -88,7 +83,8 @@ has to be used to view and change remote related variables."
    [("C" "Configure..."         magit-remote-configure)
     ("p" "Prune stale branches" magit-remote-prune)
     ("P" "Prune stale refspecs" magit-remote-prune-refspecs)
-    (7 "z" "Unshallow remote"   magit-remote-unshallow)]]
+    (7 "z" "Unshallow remote"   magit-remote-unshallow)]
+   [("d u" magit-update-default-branch)]]
   (interactive (list (magit-get-current-remote)))
   (transient-setup 'magit-remote nil nil :scope remote))
 
@@ -114,7 +110,7 @@ has to be used to view and change remote related variables."
   (if (pcase (list magit-remote-add-set-remote.pushDefault
                    (magit-get "remote.pushDefault"))
         (`(,(pred stringp) ,_) t)
-        ((or `(ask ,_) `(ask-if-unset nil))
+        ((or `(ask ,_) '(ask-if-unset nil))
          (y-or-n-p (format "Set `remote.pushDefault' to \"%s\"? " remote))))
       (progn (magit-call-git "remote" "add" args remote url)
              (setf (magit-get "remote.pushDefault") remote)
@@ -145,7 +141,7 @@ has to be used to view and change remote related variables."
     (when (equal (magit-get "remote.pushDefault") remote)
       (magit-set new-name "remote.pushDefault"))
     (dolist (var (magit-git-lines "config" "--name-only"
-                                  "--get-regexp" "^branch\.[^.]*\.pushRemote"
+                                  "--get-regexp" "^branch\\.[^.]*\\.pushRemote"
                                   (format "^%s$" remote)))
       (magit-call-git "config" (and (not new-name) "--unset") var new-name))))
 
@@ -179,16 +175,17 @@ the now stale refspecs.  Other stale branches are not removed."
          stale)
     (dolist (refspec refspecs)
       (when (string-match magit--refspec-re refspec)
-        (let ((theirs (match-string 2 refspec))
-              (ours   (match-string 3 refspec)))
+        (let ((theirs (match-str 2 refspec))
+              (ours   (match-str 3 refspec)))
           (unless (if (string-match "\\*" theirs)
                       (let ((re (replace-match ".*" t t theirs)))
-                        (--some (string-match-p re it) remote-refs))
+                        (seq-some (##string-match-p re %) remote-refs))
                     (member theirs remote-refs))
             (push (cons refspec
                         (if (string-match "\\*" ours)
                             (let ((re (replace-match ".*" t t ours)))
-                              (--filter (string-match-p re it) tracking-refs))
+                              (seq-filter (##string-match-p re %)
+                                          tracking-refs))
                           (list (car (member ours tracking-refs)))))
                   stale)))))
     (if (not stale)
@@ -203,30 +200,28 @@ the now stale refspecs.  Other stale branches are not removed."
                  variable))
             (?r "[r]emove remote"
                 (magit-call-git "remote" "rm" remote))
-            (?a "or [a]abort"
+            (?a "[a]abort"
                 (user-error "Abort")))
-        (if (if (= (length stale) 1)
+        (if (if (length= stale 1)
                 (pcase-let ((`(,refspec . ,refs) (car stale)))
                   (magit-confirm 'prune-stale-refspecs
-                    (format "Prune stale refspec %s and branch %%s" refspec)
-                    (format "Prune stale refspec %s and %%i branches" refspec)
+                    (list "Prune stale refspec %s and branch %%s" refspec)
+                    (list "Prune stale refspec %s and %%d branches" refspec)
                     nil refs))
               (magit-confirm 'prune-stale-refspecs nil
-                (format "Prune %%i stale refspecs and %i branches"
-                        (length (cl-mapcan (lambda (s) (copy-sequence (cdr s)))
-                                           stale)))
+                (format "Prune %%d stale refspecs and %d branches"
+                        (length (mapcan (##copy-sequence (cdr %)) stale)))
                 nil
                 (mapcar (pcase-lambda (`(,refspec . ,refs))
                           (concat refspec "\n"
-                                  (mapconcat (lambda (b) (concat "  " b))
-                                             refs "\n")))
+                                  (mapconcat (##concat "  " %) refs "\n")))
                         stale)))
             (pcase-dolist (`(,refspec . ,refs) stale)
               (magit-call-git "config" "--unset" variable
                               (regexp-quote refspec))
               (magit--log-action
                (lambda (refs)
-                 (format "Deleting %i branches" (length refs)))
+                 (format "Deleting %d branches" (length refs)))
                (lambda (ref)
                  (format "Deleting branch %s (was %s)" ref
                          (magit-rev-parse "--short" ref)))
@@ -258,6 +253,38 @@ Delete the symbolic-ref \"refs/remotes/<remote>/HEAD\"."
   (interactive (list (magit-read-remote "Unset HEAD for remote")))
   (magit-run-git "remote" "set-head" remote "--delete"))
 
+;;;###autoload (autoload 'magit-update-default-branch "magit-remote" nil t)
+(transient-define-suffix magit-update-default-branch ()
+  "Update name of the default branch after upstream changed it."
+  :description "Update default branch"
+  :inapt-if-not #'magit-get-some-remote
+  (interactive)
+  (pcase-let ((`(,_remote ,oldname) (magit--get-default-branch))
+              (`( ,remote ,newname) (magit--get-default-branch t)))
+    (cond
+     ((equal oldname newname)
+      (setq oldname
+            (read-string
+             (format
+              "Name of default branch is still `%s', %s\n%s `%s': " oldname
+              "but the upstreams of some local branches might need updating."
+              "Name of upstream branches to replace with" newname)))
+      (magit--set-default-branch newname oldname)
+      (magit-refresh))
+     (t
+      (unless oldname
+        (setq oldname
+              (magit-read-other-local-branch
+               (format "Name of old default branch to be renamed to `%s'"
+                       newname)
+               newname "master")))
+      (cond
+       ((y-or-n-p (format "Default branch changed from `%s' to `%s' on %s.%s?"
+                          oldname newname remote "  Do the same locally"))
+        (magit--set-default-branch newname oldname)
+        (magit-refresh))
+       ((user-error "Abort")))))))
+
 ;;;###autoload
 (defun magit-remote-unshallow (remote)
   "Convert a shallow remote into a full one.
@@ -268,8 +295,8 @@ refspec."
                          (magit-read-remote "Delete remote"))))
   (let ((refspecs (magit-get-all "remote" remote "fetch"))
         (standard (format "+refs/heads/*:refs/remotes/%s/*" remote)))
-    (when (and (= (length refspecs) 1)
-               (not (string-match-p "\\*" (car refspecs)))
+    (when (and (length= refspecs 1)
+               (not (string-search "*" (car refspecs)))
                (yes-or-no-p (format "Also replace refspec %s with %s? "
                                     (car refspecs)
                                     standard)))
@@ -282,11 +309,9 @@ refspec."
 (transient-define-prefix magit-remote-configure (remote)
   "Configure a remote."
   :man-page "git-remote"
-  [:description
-   (lambda ()
-     (concat
-      (propertize "Configure " 'face 'transient-heading)
-      (propertize (oref transient--prefix scope) 'face 'magit-branch-remote)))
+  [:description (##concat
+                 (propertize "Configure " 'face 'transient-heading)
+                 (propertize (transient-scope) 'face 'magit-branch-remote))
    ("u" magit-remote.<remote>.url)
    ("U" magit-remote.<remote>.fetch)
    ("s" magit-remote.<remote>.pushurl)
@@ -309,20 +334,20 @@ refspec."
 
 (transient-define-infix magit-remote.<remote>.url ()
   :class 'magit--git-variable:urls
-  :scope 'magit--read-remote-scope
+  :scope #'magit--read-remote-scope
   :variable "remote.%s.url"
   :multi-value t
   :history-key 'magit-remote.<remote>.*url)
 
 (transient-define-infix magit-remote.<remote>.fetch ()
   :class 'magit--git-variable
-  :scope 'magit--read-remote-scope
+  :scope #'magit--read-remote-scope
   :variable "remote.%s.fetch"
   :multi-value t)
 
 (transient-define-infix magit-remote.<remote>.pushurl ()
   :class 'magit--git-variable:urls
-  :scope 'magit--read-remote-scope
+  :scope #'magit--read-remote-scope
   :variable "remote.%s.pushurl"
   :multi-value t
   :history-key 'magit-remote.<remote>.*url
@@ -330,12 +355,12 @@ refspec."
 
 (transient-define-infix magit-remote.<remote>.push ()
   :class 'magit--git-variable
-  :scope 'magit--read-remote-scope
+  :scope #'magit--read-remote-scope
   :variable "remote.%s.push")
 
 (transient-define-infix magit-remote.<remote>.tagopt ()
   :class 'magit--git-variable:choices
-  :scope 'magit--read-remote-scope
+  :scope #'magit--read-remote-scope
   :variable "remote.%s.tagOpt"
   :choices '("--no-tags" "--tags"))
 
@@ -368,4 +393,15 @@ refspec."
 
 ;;; _
 (provide 'magit-remote)
+;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and$"         . "cond-let--and$")
+;;   ("and>"         . "cond-let--and>")
+;;   ("and-let"      . "cond-let--and-let")
+;;   ("if-let"       . "cond-let--if-let")
+;;   ("when-let"     . "cond-let--when-let")
+;;   ("while-let"    . "cond-let--while-let")
+;;   ("match-string" . "match-string")
+;;   ("match-str"    . "match-string-no-properties"))
+;; End:
 ;;; magit-remote.el ends here
