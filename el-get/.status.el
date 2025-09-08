@@ -41,6 +41,7 @@
 :keep-buffers "installed"
 :key-chord "installed"
 :lexbind-mode "installed"
+:llama "installed"
 :macrostep "installed"
 :magit "installed"
 :mo-git-blame "installed"

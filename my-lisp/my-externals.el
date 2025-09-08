@@ -224,6 +224,11 @@
             :type git
             :url "git://github.com/spacebat/lexbind-mode.git")
 
+     (:name llama
+            :type git
+            :url "https://github.com/tarsius/llama.git"
+            :build ("make")) ;; builds documentation.
+
      (:name macrostep
             :type git
             :url "https://github.com/joddie/macrostep.git")
