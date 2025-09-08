@@ -365,6 +365,9 @@ to ensure that this has happened."
 ;; (as the standard formatting will add 8 chars of padding).
 (setq git-commit-summary-max-length 72)
 
+;; Link to Git man pages from Magit info manuals.
+(setq magit-view-git-manual-method 'man)
+
 ;; Make log and diff commands from `magit-file-popup' use separate
 ;; buffers to show the specific-file log/diff. This avoids un/setting
 ;; the file filter for regular log/diff commands.
