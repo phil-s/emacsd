@@ -8,7 +8,7 @@ ELS  += gitconfig-mode.el
 ELS  += gitignore-mode.el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  =
+DEPS  = compat
 
 EMACS      ?= emacs
 EMACS_ARGS ?=
@@ -21,8 +21,11 @@ all: lisp
 help:
 	$(info make all          - generate byte-code and autoloads)
 	$(info make lisp         - generate byte-code and autoloads)
+	$(info make redo         - re-generate byte-code and autoloads)
 	$(info make clean        - remove generated files)
 	@printf "\n"
+
+redo: clean lisp
 
 lisp: $(ELCS) loaddefs check-declare
 
@@ -55,4 +58,5 @@ $(PKG)-autoloads.el: $(ELS)
   (cl-letf (((symbol-function 'progress-reporter-do-update) (lambda (&rest _)))\
             ((symbol-function 'progress-reporter-done) (lambda (_))))\
     (let ((generated-autoload-file file))\
-      (update-directory-autoloads default-directory))))"
+      (update-directory-autoloads default-directory))))" \
+	2>&1 | sed "/^Package autoload is deprecated$$/d"

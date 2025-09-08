@@ -1718,11 +1718,11 @@ Defaults to \"origin\".
 A major mode for editing .gitattributes files.
 \\{gitattributes-mode-map}
 
-\(fn)" t nil)
+\(fn)" t)
 
 (dolist (pattern '("/\\.gitattributes\\'" "/info/attributes\\'" "/git/attributes\\'")) (add-to-list 'auto-mode-alist (cons pattern #'gitattributes-mode)))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "git-modes/gitattributes-mode" '("gitattributes-mode-")))
+(register-definition-prefixes "git-modes/gitattributes-mode" '("gitattributes-mode-"))
 
 ;;;***
 
@@ -1733,11 +1733,11 @@ A major mode for editing .gitattributes files.
 (autoload 'gitconfig-mode "git-modes/gitconfig-mode" "\
 A major mode for editing .gitconfig files.
 
-\(fn)" t nil)
+\(fn)" t)
 
 (dolist (pattern '("/\\.gitconfig\\'" "/\\.git/config\\'" "/modules/.*/config\\'" "/git/config\\'" "/\\.gitmodules\\'" "/etc/gitconfig\\'")) (add-to-list 'auto-mode-alist (cons pattern 'gitconfig-mode)))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "git-modes/gitconfig-mode" '("gitconfig-")))
+(register-definition-prefixes "git-modes/gitconfig-mode" '("gitconfig-"))
 
 ;;;***
 
@@ -1748,11 +1748,11 @@ A major mode for editing .gitconfig files.
 (autoload 'gitignore-mode "git-modes/gitignore-mode" "\
 A major mode for editing .gitignore files.
 
-\(fn)" t nil)
+\(fn)" t)
 
 (dolist (pattern (list "/\\.gitignore\\'" "/info/exclude\\'" "/git/ignore\\'")) (add-to-list 'auto-mode-alist (cons pattern 'gitignore-mode)))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "git-modes/gitignore-mode" '("gitignore-mode-font-lock-keywords")))
+(register-definition-prefixes "git-modes/gitignore-mode" '("gitignore-mode-font-lock-keywords"))
 
 ;;;***
 

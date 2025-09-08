@@ -1,1 +1,7 @@
+/*-autoloads.el
+/*-pkg.el
 /.config.mk
+
+/.github
+/.elpaignore
+/.mailmap
