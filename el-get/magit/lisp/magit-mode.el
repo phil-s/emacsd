@@ -1545,6 +1545,11 @@ of the repository.
 With a prefix argument or if optional ALL is non-nil, discard the
 mentioned caches completely."
   (interactive)
+  ;; Custom hacks.
+  (setq magit--rev-parse-toplevel-cache (make-hash-table :test #'equal))
+  (setq magit--rev-parse-cdup-cache (make-hash-table :test #'equal))
+  (setq magit--rev-parse-git-dir-cache (make-hash-table :test #'equal))
+  ;; Normal.
   (cond (all
          (setq magit-repository-local-cache nil)
          (setq magit--host-git-version-cache nil)
