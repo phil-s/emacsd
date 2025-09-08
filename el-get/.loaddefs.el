@@ -871,6 +871,29 @@ kill ring instead of opening it with `browse-url'.")
 
 ;;;***
 
+;;;### (autoloads nil "compat/compat" "compat/compat.el" (0 0 0 0))
+;;; Generated autoloads from compat/compat.el
+
+(register-definition-prefixes "compat/compat" '("compat-"))
+
+;;;***
+
+;;;### (autoloads nil "compat/compat-macs" "compat/compat-macs.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from compat/compat-macs.el
+
+(register-definition-prefixes "compat/compat-macs" '("compat-"))
+
+;;;***
+
+;;;### (autoloads nil "compat/compat-tests" "compat/compat-tests.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from compat/compat-tests.el
+
+(register-definition-prefixes "compat/compat-tests" '("compat-" "should-equal"))
+
+;;;***
+
 ;;;### (autoloads nil "csv-mode/csv-mode" "csv-mode/csv-mode.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from csv-mode/csv-mode.el

@@ -1,0 +1,7 @@
+*.patch
+*~
+\#*\#
+/compat-pkg.el
+/compat-autoloads.el
+.github
+.elpaignore

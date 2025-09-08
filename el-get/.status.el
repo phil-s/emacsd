@@ -8,6 +8,7 @@
 :auto-compile "installed"
 :avy "installed"
 :browse-at-remote "installed"
+:compat "installed"
 :csv-mode "installed"
 :dash "installed"
 :deft "installed"

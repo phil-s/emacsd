@@ -87,6 +87,10 @@
             :type http
             :url "https://www.emacswiki.org/emacs/download/browse-kill-ring.el")
 
+     (:name compat
+            :type git
+            :url "https://github.com/emacs-compat/compat.git")
+
      (:name csv-mode
             :type git
             :url "https://git.savannah.gnu.org/git/emacs/elpa.git"
