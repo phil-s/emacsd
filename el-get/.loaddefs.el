@@ -894,6 +894,22 @@ kill ring instead of opening it with `browse-url'.")
 
 ;;;***
 
+;;;### (autoloads nil "cond-let/cond-let" "cond-let/cond-let.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from cond-let/cond-let.el
+
+(register-definition-prefixes "cond-let/cond-let" '("cond-let"))
+
+;;;***
+
+;;;### (autoloads nil "cond-let/cond-let-tests" "cond-let/cond-let-tests.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from cond-let/cond-let-tests.el
+
+(register-definition-prefixes "cond-let/cond-let-tests" '("cond-let-test--"))
+
+;;;***
+
 ;;;### (autoloads nil "csv-mode/csv-mode" "csv-mode/csv-mode.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from csv-mode/csv-mode.el

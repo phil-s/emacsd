@@ -91,6 +91,10 @@
             :type git
             :url "https://github.com/emacs-compat/compat.git")
 
+     (:name cond-let
+            :type git
+            :url "https://github.com/tarsius/cond-let.git")
+
      (:name csv-mode
             :type git
             :url "https://git.savannah.gnu.org/git/emacs/elpa.git"

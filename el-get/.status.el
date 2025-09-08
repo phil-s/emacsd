@@ -9,6 +9,7 @@
 :avy "installed"
 :browse-at-remote "installed"
 :compat "installed"
+:cond-let "installed"
 :csv-mode "installed"
 :dash "installed"
 :deft "installed"
