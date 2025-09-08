@@ -294,6 +294,12 @@
             :type git
             :url "git@github.com:jcsalomon/smarttabs.git")
 
+     (:name transient
+            :type git
+            :url "https://github.com/magit/transient.git"
+            :load-path ("lisp")
+            :build ("make")) ;; builds documentation.
+
      (:name transpose-frame
             :type git
             :url "https://github.com/emacsorphanage/transpose-frame.git")

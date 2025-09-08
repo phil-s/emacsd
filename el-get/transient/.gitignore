@@ -1,0 +1,19 @@
+/config.mk
+/docs/.revdesc
+/docs/dir
+/docs/stats/
+/lisp/*-autoloads.el
+/lisp/*-pkg.el
+
+/docs/gpl.texi
+/docs/transient.html
+/docs/transient.pdf
+/docs/transient/
+
+# For ELPA:
+/*-autoloads.el
+/*-pkg.el
+
+.elpaignore
+.github
+.mailmap
