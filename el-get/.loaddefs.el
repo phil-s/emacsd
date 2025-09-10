@@ -6740,12 +6740,6 @@ A major mode for displaying the directory tree in text mode.
 
 ;;;***
 
-;;;### (autoloads nil nil ("dash/dash-functional.el" "docker-tramp/docker-tramp-compat.el"
-;;;;;;  "git-modes/git-modes.el" "transient/lisp/transient-autoloads.el"
-;;;;;;  "with-editor/lisp/with-editor-autoloads.el") (0 0 0 0))
-
-;;;***
-
 (provide '.loaddefs)
 ;; Local Variables:
 ;; version-control: never

@@ -2821,7 +2821,29 @@ shouldn't be invoked directly."
         (when (fboundp 'native-compile-async)
           (native-compile-async el-get-autoload-file)))
 
-      (el-get-eval-autoloads))))
+      (el-get-eval-autoloads)))
+
+  ;; Remove the annoying `no-autoloads' section at the end of the file
+  ;; (see `make-directory-autoloads').  This ends up as a mishmash of
+  ;; package names, which is just annoying for version control.
+  (with-temp-buffer
+    (insert-file-contents el-get-autoload-file)
+    (emacs-lisp-mode)
+    (goto-char (point-min))
+    (set-buffer-modified-p nil)
+    (while (not (eobp))
+      (save-restriction
+        (forward-page)
+        (narrow-to-page)
+        (let ((start (point)))
+          (while (forward-comment 1))
+          (when (eobp)
+            (delete-region start (point))
+            (widen)
+            (when (looking-at (concat page-delimiter "\n"))
+              (replace-match ""))))))
+    (when (buffer-modified-p)
+      (write-region (point-min) (point-max) el-get-autoload-file))))
 
 (defconst el-get-load-suffix-regexp
   (concat (mapconcat 'regexp-quote (get-load-suffixes) "\\|") "\\'"))
