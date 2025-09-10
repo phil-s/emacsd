@@ -454,6 +454,12 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
 ;; TAGS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun my-reset-tags ()
+  "Call `tags-reset-tags-tables' and then `normal-mode'."
+  (interactive)
+  (tags-reset-tags-tables)
+  (normal-mode))
+
 (define-advice visit-tags-table (:around (orig-fun &rest args) large-file-ok)
   "Suppress `large-file-warning-threshold' for `visit-tags-table'.
 
