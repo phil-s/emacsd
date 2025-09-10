@@ -2253,6 +2253,87 @@ otherwise use the current selected window."
   (when delete-other-windows
     (delete-other-windows)))
 
+(declare-function proced-update "subr")
+(defvar proced-filter)
+(defvar proced-filter-alist)
+(defvar proced-grammar-alist)
+
+(defun my-proced-filter-args (regexp)
+  "Filter Proced buffer using REGEXP, matched against the process args."
+  (interactive "sFilter by regexp: ")
+  (let ((filter (list (cons 'args regexp))))
+    ;; only update if necessary
+    (unless (equal proced-filter filter)
+      (setq proced-filter filter)
+      (proced-update t))))
+
+(defun my-proced-filter-interactive (scheme)
+  "Filter Proced buffer using SCHEME.
+
+When called interactively, prompts for a member of
+`proced-filter-alist'.  An empty string means nil, i.e., no filtering.
+
+With a prefix argument, prompts instead for a process attribute to
+filter by, and a regexp to match against the values of that attribute.
+
+Sets variable `proced-filter' to SCHEME and updates the listing."
+  (interactive
+   (if current-prefix-arg
+       (let ((key (completing-read "Attribute: "
+                                   proced-grammar-alist nil t))
+             (regexp (read-string "Regexp: ")))
+         (list (list (cons (intern key) regexp))))
+     (let ((scheme (completing-read "Filter: "
+                                    proced-filter-alist nil t)))
+       (list (if (string= "" scheme)
+                 nil
+               (intern scheme)))))
+   proced-mode)
+  ;; only update if necessary
+  (unless (equal proced-filter scheme)
+    (setq proced-filter scheme)
+    (proced-update t)))
+
+(advice-add 'proced-filter-interactive :override #'my-proced-filter-interactive)
+
+
+;; (defun my-proced-filter-interactive (scheme)
+;;   "Filter Proced buffer using SCHEME.
+;;
+;; When called interactively, prompts for a member of
+;; `proced-filter-alist'.  An empty string means nil, i.e., no filtering.
+;;
+;; With a prefix argument, prompts instead for a process attribute to
+;; filter by, and a regexp to match against the values of that attribute.
+;;
+;; Sets variable `proced-filter' to SCHEME and updates the listing."
+;;   (interactive
+;;    (if current-prefix-arg
+;;        (let* ((key (completing-read "Attribute: "
+;;                                     proced-grammar-alist nil t))
+;;               ;;(regexp (read-string "Regexp: ")))
+;;               (predicate (nth 4 (assq key proced-grammar-alist)))
+;;               (regexp (let ((
+;;
+;;                (read-from-minibuffer "Regexp: " "\"\"" nil t)))
+;;          (list (list (cons (intern key) regexp))))
+;;      (let ((scheme (completing-read "Filter: "
+;;                                     proced-filter-alist nil t)))
+;;        (list (if (string= "" scheme)
+;;                  nil
+;;                (intern scheme)))))
+;;    proced-mode)
+;;   ;; only update if necessary
+;;   (unless (equal proced-filter scheme)
+;;     (setq proced-filter scheme)
+;;     (proced-update t)))
+
+
+
+
+
+
+
 (defun my-ibuffer (arg)
   "Switch to ibuffer. Exit ibuffer, if current.
 
