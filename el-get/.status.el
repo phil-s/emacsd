@@ -62,6 +62,7 @@
 :smart-tabs-mode "installed"
 :transient "installed"
 :transpose-frame "installed"
+:treepy "installed"
 :unbound "installed"
 :vcl-mode "installed"
 :visible-mark "installed"

@@ -313,6 +313,10 @@
             :type git
             :url "https://github.com/emacsorphanage/transpose-frame.git")
 
+     (:name treepy
+            :type git
+            :url "https://github.com/volrath/treepy.el.git")
+
      (:name windcycle
             :type http
             :url ,(my-local-repository-url-for "windcycle"))

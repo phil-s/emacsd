@@ -6031,6 +6031,13 @@ Omitting FRAME means currently selected frame.
 
 ;;;***
 
+;;;### (autoloads nil "treepy/treepy" "treepy/treepy.el" (0 0 0 0))
+;;; Generated autoloads from treepy/treepy.el
+
+(register-definition-prefixes "treepy/treepy" '("treepy-"))
+
+;;;***
+
 ;;;### (autoloads nil "unbound/unbound" "unbound/unbound.el" (0 0
 ;;;;;;  0 0))
 ;;; Generated autoloads from unbound/unbound.el
