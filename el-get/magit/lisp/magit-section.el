@@ -8,13 +8,13 @@
 ;; Homepage: https://github.com/magit/magit
 ;; Keywords: tools
 
-;; Package-Version: 4.3.8
+;; Package-Version: 4.4.0
 ;; Package-Requires: (
-;;     (emacs "28.1")
-;;     (compat "30.1")
+;;     (emacs   "28.1")
+;;     (compat  "30.1")
 ;;     (cond-let "0.1")
-;;     (llama "1.0")
-;;     (seq "2.24"))
+;;     (llama    "1.0")
+;;     (seq      "2.24"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
