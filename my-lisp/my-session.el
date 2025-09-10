@@ -97,4 +97,21 @@ Remove with:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Use a separate static desktop file as the initial set of buffers at
+;; start-up:
+;;
+;; ;; To prepare the start-up desktop file...
+;; ;; 1. Run a separate temporary instance of Emacs, and within that:
+;; ;; 2. M-x make-directory RET ~/.emacs.d/start RET
+;; ;; 3. M-x desktop-change-dir RET ~/.emacs.d/start RET
+;; ;; 4. Visit files, etc -- create the configuration you wish to store
+;; ;; 5. M-x desktop-save-in-desktop-dir
+;; ;; 6. Quit the temporary instance of Emacs
+;; ;; 7. Add the following to your regular init file
+;; (let (desktop-dirname)
+;;   (desktop-read "~/.emacs.d/start")
+;;   (desktop-release-lock))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-session)

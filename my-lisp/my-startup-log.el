@@ -1,5 +1,26 @@
 ;; -*- lexical-binding: nil; -*-
 
+;; TODO: `before-init-hook' is a thing.
+;;
+;; I could probably load this in early-init.el (first), and use
+;; hooks to do everything else which is currently hard-coded in
+;; either early-init.el or init.el ?
+;;
+;; I might need to use depths of both -100 and 100 when adding
+;; to `after-init-hook' ?
+;;
+;; And maybe I'd need to do more in the advice to
+;; `package-activate-all'?
+;;
+;; Or perhaps I can just call functions defined in this file,
+;; rather than inlining timing code.
+;;
+;; If it's much-of-a-muchness, then the benefit of having it all
+;; automated probably outweighs any miniscule timing differences.
+
+
+
+
 ;; Display the time taken to start Emacs.
 ;;
 ;; This depends on code in both early-init.el and init.el.

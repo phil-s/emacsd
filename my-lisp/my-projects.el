@@ -9,6 +9,30 @@
 ;; (my-file-locals-set-directory-class "/file/path" 'class-symbol)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;; Emacs caches .dir-locals.el entries to avoid reparsing them. It
+;; also checks the modification time on the file at each open to
+;; ensure the cache is fresh, and reparses if needed.
+;;
+;; However, if you invoke dir-locals-set-directory-class with a nil
+;; mtime, the cache is always considered fresh. If you do this when
+;; you assign your classes to your remote directory roots, you can
+;; avoid the repeated costs and pay only for the first parse. Of
+;; course, this assumes you won't be changing your class content.
+;;
+;; If you want to use .dir-locals.el (which I prefer since it's
+;; transparent and would likely be in source control for each
+;; project), the one hack you might want to consider is to alter the
+;; remote-project root entries in dir-locals-directory-cache to nil
+;; their mtime. I guess you'd do this in a find-file-hook. Even though
+;; it would nil each time a file is opened, it's way cheaper than
+;; checking mtime across the net.
+;;
+;; See the code for dir-locals-find-file to see how the cache works.
+;;
+;; -- https://old.reddit.com/r/emacs/comments/1luxt57/remote_dirlocals_enable_directory_classes_but_not/n21yiki/
+
+
 ;; Null class
 (dir-locals-set-class-variables 'null '(nil))
 

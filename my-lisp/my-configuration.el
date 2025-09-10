@@ -329,13 +329,22 @@ when `auto-save-mode' is invoked manually.")
 
 ;; Try to prevent things being displayed in iconified frames.
 ;;
-;; When XMonad hides an Emacs frame (whether because another frame is
-;; maximised, or because the frame is in a different workspace entirely),
-;; Emacs sees the hidden frame as "iconified" (see `frame-visible-p').
+;; When XMonad hides an Emacs frame (whether because another frame is maximised,
+;; or because the frame is in a different workspace entirely), Emacs sees the
+;; hidden frame as "iconified" (see `frame-visible-p').
 ;;
 ;; I want these frames to be treated as if they were invisible; but some
-;; commands pass (reusable-frames . 0) to `display-buffer', which allows
-;; it to select windows in iconified frames.
+;; commands pass (reusable-frames . 0) to `display-buffer', which allows it to
+;; select windows in iconified frames.
+;;
+;; Note that `display-buffer' collects /all/ of the action functions and action
+;; alists from all of the variables, and /combines/ them, and then looks for a
+;; match.  So each of the functions called receives the combined alist assembled
+;; from all of the variables.  This explains why `display-buffer-base-action'
+;; has a default value of `(nil)' -- which is the same as `(nil . nil)' -- as
+;; that's just providing an empty (FUNCTIONS . ALIST) pair to be combined with
+;; the other lists.  Therefore we can manipulate only the ALIST without needing
+;; to populate FUNCTIONS.
 (push '(reusable-frames . visible) (cdr display-buffer-base-action))
 
 ;; Disable bi-directional display support for performance reasons.
@@ -1057,6 +1066,8 @@ n.b. ffap-alternate-file is intended for interactive use only."
 (advice-add 'display-time-update--mail :override #'ignore)
 
 ;; Display the hostname and time in the minibuffer window.
+;; N.b.: `mode-line-format-right-align' was introduced in 30.1.
+;; (I'm not sure whether that's usable with `minibuffer-line', though.)
 (defun my-minibuffer-line-justify-right (text)
   "Return a string of `window-width' length with TEXT right-aligned."
   (with-selected-window (minibuffer-window)

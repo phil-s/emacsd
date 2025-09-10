@@ -143,10 +143,16 @@ using the specified hippie-expand function."
      (if selection
          (progn
            (undo-boundary)
+           ;; FIXME: The string to substitute can vary!  Different try-expand-*
+           ;; functions try to complete different parts of the incomplete text.
+           ;; E.g. With "(def" as preceding text, `try-expand-list' completes
+           ;; "(def", whereas `try-complete-lisp-symbol' completes "def".  We
+           ;; need to know which was used in order to substitute correctly.
            (he-substitute-string selection t))
        (message "No expansion found"))))
 
 (defun my-hippie-expand-menu-group (completion transform)
+  "Group the completions by `hippie-expand-try-functions-list'."
   (if transform
       completion
     (if-let ((group (get-text-property 0 'my-group completion)))

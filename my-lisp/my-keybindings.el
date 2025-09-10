@@ -509,6 +509,11 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defun my-buffer-local-set-key (key command)
   ;; Helper intended for use in local variables. e.g.:
   ;; eval: (my-buffer-local-set-key (kbd "C-c f") 'foo)
+  ;;
+  ;; FIXME: Name the new keymap (or otherwise set some property), and
+  ;; check for that name whenever calling this so that, when binding
+  ;; /multiple/ local keys, we can re-use the new keymap instead of
+  ;; creating a chain of multiple new keymaps.
   (interactive "KSet key buffer-locally: \nCSet key %s buffer-locally to command: ")
   (let ((oldmap (current-local-map))
         (newmap (make-sparse-keymap)))

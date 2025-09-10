@@ -260,7 +260,9 @@ only a single completion option available."
 ;; (setq user-full-name "Firstname Lastname"
 ;;       user-mail-address "me@example.com")
 ;;
-;; ;; SMTP
+;; ;; SMTP.  You might need to keep your `auth-sources' file in sync:
+;; ;; machine <server> login <address> port <port> password "..."
+;; ;; (but note also the ~/.mailpass.gpg usage.)
 ;; (setq send-mail-function #'smtpmail-send-it
 ;;       smtpmail-smtp-server "mail.example.com"
 ;;       smtpmail-smtp-service 465
