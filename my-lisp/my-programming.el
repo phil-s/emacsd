@@ -200,12 +200,18 @@
                      (imenu--cleanup)
                      (setq imenu--index-alist nil)
                      (imenu-ido-goto-symbol (imenu--make-index-alist))
+                     (setq default (and default (symbol-name default)))
                      (setq selected-symbol
+                           ;; N.b. imenu produces much more than just
+                           ;; the symbol in some cases (e.g. PHP).
                            (if default
-                               (completing-read
-                                (format "Symbol (default %s): " default)
-                                symbol-names nil nil nil nil
-                                (symbol-name default))
+                               (if (member default symbol-names)
+                                   (completing-read
+                                    (format "Symbol (default %s): " default)
+                                    symbol-names nil nil nil nil default)
+                                 (completing-read
+                                  "Symbol: "
+                                  symbol-names nil nil default nil default))
                              (completing-read "Symbol: " symbol-names)))
                      (string= (car imenu--rescan-item) selected-symbol)))
             (unless (and (boundp 'mark-active) mark-active)
