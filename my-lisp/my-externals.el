@@ -13,7 +13,7 @@
   (package-initialize))
 ;; Add extra package archives.
 ;; The nongnu ELPA archive is standard starting from Emacs 28.
-(eval-when-compile (require 'package))
+(require 'package)
 (add-to-list 'package-archives
              '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (add-to-list 'package-archives
@@ -39,7 +39,7 @@
      (:name async
             :type git
             :branch "v1.9.3" ;; install a specific release
-            :url "git@github.com:jwiegley/emacs-async.git")
+            :url "https://github.com/jwiegley/emacs-async.git")
 
      (:name el-get
             :type git
@@ -119,7 +119,7 @@
 
      (:name diff-hl
             :type git
-            :url "git@github.com:dgutov/diff-hl.git")
+            :url "https://github.com/dgutov/diff-hl.git")
 
      (:name dired-details
             :type emacswiki)
@@ -167,7 +167,7 @@
 
      (:name font-lock-studio
             :type git
-            :url "git@github.com:Lindydancer/font-lock-studio.git")
+            :url "https://github.com/Lindydancer/font-lock-studio.git")
 
      (:name geben
             :type git
@@ -182,8 +182,8 @@
 
      (:name git-modes
             :type git
-            :branch "master"
-            :url "git@github.com:magit/git-modes.git")
+            ;; :branch "master"
+            :url "https://github.com/magit/git-modes.git")
 
      (:name git-link
             :type git
@@ -304,7 +304,7 @@
 
      (:name smart-tabs-mode
             :type git
-            :url "git@github.com:jcsalomon/smarttabs.git")
+            :url "https://github.com/jcsalomon/smarttabs.git")
 
      (:name transient
             :type git
@@ -362,7 +362,7 @@
 
      (:name with-editor
             :type git
-            :url "git@github.com:magit/with-editor.git"
+            :url "https://github.com/magit/with-editor.git"
             :load-path ("lisp")
             :build ("make")) ;; builds documentation.
 
