@@ -1814,6 +1814,7 @@ A numeric prefix argument pads the minimal indent by PAD columns.
 
 See also `my-kill-region'."
   (interactive "P\nr")
+  (setq this-command 'copy-region-as-kill)
   (if pad
       (my-copy-region-unindented (if (consp pad) nil pad)
                                  beginning end)
@@ -1831,6 +1832,7 @@ A numeric prefix argument pads the minimal indent by PAD columns.
 
 See also `my-copy-region-as-kill'."
   (interactive "P\nr")
+  (setq this-command 'kill-region)
   (if pad
       (progn
         (my-copy-region-unindented (if (consp pad) nil pad)
