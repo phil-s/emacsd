@@ -749,6 +749,12 @@ The WHEN argument must be a valid TIME for `run-at-time', or the string \"now\".
       (reminder--frame-1 what type timeout)
     (run-at-time when nil #'reminder--frame-1 what type timeout)))
 
+(defvar reminder-frame-name nil
+  ;; Note that only the default name is targeted in my xmonad.hs config:
+  ;;   -- My Emacs notification frames.  Show these on every workspace.
+  ;; , appName =? "Notification" --> doFloat <+> doF copyToAll
+  "Optional name for the frame.")
+
 (defun reminder--frame-1 (what type timeout)
   "Generates the frame for `reminder--frame'."
   (let ((buf (generate-new-buffer "*reminder*"))
@@ -810,7 +816,7 @@ The WHEN argument must be a valid TIME for `run-at-time', or the string \"now\".
                     nil :local)
           ;; Create the notification.
           (let ((fparams
-                 `((name . "Notification")
+                 `((name . ,(or reminder-frame-name "Notification"))
                    (visibility . nil)
                    (fullscreen . nil)
                    (auto-raise . t)
@@ -959,7 +965,8 @@ The WHEN argument must be a valid TIME for `run-at-time', or the string \"now\".
                                             (selected-frame)
                                             buf)))
               ;; Make the frame visible.
-              (set-frame-parameter nil 'visibility t))))))))
+              (set-frame-parameter nil 'visibility t)
+              (selected-frame))))))))
 
 (defun reminder--ding (buf)
   "Flash the reminder frame."
