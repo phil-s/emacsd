@@ -409,6 +409,16 @@ to ensure that this has happened."
 ;; (with-eval-after-load "magit"
 ;;   (global-magit-file-mode 1)) ;; per-file popup on C-c M-g
 
+
+
+(defun my-magit-log-config ()
+  "Called after loading `magit-log'."
+  (transient-append-suffix 'magit-log "=u"
+    '("=r" "Limit to commits from remote" (nil "--remotes="))))
+
+(with-eval-after-load "magit-log"
+  (my-magit-log-config))
+
 ;; ;; FIXME: Convert to transient.
 ;; (with-eval-after-load "magit-branch"
 ;;   (magit-define-popup-action 'magit-branch-popup
