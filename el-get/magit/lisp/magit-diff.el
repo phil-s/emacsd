@@ -914,7 +914,6 @@ and `:slant'."
   ["Limit arguments"
    (magit:--)
    (magit-diff:--ignore-submodules)
-   ("-B" "Ignore blank lines"         "--ignore-blank-lines")
    ("-b" "Ignore whitespace changes"  ("-b" "--ignore-space-change"))
    ("-w" "Ignore all whitespace"      ("-w" "--ignore-all-space"))
    ("-D" "Omit preimage for deletes"  ("-D" "--irreversible-delete")

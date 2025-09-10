@@ -433,6 +433,8 @@ to ensure that this has happened."
 
 (defun my-magit-diff-config ()
   "Called after loading `magit-diff'."
+  (transient-append-suffix 'magit-diff 'magit-diff:--ignore-submodules
+    '("-B" "Ignore blank lines" (nil "--ignore-blank-lines")))
   (transient-append-suffix 'magit-diff "r"
     '("R" "Diff range" magit-diff-range))
   (transient-replace-suffix 'magit-diff "r"
