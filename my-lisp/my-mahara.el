@@ -271,6 +271,15 @@ files are not relevant.")
 
 (defun mahara-tags-autoupdate-callback ()
   "Check whether the TAGS file is out of date, and rebuild it if necessary."
+  ;; I'm still getting negative timer ETAs for this.  If the problem
+  ;; is errors while the work is happening, let's try doing basically
+  ;; no work here, and instead use this to trigger a separate one-off
+  ;; timer to do what needs doing.
+  (when (and mahara-tags-autoupdate-enabled tags-file-name)
+    (run-at-time 0 nil #'mahara-tags-autoupdate-callback-1)))
+
+(defun mahara-tags-autoupdate-callback-1 ()
+  "Check whether the TAGS file is out of date, and rebuild it if necessary."
   (when (and mahara-tags-autoupdate-enabled tags-file-name)
     ;; Error handling is important for timer callbacks, else we can end up with
     ;; non-functional timers with a negative 'Next' time which can't trigger:
