@@ -1260,7 +1260,7 @@ trees.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from etags-select/etags-select.el
 
-(let ((loads (get 'etags-select-mode 'custom-loads))) (if (member '"etags-select/etags-select" loads) nil (put 'etags-select-mode 'custom-loads (cons '"etags-select/etags-select" loads))))
+(let ((loads (get 'etags-select-mode 'custom-loads))) (if (member '"etags-select/etags-select" loads) nil (put 'etags-select-mode 'custom-loads (cons '"etags-select/etags-select" loads)) (put 'etags 'custom-loads (cons 'etags-select-mode (get 'etags 'custom-loads)))))
 
 (defvar etags-select-no-select-for-one-match t "\
 *If non-nil, don't open the selection window if there is only one
@@ -1306,12 +1306,12 @@ Only works with GNU Emacs.")
 (autoload 'etags-select-find-tag-at-point "etags-select/etags-select" "\
 Do a find-tag-at-point, and display all exact matches.  If only one match is
 found, see the `etags-select-no-select-for-one-match' variable to decide what
-to do." t nil)
+to do." t)
 
 (autoload 'etags-select-find-tag "etags-select/etags-select" "\
 Do a find-tag, and display all exact matches.  If only one match is
 found, see the `etags-select-no-select-for-one-match' variable to decide what
-to do." t nil)
+to do." t)
 
 (register-definition-prefixes "etags-select/etags-select" '("etags-select-"))
 
@@ -6734,9 +6734,9 @@ Creates an interactive buffer with the directory tree of the path given
 (autoload 'ztree-mode "ztree-diff/ztree-view" "\
 A major mode for displaying the directory tree in text mode.
 
-\(fn)" t nil)
+\(fn)" t)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ztree-diff/ztree-view" '("ztree" "scroll-to-line")))
+(register-definition-prefixes "ztree-diff/ztree-view" '("scroll-to-line" "ztree"))
 
 ;;;***
 
