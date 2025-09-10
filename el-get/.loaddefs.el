@@ -153,21 +153,21 @@ toggle it if ARG is `toggle'; disable the mode otherwise.
 ;;; Generated autoloads from anzu/anzu.el
 
 (autoload 'anzu-mode "anzu/anzu" "\
-minor-mode which display search information in mode-line.
+Minor mode which displays the current search's match count in the mode-line.
 
-This is a minor mode.  If called interactively, toggle the `Anzu
-mode' mode.  If the prefix argument is positive, enable the mode,
-and if it is zero or negative, disable the mode.
+This is a minor mode.  If called interactively, toggle the `Anzu mode'
+mode.  If the prefix argument is positive, enable the mode, and if it is
+zero or negative, disable the mode.
 
-If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
-the mode if ARG is nil, omitted, or is a positive number.
-Disable the mode if ARG is a negative number.
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable the
+mode if ARG is nil, omitted, or is a positive number.  Disable the mode
+if ARG is a negative number.
 
 To check whether the minor mode is enabled in the current buffer,
-evaluate `anzu-mode'.
+evaluate the variable `anzu-mode'.
 
-The mode's hook is called both when the mode is enabled and when
-it is disabled.
+The mode's hook is called both when the mode is enabled and when it is
+disabled.
 
 \(fn &optional ARG)" t)
 
@@ -198,31 +198,31 @@ See `anzu-mode' for more information on Anzu mode.
 \(fn &optional ARG)" t)
 
 (autoload 'anzu-query-replace-at-cursor "anzu/anzu" "\
-Replace symbol at cursor with to-string." t)
+Replace the symbol at point." t)
 
 (autoload 'anzu-query-replace-at-cursor-thing "anzu/anzu" "\
-Replace symbol at cursor within `anzu-replace-at-cursor-thing' area." t)
+Replace the thing at point, determined by variable `anzu-replace-at-cursor-thing'." t)
 
 (autoload 'anzu-query-replace "anzu/anzu" "\
-anzu version of `query-replace'.
+Anzu version of `query-replace'.
 
 \(fn ARG)" t)
 
 (autoload 'anzu-query-replace-regexp "anzu/anzu" "\
-anzu version of `query-replace-regexp'.
+Anzu version of `query-replace-regexp'.
 
 \(fn ARG)" t)
 
 (autoload 'anzu-replace-at-cursor-thing "anzu/anzu" "\
-anzu-query-replace-at-cursor-thing without query." t)
+Like `anzu-query-replace-at-cursor-thing', but without the query." t)
 
 (autoload 'anzu-isearch-query-replace "anzu/anzu" "\
-anzu version of `isearch-query-replace'.
+Anzu version of `isearch-query-replace'.
 
 \(fn ARG)" t)
 
 (autoload 'anzu-isearch-query-replace-regexp "anzu/anzu" "\
-anzu version of `isearch-query-replace-regexp'.
+Anzu version of `isearch-query-replace-regexp'.
 
 \(fn ARG)" t)
 

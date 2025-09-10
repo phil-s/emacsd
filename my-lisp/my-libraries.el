@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: nil; -*-
 ;; Silence compiler warnings
 (eval-when-compile
+  (defvar anzu-mode-lighter)
   (defvar framemove-hook-into-windmove)
   (defvar sudo-clear-password-always)
   (declare-function global-anzu-mode "anzu")
@@ -17,6 +18,7 @@
 
 ;; Anzu
 (when (require 'anzu nil :noerror)
+  (setq anzu-mode-lighter nil)
   (global-anzu-mode 1))
 
 ;; Local occur minor mode
