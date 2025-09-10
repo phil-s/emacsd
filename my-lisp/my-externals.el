@@ -175,7 +175,10 @@
 
      (:name ghub
             :type git
-            :url "https://github.com/magit/ghub.git")
+            :url "https://github.com/magit/ghub.git"
+            :load-path ("lisp")
+            :build ("make")
+            :depends (compat llama treepy))
 
      (:name git-modes
             :type git

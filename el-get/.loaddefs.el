@@ -1639,34 +1639,45 @@ or call the function `geben-full-frame-mode'.")
 
 ;;;***
 
-;;;### (autoloads nil "ghub/ghub" "ghub/ghub.el" (0 0 0 0))
-;;; Generated autoloads from ghub/ghub.el
+;;;### (autoloads nil "ghub/lisp/ghub" "ghub/lisp/ghub.el" (0 0 0
+;;;;;;  0))
+;;; Generated autoloads from ghub/lisp/ghub.el
 
-(autoload 'ghub-create-token "ghub/ghub" "\
-Create, store and return a new token.
+(autoload 'ghub-clear-caches "ghub/lisp/ghub" "\
+Clear all caches that might negatively affect Ghub.
 
-HOST is the Github instance, usually \"api.github.com\".
-USERNAME is the name of a user on that instance.
-PACKAGE is the package that will use the token.
-SCOPES are the scopes the token is given access to.
+If a library that is used by Ghub caches incorrect information
+such as a mistyped password, then that can prevent Ghub from
+asking the user for the correct information again.
 
-\(fn HOST USERNAME PACKAGE SCOPES)" t nil)
+Set `url-http-real-basic-auth-storage' to nil
+and call `auth-source-forget+'." t)
 
-(autoload 'ghub-token-scopes "ghub/ghub" "\
-Return and echo the scopes of the specified token.
-This is intended for debugging purposes only.  The user
-has to provide several values including their password.
-
-\(fn HOST USERNAME PACKAGE)" t nil)
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ghub/ghub" '("auth-source-netrc-parse-next-interesting@save-match-data" "ghub-")))
+(register-definition-prefixes "ghub/lisp/ghub" '("ghub-"))
 
 ;;;***
 
-;;;### (autoloads nil "ghub/glab" "ghub/glab.el" (0 0 0 0))
-;;; Generated autoloads from ghub/glab.el
+;;;### (autoloads nil "ghub/lisp/ghub-graphql" "ghub/lisp/ghub-graphql.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from ghub/lisp/ghub-graphql.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ghub/glab" '("glab-default-host")))
+(register-definition-prefixes "ghub/lisp/ghub-graphql" '("ghub-"))
+
+;;;***
+
+;;;### (autoloads nil "ghub/lisp/ghub-legacy" "ghub/lisp/ghub-legacy.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from ghub/lisp/ghub-legacy.el
+
+(register-definition-prefixes "ghub/lisp/ghub-legacy" '("ghub-fetch-repository"))
+
+;;;***
+
+;;;### (autoloads nil "ghub/lisp/gsexp" "ghub/lisp/gsexp.el" (0 0
+;;;;;;  0 0))
+;;; Generated autoloads from ghub/lisp/gsexp.el
+
+(register-definition-prefixes "ghub/lisp/gsexp" '("gsexp-"))
 
 ;;;***
 
