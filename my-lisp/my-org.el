@@ -149,7 +149,13 @@
         (with-current-buffer buf
           (org-timer-set-timer minutes))
       (when (buffer-live-p buf)
-        (kill-buffer buf)))))
+        (kill-buffer buf))))
+  ;; Pop up a reminder window with the timer.
+  (with-selected-frame
+      (let ((reminder-frame-name "Pomodoro"))
+        (reminder--frame-1 (format "Pomodoro: %s" purpose) 'info nil))
+    (setq-local mode-line-format '("" org-timer-mode-line-string))
+    (setq-local header-line-format '("" org-timer-mode-line-string))))
 
 ;; This is the standard definition with the space at the end instead
 ;; of at the start.

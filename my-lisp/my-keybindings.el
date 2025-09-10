@@ -457,6 +457,7 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'sx 'sx-tab-all-questions)
 (defalias 'tb 'tool-bar-mode)
 (defalias 'ws 'whitespace-mode)
+(defalias 'pom 'my-pomodoro)
 (defalias 'profiler-quit 'profiler-reset
   "Stop the profiler and purge the report data.")
 
