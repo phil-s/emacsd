@@ -2498,7 +2498,9 @@ still give me some idea of how long it was running for."
   (interactive "kType key sequence: ")
   (insert "<kbd>"
           (mapconcat (lambda (s)
-                       (replace-regexp-in-string "<" "&lt;" s))
+                       (replace-regexp-in-string
+                        "\\\\" "\\\\"
+                        (replace-regexp-in-string "<" "&lt;" s)))
                      (split-string (help-key-description keyseq nil))
                      "</kbd><kbd>")
           "</kbd>"))
