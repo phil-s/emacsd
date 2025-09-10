@@ -3065,6 +3065,60 @@ and map delete-window across the resulting list."
 
 (advice-add 'delete-other-windows-vertically
             :override #'my/delete-other-windows-on-same-side-as)
+
+
+;; D'oh.  `delete-all-overlays' exists :)
+(defun my-delete-all-overlays ()
+  (interactive)
+  (delete-all-overlays)
+  ;; (let ((pos (point-min)))
+  ;;   (while (and (not (eql pos (point-max)))
+  ;;               (setq pos (next-overlay-change pos)))
+  ;;     (mapc #'delete-overlay (overlays-at pos))))
+  )
+
+(defvar-local my-hide-window-overlays-alist nil
+  "Alist of (WINDOW . OVERLAY-LIST) created by `my-hide-region-in-window'.")
+
+(defun my-hide-region-in-window (beg end &optional window)
+  "Make the region from BEG to END invisible in WINDOW.
+Uses an overlay with `invisible' and `window' properties.
+See also `my-unhide-in-window'."
+  (interactive "r")
+  (let ((o (make-overlay beg end))
+        (w (or window (selected-window))))
+    (overlay-put o 'window w)
+    (overlay-put o 'display "")
+    (if-let ((windowoverlays (assq w my-hide-window-overlays-alist)))
+        (push o (cdr windowoverlays))
+      (push (cons w (list o)) my-hide-window-overlays-alist)))
+  ;; ;; Seems to be necessary, due to (info "(elisp)Adjusting Point")
+  ;; ;; Nope... doesn't help! :(
+  ;; (setq-local global-disable-point-adjustment t)
+  )
+
+(defun my-hide-other (&optional window)
+  "Hide everything except the current defun or active region.
+Uses `my-hide-region-in-window'."
+  (interactive)
+  (cl-destructuring-bind (beg . end)
+      (if (use-region-p)
+          (cons (region-beginning) (region-end))
+        (bounds-of-thing-at-point 'defun))
+    (my-hide-region-in-window (point-min) beg window)
+    (my-hide-region-in-window end (point-max) window)))
+
+(defun my-unhide-in-window (&optional window)
+  "Unhide anything hidden in WINDOW by `my-hide-region-in-window'."
+  (interactive)
+  (let* ((w (or window (selected-window)))
+         (overlays (cdr (assq w my-hide-window-overlays-alist))))
+    (dolist (o overlays)
+      (delete-overlay o))
+    (setq my-hide-window-overlays-alist
+          (assq-delete-all w my-hide-window-overlays-alist))
+    ;; (kill-local-variable 'global-disable-point-adjustment)
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
