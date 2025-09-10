@@ -881,7 +881,16 @@ Called via `comint-output-filter-functions'."
                      (goto-char (1- (line-beginning-position)))
                      (let ((fill-column (1- (window-width)))
                            (fill-prefix (make-string indent ?\s)))
-                       (fill-region start (point))))
+                       ;; Arbitrary buffer size of 30 characters to try to avoid
+                       ;; an infinite loop, if there isn't space to fill the
+                       ;; text.  I've seen this with "doc array_push" where
+                       ;; there's an (incorrect) double-space at 88 columns, vs
+                       ;; my normal window width of 92 columns.  This should be
+                       ;; raised upstream as an Emacs bug, as `fill-region'
+                       ;; should fail gracefully in this scenario (as opposed to
+                       ;; trying to insert infinite newlines).
+                       (when (> (- fill-column indent) 30)
+                         (fill-region start (point)))))
                    ;; Outer `while' loop condition:
                    (eql 0 (forward-line 1)))))))))
 
