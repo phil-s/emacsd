@@ -710,6 +710,15 @@ Remove with:
 (setq tab-bar-history-limit 64) ;; winner-ring-size is 200
 (tab-bar-history-mode 1)
 
+;; Allow deleted frames to be restored.  Up to 16 frames are stored.
+;; TODO: Do I want this??  I think it will have marker ramifications
+;; for all of the window configurations which are still hanging
+;; around.  OTOH, it's really handy if I actually delete something by
+;; accident.  I suppose I could purge the history on a timer or
+;; something -- most likely I only want to restore any frame JUST
+;; after deleting it by mistake...
+(undelete-frame-mode 1)
+
 ;; `switch-to-buffer' should display the buffer at its previous
 ;; position in the selected window, provided the buffer is currently
 ;; displayed in some other window on any visible or iconified frame.
