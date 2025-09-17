@@ -1,5 +1,9 @@
 *~
 \#*\#
-*.elc
 .#*
+.DS_Store
 _err.*
+
+/.github
+/issues/
+/tests/
