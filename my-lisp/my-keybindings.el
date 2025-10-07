@@ -463,6 +463,20 @@ Called via `after-load-functions', as well as `after-init-hook'."
 
 ;;;; * Miscellaneous / Helpers
 
+(defun my-mouse-save-pacifist (&rest args)
+  "Advice for `mouse-save-then-kill' and `mouse-secondary-save-then-kill'.
+
+Prevent [mouse-3] from ever killing/deleting text.
+
+Remove with:
+\(progn
+  (advice-remove \\='mouse-save-then-kill \\='my-mouse-save-pacifist)
+  (advice-remove \\='mouse-secondary-save-then-kill \\='my-mouse-save-pacifist))"
+  (setq mouse-save-then-kill-posn nil))
+
+(advice-add 'mouse-save-then-kill :after #'my-mouse-save-pacifist)
+(advice-add 'mouse-secondary-save-then-kill :after #'my-mouse-save-pacifist)
+
 ;; (defun my-keys-pass-through (arg)
 ;;   "Allow a key sequence to pass through to its next binding."
 ;;   (interactive)
