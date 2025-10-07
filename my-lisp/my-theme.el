@@ -121,9 +121,12 @@
   (load-theme 'zenburn t)
   (my-zenburn-theme-config))
 
-;; This magic means we fall back to Symbola for all missing unicode glyphs.
-;; For Debian: apt-get install ttf-ancient-fonts
-(set-fontset-font "fontset-default" nil (font-spec :size 20 :name "Symbola:"))
+;; Emacs supports Symbola by default, nowadays, if when it is installed.
+;; (But retain these comments as an example of this functionality.)
+;;
+;; ;; This magic means we fall back to Symbola for all missing unicode glyphs.
+;; ;; For Debian: apt-get install ttf-ancient-fonts
+;; (set-fontset-font "fontset-default" nil (font-spec :size 20 :name "Symbola:"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
