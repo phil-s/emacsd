@@ -33,13 +33,6 @@
 ;; Prot's notes on customizing theme faces:
 ;; https://old.reddit.com/r/emacs/comments/1auhjpb/how_to_set_faces_using_dynamic_colors/
 
-
-;; Not this.  Needs to be repeated after enabling the theme.
-;; (custom-theme-set-faces 'modus-operandi '(hl-line ((t :background "cyan")) t "Mine"))
-;; (custom-theme-set-faces 'modus-vivendi '(hl-line ((t :background "darkgreen")) t "Mine"))
-;; (custom-theme-recalc-face 'hl-line)
-
-
 ;; Silence compiler warnings
 (eval-when-compile
   (defvar hl-line-face)
@@ -52,51 +45,21 @@
 (defface my-highlight-1 '((t :inherit dired-broken-symlink))
   "Readable highlighting for `highlight-regexp'.")
 
+(defun my-theme-custom-faces-apply (theme faces)
+  ;; Must be defined before it's called.
+  "Make FACES for THEME take effect."
+  (apply #'custom-theme-set-faces theme faces)
+  (dolist (spec faces)
+    (custom-theme-recalc-face (car spec))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Color theme - Zenburn
+;; https://github.com/bbatsov/zenburn-emacs
+
 (defun my-zenburn-theme-config ()
   "Custom changes to Zenburn defaults."
   (setq frame-background-mode 'dark)
-
-  ;; Make errors slightly less red for a nicer zenburn contrast.
-  (set-face-foreground 'error "orangered")
-
-  ;; `display-fill-column-indicator-mode' (27+).
-  (when (facep 'fill-column-indicator)
-    (set-face-attribute 'fill-column-indicator nil :foreground "grey27"))
-
-  ;; Set zenburn-friendly colours for ansi-color-* faces.
-  (with-eval-after-load "ansi-color"
-    (dolist (map '((blue . "SteelBlue1")
-                   (green . "OliveDrab2")
-                   (red . "OrangeRed")))
-      (let ((face (intern (concat "ansi-color-" (symbol-name (car map)))))
-            (colour (cdr map)))
-        (set-face-foreground face colour)
-        (set-face-background face colour))))
-
-  (with-eval-after-load "hl-sexp"
-    (set-face-background 'hl-sexp-face "#383838") ;; "#090909"
-    (with-eval-after-load "paren"
-      (set-face-attribute 'show-paren-match-expression nil
-                          :background "#384848"
-                          :extend t)))
-
-  (with-eval-after-load "hl-line"
-    (set-face-background hl-line-face "#333333"))
-
-  (with-eval-after-load "magit"
-    (set-face-foreground 'magit-section-heading "LemonChiffon")
-    (set-face-foreground 'magit-mode-line-process "yellow"))
-
-  (with-eval-after-load "visible-mark"
-    (set-face-foreground 'visible-mark-active "white")
-    (set-face-background 'visible-mark-active "firebrick3")
-    (set-face-background 'visible-mark-face1 "DarkRed")
-    (set-face-background 'visible-mark-face2 "DarkOrange4"))
-
-  (with-eval-after-load "whitespace"
-    (set-face-attribute 'whitespace-space nil
-                        :foreground "grey30"
-                        :background 'unspecified))
 
   ;; StackExchange (sx library)
   ;; (plist-get (symbol-plist 'sx-question-mode-kbd-tag) 'face-defface-spec)
@@ -112,8 +75,77 @@
   ;; end of zenburn-theme config
   )
 
-;; Color theme - Zenburn
-;; https://github.com/bbatsov/zenburn-emacs
+(defun my-theme-custom-faces-for-zenburn ()
+  "Equivalent to (custom-set-faces ...) but only for zenburn."
+  (my-theme-custom-faces-apply
+   'zenburn
+   (list
+    ;; Can copy these verbatim from `custom-set-faces' arguments.
+    '(ansi-color-blue ((t (:background "SteelBlue1" :foreground "SteelBlue1"))))
+    '(ansi-color-green ((t (:background "OliveDrab2" :foreground "OliveDrab2"))))
+    '(ansi-color-red ((t (:background "OrangeRed" :foreground "OrangeRed"))))
+    '(cfw:face-title ((t (:inherit variable-pitch :foreground "darkgoldenrod3" :weight bold))))
+    '(cfw:face-toolbar ((t nil)))
+    '(cfw:face-toolbar-button-off ((t (:foreground "Gray8" :weight bold))))
+    '(cfw:face-toolbar-button-on ((t (:foreground "Gray65" :weight bold))))
+    '(diff-hl-change ((t (:background "#4f4f7f" :foreground "#5f5fff"))))
+    '(diff-hl-delete ((t (:background "#7f4f4f" :foreground "#964f6f"))))
+    '(diff-hl-insert ((t (:background "#4f664f" :foreground "#4f7f4f"))))
+    '(diff-refine-added ((t (:inherit diff-refine-change :background "#228822"))))
+    '(ediff-current-diff-C ((t (:background "#888833" :foreground "#333333"))))
+    '(ediff-fine-diff-B ((t (:background "#22aa22" :foreground "#333333"))))
+    '(error ((t (:foreground "orangered"))))
+    '(fill-column-indicator ((t (:foreground "grey27"))))
+    '(ement-room-mention ((t (:extend t :background "grey12"))))
+    '(ement-room-message-text ((t (:inherit variable-pitch))))
+    '(ement-room-timestamp ((t (:inherit font-lock-comment-face :foreground "grey50" :height 0.8))))
+    '(ement-room-timestamp-header ((t (:inherit header-line :foreground "darkorange" :weight bold :height 1.1))))
+    '(ement-room-user ((t (:inherit (font-lock-function-name-face variable-pitch) :overline nil :weight bold))))
+    '(highlight ((t (:background "#386868"))))
+    '(hl-line ((t (:extend t :background "#303030"))))
+    '(hl-sexp-face ((t (:background "#383838"))))
+    '(magit-diff-added ((t (:extend t :background "#335533" :foreground "#ddffdd"))))
+    '(magit-diff-added-highlight ((t (:extend t :background "#336633" :foreground "#cceecc"))))
+    '(magit-diff-base ((t (:extend t :background "#555522" :foreground "#ffffcc"))))
+    '(magit-diff-base-highlight ((t (:extend t :background "#666622" :foreground "#eeeebb"))))
+    '(magit-diff-context-highlight ((t (:background "#4e5b7b" :foreground "grey70"))))
+    '(magit-diff-hunk-heading ((t (:background "DodgerBlue4" :foreground "grey70"))))
+    '(magit-diff-hunk-heading-highlight ((t (:background "DodgerBlue3" :foreground "grey70"))))
+    '(magit-diff-hunk-region ((t (:inherit bold :extend t))))
+    '(magit-diff-lines-heading ((t (:extend t :background "#DFAF8F" :foreground "#5F5F5F"))))
+    '(magit-diff-removed ((t (:extend t :background "#553333" :foreground "#ffdddd"))))
+    '(magit-diff-removed-highlight ((t (:extend t :background "#663333" :foreground "#eecccc"))))
+    '(magit-diff-revision-summary ((t (:inherit bold))))
+    '(magit-item-highlight ((t (:background "#4f4f4f"))))
+    '(magit-mode-line-process ((t (:foreground "yellow"))))
+    '(magit-section-heading ((t (:foreground "LemonChiffon"))))
+    '(magit-tag ((t (:background "LemonChiffon1" :foreground "black"))))
+    '(mu4e-modeline-face ((t (:inherit mode-line-emphasis :weight bold))))
+    '(show-paren-match-expression ((t (:extend t :background "#384848"))))
+    '(simple-wiki-code-face ((t (:background "grey30"))))
+    '(so-long-mode-line-active ((t (:inherit mode-line-emphasis :foreground "yellow"))))
+    '(tab-bar ((t (:inherit variable-pitch :background "gray32" :foreground "black"))))
+    '(tab-bar-tab ((t (:inherit tab-bar :background "dark gray" :box (:line-width (1 . 1) :style released-button)))))
+    '(tab-bar-tab-inactive ((t (:inherit tab-bar-tab :background "grey45"))))
+    '(tab-line ((t (:inherit variable-pitch :background "grey35" :foreground "black" :height 0.9))))
+    '(term-color-blue ((t (:background "blue2" :foreground "deep sky blue"))))
+    '(term-color-cyan ((t (:background "DodgerBlue4" :foreground "CadetBlue1"))))
+    '(term-color-green ((t (:background "green3" :foreground "green2"))))
+    '(term-color-magenta ((t (:background "#cf3360" :foreground "#ff3377"))))
+    '(term-color-red ((t (:background "red3" :foreground "orange red"))))
+    '(term-color-yellow ((t (:background "yellow3" :foreground "yellow2"))))
+    '(tks-time-face ((t (:foreground "#cc9933"))))
+    '(visible-mark-active ((t (:background "firebrick3" :foreground "white"))))
+    '(visible-mark-face1 ((t (:background "DarkRed"))))
+    '(visible-mark-face2 ((t (:background "DarkOrange4"))))
+    '(whitespace-newline ((t (:foreground "grey32" :weight normal))))
+    '(whitespace-space ((((class color) (background dark)) (:foreground "grey30"))))
+    '(window-tool-bar-button ((t (:inherit tab-line :background "grey65" :box (:line-width (1 . -1) :style released-button)))))
+    )))
+
+(with-eval-after-load "zenburn-theme"
+  (my-theme-custom-faces-for-zenburn))
+
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/el-get/zenburn-theme"))
 (with-demoted-errors "Error: %S"
   ;; (when (require-theme 'zenburn-theme t) ;; we would be loading it twice
@@ -128,7 +160,9 @@
 ;; ;; For Debian: apt-get install ttf-ancient-fonts
 ;; (set-fontset-font "fontset-default" nil (font-spec :size 20 :name "Symbola:"))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; My 'standard' alternative theme.
 
 (defun my-alt-theme ()
   "A really obviously-different theme, for when I need it."
@@ -149,48 +183,71 @@
   ;;   (set-face-attribute 'magit-item-highlight nil :inherit nil))
   )
 
-(defun my-replace-theme (theme &optional faces)
-  "Replace current theme with THEME.
-FACES is a list of face specs for `custom-theme-set-faces'."
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Modus themes
+
+(defun my-theme-custom-faces-for-modus-operandi ()
+  "Equivalent to (custom-set-faces ...) but only for modus-operandi."
+  (my-theme-custom-faces-apply
+   'modus-operandi
+   (list
+    ;; Can copy these verbatim from `custom-set-faces' arguments.
+    '(hl-sexp-face ((t (:background "#eaf5fc"))))
+    '(tks-comment-face ((t (:foreground "#3548cf"))))
+    '(tks-date-face ((t (:foreground "#dc0c93"))))
+    ;; '(tks-description-face ((t (:foreground ""))))
+    '(tks-time-face ((t (:foreground "#9c6903"))))
+    '(tks-wr-face ((t (:foreground "#603f9f"))))
+    )))
+
+(with-eval-after-load "modus-operandi-theme"
+  (my-theme-custom-faces-for-modus-operandi))
+
+(defun my-theme-custom-faces-for-modus-vivendi ()
+  "Equivalent to (custom-set-faces ...) but only for modus-vivendi."
+  (my-theme-custom-faces-apply
+   'modus-vivendi
+   (list
+    ;; Can copy these verbatim from `custom-set-faces' arguments.
+    '(hl-sexp-face ((t (:background "#172031"))))
+    )))
+
+(with-eval-after-load "modus-vivendi-theme"
+  (my-theme-custom-faces-for-modus-vivendi))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-replace-theme (theme)
+  "Replace current theme with THEME."
   (mapc #'disable-theme custom-enabled-themes)
-  (enable-theme theme)
-  ;; Modus theme tweaks.
-  (when (memq theme '(modus-operandi modus-vivendi))
-    (dolist (face '(hl-line))
-      (let* ((theme-face (cadr (assq theme (get face 'theme-face))))
-             (face-spec (face-spec-choose theme-face))
-             (background (plist-get face-spec :background)))
-        (set-face-attribute 'hl-line nil :background background))))
-  ;; Override certain faces.
-  (when faces
-    (apply #'custom-theme-set-faces theme faces)))
+  (let ((setfaces (intern (concat "my-theme-custom-faces-for-"
+                                  (symbol-name theme)))))
+    (when (fboundp setfaces)
+      (funcall setfaces)))
+  (enable-theme theme))
 
 (defun my-theme-modus-operandi ()
   "Replace current theme with `modus-operandi'."
   (interactive)
   (require 'modus-operandi-theme)
-  (my-replace-theme 'modus-operandi
-                    '((hl-sexp-face ((t . (:background "#f3f3f3"))) t)
-                      (tks-comment-face ((t . (:foreground "#3548cf"))) t)
-                      (tks-date-face ((t . (:foregreound "#dc0c93"))) t)
-                      (tks-description-face ((t . (:foregreound ""))) t)
-                      (tks-time-face ((t . (:foregreound "#9c6903"))) t)
-                      (tks-wr-face ((t . (:foregreound "#603f9f"))) t))))
+  (my-replace-theme 'modus-operandi))
 
 (defun my-theme-modus-vivendi ()
   "Replace current theme with `modus-vivendi'."
   (interactive)
   (require 'modus-vivendi-theme)
-  (my-replace-theme
-   'modus-vivendi '((hl-sexp-face ((t . (:background "#172031"))) t))))
+  (my-replace-theme 'modus-vivendi))
 
 (defun my-theme-zenburn ()
   "Replace current theme with `zenburn'."
   (interactive)
   (require 'zenburn-theme)
-  (my-replace-theme 'zenburn) ;; "#383838"
+  (my-replace-theme 'zenburn)
   (my-zenburn-theme-config))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'my-theme)
