@@ -49,6 +49,9 @@
 ;; Disable mumamo chunk background colours
 (setq mumamo-background-colors nil)
 
+(defface my-highlight-1 '((t :inherit dired-broken-symlink))
+  "Readable highlighting for `highlight-regexp'.")
+
 (defun my-zenburn-theme-config ()
   "Custom changes to Zenburn defaults."
   (setq frame-background-mode 'dark)
