@@ -1,11 +1,12 @@
 It's very important to understand that `'...` which means `(quote ...)`
 is not a shorthand for making lists.  It's a form which causes lisp to
 return, unevaluated, the object that was created by the lisp reader
-(at read time)(^1).
+(at read time)^1.
 
 If you quote a list and then *modify* the quoted list, it stays
-modified.  If you want to create a list and then modify it, create it
-(at eval time) with `(list ...)`.
+modified (such that re-evaluating the quoted form returns that
+modified list).  If you need to create (and potentially re-create)
+a new list at eval time, create it with `(list ...)`.
 
 Be sure to go over the distinct `read` and `eval` phases of lisp
 execution.  Once you understand the distinction, `quote` will make
@@ -31,7 +32,7 @@ cases), as well as an example of the "code is data" nature of lisp.
 
 ----
 
-(^1): More accurately `quote` simply *returns its argument*, and there
+^1: More accurately `quote` simply *returns its argument*, and there
 *are* other ways (such as macro expansion) in which that argument could
 be established.  In the *vast* majority of cases, however, a quoted
 argument is created by the lisp reader, and this (normal) scenario is
