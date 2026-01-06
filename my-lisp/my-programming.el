@@ -687,19 +687,21 @@ Advice for `visit-tags-table'."
   ;; Automatically upcase SQL keywords.
   (sql-upcase-mode 1))
 
-(defvar-local my-sql-last-input ""
-  "The last input sent by `sql-input-sender'.
-
-See advice `sql-input-sender@my-sql-last-input'.")
-
-(define-advice sql-input-sender (:filter-args (args) my-sql-last-input)
-  "Store STRING in `my-sql-last-input'.
-
-Used by `my-sql-comint-preoutput-filter-table-cruft' so that we can
-handle input from `sql-mode' buffers as well as comint prompt input."
-  (cl-destructuring-bind (_proc string) args
-    (setq my-sql-last-input (concat my-sql-last-input string)))
-  args)
+;; Deprecated along with `my-sql-comint-preoutput-filter-table-cruft':
+;;
+;; (defvar-local my-sql-last-input ""
+;;   "The last input sent by `sql-input-sender'.
+;;
+;; See advice `sql-input-sender@my-sql-last-input'.")
+;;
+;; (define-advice sql-input-sender (:filter-args (args) my-sql-last-input)
+;;   "Store STRING in `my-sql-last-input'.
+;;
+;; Used by `my-sql-comint-preoutput-filter-table-cruft' so that we can
+;; handle input from `sql-mode' buffers as well as comint prompt input."
+;;   (cl-destructuring-bind (_proc string) args
+;;     (setq my-sql-last-input (concat my-sql-last-input string)))
+;;   args)
 
 (add-hook 'sql-interactive-mode-hook 'my-sql-interactive-mode-hook)
 (defun my-sql-interactive-mode-hook ()
@@ -736,14 +738,27 @@ handle input from `sql-mode' buffers as well as comint prompt input."
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
     (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(][#>] ")
 
-    ;; Remove "Indexes" and "Check constraints" output in table details when
-    ;; using the psql "\d" command (as that is almost never useful to me; it
-    ;; takes up many extra lines; and it causes dabbrev to be less useful).
-    ;; (If I actually want to see this information, I can simply use "\d+".)
-    ;; Runs after `sql-interactive-remove-continuation-prompt'.
-    ;; See also the advice to `sql-input-sender'.
-    (add-hook 'comint-preoutput-filter-functions
-              'my-sql-comint-preoutput-filter-table-cruft :append :local))
+    ;; ;; Remove "Indexes" and "Check constraints" output in table details when
+    ;; ;; using the psql "\d" command (as that is almost never useful to me; it
+    ;; ;; takes up many extra lines; and it causes dabbrev to be less useful).
+    ;; ;; (If I actually want to see this information, I can simply use "\d+".)
+    ;; ;; Runs after `sql-interactive-remove-continuation-prompt'.
+    ;; ;; See also the advice to `sql-input-sender'.
+    ;; (add-hook 'comint-preoutput-filter-functions
+    ;;           'my-sql-comint-preoutput-filter-table-cruft :append :local)
+    ;;
+    ;; Output buffering breaks the (naive) preoutput filter implementation.
+    ;; I think that's non-trivial to solve, but this alternative is easy.
+    ;; See `sql-input-sender' and `sql-product-alist'.  Note that
+    ;; `comint-input-filter-functions' is useless, as (since lexical-binding)
+    ;; it does not enable you to modify the input.
+    (let ((filters (sql-get-product-feature 'postgres :input-filter))
+          (myfilter 'my-sql-postgres-input-filter))
+      (unless (listp filters)
+        (setq filters (list filters)))
+      (unless (memq myfilter filters)
+        (push myfilter filters))
+      (sql-set-product-feature 'postgres :input-filter filters)))
 
   ;; Deal with inline prompts in query output.
   ;; Runs after `sql-interactive-remove-continuation-prompt'.
@@ -751,28 +766,87 @@ handle input from `sql-mode' buffers as well as comint prompt input."
   (add-hook 'comint-preoutput-filter-functions
             'my-sql-comint-preoutput-filter-prompts :append :local))
 
-(defun my-sql-comint-preoutput-filter-table-cruft (output)
-  "Filter \"Indexes\" and \"Check constrints\" lines from psql \"\\d\" output.
+(defun my-sql-postgres-input-filter (input)
+  "Rewrite psql's \\d command so that less information is shown.
 
-Runs after `my-sql-comint-preoutput-filter-prompts' in
-`comint-preoutput-filter-functions'."
-  ;; If the entire output is simply the main prompt, return that.
-  ;; (i.e. When simply typing RET at the sqli prompt.)
-  (prog1
-      (save-match-data
-        (if (not (string-match "\\`\n*\\\\d " my-sql-last-input))
-            output
-          (with-temp-buffer
-            (insert output)
-            (goto-char (point-min))
-            (while (re-search-forward "^Indexes:\n\\(    \".+\n\\)+" nil t)
-              (replace-match ""))
-            (when (re-search-forward "^Check constraints:\n\\(    \".+\n\\)+" nil t)
-              (replace-match ""))
-            ;; Return the filtered output.
-            (buffer-substring-no-properties (point-min) (point-max)))))
-    ;; Clear the input buffer.
-    (setq my-sql-last-input "")))
+To run the command normally, use ;\\d (the semicolon introduces a no-op
+which prevents this function from manipulating the command).
+
+Alternatively, use \\d+ (for maximum information).
+
+This is an :input-filter function for `postgres' in `sql-product-alist'."
+  ;; Make \d be \dt
+  (cond ((string-match "\\` *\\\\d *\n?\\'" input)
+         "\\dt")
+        ;; \d <table> and \d <schema>.<table>
+        ((string-match "\\` *\\\\d +\\(?:\\([^ \n]+\\)\\.\\)?\\([^ \n]+\\) *\n?\\'" input)
+         ;; See https://stackoverflow.com/q/109325
+         ;; FIXME: "Quote" the table-name to handle mixed case names?
+         ;; Maybe not... else \d+ and \d will be inconsistent...
+         ;; (message "%s"
+         (apply #'format "\
+SELECT \
+column_name AS \"Column\", \
+CASE \
+WHEN character_maximum_length IS NOT NULL \
+THEN CONCAT(data_type, '(', character_maximum_length, ')') \
+ELSE data_type \
+END AS \"Type\", \
+CASE \
+WHEN is_nullable = 'NO' THEN 'not null' \
+WHEN is_nullable = 'YES' THEN NULL \
+ELSE is_nullable \
+END AS \"Nullable\", \
+column_default AS \"Default\" \
+FROM information_schema.columns \
+WHERE table_name = '%s'%s \
+ORDER BY ordinal_position;"
+                (if (match-string 1 input)
+                    ;; <schema>.<table>
+                    (list (match-string 2 input)
+                          (format " AND table_schema = '%s'"
+                                  (match-string 1 input)))
+                  ;; <table>
+                  (list (match-string 2 input)
+                        ""))))
+        ;;) ;;message
+        (t
+         input)))
+
+;; Deprecated, due to not handling buffered output.
+;; Replaced by `my-sql-postgres-input-filter'.
+;;
+;; (defun my-sql-comint-preoutput-filter-table-cruft (output)
+;;   "Filter \"Indexes\" and \"Check constrints\" lines from psql \"\\d\" output.
+;;
+;; Runs after `my-sql-comint-preoutput-filter-prompts' in
+;; `comint-preoutput-filter-functions'."
+;;   ;; If the entire output is simply the main prompt, return that.
+;;   ;; (i.e. When simply typing RET at the sqli prompt.)
+;;   (prog1
+;;       (save-match-data
+;;         (if (not (string-match "\\`\n*\\\\d " my-sql-last-input))
+;;             output
+;;           (with-temp-buffer
+;;             (insert output)
+;;             (goto-char (point-min))
+;;             (while (re-search-forward "^Indexes:\n\\(    \".+\n\\)+" nil t)
+;;               (replace-match ""))
+;;             (when (re-search-forward "^Check constraints:\n\\(    \".+\n\\)+" nil t)
+;;               (replace-match ""))
+;;             (when (re-search-forward "^Foreign-key constraints:\n\\(    \".+\n\\)+" nil t)
+;;               (replace-match ""))
+;;             (while (re-search-forward "^Referenced by:\n\\(    TABLE .+\n\\)+" nil t)
+;;               (replace-match ""))
+;;             ;; FIXME: buffered output means we don't always see the header.
+;;             ;; Just making an assumption here as a quick fix, but it would
+;;             ;; be nice to deal with this more robustly!
+;;             (while (re-search-forward "^    TABLE \"[^\"\n]+\" CONSTRAINT \"[^\"\n]+\" FOREIGN KEY ([^)\n]+) REFERENCES [^(\n]+([^)\n]+)\n" nil t)
+;;               (replace-match ""))
+;;             ;; Return the filtered output.
+;;             (buffer-substring-no-properties (point-min) (point-max)))))
+;;     ;; Clear the input buffer.
+;;     (setq my-sql-last-input "")))
 
 ;; FIXME: We can now have duplicate prompts *following* the results as
 ;; well as prefixing it.  Not sure whether this is Emacs 27's doing,
@@ -781,9 +855,10 @@ Runs after `my-sql-comint-preoutput-filter-prompts' in
   "Filter prompts out of SQL query output.
 
 Runs after `sql-interactive-remove-continuation-prompt' in
-`comint-preoutput-filter-functions'.
-
-For postgres, runs after `my-sql-comint-preoutput-filter-table-cruft'."
+`comint-preoutput-filter-functions'."
+  ;; For postgres, runs after `my-sql-comint-preoutput-filter-table-cruft'.
+  ;; (^ now deprecated)
+  ;;
   ;; If the entire output is simply the main prompt, return that.
   ;; (i.e. When simply typing RET at the sqli prompt.)
   (if (string-match (concat "\\`\\(" sql-prompt-regexp "\\)\\'") output)
