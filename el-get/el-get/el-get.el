@@ -147,6 +147,9 @@
 (require 'cl-lib)
 (require 'simple)        ; needed for `apply-partially'
 (require 'bytecomp)
+;; (unless (require 'loaddefs-gen nil 'noerror)
+;;   (require 'autoload)) ;; 'Deprecated' since 29.1.
+;; But the API has changed, so other changes are needed.  So in the meantime:
 (require 'autoload)
 (require 'help-mode)     ; byte-compiling needs to know about xref-type buttons
 
