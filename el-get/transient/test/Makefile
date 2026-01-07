@@ -1,15 +1,21 @@
 -include ../config.mk
 include ../default.mk
 
-LOAD_PATH  += -L $(TOP)test
+LOAD_PATH += -L ../lisp
 
 test: lisp
 	@printf "  Testing...\n"
-	@$(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH) \
-	-l ert -l $(PKG)-test -f ert-run-tests-batch-and-exit
+	@$(EMACS_BATCH) -l $(PKG)-tests -f ert-run-tests-batch-and-exit
 
-lisp: ../lisp/$(PKG).elc $(PKG)-test.elc
+test-interactive:
+	@$(EMACS_INTR) -l $(PKG)-tests --eval "(ert t)"
+
+lisp: $(addprefix ../lisp/,$(ELCS)) $(PKG)-tests.elc
+
+%.elc: %.el
+	@printf "Compiling $<\n"
+	@$(EMACS_BATCH) --funcall batch-byte-compile $<
 
 clean:
 	@printf " Cleaning test/*...\n"
-	@rm -rf $(PKG)-test.elc
+	@rm -rf $(PKG)-tests.elc

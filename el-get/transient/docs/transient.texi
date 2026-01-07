@@ -8,7 +8,7 @@
 
 @copying
 @quotation
-Copyright (C) 2018--2025 Free Software Foundation, Inc.
+Copyright (C) 2018--2026 Free Software Foundation, Inc.
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -31,7 +31,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Transient User and Developer Manual
-@subtitle for version 0.10.0
+@subtitle for version 0.12.0
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -53,7 +53,7 @@ resource to get over that hurdle is Psionic K's interactive tutorial,
 available at @uref{https://github.com/positron-solutions/transient-showcase}.
 
 @noindent
-This manual is for Transient version 0.10.0.
+This manual is for Transient version 0.12.0.
 
 @insertcopying
 @end ifnottex
@@ -98,6 +98,12 @@ Defining New Commands
 * Current Prefix Command::
 * Transient State::
 
+Binding Suffix and Infix Commands
+
+* Group Specifications::
+* Suffix Specifications::
+
+
 Classes and Methods
 
 * Group Classes::
@@ -109,6 +115,12 @@ Classes and Methods
 * Prefix Slots::
 * Suffix Slots::
 * Predicate Slots::
+
+Suffix Methods
+
+* Suffix Value Methods::
+* Suffix Format Methods::
+
 
 @end detailmenu
 @end menu
@@ -879,6 +891,9 @@ This option controls whether key bindings of infix commands that do
 not match the respective command-line argument should be highlighted.
 For other infix commands this option has no effect.
 
+This is mostly intended for authors of transient menus and disabled
+by default.
+
 When this option is non-@code{nil}, the key binding for an infix argument
 is highlighted when only a long argument (e.g., @code{--verbose}) is
 specified but no shorthand (e.g., @code{-v}).  In the rare case that a
@@ -1052,12 +1067,12 @@ the function @code{transient--get-layout}.
 
 These functions operate on the information stored in the
 @code{transient--layout} property of the @var{PREFIX} symbol.  Elements in that
-tree are not objects but have the form @code{(@var{CLASS} @var{PLIST}) for suffixes} and
-[CLASS PLIST CHILDREN] for groups.  At the root of the tree is an
-element [N nil CHILDREN], where N is the version of the layout format,
+tree are not objects but have the form @code{(@var{CLASS} @var{PLIST})} for suffixes and
+@code{[CLASS PLIST CHILDREN]} for groups.  At the root of the tree is an
+element @code{[N nil CHILDREN]}, where @code{N} is the version of the layout format,
 currently and hopefully for a long time 2.  While that element looks
 like a group vector, that element does not count when identifying a
-group using a coordinate vector, i.e., [0] is its first child, not the
+group using a coordinate vector, i.e., @code{[0]} is its first child, not the
 root element itself.
 
 @defun transient-insert-suffix prefix loc suffix &optional keep-other
@@ -1245,7 +1260,7 @@ binds the transient's infix and suffix commands.  In other words, it
 defines the complete transient, not just the transient prefix command
 that is used to invoke that transient.
 
-@defmac transient-define-prefix name arglist [docstring] [keyword value]@dots{} group@dots{} [body@dots{}]
+@defmac transient-define-prefix name arglist [docstring] [keyword value]... group... [body...]
 This macro defines @var{NAME} as a transient prefix command and binds the
 transient's infix and suffix commands.
 
@@ -1302,7 +1317,7 @@ you would otherwise use a group vector.  If an included group is
 placed at the top-level of a prefix (as opposed of inside inside
 a vector as a child group), then the symbol should be quoted.
 
-@defmac transient-define-group name group@dots{}
+@defmac transient-define-group name group...
 This macro define one or more groups and stores them in symbol NAME@.
 GROUPs have the same form as for @code{transient-define-prefix}.
 @end defmac
@@ -1319,7 +1334,12 @@ functions such as @code{transient-insert-suffix} (see @ref{Modifying Existing Tr
 their arguments, which has the same form as the specifications used in
 @code{transient-define-prefix}.
 
-@anchor{Group Specifications}
+@menu
+* Group Specifications::
+* Suffix Specifications::
+@end menu
+
+@node Group Specifications
 @subsection Group Specifications
 
 @cindex group specifications
@@ -1474,7 +1494,7 @@ using @code{,}.  This feature is experimental and should be avoided.
 
 The form of suffix specifications is documented in the next node.
 
-@anchor{Suffix Specifications}
+@node Suffix Specifications
 @subsection Suffix Specifications
 
 @cindex suffix specifications
@@ -1599,7 +1619,7 @@ Note that an infix is a special kind of suffix.  Depending on context
 ``suffixes'' means ``suffixes (including infixes)'' or ``non-infix
 suffixes''.
 
-@defmac transient-define-suffix name arglist [docstring] [keyword value]@dots{} body@dots{}
+@defmac transient-define-suffix name arglist [docstring] [keyword value]... body...
 This macro defines @var{NAME} as a transient suffix command.
 
 @var{ARGLIST} are the arguments that the command takes.
@@ -1616,7 +1636,7 @@ The infix arguments are usually accessed by using @code{transient-args}
 inside @code{interactive}.
 @end defmac
 
-@defmac transient-define-infix name arglist [docstring] [keyword value]@dots{}
+@defmac transient-define-infix name arglist [docstring] [keyword value]...
 This macro defines @var{NAME} as a transient infix command.
 
 @var{ARGLIST} is always ignored (but mandatory never-the-less) and
@@ -1649,7 +1669,7 @@ define your own infix command class.  In that case you have to use
 value of the @code{:transient} keyword.
 @end defmac
 
-@defmac transient-define-argument name arglist [docstring] [keyword value]@dots{}
+@defmac transient-define-argument name arglist [docstring] [keyword value]...
 This macro defines @var{NAME} as a transient infix command.
 
 This is an alias for @code{transient-define-infix}.  Only use this alias
@@ -1699,7 +1719,7 @@ should be used.
 @end defun
 
 @defun transient-get-value
-This function returns the value of the erant prefix.
+This function returns the value of the extant prefix.
 
 This function is intended to be used when setting up a menu and its
 suffixes.  It is not intended to be used when a suffix command is
@@ -1735,16 +1755,16 @@ its value can be accessed using @code{transient-args}.
 This function returns the scope of the active or current transient
 prefix command.
 
-If optional PREFIXES and CLASSES are both nil, return the scope of
+If optional PREFIXES and CLASSES are both @code{nil}, return the scope of
 the prefix currently being setup, making this variation useful, e.g.,
 in @code{:if*} predicates.  If no prefix is being setup, but the current
 command was invoked from some prefix, then return the scope of that.
 
-If PREFIXES is non-nil, it must be a prefix command or a list of such
-commands.  If CLASSES is non-nil, it must be a prefix class or a list
+If PREFIXES is non-@code{nil}, it must be a prefix command or a list of such
+commands.  If CLASSES is non-@code{nil}, it must be a prefix class or a list
 of such classes.  When this function is called from the body or the
 @code{interactive} form of a suffix command, PREFIXES and/or CLASSES should
-be non-nil.  If either is non-nil, try the following in order:
+be non-@code{nil}.  If either is non-@code{nil}, try the following in order:
 
 @itemize
 @item
@@ -1770,7 +1790,7 @@ PREFIXES@.  This only works if that slot is set in the respective
 class definition or using its `transient-init-scope' method.
 @end itemize
 
-If no prefix matches, return nil.
+If no prefix matches, return @code{nil}.
 @end defun
 
 @node Current Suffix Command
@@ -2455,7 +2475,12 @@ commands.  The default method effectively describes the command using
 To get information about the methods implementing these generic
 functions use @code{describe-function}.
 
-@anchor{Suffix Value Methods}
+@menu
+* Suffix Value Methods::
+* Suffix Format Methods::
+@end menu
+
+@node Suffix Value Methods
 @subsection Suffix Value Methods
 
 @defun transient-init-value obj
@@ -2537,7 +2562,7 @@ unless a concrete method is implemented, this falls through to
 the default implementation, which is a noop.
 @end defun
 
-@anchor{Suffix Format Methods}
+@node Suffix Format Methods
 @subsection Suffix Format Methods
 
 @defun transient-format obj
@@ -2879,7 +2904,7 @@ defining a command using @code{transient-define-suffix}.
 
 The following two slots are experimental.  They can also be set for a
 group, in which case they apply to all suffixes in that group, except
-for suffixes that set the same slot to a non-nil value.
+for suffixes that set the same slot to a non-@code{nil} value.
 
 @itemize
 @item
@@ -2890,7 +2915,7 @@ advice.
 @item
 @code{advice*} A function used to advise the command.  Unlike @code{advice}, this
 advises not only the command body but also its @code{interactive} spec.  If
-both slots are non-nil, @code{advice} is used for the body and @code{advice*} is
+both slots are non-@code{nil}, @code{advice} is used for the body and @code{advice*} is
 used for the @code{interactive} form.  When advising the @code{interactive} spec,
 called using @code{(funcall advice #'advice-eval-interactive-spec spec)}.
 @end itemize
