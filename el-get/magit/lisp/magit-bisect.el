@@ -1,6 +1,6 @@
 ;;; magit-bisect.el --- Bisect support for Magit  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -53,7 +53,7 @@
 
 ;;; Commands
 
-;;;###autoload (autoload 'magit-bisect "magit-bisect" nil t)
+;;;###autoload(autoload 'magit-bisect "magit-bisect" nil t)
 (transient-define-prefix magit-bisect ()
   "Narrow in on the commit that introduced a bug."
   :man-page "git-bisect"

@@ -1,5 +1,5 @@
 The following people have contributed to Magit.
-For statistics see https://magit.vc/stats/magit/authors.html.
+For statistics see https://stats.magit.vc/magit/authors.html.
 
 Authors
 -------
@@ -169,6 +169,7 @@ All Contributors
 - Hannu Koivisto
 - Hans-Peter Deifel
 - hokomo
+- Huon Wilson
 - Hussein Ait-Lahcen
 - Ian Eure
 - Ian Milligan
@@ -238,6 +239,7 @@ All Contributors
 - Lluís Vilanova
 - Loic Dachary
 - Louis Roché
+- Lucius Chen
 - Luís Oliveira
 - Luke Amdor
 - Magnar Sveen
@@ -411,6 +413,7 @@ All Contributors
 - Wouter Bolsterlee
 - X4lldux
 - Xavier Noria
+- Xavier Young
 - Xu Chunyang
 - Yann Herklotz
 - Yann Hodique

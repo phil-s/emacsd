@@ -62,13 +62,13 @@ magit-bookmark.elc:        magit.elc
 
 ## Build #############################################################
 
-lisp:       $(ELCS) loaddefs $(LISP_EXTRA_TARGETS)
-loaddefs:   $(PKG)-autoloads.el
+lisp:       $(ELCS) autoloads $(LISP_EXTRA_TARGETS)
+autoloads:  $(PKG)-autoloads.el
 versionlib: $(PKG)-version.el
 
 %.elc: %.el
 	@printf "Compiling $<\n"
-	@$(BATCH) --eval "(progn\
+	@$(EMACS_BATCH) --eval "(progn\
 	(when (file-exists-p \"$@\")\
 	  (delete-file \"$@\"))\
 	(setq with-editor-emacsclient-executable nil)\
@@ -78,17 +78,15 @@ versionlib: $(PKG)-version.el
 
 $(PKG)-autoloads.el: $(ELS)
 	@printf " Creating $@\n"
-	@$(EMACS) -Q --batch -l autoload -l cl-lib --eval "\
-(let ((file (expand-file-name \"$@\"))\
-      (autoload-timestamps nil) \
-      (backup-inhibited t)\
-      (version-control 'never)\
-      (coding-system-for-write 'utf-8-emacs-unix))\
-  (write-region (autoload-rubric file \"package\" nil) nil file nil 'silent)\
-  (cl-letf (((symbol-function 'progress-reporter-do-update) (lambda (&rest _)))\
-            ((symbol-function 'progress-reporter-done) (lambda (_))))\
-    (let ((generated-autoload-file file))\
-      (update-directory-autoloads default-directory))))" \
+	@$(EMACS_BATCH) --load autoload --eval "\
+(let* ((file (expand-file-name \"$@\"))\
+       (generated-autoload-file file)\
+       (coding-system-for-write 'utf-8-emacs-unix)\
+       (backup-inhibited t)\
+       (version-control 'never)\
+       (inhibit-message t))\
+  (write-region (autoload-rubric file \"package\" t) nil file)\
+  (update-directory-autoloads default-directory))" \
 	2>&1 | sed "/^Package autoload is deprecated$$/d"
 
 $(PKG)-version.el:
@@ -97,7 +95,7 @@ $(PKG)-version.el:
 
 check-declare:
 	@printf "Checking function declarations\n"
-	@$(BATCH) -L $(TOP)../borg -L $(TOP)../forge/lisp \
+	@$(EMACS_BATCH) -L $(TOP)../borg -L $(TOP)../forge/lisp \
 	--eval "(check-declare-directory default-directory)"
 
 ## Install ###########################################################

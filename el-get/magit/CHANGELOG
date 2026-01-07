@@ -1,4 +1,81 @@
 # -*- mode: org -*-
+* v4.5.0    2026-01-01
+
+- Removed support for loading Magit extensions from ".git/config".
+  Please [[https://github.com/magit/magit/commit/d662ec107e74a05a0348ca75c89ebd127d658656][use ~.dir-locals.el~ instead]].  d662ec107e
+
+- Reworked how the global ~magit-auto-revert-mode~ is, or is not,
+  enabled at startup.  Enabling ~global-auto-revert-mode~ now disables
+  this mode.  38a916f555..de766d2968 et al.
+
+- Simplified ~magit-wip-mode~.  This involves removing all other wip
+  modes (which allowed using only a subset of the protection offered
+  by ~magit-wip-mode~) and using the new ~magit-before-change-functions~
+  and ~magit-after-apply-functions~ hooks.  98ef107037..fa629ad5b5
+
+- Added experimental support for calling Lisp hooks from Git hooks,
+  and added a few such hooks: ~magit-common-git-post-commit-functions~,
+  ~magit-git-post-commit-functions~, ~magit-git-post-merge-functions~
+  and ~magit-git-post-rewrite-functions~.
+
+- Replaced option ~magit-section-visibility-indicator~ (singluar) with
+  new option ~magit-section-visibility-indicators~ (plurarl) to better
+  support emacs sessions that have both terminal and gui frames.
+  2d8f43e681
+
+- ~mouse-set-point~ is now remapped to Magit's variant.  fa5906621a
+
+- ~magit-autoloads~ is now loaded exactly once.  3d1a008f18
+
+- Fixed custom type of ~magit-blame-styles~.  84c5c8c8c6
+
+- Fixes regression in ~magit-rebase-autosquash~.  It no longer excluded
+  the merge-base.  54e460a701
+
+- A few hook functions were not autoloaded.  #5464
+
+- Some refinements were calculated for the diff in the commit
+  message buffer, despite not actually being displayed.  #5483
+
+- Commands for showing logs for wip branches were no longer displayed
+  in the log menu, despite ~magit-wip-mode~ being enabled.  #5488
+
+- Added new option ~magit-wip-debug~.  655bc502a3
+
+- Various build improvements.
+
+* v4.4.2    2025-10-06
+
+- Addressed harmless compiler warning.
+
+* v4.4.1    2025-10-06
+
+- Added new option ~magit-log-trailer-labels~.  #5432
+
+- Added new command ~magit-delete-shelved-branch~.  31c0ae17d3
+
+- Added new variable ~magit-save-repository-buffers-predicate~.  #5450
+
+- Fixed saving the value of the menus ~magit-diff~, ~magit-log~,
+  ~magit-diff-refresh~ and ~magit-log-refresh~.  c7ba53b4b4
+
+- A form from the ~cond-let~ library made it into the autoloads file,
+  where that library isn't being loaded.  #5451
+
+- ~magit-revert-rev-file-buffer~ did not respect a value of ~nil~ for
+  ~enable-local-variables~.  5eb31a419a
+
+- Improved commands for jumping to specific sections in revision
+  buffers.  #5442
+
+- Improved consistency of scroll command bindings.  #5453
+
+- It is possible again to exit ~magit-completing-read-multiple~ with
+  no input if REQUIRE-MATCH is ~t~.  b5066e5fa4
+
+- Diffs that appear in logs could not be parsed in some edge cases.
+  #5454
+
 * v4.4.0    2025-09-09
 
 - At least Emacs 28.1 is required now.  Emacs 30.1 was released
@@ -7,7 +84,7 @@
 - Code for tracking a position within a file across versions and
   diffs, and the commands that build on that to allow jumping to
   the same location in another version or diff, are undergoing
-  heavy refactoring and improvements.  This is paying of technical
+  heavy refactoring and improvements.  This is paying off technical
   dept and prepares for upcoming user-level improvements as well
   as for new features.  Some changes in behavior already appear in
   this release, as described below.
@@ -22,13 +99,13 @@
   Visiting the file in the worktree is very useful, but, instead of
   ~RET~, I recommend using ~C-<return>~ (~magit-diff-visit-worktree-file~).
   The new option ~magit-diff-visit-prefer-worktree~ allows restoring
-  the old behavior.  See [[https://magit.vc/manual/magit/Visiting-Files-and-Blobs-from-a-Diff.html][Visiting Files and Blobs from a Diff]].
+  the old behavior.  See [[https://docs.magit.vc/magit/Visiting-Files-and-Blobs-from-a-Diff.html][Visiting Files and Blobs from a Diff]].
 
 - "Blob navigation" is now aware of index blobs.  It is possible to
   navigate between such blobs, and the HEAD blob or the file on disk,
   using the same key bindings used to time travel from one committed
-  blob to another.  See [[https://magit.vc/manual/magit/Minor-Mode-for-Buffers-Visiting-Blobs.html][Minor Mode for Buffers Visiting Blobs]] and
-  [[https://magit.vc/manual/magit/Commands-for-Buffers-Visiting-Files.html][Commands for Buffers Visiting Files]].
+  blob to another.  See [[https://docs.magit.vc/magit/Minor-Mode-for-Buffers-Visiting-Blobs.html][Minor Mode for Buffers Visiting Blobs]] and
+  [[https://docs.magit.vc/magit/Commands-for-Buffers-Visiting-Files.html][Commands for Buffers Visiting Files]].
 
 - When quitting a blob-visiting buffer with ~q~, it is no longer
   killed, iff it is being displayed in an additional window.  The
@@ -356,7 +433,7 @@ Bugfixes:
 
 - Argument ~--signoff~ is now available in all menus that create commits.
   However, it is no longer shown in any menu by default.  See the end
-  of [[https://magit.vc/manual/transient/Enabling-and-Disabling-Suffixes.html][Enabling and Disabling Suffixes]] to learn how to enable it in all
+  of [[https://docs.magit.vc/transient/Enabling-and-Disabling-Suffixes.html][Enabling and Disabling Suffixes]] to learn how to enable it in all
   menus at once in a single action.  #5297
 
 - Began using the ~##~ macro from the ~llama~ package.  0a64982100

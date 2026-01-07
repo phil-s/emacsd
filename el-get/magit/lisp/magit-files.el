@@ -1,6 +1,6 @@
 ;;; magit-files.el --- Finding files  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -85,16 +85,16 @@ the line and column corresponding to that location."
       (setq line (line-number-at-pos))
       (setq col (current-column))
       (cond
-       ((not (equal visited-file file)))
-       ((equal magit-buffer-revision rev))
-       ((equal rev "{worktree}")
-        (setq line (magit-diff-visit--offset file magit-buffer-revision line)))
-       ((equal rev "{index}")
-        (setq line (magit-diff-visit--offset file nil line)))
-       (magit-buffer-revision
-        (setq line (magit-diff-visit--offset
-                    file (concat magit-buffer-revision ".." rev) line)))
-       ((setq line (magit-diff-visit--offset file (list "-R" rev) line)))))
+        ((not (equal visited-file file)))
+        ((equal magit-buffer-revision rev))
+        ((equal rev "{worktree}")
+         (setq line (magit-diff-visit--offset file magit-buffer-revision line)))
+        ((equal rev "{index}")
+         (setq line (magit-diff-visit--offset file nil line)))
+        (magit-buffer-revision
+         (setq line (magit-diff-visit--offset
+                     file (concat magit-buffer-revision ".." rev) line)))
+        ((setq line (magit-diff-visit--offset file (list "-R" rev) line)))))
     (funcall fn buf)
     (when line
       (with-current-buffer buf
@@ -122,7 +122,7 @@ A non-nil value for REVERT is ignored if REV is \"{worktree}\"."
                          (buffer-local-value 'auto-revert-mode $))
                    (cons "." revert-without-query)
                  revert-without-query)))
-            (find-file-noselect file-abs))
+          (find-file-noselect file-abs))
       (with-current-buffer (magit-get-revision-buffer-create rev file-rel)
         (when (or (not magit-buffer-file-name)
                   (if (eq revert 'ask-revert)
@@ -175,7 +175,10 @@ A non-nil value for REVERT is ignored if REV is \"{worktree}\"."
                              global-diff-hl-mode-enable-in-buffers ; Emacs < 30
                              eglot--maybe-activate-editing-mode)
                            #'eq)))
-      (normal-mode t))
+      ;; We want `normal-mode' to respect nil `enable-local-variables'.
+      ;; The FIND-FILE argument wasn't designed for our use case, so we
+      ;; have to use this strange invocation to achieve that.
+      (normal-mode (not enable-local-variables)))
     (setq buffer-read-only t)
     (set-buffer-modified-p nil)
     (goto-char (point-min))))
@@ -208,8 +211,7 @@ is done using `magit-find-index-noselect'."
         (let ((index (make-temp-name
                       (expand-file-name "magit-update-index-" (magit-gitdir))))
               (buffer (current-buffer)))
-          (when magit-wip-before-change-mode
-            (magit-wip-commit-before-change (list file) " before un-/stage"))
+          (magit-run-before-change-functions file "un-/stage")
           (unwind-protect
               (progn
                 (let ((coding-system-for-write buffer-file-coding-system))
@@ -226,8 +228,7 @@ is done using `magit-find-index-noselect'."
                    file)))
             (ignore-errors (delete-file index)))
           (set-buffer-modified-p nil)
-          (when magit-wip-after-apply-mode
-            (magit-wip-commit-after-apply (list file) " after un-/stage")))
+          (magit-run-after-apply-functions file "un-/stage"))
       (message "Abort")))
   (when-let ((buffer (magit-get-mode-buffer 'magit-status-mode)))
     (with-current-buffer buffer
@@ -247,9 +248,9 @@ This command is like `find-file', except that it temporarily
 binds `default-directory' to the actual git directory, while
 reading the FILENAME."
   (interactive
-   (let ((default-directory (magit-gitdir)))
-     (find-file-read-args "Find file: "
-                          (confirm-nonexistent-file-or-buffer))))
+    (let ((default-directory (magit-gitdir)))
+      (find-file-read-args "Find file: "
+                           (confirm-nonexistent-file-or-buffer))))
   (find-file filename wildcards))
 
 (defun magit-find-git-config-file-other-window (filename &optional wildcards)
@@ -263,9 +264,9 @@ This command is like `find-file-other-window', except that it
 temporarily binds `default-directory' to the actual git
 directory, while reading the FILENAME."
   (interactive
-   (let ((default-directory (magit-gitdir)))
-     (find-file-read-args "Find file in other window: "
-                          (confirm-nonexistent-file-or-buffer))))
+    (let ((default-directory (magit-gitdir)))
+      (find-file-read-args "Find file in other window: "
+                           (confirm-nonexistent-file-or-buffer))))
   (find-file-other-window filename wildcards))
 
 (defun magit-find-git-config-file-other-frame (filename &optional wildcards)
@@ -279,14 +280,14 @@ This command is like `find-file-other-frame', except that it
 temporarily binds `default-directory' to the actual git
 directory, while reading the FILENAME."
   (interactive
-   (let ((default-directory (magit-gitdir)))
-     (find-file-read-args "Find file in other frame: "
-                          (confirm-nonexistent-file-or-buffer))))
+    (let ((default-directory (magit-gitdir)))
+      (find-file-read-args "Find file in other frame: "
+                           (confirm-nonexistent-file-or-buffer))))
   (find-file-other-frame filename wildcards))
 
 ;;; File Dispatch
 
-;;;###autoload (autoload 'magit-file-dispatch "magit" nil t)
+;;;###autoload(autoload 'magit-file-dispatch "magit" nil t)
 (transient-define-prefix magit-file-dispatch ()
   "Invoke a Magit command that acts on the visited file.
 When invoked outside a file-visiting buffer, then fall back
@@ -494,11 +495,11 @@ staged as well as unstaged changes."
 NEWNAME may be a file or directory name.  If FILE isn't tracked in
 Git, fallback to using `rename-file'."
   (interactive
-   (let* ((file (magit-read-file "Rename file"))
-          (path (expand-file-name file (magit-toplevel))))
-     (list path (expand-file-name
-                 (read-file-name (format "Move %s to destination: " file)
-                                 (file-name-directory path))))))
+    (let* ((file (magit-read-file "Rename file"))
+           (path (expand-file-name file (magit-toplevel))))
+      (list path (expand-file-name
+                  (read-file-name (format "Move %s to destination: " file)
+                                  (file-name-directory path))))))
   (let ((oldbuf (get-file-buffer file))
         (dstdir (file-name-directory newname))
         (dstfile (if (directory-name-p newname)
@@ -547,9 +548,9 @@ Git, then fallback to using `delete-file'."
 (defun magit-file-checkout (rev file)
   "Checkout FILE from REV."
   (interactive
-   (let ((rev (magit-read-branch-or-commit
-               "Checkout from revision" magit-buffer-revision)))
-     (list rev (magit-read-file-from-rev rev "Checkout file" nil t))))
+    (let ((rev (magit-read-branch-or-commit
+                "Checkout from revision" magit-buffer-revision)))
+      (list rev (magit-read-file-from-rev rev "Checkout file" nil t))))
   (magit-with-toplevel
     (magit-run-git "checkout" rev "--" file)))
 

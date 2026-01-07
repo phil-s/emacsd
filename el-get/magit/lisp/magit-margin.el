@@ -1,6 +1,6 @@
 ;;; magit-margin.el --- Margins in Magit buffers  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -161,7 +161,7 @@ does not carry to other options."
     (with-selected-window window
       (set-window-margins
        nil
-       (if (characterp (car magit-section-visibility-indicator))
+       (if (characterp (car (magit-section-visibility-indicator)))
            1
          (car (window-margins)))
        (and (magit--right-margin-active)
@@ -241,20 +241,19 @@ as an option, because most other parts of Magit are always in
 English.")
 
 (defun magit--age (date &optional abbreviate)
-  (cl-labels ((fn (age spec)
-                (pcase-let ((`(,char ,unit ,units ,weight) (car spec)))
-                  (let ((cnt (round (/ age weight 1.0))))
-                    (if (or (not (cdr spec))
-                            (>= (/ age weight) 1))
-                        (list cnt (cond (abbreviate char)
-                                        ((= cnt 1) unit)
-                                        (units)))
-                      (fn age (cdr spec)))))))
-    (fn (abs (- (float-time)
-                (if (stringp date)
-                    (string-to-number date)
-                  date)))
-        magit--age-spec)))
+  (named-let calc ((age (abs (- (float-time)
+                                (if (stringp date)
+                                    (string-to-number date)
+                                  date))))
+                   (spec magit--age-spec))
+    (pcase-let* ((`((,char ,unit ,units ,weight) . ,spec) spec)
+                 (cnt (round (/ age weight 1.0))))
+      (if (or (not spec)
+              (>= (/ age weight) 1))
+          (list cnt (cond (abbreviate char)
+                          ((= cnt 1) unit)
+                          (units)))
+        (calc age spec)))))
 
 ;;; _
 (provide 'magit-margin)

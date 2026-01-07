@@ -1,6 +1,6 @@
 ;;; magit-stash.el --- Stash support for Magit  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -87,7 +87,7 @@ AUTHOR-WIDTH has to be an integer.  When the name of the author
 
 ;;; Commands
 
-;;;###autoload (autoload 'magit-stash "magit-stash" nil t)
+;;;###autoload(autoload 'magit-stash "magit-stash" nil t)
 (transient-define-prefix magit-stash ()
   "Stash uncommitted changes."
   :man-page "git-stash"
@@ -127,13 +127,13 @@ Untracked files are included according to infix arguments.
 One prefix argument is equivalent to `--include-untracked'
 while two prefix arguments are equivalent to `--all'."
   (interactive
-   (progn (when (and (magit-merge-in-progress-p)
-                     (not (magit-y-or-n-p "\
+    (progn (when (and (magit-merge-in-progress-p)
+                      (not (magit-y-or-n-p "\
 Stashing and resetting during a merge conflict.  \
 Applying the resulting stash won't restore the merge state.  \
 Proceed anyway? ")))
-            (user-error "Abort"))
-          (magit-stash-read-args)))
+             (user-error "Abort"))
+           (magit-stash-read-args)))
   (magit-stash-save message t t include-untracked t))
 
 ;;;###autoload
@@ -234,7 +234,7 @@ while two prefix arguments are equivalent to `--all'."
   (magit-stash-save (concat "WIP on " (magit-stash-summary))
                     index worktree untracked refresh t))
 
-;;;###autoload (autoload 'magit-stash-push "magit-stash" nil t)
+;;;###autoload(autoload 'magit-stash-push "magit-stash" nil t)
 (transient-define-prefix magit-stash-push (&optional transient args)
   "Create stash using \"git stash push\".
 
@@ -370,9 +370,9 @@ want to fall back to using \"--3way\", without being prompted."
   "Remove a stash from the stash list.
 When the region is active offer to drop all contained stashes."
   (interactive
-   (list (if-let ((values (magit-region-values 'stash)))
-             (magit-confirm 'drop-stashes nil "Drop %d stashes" nil values)
-           (magit-read-stash "Drop stash"))))
+    (list (if-let ((values (magit-region-values 'stash)))
+              (magit-confirm 'drop-stashes nil "Drop %d stashes" nil values)
+            (magit-read-stash "Drop stash"))))
   (dolist (stash (if (listp stash)
                      (nreverse (prog1 stash (setq stash (car stash))))
                    (list stash)))

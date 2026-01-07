@@ -1,6 +1,6 @@
 ;;; magit-mode.el --- Create and refresh Magit buffers  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -47,20 +47,18 @@
 (declare-function elp-restore-all "elp" ())
 
 (defvar magit--wip-inhibit-autosave)
-(defvar magit-wip-after-save-local-mode)
+(defvar magit-wip-mode)
 (declare-function magit-wip-get-ref "magit-wip" ())
 (declare-function magit-wip-commit-worktree "magit-wip" (ref files msg))
 
 ;;; Options
 
-(defcustom magit-mode-hook
-  (list #'magit-load-config-extensions)
+(defcustom magit-mode-hook nil
   "Hook run when entering a mode derived from Magit mode."
-  :package-version '(magit . "3.0.0")
+  :package-version '(magit . "4.4.2")
   :group 'magit-modes
   :type 'hook
-  :options (list #'magit-load-config-extensions
-                 #'bug-reference-mode))
+  :options (list #'bug-reference-mode))
 
 (defcustom magit-setup-buffer-hook
   (list #'magit-maybe-save-repository-buffers
@@ -95,6 +93,7 @@ inside your function."
 
 (defcustom magit-post-refresh-hook
   ;; Do not function-quote to avoid circular dependencies.
+  ;; Functions added here have to be autoloaded.
   '(magit-auto-revert-buffers
     magit-run-post-commit-hook
     magit-run-post-stage-hook
@@ -425,6 +424,7 @@ recommended value."
   "C-c C-w" 'magit-copy-thing
   "C-w"     'magit-copy-section-value
   "M-w"     'magit-copy-buffer-revision
+  "<remap> <mouse-set-point>"     'magit-mouse-set-point
   "<remap> <back-to-indentation>" 'magit-back-to-indentation
   "<remap> <previous-line>"       'magit-previous-line
   "<remap> <next-line>"           'magit-next-line
@@ -553,13 +553,6 @@ to the kill ring."
     ["Bury buffer"                magit-mode-bury-buffer t]))
 
 ;;; Mode
-
-(defun magit-load-config-extensions ()
-  "Load Magit extensions that are defined at the Git config layer."
-  (dolist (ext (magit-get-all "magit.extension"))
-    (let ((sym (intern (format "magit-%s-mode" ext))))
-      (when (fboundp sym)
-        (funcall sym 1)))))
 
 (define-derived-mode magit-mode magit-section-mode "Magit"
   "Parent major mode from which Magit major modes inherit.
@@ -717,8 +710,8 @@ and `magit-post-display-buffer-hook'."
   (let ((window (funcall (or display-function magit-display-buffer-function)
                          buffer)))
     (unless magit-display-buffer-noselect
-      (let* ((old-frame (selected-frame))
-             (new-frame (window-frame window)))
+      (let ((old-frame (selected-frame))
+            (new-frame (window-frame window)))
         (select-window window)
         (unless (eq old-frame new-frame)
           (select-frame-set-input-focus new-frame)))))
@@ -1105,21 +1098,21 @@ The arguments are for internal use."
       (when magit-refresh-verbose
         (message "%s buffer `%s'..." action (buffer-name)))
       (cond
-       (created
-        (funcall refresh)
-        (cond (initial-section (funcall initial-section))
-              (select-section (funcall select-section))))
-       (t
-        (deactivate-mark)
-        (setq magit-section-pre-command-section nil)
-        (setq magit-section-highlight-overlays nil)
-        (setq magit-section-selection-overlays nil)
-        (setq magit-section-highlighted-sections nil)
-        (setq magit-section-focused-sections nil)
-        (let ((positions (magit--refresh-buffer-get-positions)))
-          (funcall refresh)
-          (cond (select-section (funcall select-section))
-                ((magit--refresh-buffer-set-positions positions))))))
+        (created
+         (funcall refresh)
+         (cond (initial-section (funcall initial-section))
+               (select-section (funcall select-section))))
+        (t
+         (deactivate-mark)
+         (setq magit-section-pre-command-section nil)
+         (setq magit-section-highlight-overlays nil)
+         (setq magit-section-selection-overlays nil)
+         (setq magit-section-highlighted-sections nil)
+         (setq magit-section-focused-sections nil)
+         (let ((positions (magit--refresh-buffer-get-positions)))
+           (funcall refresh)
+           (cond (select-section (funcall select-section))
+                 ((magit--refresh-buffer-set-positions positions))))))
       (let ((magit-section-cache-visibility nil))
         (magit-section-show magit-root-section))
       (run-hooks 'magit-refresh-buffer-hook)
@@ -1277,16 +1270,51 @@ if you so desire."
 
 (defvar-local magit-inhibit-refresh-save nil)
 
+(defvar magit-save-repository-buffers-predicate
+  (lambda (topdir)
+    (let ((remote (file-remote-p default-directory))
+          (topdirs nil)
+          ;; If the current file is modified and resides inside
+          ;; a repository, and a let-binding is in effect, which
+          ;; places us in another repository, then this binding
+          ;; is needed to prevent that file from being saved.
+          (default-directory default-directory))
+      (and buffer-file-name
+           (setq default-directory (file-name-directory buffer-file-name))
+           ;; Check whether the repository still exists.
+           (file-exists-p default-directory)
+           ;; Check whether refreshing is disabled.
+           (not magit-inhibit-refresh-save)
+           ;; Check whether the visited file is either on the
+           ;; same remote as the repository, or both are on
+           ;; the local system.
+           (equal (file-remote-p buffer-file-name) remote)
+           ;; Delayed checks that are more expensive for remote
+           ;; repositories, due to the required network access.
+           ;;
+           ;; Check whether the file is inside the repository.
+           (equal (or (cdr (assoc default-directory topdirs))
+                      (let ((top (magit-rev-parse-safe "--show-toplevel")))
+                        (push (cons default-directory top) topdirs)
+                        top))
+                  topdir)
+           ;; Check whether the file is actually writable.
+           (file-writable-p buffer-file-name))))
+  "Predicate for `magit-save-repository-buffers'.
+
+This function is called for each buffer that might need saving with
+one argument, the working tree of the respective repository.  If it
+returns non-nil, the current buffer is saved.")
+
 (defun magit-save-repository-buffers (&optional arg)
   "Save file-visiting buffers belonging to the current repository.
 After any buffer where `buffer-save-without-query' is non-nil
 is saved without asking, the user is asked about each modified
-buffer which visits a file in the current repository.  Optional
+buffer, which visits a file in the current repository.  Optional
 argument (the prefix) non-nil means save all with no questions."
   (interactive "P")
   (when-let ((topdir (magit-rev-parse-safe "--show-toplevel")))
-    (let ((remote (file-remote-p default-directory))
-          (save-some-buffers-action-alist
+    (let ((save-some-buffers-action-alist
            `((?Y ,(##with-current-buffer %
                     (setq buffer-save-without-query t)
                     (save-buffer))
@@ -1295,53 +1323,26 @@ argument (the prefix) non-nil means save all with no questions."
                     (setq magit-inhibit-refresh-save t))
                  "to skip the current buffer and remember choice")
              ,@save-some-buffers-action-alist))
-          (topdirs nil)
-          (unwiped nil)
-          (magit--wip-inhibit-autosave t))
+          ;; Create a single wip commit for all saved files.
+          (magit--wip-inhibit-autosave t)
+          (saved nil))
       (unwind-protect
           (save-some-buffers
            arg
            (lambda ()
-             ;; If the current file is modified and resides inside
-             ;; a repository, and a let-binding is in effect, which
-             ;; places us in another repository, then this binding
-             ;; is needed to prevent that file from being saved.
-             (and-let ((default-directory
-                        (and buffer-file-name
-                             (file-name-directory buffer-file-name))))
-               (and
-                ;; Check whether the repository still exists.
-                (file-exists-p default-directory)
-                ;; Check whether refreshing is disabled.
-                (not magit-inhibit-refresh-save)
-                ;; Check whether the visited file is either on the
-                ;; same remote as the repository, or both are on
-                ;; the local system.
-                (equal (file-remote-p buffer-file-name) remote)
-                ;; Delayed checks that are more expensive for remote
-                ;; repositories, due to the required network access.
-                ;;
-                ;; Check whether the file is inside the repository.
-                (equal (or (cdr (assoc default-directory topdirs))
-                           (let ((top (magit-rev-parse-safe "--show-toplevel")))
-                             (push (cons default-directory top) topdirs)
-                             top))
-                       topdir)
-                ;; Check whether the file is actually writable.
-                (file-writable-p buffer-file-name)
-                (prog1 t
-                  ;; Schedule for wip commit, if appropriate.
-                  (when magit-wip-after-save-local-mode
-                    (push (expand-file-name buffer-file-name) unwiped)))))))
-        (when unwiped
+             (and (funcall magit-save-repository-buffers-predicate topdir)
+                  (prog1 t
+                    (when magit-wip-mode
+                      (push (expand-file-name buffer-file-name) saved))))))
+        (when saved
           (let ((default-directory topdir))
             (magit-wip-commit-worktree
              (magit-wip-get-ref)
-             unwiped
-             (if (cdr unwiped)
-                 (format "autosave %s files after save" (length unwiped))
+             saved
+             (if (cdr saved)
+                 (format "autosave %s files after save" (length saved))
                (format "autosave %s after save"
-                       (file-relative-name (car unwiped)))))))))))
+                       (file-relative-name (car saved)))))))))))
 
 ;;; Restore Window Configuration
 
@@ -1355,12 +1356,12 @@ argument (the prefix) non-nil means save all with no questions."
 
 Later, when the buffer is buried, it may be restored by
 `magit-restore-window-configuration'."
-  (if magit-inhibit-save-previous-winconf
-      (when (eq magit-inhibit-save-previous-winconf 'unset)
-        (setq magit-previous-window-configuration nil))
-    (unless (get-buffer-window (current-buffer) (selected-frame))
-      (setq magit-previous-window-configuration
-            (current-window-configuration)))))
+  (cond (magit-inhibit-save-previous-winconf
+         (when (eq magit-inhibit-save-previous-winconf 'unset)
+           (setq magit-previous-window-configuration nil)))
+        ((not (get-buffer-window (current-buffer) (selected-frame)))
+         (setq magit-previous-window-configuration
+               (current-window-configuration)))))
 
 (defun magit-restore-window-configuration (&optional kill-buffer)
   "Bury or kill the current buffer and restore previous window configuration."
@@ -1508,10 +1509,10 @@ repositories."
   (cond-let
     ((eq repository 'all)
      (dolist (cache magit-repository-local-cache)
-       (setf cache (compat-call assoc-delete-all key cache))))
+       (setf cache (assoc-delete-all key cache))))
     ([cache (assoc (or repository (magit-repository-local-repository))
                    magit-repository-local-cache)]
-     (setf cache (compat-call assoc-delete-all key cache)))))
+     (setf cache (assoc-delete-all key cache)))))
 
 (defmacro magit--with-repository-local-cache (key &rest body)
   (declare (indent 1) (debug (form body)))
@@ -1584,16 +1585,16 @@ The additional output can be found in the *Messages* buffer."
 
 (defun magit-run-hook-with-benchmark (hook)
   (cond
-   ((not hook))
-   (magit-refresh-verbose
-    (message "Running %s..." hook)
-    (message "Running %s...done (%.3fs)" hook
-             (benchmark-elapse
-               (run-hook-wrapped
-                hook
-                (lambda (fn)
-                  (message "  %-50s %f" fn (benchmark-elapse (funcall fn))))))))
-   ((run-hooks hook))))
+    ((not hook))
+    (magit-refresh-verbose
+     (message "Running %s..." hook)
+     (message "Running %s...done (%.3fs)" hook
+              (benchmark-elapse
+                (run-hook-wrapped
+                 hook
+                 (lambda (fn)
+                   (message "  %-50s %f" fn (benchmark-elapse (funcall fn))))))))
+    ((run-hooks hook))))
 
 (defun magit-file-region-line-numbers ()
   "Return the bounds of the region as line numbers.

@@ -1,5 +1,10 @@
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 
+DOMAIN ?= magit.vc
+
+PKG  = magit
+PKGS = magit magit-section
+
 ## User options ######################################################
 #
 # You can override these settings in "config.mk" or on the command
@@ -25,17 +30,18 @@ RMDIR    ?= rm -rf
 TAR      ?= tar
 SED      ?= sed
 
-EMACS      ?= emacs
-EMACS_ARGS ?= --eval "(progn \
-  (put 'if-let 'byte-obsolete-info nil) \
-  (put 'when-let 'byte-obsolete-info nil))"
-BATCH       = $(EMACS) -Q --batch $(EMACS_ARGS) $(LOAD_PATH)
+EMACS       ?= emacs
+EMACS_ARGS  ?=
+EMACS_Q_ARG ?= -Q
+EMACS_BATCH ?= $(EMACS) $(EMACS_Q_ARG) --batch $(EMACS_ARGS) $(LOAD_PATH)
+EMACS_ORG   ?= $(EMACS) $(EMACS_Q_ARG) --batch $(EMACS_ARGS) $(ORG_LOAD_PATH)
+EMACS_INTR  ?= $(EMACS) $(EMACS_Q_ARG) $(EMACS_ARGS) $(LOAD_PATH)
 
 LISP_EXTRA_TARGETS ?= check-declare
 
 INSTALL_INFO     ?= $(shell command -v ginstall-info || printf install-info)
 MAKEINFO         ?= makeinfo
-MANUAL_HTML_ARGS ?= --css-ref /assets/page.css
+MANUAL_HTML_ARGS ?= --css-ref https://$(DOMAIN)/assets/page.css
 
 GITSTATS      ?= gitstats
 GITSTATS_DIR  ?= $(TOP)docs/stats
@@ -44,18 +50,14 @@ GITSTATS_ARGS ?= -c style=https://magit.vc/assets/stats.css \
 
 ## Files #############################################################
 
-PKG       = magit
-PKGSTEXI  = magit magit-section
-PACKAGES  = magit magit-section git-commit
-
-ORGPAGES  = $(addsuffix .org,$(PKGSTEXI))
-TEXIPAGES = $(addsuffix .texi,$(PKGSTEXI))
-INFOPAGES = $(addsuffix .info,$(PKGSTEXI))
-HTMLFILES = $(addsuffix .html,$(PKGSTEXI))
-HTMLTOPS  = $(addsuffix /index.html,$(PKGSTEXI))
-HTMLDIRS  = $(PKGSTEXI)
-PDFFILES  = $(addsuffix .pdf,$(PKGSTEXI))
-EPUBFILES = $(addsuffix .epub,$(PKGSTEXI))
+ORGPAGES  = $(addsuffix .org,$(PKGS))
+TEXIPAGES = $(addsuffix .texi,$(PKGS))
+INFOPAGES = $(addsuffix .info,$(PKGS))
+HTMLFILES = $(addsuffix .html,$(PKGS))
+HTMLTOPS  = $(addsuffix /index.html,$(PKGS))
+HTMLDIRS  = $(PKGS)
+PDFFILES  = $(addsuffix .pdf,$(PKGS))
+EPUBFILES = $(addsuffix .epub,$(PKGS))
 
 # When making changes here, also update "<nongnu.git>/elpa-packages".
 
@@ -107,8 +109,6 @@ ELS += magit-dired.el
 ELS += git-rebase.el
 ELS += magit-bookmark.el
 ELCS = $(ELS:.el=.elc)
-ELMS = magit.el $(filter-out $(addsuffix .el,$(PACKAGES)),$(ELS))
-ELGS = magit-autoloads.el magit-version.el
 
 ## Versions ##########################################################
 
@@ -119,9 +119,9 @@ REVDESC := $(shell test -e $(TOP).git && git describe --tags)
 
 EMACS_VERSION = 28.1
 
-EMACSOLD := $(shell $(BATCH) --eval \
+EMACS_OLD := $(shell $(EMACS_BATCH) --eval \
   "(and (version< emacs-version \"$(EMACS_VERSION)\") (princ \"true\"))")
-ifeq "$(EMACSOLD)" "true"
+ifeq "$(EMACS_OLD)" "true"
   $(error At least version $(EMACS_VERSION) of Emacs is required)
 endif
 
@@ -192,7 +192,7 @@ ifeq ($(SYSTYPE), windows-nt)
   CYGPATH := $(shell cygpath --version 2>/dev/null)
 endif
 
-LOAD_PATH = -L $(TOP)lisp
+LOAD_PATH = -L .
 
 # When making changes here, then don't forget to adjust DEPS below,
 # ".github/ISSUE_TEMPLATE/bug_report.md", `magit-emacs-Q-command'
@@ -226,9 +226,7 @@ endif
 
 endif # ifndef LOAD_PATH
 
-ifndef ORG_LOAD_PATH
-ORG_LOAD_PATH = -L ../../org/lisp
-endif
+ORG_LOAD_PATH ?= -L ../../org/lisp
 
 ## Dependencies ######################################################
 
@@ -243,9 +241,9 @@ DEPS += with-editor/lisp
 
 ## Publish ###########################################################
 
-DOMAIN      ?= magit.vc
-CFRONT_DIST ?= E2LUHBKU1FBV02
-
 DOCBOOK_XSL ?= /usr/share/xml/docbook/stylesheet/docbook-xsl/epub/docbook.xsl
 
 EPUBTRASH = epub.xml META-INF OEBPS
+
+RCLONE      ?= rclone
+RCLONE_ARGS ?= -v

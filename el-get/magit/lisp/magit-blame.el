@@ -1,6 +1,6 @@
 ;;; magit-blame.el --- Blame support for Magit  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -128,7 +128,8 @@ part of the default value:
    (margin-body-face . (magit-blame-dimmed)))"
   :package-version '(magit . "2.13.0")
   :group 'magit-blame
-  :type 'string)
+  :type '(alist :key-type symbol
+                :value-type (alist :key-type symbol :value-type sexp)))
 
 (defcustom magit-blame-echo-style 'lines
   "The blame visualization style used by `magit-blame-echo'.
@@ -265,21 +266,22 @@ Also see option `magit-blame-styles'."
                             (magit-file-relative-name
                              nil (not magit-buffer-file-name))))
                  (line (format "%d,+1" (line-number-at-pos))))
-             (cond (file (with-temp-buffer
-                           (magit-with-toplevel
-                             (magit-git-insert
-                              "blame" "--porcelain"
-                              (if (memq magit-blame-type '(final removal))
-                                  (cons "--reverse" (magit-blame-arguments))
-                                (magit-blame-arguments))
-                              "-L" line rev "--" file)
-                             (goto-char (point-min))
-                             (if (eobp)
-                                 (unless noerror
-                                   (error "Cannot get blame chunk at eob"))
-                               (car (magit-blame--parse-chunk type))))))
-                   (noerror nil)
-                   ((error "Buffer does not visit a tracked file")))))))
+             (cond (file
+                    (with-temp-buffer
+                      (magit-with-toplevel
+                        (magit-git-insert
+                         "blame" "--porcelain"
+                         (if (memq magit-blame-type '(final removal))
+                             (cons "--reverse" (magit-blame-arguments))
+                           (magit-blame-arguments))
+                         "-L" line rev "--" file)
+                        (goto-char (point-min))
+                        (cond ((not (eobp))
+                               (car (magit-blame--parse-chunk type)))
+                              ((not noerror)
+                               (error "Cannot get blame chunk at eob"))))))
+                   ((not noerror)
+                    (error "Buffer does not visit a tracked file")))))))
 
 (defun magit-blame-chunk-at (pos)
   (seq-some (##overlay-get % 'magit-blame-chunk)
@@ -459,10 +461,10 @@ modes is toggled, then this mode also gets toggled automatically.
             (message "Blaming...done"))
         (magit-blame-assert-buffer process)
         (with-current-buffer (process-get process 'command-buf)
-          (if magit-blame-mode
-              (progn (magit-blame-mode -1)
-                     (message "Blaming...failed"))
-            (message "Blaming...aborted"))))
+          (cond (magit-blame-mode
+                 (magit-blame-mode -1)
+                 (message "Blaming...failed"))
+                ((message "Blaming...aborted")))))
       (kill-local-variable 'magit-blame-process))))
 
 (defun magit-blame-process-filter (process string)
@@ -759,7 +761,7 @@ modes is toggled, then this mode also gets toggled automatically.
 
 ;;; Commands
 
-;;;###autoload (autoload 'magit-blame-echo "magit-blame" nil t)
+;;;###autoload(autoload 'magit-blame-echo "magit-blame" nil t)
 (transient-define-suffix magit-blame-echo (args)
   "For each line show the revision in which it was added.
 Show the information about the chunk at point in the echo area
@@ -783,7 +785,7 @@ not turn on `read-only-mode'."
     (read-only-mode -1)
     (magit-blame--update-overlays)))
 
-;;;###autoload (autoload 'magit-blame-addition "magit-blame" nil t)
+;;;###autoload(autoload 'magit-blame-addition "magit-blame" nil t)
 (transient-define-suffix magit-blame-addition (args)
   "For each line show the revision in which it was added."
   (interactive (list (magit-blame-arguments)))
@@ -791,7 +793,7 @@ not turn on `read-only-mode'."
   (magit-blame--pre-blame-setup  'addition)
   (magit-blame--run args))
 
-;;;###autoload (autoload 'magit-blame-removal "magit-blame" nil t)
+;;;###autoload(autoload 'magit-blame-removal "magit-blame" nil t)
 (transient-define-suffix magit-blame-removal (args)
   "For each line show the revision in which it was removed."
   :if-nil 'buffer-file-name
@@ -802,7 +804,7 @@ not turn on `read-only-mode'."
   (magit-blame--pre-blame-setup  'removal)
   (magit-blame--run args))
 
-;;;###autoload (autoload 'magit-blame-reverse "magit-blame" nil t)
+;;;###autoload(autoload 'magit-blame-reverse "magit-blame" nil t)
 (transient-define-suffix magit-blame-reverse (args)
   "For each line show the last revision in which it still exists."
   :if-nil 'buffer-file-name
@@ -939,7 +941,7 @@ instead of the hash, like `kill-ring-save' would."
 
 ;;; Popup
 
-;;;###autoload (autoload 'magit-blame "magit-blame" nil t)
+;;;###autoload(autoload 'magit-blame "magit-blame" nil t)
 (transient-define-prefix magit-blame ()
   "Show the commits that added or removed lines in the visited file."
   :man-page "git-blame"

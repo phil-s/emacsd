@@ -1,6 +1,6 @@
 This is magit.info, produced by makeinfo version 6.8 from magit.texi.
 
-     Copyright (C) 2015-2025 Jonas Bernoulli
+     Copyright (C) 2015-2026 Jonas Bernoulli
      <emacs.magit@jonas.bernoulli.dev>
 
      You can redistribute this document and/or modify it under the terms
@@ -32,9 +32,9 @@ to perform almost all of their daily version control tasks directly from
 within Emacs.  While many fine Git clients exist, only Magit and Git
 itself deserve to be called porcelains.
 
-This manual is for Magit version 4.3.8.
+This manual is for Magit version 4.5.0.
 
-     Copyright (C) 2015-2025 Jonas Bernoulli
+     Copyright (C) 2015-2026 Jonas Bernoulli
      <emacs.magit@jonas.bernoulli.dev>
 
      You can redistribute this document and/or modify it under the terms
@@ -255,7 +255,6 @@ Submodules
 Wip Modes
 
 * Wip Graph::
-* Legacy Wip Modes::
 
 
 Customizing
@@ -760,17 +759,17 @@ File: magit.info,  Node: Switching Buffers,  Next: Naming Buffers,  Up: Modes an
      ‘magit-display-buffer-noselect’ is ‘nil’.  It also runs the hooks
      mentioned below.
 
-     If optional DISPLAY-FUNCTION is non-nil, then that is used to
+     If optional DISPLAY-FUNCTION is non-‘nil’, then that is used to
      display the buffer.  Usually that is ‘nil’ and the function
      specified by ‘magit-display-buffer-function’ is used.
 
  -- Variable: magit-display-buffer-noselect
-     When this is non-nil, then ‘magit-display-buffer’ only displays the
-     buffer but forgoes also selecting the window.  This variable should
-     not be set globally, it is only intended to be let-bound, by code
-     that automatically updates "the other window".  This is used for
-     example when the revision buffer is updated when you move inside
-     the log buffer.
+     When this is non-‘nil’, then ‘magit-display-buffer’ only displays
+     the buffer but forgoes also selecting the window.  This variable
+     should not be set globally, it is only intended to be let-bound, by
+     code that automatically updates "the other window".  This is used
+     for example when the revision buffer is updated when you move
+     inside the log buffer.
 
  -- User Option: magit-display-buffer-function
      The function specified here is called by ‘magit-display-buffer’
@@ -895,18 +894,18 @@ File: magit.info,  Node: Naming Buffers,  Next: Quitting Windows,  Prev: Switchi
         • ‘%t’
 
           The top-level directory of the working tree of the repository,
-          or if ‘magit-uniquify-buffer-names’ is non-nil an abbreviation
-          of that.
+          or if ‘magit-uniquify-buffer-names’ is non-‘nil’ an
+          abbreviation of that.
 
         • ‘%x’
 
-          If ‘magit-uniquify-buffer-names’ is nil "*", otherwise the
+          If ‘magit-uniquify-buffer-names’ is ‘nil’ "*", otherwise the
           empty string.  Due to limitations of the ‘uniquify’ package,
           buffer names must end with the path.
 
      The value should always contain ‘%m’ or ‘%M’, ‘%v’ or ‘%V’, and
-     ‘%t’.  If ‘magit-uniquify-buffer-names’ is non-nil, then the value
-     must end with ‘%t’ or ‘%t%x’.  See issue #2841.
+     ‘%t’.  If ‘magit-uniquify-buffer-names’ is non-‘nil’, then the
+     value must end with ‘%t’ or ‘%t%x’.  See issue #2841.
 
  -- User Option: magit-uniquify-buffer-names
      This option controls whether the names of Magit buffers are
@@ -940,9 +939,9 @@ File: magit.info,  Node: Quitting Windows,  Next: Automatic Refreshing of Magit 
      The function used to actually bury or kill the current buffer.
 
      ‘magit-mode-bury-buffer’ calls this function with one argument.  If
-     the argument is non-nil, then the function has to kill the current
-     buffer.  Otherwise it has to bury it alive.  The default value
-     currently is ‘magit-mode-quit-window’.
+     the argument is non-‘nil’, then the function has to kill the
+     current buffer.  Otherwise it has to bury it alive.  The default
+     value currently is ‘magit-mode-quit-window’.
 
  -- Function: magit-restore-window-configuration kill-buffer
      Bury or kill the current buffer using ‘quit-window’, which is
@@ -1002,7 +1001,7 @@ to the repository outside of Magit.
      being tracked in the current repository.
 
      The file-visiting buffers are always reverted, even if
-     ‘magit-revert-buffers’ is nil.
+     ‘magit-revert-buffers’ is ‘nil’.
 
  -- User Option: magit-refresh-buffer-hook
      This hook is run in each Magit buffer that was refreshed during the
@@ -1010,13 +1009,13 @@ to the repository outside of Magit.
      buffer.
 
  -- User Option: magit-refresh-status-buffer
-     When this option is non-nil, then the status buffer is
+     When this option is non-‘nil’, then the status buffer is
      automatically refreshed after running git for side-effects, in
      addition to the current Magit buffer, which is always refreshed
      automatically.
 
-     Only set this to nil after exhausting all other options to improve
-     performance.
+     Only set this to ‘nil’ after exhausting all other options to
+     improve performance.
 
  -- Function: magit-after-save-refresh-status
      This function is intended to be added to ‘after-save-hook’.  After
@@ -1045,7 +1044,7 @@ explicitly.
      This option controls whether file-visiting buffers are saved before
      certain events.
 
-     If this is non-nil then all modified file-visiting buffers
+     If this is non-‘nil’ then all modified file-visiting buffers
      belonging to the current repository may be saved before running
      commands, before creating new Magit buffers, and before explicitly
      refreshing such buffers.  If this is ‘dontask’ then this is done
@@ -1085,14 +1084,15 @@ the visiting buffer before you could continue making changes.
  -- User Option: magit-auto-revert-immediately
      This option controls whether Magit reverts buffers immediately.
 
-     If this is non-nil and either ‘global-auto-revert-mode’ or
+     If this is non-‘nil’ and either ‘global-auto-revert-mode’ or
      ‘magit-auto-revert-mode’ is enabled, then Magit immediately reverts
      buffers by explicitly calling ‘auto-revert-buffers’ after running
      Git for side-effects.
 
-     If ‘auto-revert-use-notify’ is non-nil (and file notifications are
-     actually supported), then ‘magit-auto-revert-immediately’ does not
-     have to be non-nil, because the reverts happen immediately anyway.
+     If ‘auto-revert-use-notify’ is non-‘nil’ (and file notifications
+     are actually supported), then ‘magit-auto-revert-immediately’ does
+     not have to be non-‘nil’, because the reverts happen immediately
+     anyway.
 
      If ‘magit-auto-revert-immediately’ and ‘auto-revert-use-notify’ are
      both ‘nil’, then reverts happen after ‘auto-revert-interval’
@@ -1135,7 +1135,7 @@ the visiting buffer before you could continue making changes.
      on the local mode ‘auto-revert-mode’ themselves, are best served by
      setting the value to ‘magit-auto-revert-repository-buffer-p’.
 
-     However the default is nil, so as not to disturb users who do use
+     However the default is ‘nil’, so as not to disturb users who do use
      the local mode directly.  If you experience delays when running
      Magit commands, then you should consider using one of the
      predicates provided by Magit - especially if you also use Tramp.
@@ -1448,7 +1448,7 @@ certain sections can also be overwritten using the hook
  -- User Option: magit-section-cache-visibility
      This option controls for which sections the previous visibility
      state should be restored if a section disappears and later appears
-     again.  The value is a boolean or a list of section types.  If t,
+     again.  The value is a boolean or a list of section types.  If ‘t’,
      then the visibility of all sections is cached.  Otherwise this is
      only done for sections whose type matches one of the listed types.
 
@@ -1469,15 +1469,19 @@ certain sections can also be overwritten using the hook
 
      Usually this should only be used to set the initial visibility but
      not during refreshes.  If ‘magit-insert-section--oldroot’ is
-     non-nil, then the buffer is being refreshed and these functions
+     non-‘nil’, then the buffer is being refreshed and these functions
      should immediately return ‘nil’.
 
- -- User Option: magit-section-visibility-indicator
+ -- User Option: magit-section-visibility-indicators
      This option controls whether and how to indicate that a section can
      be expanded/collapsed.
 
-     If nil, then no visibility indicators are shown.  Otherwise the
-     value has to have one of these two forms:
+     If ‘nil’, then don’t show any indicators.  Otherwise the value has
+     to be a list with two elements.  The first controls the indicators
+     used in graphical frames, the second the indicators in terminal
+     frames.  For graphical frames all of the following forms are valid,
+     while terminal frames do not have fringes and thus do not support
+     the first form.
 
         • ‘(EXPANDABLE-BITMAP . COLLAPSIBLE-BITMAP)’
 
@@ -1488,8 +1492,13 @@ certain sections can also be overwritten using the hook
           To provide extra padding around the indicator, set
           ‘left-fringe-width’ in ‘magit-mode-hook’, e.g.:
 
-               (add-hook 'magit-mode-hook (lambda ()
-                                            (setq left-fringe-width 20)))
+               (add-hook 'magit-mode-hook
+                         (lambda () (setq left-fringe-width 20)))
+
+        • ‘(EXPANDABLE-CHAR . COLLAPSIBLE-CHAR)’
+
+          In this case every section that can be expanded or collapsed
+          gets an indicator in the left margin.
 
         • ‘(STRING . BOOLEAN)’
 
@@ -1525,27 +1534,27 @@ this manual along with the appropriate "section inserter functions".
      Add the function FUNCTION to the value of section hook HOOK.
 
      Add FUNCTION at the beginning of the hook list unless optional
-     APPEND is non-nil, in which case FUNCTION is added at the end.  If
-     FUNCTION already is a member then move it to the new location.
+     APPEND is non-‘nil’, in which case FUNCTION is added at the end.
+     If FUNCTION already is a member then move it to the new location.
 
-     If optional AT is non-nil and a member of the hook list, then add
+     If optional AT is non-‘nil’ and a member of the hook list, then add
      FUNCTION next to that instead.  Add before or after AT, or replace
      AT with FUNCTION depending on APPEND.  If APPEND is the symbol
-     ‘replace’, then replace AT with FUNCTION.  For any other non-nil
-     value place FUNCTION right after AT.  If nil, then place FUNCTION
+     ‘replace’, then replace AT with FUNCTION.  For any other non-‘nil’
+     value place FUNCTION right after AT.  If ‘nil’, then place FUNCTION
      right before AT.  If FUNCTION already is a member of the list but
      AT is not, then leave FUNCTION where ever it already is.
 
-     If optional LOCAL is non-nil, then modify the hook’s buffer-local
+     If optional LOCAL is non-‘nil’, then modify the hook’s buffer-local
      value rather than its global value.  This makes the hook local by
      copying the default value.  That copy is then modified.
 
-     HOOK should be a symbol.  If HOOK is void, it is first set to nil.
-     HOOK’s value must not be a single hook function.  FUNCTION should
-     be a function that takes no arguments and inserts one or multiple
-     sections at point, moving point forward.  FUNCTION may choose not
-     to insert its section(s), when doing so would not make sense.  It
-     should not be abused for other side-effects.
+     HOOK should be a symbol.  If HOOK is void, it is first set to
+     ‘nil’.  HOOK’s value must not be a single hook function.  FUNCTION
+     should be a function that takes no arguments and inserts one or
+     multiple sections at point, moving point forward.  FUNCTION may
+     choose not to insert its section(s), when doing so would not make
+     sense.  It should not be abused for other side-effects.
 
    To remove a function from a section hook, use ‘remove-hook’.
 
@@ -2009,8 +2018,8 @@ or without confirmation.
 
    • If the command uses ‘magit-completing-read’ multiple times, then
      PROMPT can be used to only affect one of these uses.  PROMPT, if
-     non-nil, is a regular expression that is used to match against the
-     PROMPT argument passed to ‘magit-completing-read’.
+     non-‘nil’, is a regular expression that is used to match against
+     the PROMPT argument passed to ‘magit-completing-read’.
 
    • DEFAULT specifies how to use the default.  If it is ‘t’, then the
      DEFAULT argument passed to ‘magit-completing-read’ is used without
@@ -2165,7 +2174,7 @@ then you are done too.
           then ‘nil’ is returned instead of an empty string.
 
         • If REQUIRE-MATCH is ‘any’, then do not require a match but do
-          require non-empty input (or non-nil DEFAULT, since that is
+          require non-empty input (or non-‘nil’ DEFAULT, since that is
           substituted for empty input).
 
         • If REQUIRE-MATCH is non-‘nil’ and the users exits without a
@@ -2609,6 +2618,11 @@ such hooks and how to customize them.
      by default added to another hooks, are listed in *note References
      Buffer::.
 
+ -- Function: magit-insert-status-headers
+     Insert header sections appropriate for ‘magit-status-mode’ buffers.
+     The sections are inserted by running the functions on the hook
+     ‘magit-status-headers-hook’.  See *note Status Header Sections::.
+
  -- Function: magit-insert-merge-log
      Insert section for the on-going merge.  Display the heads that are
      being merged.  If no merge is in progress, do nothing.
@@ -2642,9 +2656,9 @@ such hooks and how to customize them.
 
  -- Function: magit-insert-stashes &optional ref heading
      Insert the ‘stashes’ section showing reflog for "refs/stash".  If
-     optional REF is non-nil show reflog for that instead.  If optional
-     HEADING is non-nil use that as section heading instead of
-     "Stashes:".
+     optional REF is non-‘nil’ show reflog for that instead.  If
+     optional HEADING is non-‘nil’ use that as section heading instead
+     of "Stashes:".
 
  -- Function: magit-insert-unpulled-from-upstream
      Insert section showing commits that haven’t been pulled from the
@@ -2653,6 +2667,14 @@ such hooks and how to customize them.
  -- Function: magit-insert-unpulled-from-pushremote
      Insert section showing commits that haven’t been pulled from the
      push-remote branch yet.
+
+ -- Function: magit-insert-unpushed-to-upstream-or-recent
+     Insert section showing unpushed or other recent commits.  If an
+     upstream is configured for the current branch and it is behind of
+     the current branch, then show the commits that have not yet been
+     pushed into the upstream branch.  If no upstream is configured or
+     if the upstream is not behind of the current branch, then show the
+     last ‘magit-log-section-commit-count’ commits.
 
  -- Function: magit-insert-unpushed-to-upstream
      Insert section showing commits that haven’t been pushed to the
@@ -2727,7 +2749,7 @@ that you don’t do that.
  -- Function: magit-insert-skip-worktree-files
      Insert a list of skip-worktree files.
 
- -- Function: magit-insert-assumed-unchanged-files
+ -- Function: magit-insert-assume-unchanged-files
      Insert a list of files that are assumed to be unchanged.
 
 
@@ -2858,8 +2880,8 @@ variable.
      This option controls whether ‘magit-insert-modules’ wraps inserted
      sections in an additional section.
 
-     If this is non-nil, then only a single top-level section is
-     inserted.  If it is nil, then all sections listed in
+     If this is non-‘nil’, then only a single top-level section is
+     inserted.  If it is ‘nil’, then all sections listed in
      ‘magit-module-sections-hook’ become top-level sections.
 
  -- Function: magit-insert-modules-overview
@@ -2904,7 +2926,7 @@ File: magit.info,  Node: Status Options,  Prev: Status Module Sections,  Up: Sta
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -2946,8 +2968,9 @@ File: magit.info,  Node: Repository List,  Next: Logging,  Prev: Status Buffer, 
      of the column.  FORMAT is a function that is called with one
      argument, the repository identification (usually its basename), and
      with ‘default-directory’ bound to the toplevel of its working tree.
-     It has to return a string to be inserted or nil.  PROPS is an alist
-     that supports the keys ‘:right-align’, ‘:pad-right’ and ‘:sort’.
+     It has to return a string to be inserted or ‘nil’.  PROPS is an
+     alist that supports the keys ‘:right-align’, ‘:pad-right’ and
+     ‘:sort’.
 
      The ‘:sort’ function has a weird interface described in the
      docstring of ‘tabulated-list--get-sort’.  Alternatively ‘<’ and
@@ -3291,7 +3314,7 @@ regular log buffers that would be ‘magit-log-margin’.
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -3375,7 +3398,7 @@ buffers:
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -3418,7 +3441,7 @@ Also see *note (gitman)git-reflog::.
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -3462,7 +3485,7 @@ for multiple "upstreams" at once.
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -3750,7 +3773,7 @@ File: magit.info,  Node: Diff Options,  Next: Revision Buffer,  Prev: Commands A
 
      Determining the correct width can be expensive if it requires
      opening large and/or many files, so the widths are cached in the
-     variable ‘magit-diff--tab-width-cache’.  Set that to nil to
+     variable ‘magit-diff--tab-width-cache’.  Set that to ‘nil’ to
      invalidate the cache.
 
         • ‘nil’ Never adjust tab width.  Use ‘tab-width’s value from the
@@ -3771,7 +3794,7 @@ File: magit.info,  Node: Diff Options,  Next: Revision Buffer,  Prev: Commands A
 
      See ‘magit-diff-highlight-trailing’,
      ‘magit-diff-highlight-indentation’.  The symbol ‘t’ means in all
-     diffs, ‘status’ means only in the status buffer, and nil means
+     diffs, ‘status’ means only in the status buffer, and ‘nil’ means
      nowhere.
 
         • ‘nil’ Never highlight whitespace errors.
@@ -3789,12 +3812,12 @@ File: magit.info,  Node: Diff Options,  Next: Revision Buffer,  Prev: Commands A
 
  -- User Option: magit-diff-highlight-trailing
      Whether to highlight whitespace at the end of a line in diffs.
-     Used only when ‘magit-diff-paint-whitespace’ is non-nil.
+     Used only when ‘magit-diff-paint-whitespace’ is non-‘nil’.
 
  -- User Option: magit-diff-highlight-indentation
      This option controls whether to highlight the indentation in case
      it used the "wrong" indentation style.  Indentation is only
-     highlighted if ‘magit-diff-paint-whitespace’ is also non-nil.
+     highlighted if ‘magit-diff-paint-whitespace’ is also non-‘nil’.
 
      The value is an alist of the form ‘((REGEXP . INDENT)...)’.  The
      path to the current repository is matched against each element in
@@ -3887,12 +3910,12 @@ File: magit.info,  Node: Revision Buffer,  Prev: Diff Options,  Up: Diffing
      author’s image.  The top half of the image is inserted right after
      the matched text, the bottom half on the next line in the same
      column.  The cdr specifies where to insert the committer’s image,
-     accordingly.  Either the car or the cdr may be nil."
+     accordingly.  Either the car or the cdr may be ‘nil’."
 
  -- User Option: magit-revision-use-hash-sections
      Whether to turn hashes inside the commit message into sections.
 
-     If non-nil, then hashes inside the commit message are turned into
+     If non-‘nil’, then hashes inside the commit message are turned into
      ‘commit’ sections.  There is a trade off to be made between
      performance and reliability:
 
@@ -3904,8 +3927,8 @@ File: magit.info,  Node: Revision Buffer,  Prev: Diff Options,  Up: Diffing
           long and which contain at least one number as well as at least
           one letter.
 
-     If nil, then no hashes are turned into sections, but you can still
-     visit the commit at point using "RET".
+     If ‘nil’, then no hashes are turned into sections, but you can
+     still visit the commit at point using "RET".
 
    The diffs shown in the revision buffer may be automatically
 restricted to a subset of the changed files.  If the revision buffer is
@@ -3917,15 +3940,15 @@ file restriction as that log buffer (also see the command
      Whether showing a commit from a log buffer honors the log’s file
      filter when the log arguments include ‘--follow’.
 
-     When this option is nil, displaying a commit from a log ignores the
-     log’s file filter if the log arguments include ‘--follow’.  Doing
-     so avoids showing an empty diff in revision buffers for commits
-     before a rename event.  In such cases, the ‘--patch’ argument of
-     the log transient can be used to show the file-restricted diffs
-     inline.
+     When this option is ‘nil’, displaying a commit from a log ignores
+     the log’s file filter if the log arguments include ‘--follow’.
+     Doing so avoids showing an empty diff in revision buffers for
+     commits before a rename event.  In such cases, the ‘--patch’
+     argument of the log transient can be used to show the
+     file-restricted diffs inline.
 
-     Set this option to non-nil to keep the log’s file restriction even
-     if ‘--follow’ is present in the log arguments.
+     Set this option to non-‘nil’ to keep the log’s file restriction
+     even if ‘--follow’ is present in the log arguments.
 
    If the revision buffer is not displayed from a log buffer, the file
 restriction is determined as usual (see *note Transient Arguments and
@@ -4044,7 +4067,7 @@ information on how to use Ediff itself, see *note (ediff)Top::.
 
  -- User Option: magit-ediff-dwim-show-on-hunks
      This option controls what command ‘magit-ediff-dwim’ calls when
-     point is on uncommitted hunks.  When nil, always run
+     point is on uncommitted hunks.  When ‘nil’, always run
      ‘magit-ediff-stage’.  Otherwise, use ‘magit-ediff-show-staged’ and
      ‘magit-ediff-show-unstaged’ to show staged and unstaged changes,
      respectively.
@@ -4113,12 +4136,12 @@ the other references are compared.
      Whether to pad all commit counts on all sides in Magit-Refs mode
      buffers.
 
-     If this is nil, then some commit counts are displayed right next to
-     one of the branches that appear next to the count, without any
+     If this is ‘nil’, then some commit counts are displayed right next
+     to one of the branches that appear next to the count, without any
      space in between.  This might look bad if the branch name faces
      look too similar to ‘magit-dimmed’.
 
-     If this is non-nil, then spaces are placed on both sides of all
+     If this is non-‘nil’, then spaces are placed on both sides of all
      commit counts.
 
  -- User Option: magit-refs-show-remote-prefix
@@ -4159,7 +4182,7 @@ the other references are compared.
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -4212,9 +4235,9 @@ you should also change the others to keep things aligned.  The following
      refs are displayed (subject to ‘magit-refs-sections-hook’).
 
      All keys are tried in order until one matches.  Then its value is
-     used and subsequent elements are ignored.  If the value is non-nil,
-     then the reference is displayed, otherwise it is not.  If no
-     element matches, then the reference is displayed.
+     used and subsequent elements are ignored.  If the value is
+     non-‘nil’, then the reference is displayed, otherwise it is not.
+     If no element matches, then the reference is displayed.
 
      A key can either be a regular expression that the refname has to
      match, or a function that takes the refname as only argument and
@@ -4956,7 +4979,7 @@ apply variants are described in the next section.
        2. Visit the ‘HEAD’ commit and navigate to the change that should
           not have been included in that commit.
        3. Type ‘u’ (‘magit-unstage’) to reverse it in the index.  This
-          assumes that ‘magit-unstage-committed’ is non-nil.
+          assumes that ‘magit-unstage-committed’ is non-‘nil’.
        4. Type ‘c e’ to extend ‘HEAD’ with the staged changes, including
           those that were already staged before.
        5. Optionally stage the remaining changes using ‘s’ or ‘S’ and
@@ -5352,8 +5375,8 @@ Options used by commit commands
 
       -- User Option: magit-commit-squash-confirm
           Whether the commit targeted by squash and fixup has to be
-          confirmed.  When non-nil then the commit at point (if any) is
-          used as default choice.  Otherwise it has to be confirmed.
+          confirmed.  When non-‘nil’ then the commit at point (if any)
+          is used as default choice.  Otherwise it has to be confirmed.
           This option only affects ‘magit-commit-squash’ and
           ‘magit-commit-fixup’.  The "instant" variants always require
           confirmation because making an error while using those is
@@ -5474,21 +5497,21 @@ Using the Revision Stack
 
      The entries on the stack have the format ‘(HASH TOPLEVEL)’ and this
      option has the format ‘(POINT-FORMAT EOB-FORMAT INDEX-REGEXP)’, all
-     of which may be nil or a string (though either one of EOB-FORMAT or
-     POINT-FORMAT should be a string, and if INDEX-REGEXP is non-nil,
-     then the two formats should be too).
+     of which may be ‘nil’ or a string (though either one of EOB-FORMAT
+     or POINT-FORMAT should be a string, and if INDEX-REGEXP is
+     non-‘nil’, then the two formats should be too).
 
      First INDEX-REGEXP is used to find the previously inserted entry,
      by searching backward from point.  The first submatch must match
      the index number.  That number is incremented by one, and becomes
      the index number of the entry to be inserted.  If you don’t want to
-     number the inserted revisions, then use nil for INDEX-REGEXP.
+     number the inserted revisions, then use ‘nil’ for INDEX-REGEXP.
 
-     If INDEX-REGEXP is non-nil then both POINT-FORMAT and EOB-FORMAT
+     If INDEX-REGEXP is non-‘nil’ then both POINT-FORMAT and EOB-FORMAT
      should contain \"%N\", which is replaced with the number that was
      determined in the previous step.
 
-     Both formats, if non-nil and after removing %N, are then expanded
+     Both formats, if non-‘nil’ and after removing %N, are then expanded
      using ‘git show --format=FORMAT ...’ inside TOPLEVEL.
 
      The expansion of POINT-FORMAT is inserted at point, and the
@@ -5625,14 +5648,14 @@ who has to waste some time telling you to fix your commits.
      List of functions called to query before performing commit.
 
      The commit message buffer is current while the functions are
-     called.  If any of them returns nil, then the commit is not
+     called.  If any of them returns ‘nil’, then the commit is not
      performed and the buffer is not killed.  The user should then fix
      the issue and try again.
 
-     The functions are called with one argument.  If it is non-nil then
-     that indicates that the user used a prefix argument to force
+     The functions are called with one argument.  If it is non-‘nil’
+     then that indicates that the user used a prefix argument to force
      finishing the session despite issues.  Functions should usually
-     honor this wish and return non-nil.
+     honor this wish and return non-‘nil’.
 
      By default the only member is ‘git-commit-check-style-conventions’.
 
@@ -5816,9 +5839,9 @@ them.  Those features are available from separate transient commands.
      upstream of the starting-point may be used as the upstream of the
      new branch, instead of the starting-point itself.
 
-     If optional FROM is non-nil, then the source branch is reset to
+     If optional FROM is non-‘nil’, then the source branch is reset to
      ‘FROM~’, instead of to the last commit it shares with its upstream.
-     Interactively, FROM is only ever non-nil, if the region selects
+     Interactively, FROM is only ever non-‘nil’, if the region selects
      some commits, and among those commits, FROM is the commit that is
      the fewest commits ahead of the source branch.
 
@@ -7097,7 +7120,7 @@ Also see *note (gitman)git-stash::.
 
      The value has the form ‘(INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH)’.
 
-        • If INIT is non-nil, then the margin is shown initially.
+        • If INIT is non-‘nil’, then the margin is shown initially.
         • STYLE controls how to format the author or committer date.  It
           can be one of ‘age’ (to show the age of the commit),
           ‘age-abbreviated’ (to abbreviate the time unit to a
@@ -7711,8 +7734,9 @@ Sections::.
      of the column.  FORMAT is a function that is called with one
      argument, the repository identification (usually its basename), and
      with ‘default-directory’ bound to the toplevel of its working tree.
-     It has to return a string to be inserted or nil.  PROPS is an alist
-     that supports the keys ‘:right-align’, ‘:pad-right’ and ‘:sort’.
+     It has to return a string to be inserted or ‘nil’.  PROPS is an
+     alist that supports the keys ‘:right-align’, ‘:pad-right’ and
+     ‘:sort’.
 
      The ‘:sort’ function has a weird interface described in the
      docstring of ‘tabulated-list--get-sort’.  Alternatively ‘<’ and
@@ -7749,7 +7773,7 @@ modules.
 ‘o a’ (‘magit-submodule-add’)
      This commands adds the repository at URL as a module.  Optional
      PATH is the path to the module relative to the root of the
-     super-project.  If it is nil then the path is determined based on
+     super-project.  If it is ‘nil’ then the path is determined based on
      URL.
 
 ‘o r’ (‘magit-submodule-register’)
@@ -7870,6 +7894,11 @@ Also see *note (gitman)git-worktree::.
      If there is no worktree at point, then read one in the minibuffer.
      If the worktree at point is the one whose status is already being
      displayed in the current buffer, then show it in Dired instead.
+
+   If you want the status buffer to list worktrees, add the function
+‘magit-insert-worktrees’ to ‘magit-status-sections-hook’ as described in
+*note Status Sections::.  If there is only one worktree, this function
+inserts nothing.
 
 
 File: magit.info,  Node: Sparse checkouts,  Next: Bundle,  Prev: Worktree,  Up: Miscellaneous
@@ -8039,11 +8068,6 @@ different wip refs for subsequent changes.
      Setting this variable directly does not take effect; either use the
      Custom interface to do so or call the respective mode function.
 
-     For historic reasons this mode is implemented on top of four other
-     ‘magit-wip-*’ modes, which can also be used individually, if you
-     want finer control over when the wip refs are updated; but that is
-     discouraged.  See *note Legacy Wip Modes::.
-
    To view the log for a branch and its wip refs use the commands
 ‘magit-wip-log’ and ‘magit-wip-log-current’.  You should use ‘--graph’
 when using these commands.
@@ -8105,10 +8129,9 @@ files are being committed.
 * Menu:
 
 * Wip Graph::
-* Legacy Wip Modes::
 
 
-File: magit.info,  Node: Wip Graph,  Next: Legacy Wip Modes,  Up: Wip Modes
+File: magit.info,  Node: Wip Graph,  Up: Wip Modes
 
 8.9.1 Wip Graph
 ---------------
@@ -8117,14 +8140,18 @@ File: magit.info,  Node: Wip Graph,  Next: Legacy Wip Modes,  Up: Wip Modes
      This option controls whether the current branch is merged into the
      wip refs after a new commit was created on the branch.
 
-     If non-nil and the current branch has new commits, then it is
+     If non-‘nil’ and the current branch has new commits, then it is
      merged into the wip ref before creating a new wip commit.  This
      makes it easier to inspect wip history and the wip commits are
      never garbage collected.
 
-     If nil and the current branch has new commits, then the wip ref is
-     reset to the tip of the branch before creating a new wip commit.
+     If ‘nil’ and the current branch has new commits, then the wip ref
+     is reset to the tip of the branch before creating a new wip commit.
      With this setting wip commits are eventually garbage collected.
+
+     If ‘immediately’, then use ‘git-commit-post-finish-hook’ to create
+     the merge commit.  This is discouraged because it can lead to a
+     race condition, e.g., during rebases.
 
    When ‘magit-wip-merge-branch’ is ‘t’, then the history looks like
 this:
@@ -8165,69 +8192,6 @@ is being staged.  Likewise just checking out a branch or creating a
 commit does not change the fork-point of the working tree wip ref.  The
 fork-points are not adjusted until there actually is a change that
 should be committed to the respective wip ref.
-
-
-File: magit.info,  Node: Legacy Wip Modes,  Prev: Wip Graph,  Up: Wip Modes
-
-8.9.2 Legacy Wip Modes
-----------------------
-
-It is recommended that you use the mode ‘magit-wip-mode’ (which see) and
-ignore the existence of the following modes, which are preserved for
-historic reasons.
-
-   Setting the following variables directly does not take effect; either
-use the Custom interface to do so or call the respective mode functions.
-
- -- User Option: magit-wip-after-save-mode
-     When this mode is enabled, then saving a buffer that visits a file
-     tracked in a Git repository causes its current state to be
-     committed to the working tree wip ref for the current branch.
-
- -- User Option: magit-wip-after-apply-mode
-     When this mode is enabled, then applying (i.e., staging, unstaging,
-     discarding, reversing, and regularly applying) a change to a file
-     tracked in a Git repository causes its current state to be
-     committed to the index and/or working tree wip refs for the current
-     branch.
-
-   If you only ever edit files using Emacs and only ever interact with
-Git using Magit, then the above two modes should be enough to protect
-each and every change from accidental loss.  In practice nobody does
-that.  Two additional modes exists that do commit to the wip refs before
-making changes that could cause the loss of earlier changes.
-
- -- User Option: magit-wip-before-change-mode
-     When this mode is enabled, then certain commands commit the
-     existing changes to the files they are about to make changes to.
-
- -- User Option: magit-wip-initial-backup-mode
-     When this mode is enabled, then the current version of a file is
-     committed to the worktree wip ref before the buffer visiting that
-     file is saved for the first time since the buffer was created.
-
-     This backs up the same version of the file that ‘backup-buffer’
-     would save.  While ‘backup-buffer’ uses a backup file, this mode
-     uses the same worktree wip ref as used by the other Magit Wip
-     modes.  Like ‘backup-buffer’, it only does this once; unless you
-     kill the buffer and visit the file again only one backup will be
-     created per Emacs session.
-
-     This mode ignores the variables that affect ‘backup-buffer’ and can
-     be used along-side that function, which is recommended because it
-     only backs up files that are tracked in a Git repository.
-
- -- User Option: magit-wip-after-save-local-mode-lighter
-     Mode-line lighter for ‘magit-wip-after-save-local-mode’.
-
- -- User Option: magit-wip-after-apply-mode-lighter
-     Mode-line lighter for ‘magit-wip-after-apply-mode’.
-
- -- User Option: magit-wip-before-change-mode-lighter
-     Mode-line lighter for ‘magit-wip-before-change-mode’.
-
- -- User Option: magit-wip-initial-backup-mode-lighter
-     Mode-line lighter for ‘magit-wip-initial-backup-mode’.
 
 
 File: magit.info,  Node: Commands for Buffers Visiting Files,  Next: Minor Mode for Buffers Visiting Blobs,  Prev: Wip Modes,  Up: Miscellaneous
@@ -8970,7 +8934,7 @@ side-effects, but that should be avoided.
      Executes git with ARGS and returns its null-separated output as a
      list.  Empty items anywhere in the output are omitted.
 
-     If the value of option ‘magit-git-debug’ is non-nil and git exits
+     If the value of option ‘magit-git-debug’ is non-‘nil’ and git exits
      with a non-zero exit status, then warn about that in the echo area
      and add a section containing git’s standard error in the current
      repository’s process buffer.
@@ -9080,7 +9044,7 @@ asynchronous functions return the process object.
      current when this function was called (if it is a Magit buffer and
      still alive), as well as the respective Magit status buffer.
      Unmodified buffers visiting files that are tracked in the current
-     repository are reverted if ‘magit-revert-buffers’ is non-nil.
+     repository are reverted if ‘magit-revert-buffers’ is non-‘nil’.
 
  -- Function: magit-run-git-with-editor &rest args
      Export GIT_EDITOR and start Git.  Also prepare for refresh and
@@ -9096,7 +9060,7 @@ asynchronous functions return the process object.
  -- Function: magit-start-git input &rest args
      Start Git, prepare for refresh, and return the process object.
 
-     If INPUT is non-nil, it has to be a buffer or the name of an
+     If INPUT is non-‘nil’, it has to be a buffer or the name of an
      existing buffer.  The buffer content becomes the processes standard
      input.
 
@@ -9109,13 +9073,13 @@ asynchronous functions return the process object.
      current when this function was called (if it is a Magit buffer and
      still alive), as well as the respective Magit status buffer.
      Unmodified buffers visiting files that are tracked in the current
-     repository are reverted if ‘magit-revert-buffers’ is non-nil.
+     repository are reverted if ‘magit-revert-buffers’ is non-‘nil’.
 
  -- Function: magit-start-process &rest args
      Start PROGRAM, prepare for refresh, and return the process object.
 
-     If optional argument INPUT is non-nil, it has to be a buffer or the
-     name of an existing buffer.  The buffer content becomes the
+     If optional argument INPUT is non-‘nil’, it has to be a buffer or
+     the name of an existing buffer.  The buffer content becomes the
      processes standard input.
 
      The process is started using ‘start-file-process’ and then setup to
@@ -9130,15 +9094,16 @@ asynchronous functions return the process object.
      it is a Magit buffer and still alive), as well as the respective
      Magit status buffer.  Unmodified buffers visiting files that are
      tracked in the current repository are reverted if
-     ‘magit-revert-buffers’ is non-nil.
+     ‘magit-revert-buffers’ is non-‘nil’.
 
  -- Variable: magit-this-process
      The child process which is about to start.  This can be used to
      change the filter and sentinel.
 
  -- Variable: magit-process-raise-error
-     When this is non-nil, then ‘magit-process-sentinel’ raises an error
-     if git exits with a non-zero exit status.  For debugging purposes.
+     When this is non-‘nil’, then ‘magit-process-sentinel’ raises an
+     error if git exits with a non-zero exit status.  For debugging
+     purposes.
 
 
 File: magit.info,  Node: Section Plumbing,  Next: Refreshing Buffers,  Prev: Calling Git,  Up: Plumbing
@@ -9171,12 +9136,13 @@ File: magit.info,  Node: Creating Sections,  Next: Section Selection,  Up: Secti
      Optional VALUE is the value of the section, usually a string that
      is required when acting on the section.
 
-     When optional HIDE is non-nil collapse the section body by default,
-     i.e., when first creating the section, but not when refreshing the
-     buffer.  Otherwise, expand it by default.  This can be overwritten
-     using ‘magit-section-set-visibility-hook’.  When a section is
-     recreated during a refresh, then the visibility of predecessor is
-     inherited and HIDE is ignored (but the hook is still honored).
+     When optional HIDE is non-‘nil’ collapse the section body by
+     default, i.e., when first creating the section, but not when
+     refreshing the buffer.  Otherwise, expand it by default.  This can
+     be overwritten using ‘magit-section-set-visibility-hook’.  When a
+     section is recreated during a refresh, then the visibility of
+     predecessor is inherited and HIDE is ignored (but the hook is still
+     honored).
 
      BODY is any number of forms that actually insert the section’s
      heading and body.  Optional NAME, if specified, has to be a symbol,
@@ -9214,7 +9180,7 @@ File: magit.info,  Node: Creating Sections,  Next: Section Selection,  Up: Secti
      The ‘content’ property of the section struct is the end of the
      heading (which lasts from ‘start’ to ‘content’) and the beginning
      of the body (which lasts from ‘content’ to ‘end’).  If the value of
-     ‘content’ is nil, then the section has no heading and its body
+     ‘content’ is ‘nil’, then the section has no heading and its body
      cannot be collapsed.  If a section does have a heading then its
      height must be exactly one line, including a trailing newline
      character.  This isn’t enforced; you are responsible for getting it
@@ -9246,10 +9212,10 @@ File: magit.info,  Node: Section Selection,  Next: Matching Sections,  Prev: Cre
      selection, then return a list of all selected sections.  This is
      the case when the region begins in the heading of a section and
      ends in the heading of the same section or in that of a sibling
-     section.  If optional MULTIPLE is non-nil, then the region cannot
+     section.  If optional MULTIPLE is non-‘nil’, then the region cannot
      begin and end in the same section.
 
-     When the selection is not valid, then return nil.  In this case,
+     When the selection is not valid, then return ‘nil’.  In this case,
      most commands that can act on the selected sections will instead
      act on the section at point.
 
@@ -9260,9 +9226,9 @@ File: magit.info,  Node: Section Selection,  Next: Matching Sections,  Prev: Cre
      region looks like it usually does, then that’s not a valid
      selection as far as this function is concerned.
 
-     If optional CONDITION is non-nil, then the selection not only has
+     If optional CONDITION is non-‘nil’, then the selection not only has
      to be valid; all selected sections additionally have to match
-     CONDITION, or nil is returned.  See ‘magit-section-match’ for the
+     CONDITION, or ‘nil’ is returned.  See ‘magit-section-match’ for the
      forms CONDITION can take.
 
  -- Function: magit-region-values &optional condition multiple
@@ -9331,9 +9297,10 @@ File: magit.info,  Node: Matching Sections,  Prev: Section Selection,  Up: Secti
  -- Function: magit-section-value-if condition &optional section
      If the section at point matches CONDITION, then return its value.
 
-     If optional SECTION is non-nil then test whether that matches
-     instead.  If there is no section at point and SECTION is nil, then
-     return nil.  If the section does not match, then return nil.
+     If optional SECTION is non-‘nil’ then test whether that matches
+     instead.  If there is no section at point and SECTION is ‘nil’,
+     then return ‘nil’.  If the section does not match, then return
+     ‘nil’.
 
      See ‘magit-section-match’ for the forms CONDITION can take.
 
@@ -9345,10 +9312,10 @@ File: magit.info,  Node: Matching Sections,  Prev: Section Selection,  Up: Secti
      first match are evaluated sequentially and the value of the last
      form is returned.  Inside BODY the symbol ‘it’ is bound to the
      section at point.  If no clause succeeds or if there is no section
-     at point return nil.
+     at point return ‘nil’.
 
      See ‘magit-section-match’ for the forms CONDITION can take.
-     Additionally a CONDITION of t is allowed in the final clause and
+     Additionally a CONDITION of ‘t’ is allowed in the final clause and
      matches if no other CONDITION match, even if there is no section at
      point.
 
@@ -9368,14 +9335,14 @@ File: magit.info,  Node: Matching Sections,  Prev: Section Selection,  Up: Secti
      ‘type’ slot of the corresponding ‘magit-section’ struct) but takes
      additional information into account.  When the SECTION isn’t
      related to diffs and the buffer containing it also isn’t a
-     diff-only buffer, then return nil.
+     diff-only buffer, then return ‘nil’.
 
      Currently the type can also be one of ‘tracked’ and ‘untracked’,
      but these values are not handled explicitly in every place they
-     should be.  A possible fix could be to just return nil here.
+     should be.  A possible fix could be to just return ‘nil’ here.
 
      The section has to be a ‘diff’ or ‘hunk’ section, or a section
-     whose children are of type ‘diff’.  If optional SECTION is nil,
+     whose children are of type ‘diff’.  If optional SECTION is ‘nil’,
      return the diff type for the current section.  In buffers whose
      major mode is ‘magit-diff-mode’ SECTION is ignored and the type is
      determined using other means.  In ‘magit-revision-mode’ buffers the
@@ -9389,17 +9356,18 @@ File: magit.info,  Node: Matching Sections,  Prev: Section Selection,  Up: Secti
      ‘list’.  Do not confuse this with the diff "type", as returned by
      ‘magit-diff-type’.
 
-     If optional SECTION is non-nil, then return the scope of that,
+     If optional SECTION is non-‘nil’, then return the scope of that,
      ignoring the sections selected by the region.  Otherwise return the
      scope of the current section, or if the region is active and
      selects a valid group of diff related sections, the type of these
      sections, i.e., ‘hunks’ or ‘files’.  If SECTION (or if the current
-     section that is nil) is a ‘hunk’ section and the region starts and
-     ends inside the body of a that section, then the type is ‘region’.
+     section that is ‘nil’) is a ‘hunk’ section and the region starts
+     and ends inside the body of a that section, then the type is
+     ‘region’.
 
-     If optional STRICT is non-nil then return nil if the diff type of
-     the section at point is ‘untracked’ or the section at point is not
-     actually a ‘diff’ but a ‘diffstat’ section.
+     If optional STRICT is non-‘nil’ then return ‘nil’ if the diff type
+     of the section at point is ‘untracked’ or the section at point is
+     not actually a ‘diff’ but a ‘diffstat’ section.
 
 
 File: magit.info,  Node: Refreshing Buffers,  Next: Conventions,  Prev: Section Plumbing,  Up: Plumbing
@@ -10010,7 +9978,7 @@ as the defaults for future popups.
    When switching to Transient menus, this functionality is now
 available via ‘C-x C-s’ instead; the ‘C-x’ prefix has other options as
 well when using Transient, which will be displayed when it is typed.
-See <https://magit.vc/manual/transient/Saving-Values.html#Saving-Values>
+See <https://docs.magit.vc/transient/Saving-Values.html#Saving-Values>
 for more details.
 
 
@@ -10146,7 +10114,7 @@ Appendix C Keystroke Index
 * 2:                                     Section Visibility.  (line  39)
 * 3:                                     Section Visibility.  (line  39)
 * 4:                                     Section Visibility.  (line  39)
-* 5:                                     Repository List.     (line 115)
+* 5:                                     Repository List.     (line 116)
 * ::                                     Running Git Manually.
                                                               (line  25)
 * =:                                     Log Buffer.          (line  59)
@@ -10441,7 +10409,7 @@ Appendix C Keystroke Index
 * E u:                                   Ediffing.            (line  91)
 * E w:                                   Ediffing.            (line  97)
 * E z:                                   Ediffing.            (line 103)
-* f:                                     Repository List.     (line 111)
+* f:                                     Repository List.     (line 112)
 * f <1>:                                 Editing Rebase Sequences.
                                                               (line  63)
 * F:                                     Editing Rebase Sequences.
@@ -10498,7 +10466,7 @@ Appendix C Keystroke Index
 * L s:                                   Refreshing Logs.     (line  21)
 * l u:                                   Logging.             (line  41)
 * L w:                                   Refreshing Logs.     (line  27)
-* m:                                     Repository List.     (line 105)
+* m:                                     Repository List.     (line 106)
 * m <1>:                                 Merging.             (line  10)
 * M:                                     Remote Commands.     (line  14)
 * m a:                                   Merging.             (line  42)
@@ -10601,7 +10569,7 @@ Appendix C Keystroke Index
 * r s <1>:                               Rebasing.            (line 108)
 * r u:                                   Rebasing.            (line  35)
 * r w:                                   Rebasing.            (line  92)
-* RET:                                   Repository List.     (line 102)
+* RET:                                   Repository List.     (line 103)
 * RET <1>:                               References Buffer.   (line 159)
 * RET <2>:                               Visiting Files and Blobs from a Diff.
                                                               (line  10)
@@ -10638,7 +10606,7 @@ Appendix C Keystroke Index
 * t t:                                   Tagging.             (line  14)
 * T T:                                   Notes.               (line  14)
 * TAB:                                   Section Visibility.  (line  10)
-* u:                                     Repository List.     (line 108)
+* u:                                     Repository List.     (line 109)
 * u <1>:                                 Staging and Unstaging.
                                                               (line  42)
 * U:                                     Staging and Unstaging.
@@ -10671,7 +10639,7 @@ Appendix C Keystroke Index
 * X m:                                   Resetting.           (line  15)
 * X s:                                   Resetting.           (line  19)
 * X w:                                   Resetting.           (line  39)
-* X w <1>:                               Wip Modes.           (line  64)
+* X w <1>:                               Wip Modes.           (line  59)
 * Y:                                     Cherries.            (line  18)
 * y:                                     References Buffer.   (line   7)
 * y <1>:                                 Editing Rebase Sequences.
@@ -10887,7 +10855,7 @@ Appendix D Function and Command Index
                                                               (line  31)
 * magit-call-process:                    Calling Git for Effect.
                                                               (line  34)
-* magit-cancel-section:                  Creating Sections.   (line  69)
+* magit-cancel-section:                  Creating Sections.   (line  70)
 * magit-checkout:                        Branch Commands.     (line  47)
 * magit-cherry:                          Cherries.            (line  18)
 * magit-cherry-apply:                    Cherry Picking.      (line  23)
@@ -10940,7 +10908,7 @@ Appendix D Function and Command Index
 * magit-cycle-margin-style:              Log Margin.          (line  63)
 * magit-debug-git-executable:            Git Executable.      (line  55)
 * magit-debug-git-executable <1>:        Debugging Tools.     (line  69)
-* magit-define-section-jumper:           Creating Sections.   (line  74)
+* magit-define-section-jumper:           Creating Sections.   (line  75)
 * magit-describe-section:                Section Types and Values.
                                                               (line  14)
 * magit-describe-section-briefly:        Section Types and Values.
@@ -10967,7 +10935,7 @@ Appendix D Function and Command Index
 * magit-diff-refresh:                    Refreshing Diffs.    (line  16)
 * magit-diff-refresh <1>:                Refreshing Diffs.    (line  21)
 * magit-diff-save-default-arguments:     Refreshing Diffs.    (line  31)
-* magit-diff-scope:                      Matching Sections.   (line 110)
+* magit-diff-scope:                      Matching Sections.   (line 111)
 * magit-diff-set-default-arguments:      Refreshing Diffs.    (line  25)
 * magit-diff-show-or-scroll-down:        Log Buffer.          (line  50)
 * magit-diff-show-or-scroll-down <1>:    Blaming.             (line 103)
@@ -10979,7 +10947,7 @@ Appendix D Function and Command Index
 * magit-diff-toggle-refine-hunk:         Refreshing Diffs.    (line  38)
 * magit-diff-trace-definition:           Commands Available in Diffs.
                                                               (line  15)
-* magit-diff-type:                       Matching Sections.   (line  88)
+* magit-diff-type:                       Matching Sections.   (line  89)
 * magit-diff-unstaged:                   Diffing.             (line  72)
 * magit-diff-visit-file:                 Visiting Files and Blobs from a Diff.
                                                               (line  10)
@@ -11111,23 +11079,23 @@ Appendix D Function and Command Index
 * magit-go-forward <1>:                  Refreshing Diffs.    (line  87)
 * magit-hunk-set-window-start:           Section Movement.    (line  53)
 * magit-init:                            Creating Repository. (line   7)
-* magit-insert-am-sequence:              Status Sections.     (line  30)
-* magit-insert-assumed-unchanged-files:  Status File List Sections.
+* magit-insert-am-sequence:              Status Sections.     (line  35)
+* magit-insert-assume-unchanged-files:   Status File List Sections.
                                                               (line  65)
-* magit-insert-bisect-log:               Status Sections.     (line  44)
-* magit-insert-bisect-output:            Status Sections.     (line  38)
-* magit-insert-bisect-rest:              Status Sections.     (line  41)
+* magit-insert-bisect-log:               Status Sections.     (line  49)
+* magit-insert-bisect-output:            Status Sections.     (line  43)
+* magit-insert-bisect-rest:              Status Sections.     (line  46)
 * magit-insert-diff-filter-header:       Status Header Sections.
                                                               (line  35)
 * magit-insert-error-header:             Status Header Sections.
                                                               (line  26)
 * magit-insert-head-branch-header:       Status Header Sections.
                                                               (line  38)
-* magit-insert-heading:                  Creating Sections.   (line  41)
+* magit-insert-heading:                  Creating Sections.   (line  42)
 * magit-insert-ignored-files:            Status File List Sections.
                                                               (line  59)
 * magit-insert-local-branches:           References Sections. (line  16)
-* magit-insert-merge-log:                Status Sections.     (line  22)
+* magit-insert-merge-log:                Status Sections.     (line  27)
 * magit-insert-modules:                  Status Module Sections.
                                                               (line  12)
 * magit-insert-modules-overview:         Status Module Sections.
@@ -11142,7 +11110,7 @@ Appendix D Function and Command Index
                                                               (line  50)
 * magit-insert-push-branch-header:       Status Header Sections.
                                                               (line  45)
-* magit-insert-rebase-sequence:          Status Sections.     (line  26)
+* magit-insert-rebase-sequence:          Status Sections.     (line  31)
 * magit-insert-recent-commits:           Status Log Sections. (line  12)
 * magit-insert-remote-branches:          References Sections. (line  19)
 * magit-insert-remote-header:            Status Header Sections.
@@ -11150,12 +11118,13 @@ Appendix D Function and Command Index
 * magit-insert-repo-header:              Status Header Sections.
                                                               (line  55)
 * magit-insert-section:                  Creating Sections.   (line   6)
-* magit-insert-sequencer-sequence:       Status Sections.     (line  34)
+* magit-insert-sequencer-sequence:       Status Sections.     (line  39)
 * magit-insert-skip-worktree-files:      Status File List Sections.
                                                               (line  62)
-* magit-insert-staged-changes:           Status Sections.     (line  50)
-* magit-insert-stashes:                  Status Sections.     (line  53)
-* magit-insert-status-headers:           Status Header Sections.
+* magit-insert-staged-changes:           Status Sections.     (line  55)
+* magit-insert-stashes:                  Status Sections.     (line  58)
+* magit-insert-status-headers:           Status Sections.     (line  22)
+* magit-insert-status-headers <1>:       Status Header Sections.
                                                               (line  12)
 * magit-insert-tags:                     References Sections. (line  22)
 * magit-insert-tags-header:              Status Header Sections.
@@ -11163,14 +11132,16 @@ Appendix D Function and Command Index
 * magit-insert-tracked-files:            Status File List Sections.
                                                               (line  56)
 * magit-insert-unpulled-cherries:        Status Log Sections. (line  21)
-* magit-insert-unpulled-from-pushremote: Status Sections.     (line  63)
-* magit-insert-unpulled-from-upstream:   Status Sections.     (line  59)
+* magit-insert-unpulled-from-pushremote: Status Sections.     (line  68)
+* magit-insert-unpulled-from-upstream:   Status Sections.     (line  64)
 * magit-insert-unpulled-or-recent-commits: Status Log Sections.
                                                               (line   6)
 * magit-insert-unpushed-cherries:        Status Log Sections. (line  27)
-* magit-insert-unpushed-to-pushremote:   Status Sections.     (line  71)
-* magit-insert-unpushed-to-upstream:     Status Sections.     (line  67)
-* magit-insert-unstaged-changes:         Status Sections.     (line  47)
+* magit-insert-unpushed-to-pushremote:   Status Sections.     (line  84)
+* magit-insert-unpushed-to-upstream:     Status Sections.     (line  80)
+* magit-insert-unpushed-to-upstream-or-recent: Status Sections.
+                                                              (line  72)
+* magit-insert-unstaged-changes:         Status Sections.     (line  52)
 * magit-insert-untracked-files:          Status File List Sections.
                                                               (line   9)
 * magit-insert-upstream-branch-header:   Status Header Sections.
@@ -11306,28 +11277,28 @@ Appendix D Function and Command Index
 * magit-remote-remove:                   Remote Commands.     (line  60)
 * magit-remote-rename:                   Remote Commands.     (line  52)
 * magit-remote-set-url:                  Remote Commands.     (line  56)
-* magit-repolist-column-branch:          Repository List.     (line  51)
-* magit-repolist-column-branches:        Repository List.     (line  58)
-* magit-repolist-column-flag:            Repository List.     (line  64)
-* magit-repolist-column-flags:           Repository List.     (line  76)
-* magit-repolist-column-ident:           Repository List.     (line  40)
-* magit-repolist-column-path:            Repository List.     (line  44)
-* magit-repolist-column-stashes:         Repository List.     (line  61)
+* magit-repolist-column-branch:          Repository List.     (line  52)
+* magit-repolist-column-branches:        Repository List.     (line  59)
+* magit-repolist-column-flag:            Repository List.     (line  65)
+* magit-repolist-column-flags:           Repository List.     (line  77)
+* magit-repolist-column-ident:           Repository List.     (line  41)
+* magit-repolist-column-path:            Repository List.     (line  45)
+* magit-repolist-column-stashes:         Repository List.     (line  62)
 * magit-repolist-column-unpulled-from-pushremote: Repository List.
-                                                              (line  87)
+                                                              (line  88)
 * magit-repolist-column-unpulled-from-upstream: Repository List.
-                                                              (line  83)
+                                                              (line  84)
 * magit-repolist-column-unpushed-to-pushremote: Repository List.
-                                                              (line  95)
+                                                              (line  96)
 * magit-repolist-column-unpushed-to-upstream: Repository List.
-                                                              (line  91)
-* magit-repolist-column-upstream:        Repository List.     (line  54)
-* magit-repolist-column-version:         Repository List.     (line  47)
-* magit-repolist-fetch:                  Repository List.     (line 111)
-* magit-repolist-find-file-other-frame:  Repository List.     (line 115)
-* magit-repolist-mark:                   Repository List.     (line 105)
-* magit-repolist-status:                 Repository List.     (line 102)
-* magit-repolist-unmark:                 Repository List.     (line 108)
+                                                              (line  92)
+* magit-repolist-column-upstream:        Repository List.     (line  55)
+* magit-repolist-column-version:         Repository List.     (line  48)
+* magit-repolist-fetch:                  Repository List.     (line 112)
+* magit-repolist-find-file-other-frame:  Repository List.     (line 116)
+* magit-repolist-mark:                   Repository List.     (line 106)
+* magit-repolist-status:                 Repository List.     (line 103)
+* magit-repolist-unmark:                 Repository List.     (line 109)
 * magit-reset-hard:                      Resetting.           (line  24)
 * magit-reset-index:                     Staging and Unstaging.
                                                               (line  78)
@@ -11337,7 +11308,7 @@ Appendix D Function and Command Index
 * magit-reset-quickly:                   Resetting.           (line   9)
 * magit-reset-soft:                      Resetting.           (line  19)
 * magit-reset-worktree:                  Resetting.           (line  39)
-* magit-reset-worktree <1>:              Wip Modes.           (line  64)
+* magit-reset-worktree <1>:              Wip Modes.           (line  59)
 * magit-restore-window-configuration:    Quitting Windows.    (line  24)
 * magit-reverse:                         Applying.            (line  47)
 * magit-reverse-in-index:                Staging and Unstaging.
@@ -11366,7 +11337,7 @@ Appendix D Function and Command Index
 * magit-save-window-configuration:       Switching Buffers.   (line  80)
 * magit-section-backward:                Section Movement.    (line  17)
 * magit-section-backward-siblings:       Section Movement.    (line  25)
-* magit-section-case:                    Matching Sections.   (line  66)
+* magit-section-case:                    Matching Sections.   (line  67)
 * magit-section-cycle:                   Section Visibility.  (line  14)
 * magit-section-cycle-diffs:             Section Visibility.  (line  29)
 * magit-section-cycle-global:            Section Visibility.  (line  33)
@@ -11513,9 +11484,9 @@ Appendix D Function and Command Index
 * magit-version:                         Git Executable.      (line  59)
 * magit-version <1>:                     Debugging Tools.     (line  11)
 * magit-visit-ref:                       References Buffer.   (line 159)
-* magit-wip-commit:                      Wip Modes.           (line  85)
-* magit-wip-log:                         Wip Modes.           (line  47)
-* magit-wip-log-current:                 Wip Modes.           (line  55)
+* magit-wip-commit:                      Wip Modes.           (line  80)
+* magit-wip-log:                         Wip Modes.           (line  42)
+* magit-wip-log-current:                 Wip Modes.           (line  50)
 * magit-worktree:                        Worktree.            (line   9)
 * magit-worktree-branch:                 Worktree.            (line  16)
 * magit-worktree-checkout:               Worktree.            (line  13)
@@ -11548,17 +11519,17 @@ Appendix E Variable Index
 * Menu:
 
 * auto-revert-buffer-list-filter:        Automatic Reverting of File-Visiting Buffers.
-                                                              (line  73)
+                                                              (line  74)
 * auto-revert-interval:                  Automatic Reverting of File-Visiting Buffers.
-                                                              (line  69)
+                                                              (line  70)
 * auto-revert-mode:                      Automatic Reverting of File-Visiting Buffers.
-                                                              (line  57)
+                                                              (line  58)
 * auto-revert-stop-on-user-input:        Automatic Reverting of File-Visiting Buffers.
-                                                              (line  65)
+                                                              (line  66)
 * auto-revert-use-notify:                Automatic Reverting of File-Visiting Buffers.
-                                                              (line  46)
+                                                              (line  47)
 * auto-revert-verbose:                   Automatic Reverting of File-Visiting Buffers.
-                                                              (line  94)
+                                                              (line  95)
 * branch.autoSetupMerge:                 Branch Git Variables.
                                                               (line  71)
 * branch.autoSetupRebase:                Branch Git Variables.
@@ -11601,7 +11572,7 @@ Appendix E Variable Index
 * magit-auto-revert-mode:                Automatic Reverting of File-Visiting Buffers.
                                                               (line  17)
 * magit-auto-revert-tracked-only:        Automatic Reverting of File-Visiting Buffers.
-                                                              (line  51)
+                                                              (line  52)
 * magit-bisect-show-graph:               Bisecting.           (line  57)
 * magit-blame-disable-modes:             Blaming.             (line 165)
 * magit-blame-echo-style:                Blaming.             (line 151)
@@ -11730,7 +11701,7 @@ Appendix E Variable Index
 * magit-revision-insert-related-refs:    Revision Buffer.     (line   6)
 * magit-revision-show-gravatars:         Revision Buffer.     (line  15)
 * magit-revision-use-hash-sections:      Revision Buffer.     (line  31)
-* magit-root-section:                    Matching Sections.   (line  81)
+* magit-root-section:                    Matching Sections.   (line  82)
 * magit-save-repository-buffers:         Automatic Saving of File-Visiting Buffers.
                                                               (line  13)
 * magit-section-cache-visibility:        Section Visibility.  (line  95)
@@ -11738,7 +11709,7 @@ Appendix E Variable Index
 * magit-section-movement-hook:           Section Movement.    (line  47)
 * magit-section-set-visibility-hook:     Section Visibility.  (line 105)
 * magit-section-show-child-count:        Section Options.     (line   9)
-* magit-section-visibility-indicator:    Section Visibility.  (line 122)
+* magit-section-visibility-indicators:   Section Visibility.  (line 122)
 * magit-shell-command-verbose-prompt:    Running Git Manually.
                                                               (line  43)
 * magit-stashes-margin:                  Stashing.            (line 119)
@@ -11758,18 +11729,10 @@ Appendix E Variable Index
                                                               (line  52)
 * magit-update-other-window-delay:       Section Movement.    (line 105)
 * magit-visit-ref-behavior:              References Buffer.   (line 168)
-* magit-wip-after-apply-mode:            Legacy Wip Modes.    (line  18)
-* magit-wip-after-apply-mode-lighter:    Legacy Wip Modes.    (line  54)
-* magit-wip-after-save-local-mode-lighter: Legacy Wip Modes.  (line  51)
-* magit-wip-after-save-mode:             Legacy Wip Modes.    (line  13)
-* magit-wip-before-change-mode:          Legacy Wip Modes.    (line  31)
-* magit-wip-before-change-mode-lighter:  Legacy Wip Modes.    (line  57)
-* magit-wip-initial-backup-mode:         Legacy Wip Modes.    (line  35)
-* magit-wip-initial-backup-mode-lighter: Legacy Wip Modes.    (line  60)
 * magit-wip-merge-branch:                Wip Graph.           (line   6)
 * magit-wip-mode:                        Wip Modes.           (line  30)
-* magit-wip-mode-lighter:                Wip Modes.           (line  98)
-* magit-wip-namespace:                   Wip Modes.           (line  91)
+* magit-wip-mode-lighter:                Wip Modes.           (line  93)
+* magit-wip-namespace:                   Wip Modes.           (line  86)
 * notes.displayRef:                      Notes.               (line  57)
 * pull.rebase:                           Branch Git Variables.
                                                               (line  50)
@@ -11790,183 +11753,182 @@ Appendix E Variable Index
 
 Tag Table:
 Node: Top774
-Node: Introduction6613
-Node: Installation11329
-Node: Installing from Melpa11659
-Node: Installing from the Git Repository12734
-Node: Post-Installation Tasks15931
-Node: Getting Started17214
-Node: Interface Concepts23025
-Node: Modes and Buffers23404
-Node: Switching Buffers25115
-Node: Naming Buffers29854
-Node: Quitting Windows32929
-Node: Automatic Refreshing of Magit Buffers34864
-Node: Automatic Saving of File-Visiting Buffers37745
-Node: Automatic Reverting of File-Visiting Buffers38929
-Node: Risk of Reverting Automatically43914
-Node: Sections46296
-Node: Section Movement47222
-Node: Section Visibility52681
-Node: Section Hooks59368
-Node: Section Types and Values61774
-Node: Section Options63189
-Node: Transient Commands63660
-Node: Transient Arguments and Buffer Variables65136
-Node: Completion Confirmation and the Selection72153
-Node: Action Confirmation72599
-Node: Completion and Confirmation81104
-Node: The Selection84289
-Node: The hunk-internal region87187
-Node: Support for Completion Frameworks88276
-Node: Additional Completion Options92526
-Node: Mouse Support93124
-Node: Running Git93700
-Node: Viewing Git Output93945
-Node: Git Process Status95943
-Node: Running Git Manually97162
-Node: Git Executable99852
-Node: Global Git Arguments102860
-Node: Inspecting103665
-Node: Status Buffer104822
-Node: Status Sections109111
-Node: Status File List Sections111936
-Node: Status Log Sections114637
-Node: Status Header Sections116120
-Node: Status Module Sections118743
-Node: Status Options121240
-Node: Repository List122603
-Node: Logging127381
-Node: Refreshing Logs130220
-Node: Log Buffer131641
-Node: Log Margin136464
-Node: Select from Log139617
-Node: Reflog141827
-Node: Cherries143464
-Node: Diffing145302
-Node: Refreshing Diffs149353
-Node: Commands Available in Diffs153042
-Node: Diff Options155555
-Node: Revision Buffer161654
-Node: Ediffing164974
-Node: References Buffer171024
-Node: References Sections181618
-Node: Bisecting182475
-Node: Visiting Files and Blobs184786
-Node: General-Purpose Visit Commands185314
-Node: Visiting Files and Blobs from a Diff186267
-Node: Blaming191656
-Node: Manipulating198644
-Node: Creating Repository198986
-Node: Cloning Repository199523
-Node: Staging and Unstaging205964
-Node: Staging from File-Visiting Buffers209937
-Node: Applying211043
-Node: Committing213116
-Node: Initiating a Commit213805
-Node: Creating a new commit214405
-Node: Editing the last commit214623
-Node: Editing any reachable commit216747
-Node: Editing any reachable commit and rebasing immediately221337
-Node: Options used by commit commands223170
-Ref: Used by all or most commit commands223390
-Ref: Used by all squash and fixup commands225621
-Ref: Used by specific commit commands226169
-Node: Editing Commit Messages226493
-Node: Using the Revision Stack229266
-Node: Commit Pseudo Headers232311
-Node: Commit Mode and Hooks233606
-Node: Commit Message Conventions236464
-Node: Branching238451
-Node: The Two Remotes238677
-Node: Branch Commands241330
-Node: Branch Git Variables254181
-Node: Auxiliary Branch Commands259551
-Node: Merging260667
-Node: Resolving Conflicts264827
-Node: Rebasing270201
-Node: Editing Rebase Sequences275241
-Node: Information About In-Progress Rebase280587
-Ref: Information About In-Progress Rebase-Footnote-1289700
-Node: Cherry Picking290296
-Node: Reverting294630
-Node: Resetting296049
-Node: Stashing297875
-Node: Transferring304116
-Node: Remotes304338
-Node: Remote Commands304490
-Node: Remote Git Variables308529
-Node: Fetching309800
-Node: Pulling312283
-Node: Pushing313309
-Node: Plain Patches317600
-Node: Maildir Patches319071
-Node: Miscellaneous320550
-Node: Tagging320896
-Node: Notes322789
-Node: Submodules325124
-Node: Listing Submodules325342
-Node: Submodule Transient327490
-Node: Subtree329935
-Node: Worktree331866
-Node: Sparse checkouts332942
-Node: Bundle335718
-Node: Common Commands336093
-Node: Wip Modes338721
-Node: Wip Graph343612
-Node: Legacy Wip Modes345925
-Node: Commands for Buffers Visiting Files348812
-Node: Minor Mode for Buffers Visiting Blobs357153
-Node: Customizing358316
-Node: Per-Repository Configuration359912
-Node: Essential Settings362166
-Node: Safety362512
-Node: Performance364273
-Ref: Log Performance367236
-Ref: Diff Performance368541
-Ref: Refs Buffer Performance369882
-Ref: Committing Performance370457
-Node: Microsoft Windows Performance371439
-Node: MacOS Performance372630
-Ref: MacOS Performance-Footnote-1373653
-Node: Global Bindings373735
-Node: Plumbing375963
-Node: Calling Git376792
-Node: Getting a Value from Git378317
-Node: Calling Git for Effect382045
-Node: Section Plumbing388051
-Node: Creating Sections388279
-Node: Section Selection392175
-Node: Matching Sections393971
-Node: Refreshing Buffers399892
-Node: Conventions403036
-Node: Theming Faces403228
-Node: FAQ411333
-Node: FAQ - How to ...?411771
-Node: How to pronounce Magit?412128
-Node: How to show git's output?412932
-Node: How to install the gitman info manual?413714
-Node: How to show diffs for gpg-encrypted files?414701
-Node: How does branching and pushing work?415297
-Node: Should I disable VC?415630
-Node: FAQ - Issues and Errors416233
-Node: Magit is slow417178
-Node: I changed several thousand files at once and now Magit is unusable417471
-Node: I am having problems committing418197
-Node: I am using MS Windows and cannot push with Magit418684
-Node: I am using macOS and SOMETHING works in shell but not in Magit419302
-Node: Expanding a file to show the diff causes it to disappear420136
-Node: Point is wrong in the COMMIT_EDITMSG buffer420724
-Node: The mode-line information isn't always up-to-date421773
-Node: A branch and tag sharing the same name breaks SOMETHING422836
-Node: My Git hooks work on the command-line but not inside Magit423723
-Node: git-commit-mode isn't used when committing from the command-line424569
-Node: Point ends up inside invisible text when jumping to a file-visiting buffer426840
-Node: I am no longer able to save popup defaults427689
-Node: Debugging Tools428670
-Node: Keystroke Index432609
-Node: Function and Command Index475458
-Node: Variable Index535368
+Node: Introduction6592
+Node: Installation11308
+Node: Installing from Melpa11638
+Node: Installing from the Git Repository12713
+Node: Post-Installation Tasks15910
+Node: Getting Started17193
+Node: Interface Concepts23004
+Node: Modes and Buffers23383
+Node: Switching Buffers25094
+Node: Naming Buffers29845
+Node: Quitting Windows32938
+Node: Automatic Refreshing of Magit Buffers34879
+Node: Automatic Saving of File-Visiting Buffers37778
+Node: Automatic Reverting of File-Visiting Buffers38968
+Node: Risk of Reverting Automatically43982
+Node: Sections46364
+Node: Section Movement47290
+Node: Section Visibility52749
+Node: Section Hooks59874
+Node: Section Types and Values62316
+Node: Section Options63731
+Node: Transient Commands64202
+Node: Transient Arguments and Buffer Variables65678
+Node: Completion Confirmation and the Selection72695
+Node: Action Confirmation73141
+Node: Completion and Confirmation81646
+Node: The Selection84837
+Node: The hunk-internal region87735
+Node: Support for Completion Frameworks88824
+Node: Additional Completion Options93080
+Node: Mouse Support93678
+Node: Running Git94254
+Node: Viewing Git Output94499
+Node: Git Process Status96497
+Node: Running Git Manually97716
+Node: Git Executable100406
+Node: Global Git Arguments103414
+Node: Inspecting104219
+Node: Status Buffer105376
+Node: Status Sections109665
+Node: Status File List Sections113233
+Node: Status Log Sections115933
+Node: Status Header Sections117416
+Node: Status Module Sections120039
+Node: Status Options122548
+Node: Repository List123917
+Node: Logging128706
+Node: Refreshing Logs131545
+Node: Log Buffer132966
+Node: Log Margin137789
+Node: Select from Log140948
+Node: Reflog143164
+Node: Cherries144807
+Node: Diffing146651
+Node: Refreshing Diffs150702
+Node: Commands Available in Diffs154391
+Node: Diff Options156904
+Node: Revision Buffer163027
+Node: Ediffing166376
+Node: References Buffer172432
+Node: References Sections183049
+Node: Bisecting183906
+Node: Visiting Files and Blobs186217
+Node: General-Purpose Visit Commands186745
+Node: Visiting Files and Blobs from a Diff187698
+Node: Blaming193087
+Node: Manipulating200075
+Node: Creating Repository200417
+Node: Cloning Repository200954
+Node: Staging and Unstaging207395
+Node: Staging from File-Visiting Buffers211374
+Node: Applying212480
+Node: Committing214553
+Node: Initiating a Commit215242
+Node: Creating a new commit215842
+Node: Editing the last commit216060
+Node: Editing any reachable commit218184
+Node: Editing any reachable commit and rebasing immediately222774
+Node: Options used by commit commands224607
+Ref: Used by all or most commit commands224827
+Ref: Used by all squash and fixup commands227058
+Ref: Used by specific commit commands227612
+Node: Editing Commit Messages227936
+Node: Using the Revision Stack230709
+Node: Commit Pseudo Headers233784
+Node: Commit Mode and Hooks235079
+Node: Commit Message Conventions237937
+Node: Branching239942
+Node: The Two Remotes240168
+Node: Branch Commands242821
+Node: Branch Git Variables255684
+Node: Auxiliary Branch Commands261054
+Node: Merging262170
+Node: Resolving Conflicts266330
+Node: Rebasing271704
+Node: Editing Rebase Sequences276744
+Node: Information About In-Progress Rebase282090
+Ref: Information About In-Progress Rebase-Footnote-1291203
+Node: Cherry Picking291799
+Node: Reverting296133
+Node: Resetting297552
+Node: Stashing299378
+Node: Transferring305625
+Node: Remotes305847
+Node: Remote Commands305999
+Node: Remote Git Variables310038
+Node: Fetching311309
+Node: Pulling313792
+Node: Pushing314818
+Node: Plain Patches319109
+Node: Maildir Patches320580
+Node: Miscellaneous322059
+Node: Tagging322405
+Node: Notes324298
+Node: Submodules326633
+Node: Listing Submodules326851
+Node: Submodule Transient329010
+Node: Subtree331461
+Node: Worktree333392
+Node: Sparse checkouts334707
+Node: Bundle337483
+Node: Common Commands337858
+Node: Wip Modes340486
+Node: Wip Graph345088
+Node: Commands for Buffers Visiting Files347581
+Node: Minor Mode for Buffers Visiting Blobs355922
+Node: Customizing357085
+Node: Per-Repository Configuration358681
+Node: Essential Settings360935
+Node: Safety361281
+Node: Performance363042
+Ref: Log Performance366005
+Ref: Diff Performance367310
+Ref: Refs Buffer Performance368651
+Ref: Committing Performance369226
+Node: Microsoft Windows Performance370208
+Node: MacOS Performance371399
+Ref: MacOS Performance-Footnote-1372422
+Node: Global Bindings372504
+Node: Plumbing374732
+Node: Calling Git375561
+Node: Getting a Value from Git377086
+Node: Calling Git for Effect380820
+Node: Section Plumbing386867
+Node: Creating Sections387095
+Node: Section Selection391008
+Node: Matching Sections392828
+Node: Refreshing Buffers398837
+Node: Conventions401981
+Node: Theming Faces402173
+Node: FAQ410278
+Node: FAQ - How to ...?410716
+Node: How to pronounce Magit?411073
+Node: How to show git's output?411877
+Node: How to install the gitman info manual?412659
+Node: How to show diffs for gpg-encrypted files?413646
+Node: How does branching and pushing work?414242
+Node: Should I disable VC?414575
+Node: FAQ - Issues and Errors415178
+Node: Magit is slow416123
+Node: I changed several thousand files at once and now Magit is unusable416416
+Node: I am having problems committing417142
+Node: I am using MS Windows and cannot push with Magit417629
+Node: I am using macOS and SOMETHING works in shell but not in Magit418247
+Node: Expanding a file to show the diff causes it to disappear419081
+Node: Point is wrong in the COMMIT_EDITMSG buffer419669
+Node: The mode-line information isn't always up-to-date420718
+Node: A branch and tag sharing the same name breaks SOMETHING421781
+Node: My Git hooks work on the command-line but not inside Magit422668
+Node: git-commit-mode isn't used when committing from the command-line423514
+Node: Point ends up inside invisible text when jumping to a file-visiting buffer425785
+Node: I am no longer able to save popup defaults426634
+Node: Debugging Tools427613
+Node: Keystroke Index431552
+Node: Function and Command Index474401
+Node: Variable Index534521
 
 End Tag Table
 

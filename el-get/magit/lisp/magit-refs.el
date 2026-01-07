@@ -1,6 +1,6 @@
 ;;; magit-refs.el --- Listing references  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -329,7 +329,7 @@ Type \\[magit-reset] to reset `HEAD' to the commit at point.
 
 ;;; Commands
 
-;;;###autoload (autoload 'magit-show-refs "magit-refs" nil t)
+;;;###autoload(autoload 'magit-show-refs "magit-refs" nil t)
 (transient-define-prefix magit-show-refs (&optional transient)
   "List and compare references in a dedicated buffer."
   :man-page "git-branch"
@@ -496,6 +496,10 @@ Branch %s already exists.
   "<2>" (magit-menu-item "Delete %m"    #'magit-branch-delete)
   "<1>" (magit-menu-item "Visit commit" #'magit-visit-ref))
 
+(defvar-keymap magit-shelved-branch-section-map
+  :doc "Keymap for `shelved-branch' sections."
+  "<remap> <magit-delete-thing>" #'magit-delete-shelved-branch)
+
 (defvar-keymap magit-tag-section-map
   :doc "Keymap for `tag' sections."
   "<remap> <magit-delete-thing>" #'magit-tag-delete
@@ -583,36 +587,36 @@ line is inserted at all."
                                       (split-string line "\0")
                                       :test #'equal)))
             (cond
-             (head-branch
-              ;; Note: Use `ref' instead of `branch' for the check
-              ;; below because 'refname:short' shortens the remote
-              ;; HEAD to '<remote>' instead of '<remote>/HEAD' as of
-              ;; Git v2.40.0.
-              (cl-assert
-               (equal ref (concat "refs/remotes/" remote "/HEAD")))
-              (setq head head-branch))
-             ((not (equal ref (concat "refs/remotes/" remote "/HEAD")))
-              ;; ^ Skip mis-configured remotes where HEAD is not a
-              ;; symref.  See #5092.
-              (when (magit-refs--insert-refname-p branch)
-                (magit-insert-section (branch branch t)
-                  (let ((headp (equal branch head))
-                        (abbrev (if magit-refs-show-remote-prefix
-                                    branch
-                                  (substring branch (1+ (length remote))))))
-                    (magit-insert-heading
-                      (magit-refs--format-focus-column branch)
-                      (magit-refs--propertize-branch
-                       abbrev ref (and headp 'magit-branch-remote-head))
-                      (make-string
-                       (max 1 (- (if (consp magit-refs-primary-column-width)
-                                     (car magit-refs-primary-column-width)
-                                   magit-refs-primary-column-width)
-                                 (length abbrev)))
-                       ?\s)
-                      (and msg (magit-log--wash-summary msg))))
-                  (magit-refs--maybe-format-margin branch)
-                  (magit-refs--insert-cherry-commits branch))))))))
+              (head-branch
+               ;; Note: Use `ref' instead of `branch' for the check
+               ;; below because 'refname:short' shortens the remote
+               ;; HEAD to '<remote>' instead of '<remote>/HEAD' as of
+               ;; Git v2.40.0.
+               (cl-assert
+                (equal ref (concat "refs/remotes/" remote "/HEAD")))
+               (setq head head-branch))
+              ((not (equal ref (concat "refs/remotes/" remote "/HEAD")))
+               ;; ^ Skip mis-configured remotes where HEAD is not a
+               ;; symref.  See #5092.
+               (when (magit-refs--insert-refname-p branch)
+                 (magit-insert-section (branch branch t)
+                   (let ((headp (equal branch head))
+                         (abbrev (if magit-refs-show-remote-prefix
+                                     branch
+                                   (substring branch (1+ (length remote))))))
+                     (magit-insert-heading
+                       (magit-refs--format-focus-column branch)
+                       (magit-refs--propertize-branch
+                        abbrev ref (and headp 'magit-branch-remote-head))
+                       (make-string
+                        (max 1 (- (if (consp magit-refs-primary-column-width)
+                                      (car magit-refs-primary-column-width)
+                                    magit-refs-primary-column-width)
+                                  (length abbrev)))
+                        ?\s)
+                       (and msg (magit-log--wash-summary msg))))
+                   (magit-refs--maybe-format-margin branch)
+                   (magit-refs--insert-cherry-commits branch))))))))
       (insert ?\n)
       (magit-make-margin-overlay))))
 

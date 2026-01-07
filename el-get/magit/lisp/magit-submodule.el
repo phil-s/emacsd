@@ -1,6 +1,6 @@
 ;;; magit-submodule.el --- Submodule support for Magit  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -158,7 +158,7 @@ and also setting this variable to t will lead to tears."
 
 ;;; Popup
 
-;;;###autoload (autoload 'magit-submodule "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule "magit-submodule" nil t)
 (transient-define-prefix magit-submodule ()
   "Act on a submodule."
   :man-page "git-submodule"
@@ -205,7 +205,7 @@ and also setting this variable to t will lead to tears."
                           (propertize "|" 'face 'transient-inactive-argument))))
      (cl-call-next-method obj))))
 
-;;;###autoload (autoload 'magit-submodule-add "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule-add "magit-submodule" nil t)
 (transient-define-suffix magit-submodule-add (url &optional path name args)
   "Add the repository at URL as a module.
 
@@ -216,13 +216,13 @@ it is nil, then PATH also becomes the name."
   :class 'magit--git-submodule-suffix
   :description "Add            git submodule add [--force]"
   (interactive
-   (magit-with-toplevel
-     (let* ((url (magit-read-string-ns "Add submodule (remote url)"))
-            (path (magit-submodule-read-path "Add submodules at path: " url)))
-       (list url
-             (directory-file-name path)
-             (magit-submodule-read-name-for-path path)
-             (magit-submodule-arguments "--force")))))
+    (magit-with-toplevel
+      (let* ((url (magit-read-string-ns "Add submodule (remote url)"))
+             (path (magit-submodule-read-path "Add submodules at path: " url)))
+        (list url
+              (directory-file-name path)
+              (magit-submodule-read-name-for-path path)
+              (magit-submodule-arguments "--force")))))
   (magit-submodule-add-1 url path name args))
 
 (defun magit-submodule-read-path (prompt url)
@@ -262,7 +262,7 @@ it is nil, then PATH also becomes the name."
                    (magit-git-lines "config" "--list" "-f" ".gitmodules"))
          (if prefer-short name path)))))
 
-;;;###autoload (autoload 'magit-submodule-register "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule-register "magit-submodule" nil t)
 (transient-define-suffix magit-submodule-register (modules)
   "Register MODULES.
 
@@ -277,11 +277,11 @@ single module from the user."
   ;; the modules.
   :description "Register       git submodule init"
   (interactive
-   (list (magit-module-confirm "Register" 'magit-module-no-worktree-p)))
+    (list (magit-module-confirm "Register" 'magit-module-no-worktree-p)))
   (magit-with-toplevel
     (magit-run-git-async "submodule" "init" "--" modules)))
 
-;;;###autoload (autoload 'magit-submodule-populate "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule-populate "magit-submodule" nil t)
 (transient-define-suffix magit-submodule-populate (modules args)
   "Create MODULES working directories, checking out the recorded commits.
 
@@ -295,12 +295,12 @@ single module from the user."
   :class 'magit--git-submodule-suffix
   :description "Populate       git submodule update --init [--recursive]"
   (interactive
-   (list (magit-module-confirm "Populate" 'magit-module-no-worktree-p)
-         (magit-submodule-arguments "--recursive")))
+    (list (magit-module-confirm "Populate" 'magit-module-no-worktree-p)
+          (magit-submodule-arguments "--recursive")))
   (magit-with-toplevel
     (magit-run-git-async "submodule" "update" "--init" args "--" modules)))
 
-;;;###autoload (autoload 'magit-submodule-update "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule-update "magit-submodule" nil t)
 (transient-define-suffix magit-submodule-update (modules args)
   "Update MODULES by checking out the recorded commits.
 
@@ -316,14 +316,14 @@ single module from the user."
   :description "Update         git submodule update [--force] [--no-fetch]
                      [--remote] [--recursive] [--checkout|--rebase|--merge]"
   (interactive
-   (list (magit-module-confirm "Update" 'magit-module-worktree-p)
-         (magit-submodule-arguments
-          "--force" "--remote" "--recursive" "--checkout" "--rebase" "--merge"
-          "--no-fetch")))
+    (list (magit-module-confirm "Update" 'magit-module-worktree-p)
+          (magit-submodule-arguments
+           "--force" "--remote" "--recursive" "--checkout" "--rebase" "--merge"
+           "--no-fetch")))
   (magit-with-toplevel
     (magit-run-git-async "submodule" "update" args "--" modules)))
 
-;;;###autoload (autoload 'magit-submodule-synchronize "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule-synchronize "magit-submodule" nil t)
 (transient-define-suffix magit-submodule-synchronize (modules args)
   "Synchronize url configuration of MODULES.
 
@@ -334,12 +334,12 @@ single module from the user."
   :class 'magit--git-submodule-suffix
   :description "Synchronize    git submodule sync [--recursive]"
   (interactive
-   (list (magit-module-confirm "Synchronize" 'magit-module-worktree-p)
-         (magit-submodule-arguments "--recursive")))
+    (list (magit-module-confirm "Synchronize" 'magit-module-worktree-p)
+          (magit-submodule-arguments "--recursive")))
   (magit-with-toplevel
     (magit-run-git-async "submodule" "sync" args "--" modules)))
 
-;;;###autoload (autoload 'magit-submodule-unpopulate "magit-submodule" nil t)
+;;;###autoload(autoload 'magit-submodule-unpopulate "magit-submodule" nil t)
 (transient-define-suffix magit-submodule-unpopulate (modules args)
   "Remove working directories of MODULES.
 
@@ -357,8 +357,8 @@ single module from the user."
   :class 'magit--git-submodule-suffix
   :description "Unpopulate     git submodule deinit [--force]"
   (interactive
-   (list (magit-module-confirm "Unpopulate")
-         (magit-submodule-arguments "--force")))
+    (list (magit-module-confirm "Unpopulate")
+          (magit-submodule-arguments "--force")))
   (magit-with-toplevel
     (magit-run-git-async "submodule" "deinit" args "--" modules)))
 
@@ -377,11 +377,11 @@ Both actions are very dangerous and have to be confirmed.  There
 are additional safety precautions in place, so you might be able
 to recover from making a mistake here, but don't count on it."
   (interactive
-   (list (if-let ((modules (magit-region-values 'magit-module-section t)))
-             (magit-confirm 'remove-modules nil "Remove %d modules" nil modules)
-           (list (magit-read-module-path "Remove module")))
-         (magit-submodule-arguments "--force")
-         current-prefix-arg))
+    (list (if-let ((modules (magit-region-values 'magit-module-section t)))
+              (magit-confirm 'remove-modules nil "Remove %d modules" nil modules)
+            (list (magit-read-module-path "Remove module")))
+          (magit-submodule-arguments "--force")
+          current-prefix-arg))
   (when magit-submodule-remove-trash-gitdirs
     (setq trash-gitdirs t))
   (magit-with-toplevel
@@ -539,20 +539,20 @@ With a prefix argument, visit in another window."
   (magit-with-toplevel
     (let ((path (expand-file-name module)))
       (cond
-       ((file-exists-p (expand-file-name ".git" module))
-        (magit-diff-visit-directory path other-window))
-       ((y-or-n-p (format "Initialize submodule '%s' first?" module))
-        (magit-run-git-async "submodule" "update" "--init" "--" module)
-        (set-process-sentinel
-         magit-this-process
-         (lambda (process event)
-           (let ((magit-process-raise-error t))
-             (magit-process-sentinel process event))
-           (when (and (eq (process-status      process) 'exit)
-                      (=  (process-exit-status process) 0))
-             (magit-diff-visit-directory path other-window)))))
-       ((file-exists-p path)
-        (dired-jump other-window (concat path "/.")))))))
+        ((file-exists-p (expand-file-name ".git" module))
+         (magit-diff-visit-directory path other-window))
+        ((y-or-n-p (format "Initialize submodule '%s' first?" module))
+         (magit-run-git-async "submodule" "update" "--init" "--" module)
+         (set-process-sentinel
+          magit-this-process
+          (lambda (process event)
+            (let ((magit-process-raise-error t))
+              (magit-process-sentinel process event))
+            (when (and (eq (process-status      process) 'exit)
+                       (=  (process-exit-status process) 0))
+              (magit-diff-visit-directory path other-window)))))
+        ((file-exists-p path)
+         (dired-jump other-window (concat path "/.")))))))
 
 ;;;###autoload
 (defun magit-insert-modules-unpulled-from-upstream ()

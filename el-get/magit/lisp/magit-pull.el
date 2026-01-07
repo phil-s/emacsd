@@ -1,6 +1,6 @@
 ;;; magit-pull.el --- Update local objects and refs  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -38,7 +38,7 @@
 
 ;;; Commands
 
-;;;###autoload (autoload 'magit-pull "magit-pull" nil t)
+;;;###autoload(autoload 'magit-pull "magit-pull" nil t)
 (transient-define-prefix magit-pull ()
   "Pull from another repository."
   :man-page "git-pull"
@@ -78,7 +78,7 @@
 (defun magit-pull-arguments ()
   (transient-args 'magit-pull))
 
-;;;###autoload (autoload 'magit-pull-from-pushremote "magit-pull" nil t)
+;;;###autoload(autoload 'magit-pull-from-pushremote "magit-pull" nil t)
 (transient-define-suffix magit-pull-from-pushremote (args)
   "Pull from the push-remote of the current branch.
 
@@ -106,7 +106,7 @@ push-remote."
            (format "%s, replacing invalid" v))
           ((format "%s, setting that" v)))))
 
-;;;###autoload (autoload 'magit-pull-from-upstream "magit-pull" nil t)
+;;;###autoload(autoload 'magit-pull-from-upstream "magit-pull" nil t)
 (transient-define-suffix magit-pull-from-upstream (args)
   "Pull from the upstream of the current branch.
 
@@ -138,15 +138,15 @@ the upstream."
               (merge  (magit-get "branch" branch "merge"))
               (u (magit--propertize-face "@{upstream}" 'bold)))
           (cond
-           ((magit--unnamed-upstream-p remote merge)
-            (format "%s of %s"
-                    (magit--propertize-face merge 'magit-branch-remote)
-                    (magit--propertize-face remote 'bold)))
-           ((magit--valid-upstream-p remote merge)
-            (concat u ", replacing non-existent"))
-           ((or remote merge)
-            (concat u ", replacing invalid"))
-           ((concat u ", setting that")))))))
+            ((magit--unnamed-upstream-p remote merge)
+             (format "%s of %s"
+                     (magit--propertize-face merge 'magit-branch-remote)
+                     (magit--propertize-face remote 'bold)))
+            ((magit--valid-upstream-p remote merge)
+             (concat u ", replacing non-existent"))
+            ((or remote merge)
+             (concat u ", replacing invalid"))
+            ((concat u ", setting that")))))))
 
 ;;;###autoload
 (defun magit-pull-branch (source args)

@@ -1,6 +1,6 @@
 ;;; magit-dired.el --- Dired support for Magit  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
 ;; Maintainer: Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -27,6 +27,8 @@
 ;;; Code:
 
 (require 'magit)
+
+(require 'dired)
 
 ;; For `magit-do-async-shell-command'.
 (declare-function dired-read-shell-command "dired-aux" (prompt arg files))

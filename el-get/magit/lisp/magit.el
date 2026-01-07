@@ -1,6 +1,6 @@
 ;;; magit.el --- A Git porcelain inside Emacs  -*- lexical-binding:t; coding:utf-8 -*-
 
-;; Copyright (C) 2008-2025 The Magit Project Contributors
+;; Copyright (C) 2008-2026 The Magit Project Contributors
 
 ;; Author: Marius Vollmer <marius.vollmer@gmail.com>
 ;;     Jonas Bernoulli <emacs.magit@jonas.bernoulli.dev>
@@ -17,15 +17,15 @@
 ;; Homepage: https://github.com/magit/magit
 ;; Keywords: git tools vc
 
-;; Package-Version: 4.4.0
+;; Package-Version: 4.5.0
 ;; Package-Requires: (
 ;;     (emacs        "28.1")
 ;;     (compat       "30.1")
-;;     (cond-let      "0.1")
+;;     (cond-let      "0.2")
 ;;     (llama         "1.0")
-;;     (magit-section "4.4")
+;;     (magit-section "4.5")
 ;;     (seq           "2.24")
-;;     (transient     "0.10")
+;;     (transient     "0.12")
 ;;     (with-editor   "3.4"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -69,14 +69,9 @@
 (require 'magit-repos)
 (require 'git-commit)
 
+(require 'epa) ;used in magit-read-gpg-{secret,signing}-key
 (require 'format-spec)
-(require 'package nil t) ; used in `magit-version'
 (require 'with-editor)
-
-;; For `magit:--gpg-sign'
-(declare-function epg-list-keys "epg" (context &optional name mode))
-(declare-function epg-decode-dn "epg" (alist))
-(defvar epa-protocol)
 
 ;;; Options
 
@@ -329,7 +324,7 @@ already been run."
 
 ;;; Dispatch Popup
 
-;;;###autoload (autoload 'magit-dispatch "magit" nil t)
+;;;###autoload(autoload 'magit-dispatch "magit" nil t)
 (transient-define-prefix magit-dispatch ()
   "Invoke a Magit command from a list of available commands."
   :info-manual "(magit)Top"
@@ -420,7 +415,7 @@ This affects `magit-git-command', `magit-git-command-topdir',
 
 (defvar magit-git-command-history nil)
 
-;;;###autoload (autoload 'magit-run "magit" nil t)
+;;;###autoload(autoload 'magit-run "magit" nil t)
 (transient-define-prefix magit-run ()
   "Run git or another command, or launch a graphical utility."
   [["Run git subcommand"
@@ -524,7 +519,7 @@ is run in the top-level directory of the current working tree."
 (defun magit-read-gpg-secret-key
     (prompt &optional initial-input history predicate default)
   (require 'epa)
-  (let* ((keys (mapcan
+  (let* ((keys (seq-keep
                 (lambda (cert)
                   (and (or (not predicate)
                            (funcall predicate cert))
@@ -538,11 +533,10 @@ is run in the top-level directory of the current working tree."
                                    (if (stringp id-str)
                                        id-str
                                      (epg-decode-dn id-obj))))))
-                         (list
-                          (propertize fpr 'display
-                                      (concat (substring fpr 0 (- (length id)))
-                                              (propertize id 'face 'highlight)
-                                              " " author))))))
+                         (propertize fpr 'display
+                                     (concat (substring fpr 0 (- (length id)))
+                                             (propertize id 'face 'highlight)
+                                             " " author)))))
                 (epg-list-keys (epg-make-context epa-protocol) nil t)))
          (choice (or (and (not current-prefix-arg)
                           (or (and (length= keys 1) (car keys))
@@ -638,7 +632,9 @@ the output in the kill ring.
                 (push t debug)
                 (load-file static)
                 magit-version))
-            (when (featurep 'package)
+            (when (and (featurep 'package)
+                       (boundp 'package-alist)
+                       (fboundp 'package-version-join))
               (push 'elpa debug)
               (ignore-errors
                 (when-let ((version (cadr (assq 'magit package-alist))))
@@ -667,44 +663,44 @@ the output in the kill ring.
                         (magit-git-string "rev-parse" "HEAD"))))))))
     (if (stringp magit-version)
         (when print-dest
-          (let ((str (format
-                      "Magit %s%s, Transient %s,%s Git %s, Emacs %s, %s"
-                      (or magit-version "(unknown)")
-                      (or (and (ignore-errors
+          (let* ((alt (or (and (ignore-errors
                                  (magit--version>= magit-version "2008"))
                                (ignore-errors
                                  (require 'lisp-mnt)
                                  (and (fboundp 'lm-header)
-                                      (format
-                                       " [>= %s]"
-                                       (with-temp-buffer
-                                         (insert-file-contents
-                                          (locate-library "magit.el" t))
-                                         (lm-header "Package-Version"))))))
-                          "")
-                      (or (ignore-errors
-                            (require 'lisp-mnt)
-                            (and (fboundp 'lm-header)
-                                 (with-temp-buffer
-                                   (insert-file-contents
-                                    (locate-library "transient.el" t))
-                                   (lm-header "Package-Version"))))
-                          "(unknown)")
-                      (let ((lib (locate-library "forge.el" t)))
-                        (or (and lib
-                                 (format
-                                  " Forge %s,"
-                                  (or (ignore-errors
-                                        (require 'lisp-mnt)
-                                        (with-temp-buffer
-                                          (insert-file-contents lib)
-                                          (and (fboundp 'lm-header)
-                                               (lm-header "Package-Version"))))
-                                      "(unknown)")))
-                            ""))
-                      (magit--safe-git-version)
-                      emacs-version
-                      system-type)))
+                                      (with-temp-buffer
+                                        (insert-file-contents
+                                         (locate-library "magit.el" t))
+                                        (lm-header "Package-Version")))))))
+                 (str (format
+                       "Magit %s%s, Transient %s,%s Git %s, Emacs %s, %s"
+                       (or magit-version "(unknown)")
+                       (if (and alt (not (equal alt magit-version)))
+                           (format " [>= %s]" alt)
+                         "")
+                       (or (ignore-errors
+                             (require 'lisp-mnt)
+                             (and (fboundp 'lm-header)
+                                  (with-temp-buffer
+                                    (insert-file-contents
+                                     (locate-library "transient.el" t))
+                                    (lm-header "Package-Version"))))
+                           "(unknown)")
+                       (let ((lib (locate-library "forge.el" t)))
+                         (or (and lib
+                                  (format
+                                   " Forge %s,"
+                                   (or (ignore-errors
+                                         (require 'lisp-mnt)
+                                         (with-temp-buffer
+                                           (insert-file-contents lib)
+                                           (and (fboundp 'lm-header)
+                                                (lm-header "Package-Version"))))
+                                       "(unknown)")))
+                             ""))
+                       (magit--safe-git-version)
+                       emacs-version
+                       system-type)))
             (when interactive
               (kill-new str))
             (princ str print-dest)))
@@ -776,7 +772,12 @@ For X11 something like ~/.xinitrc should work.\n"
   (require 'magit-stash)
   (require 'magit-blame)
   (require 'magit-submodule)
-  (unless (load "magit-autoloads" t t)
+  (unless (or noninteractive
+              ;; The `provide' form may be missing, so we have to
+              ;; try harder to ensure this is loaded exactly once.
+              (featurep 'magit-autoloads)
+              (autoloadp (symbol-function 'magit-patch))
+              (load "magit-autoloads" t t))
     (require 'magit-patch)
     (require 'magit-subtree)
     (require 'magit-ediff)
