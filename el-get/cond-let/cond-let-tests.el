@@ -1,6 +1,6 @@
 ;;; cond-let-tests.el --- Tests for Cond-Let  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2025 Jonas Bernoulli
+;; Copyright (C) 2025-2026 Jonas Bernoulli
 
 ;; Authors: Jonas Bernoulli <emacs.cond-let@jonas.bernoulli.dev>
 ;; Homepage: https://github.com/tarsius/cond-let
@@ -93,8 +93,7 @@
             ((e 5)
              (_ (> e (+ c d))))
           (throw ':cond-let*1 (progn (print e) e)))
-        (when t
-          (throw ':cond-let*1 (list c d))))))
+        (list c d))))
 
   (cond-let-test--macroexpansion nil '(2 3)
     (cond-let*
@@ -103,7 +102,10 @@
       [[b 2]]
       ([c 3]
        [_ (> 3 b)]
-       (list b c)))
+       (list b c))
+      (t
+       (message "4")
+       b))
 
     (catch ':cond-let*1
       (cond-let--when-let ((a nil))
@@ -112,7 +114,8 @@
         (cond-let--when-let*
             ((c 3)
              (_ (> 3 b)))
-          (throw ':cond-let*1 (list b c))))))
+          (throw ':cond-let*1 (list b c)))
+        (progn (message "4") b))))
 
   (cond-let-test--macroexpansion nil '(1 2 3)
     (cond-let*
@@ -141,6 +144,7 @@
       ([_(eq a c)]
        [b 'clause]
        (list a b c))
+      ((null t))
       (b))
 
     (catch ':cond-let1
@@ -151,9 +155,10 @@
             ((_ (eq a c))
              (b 'clause))
           (throw ':cond-let1 (list a b c)))
-        (let ((anon2 b))
+        (let ((anon2 (null t)))
           (when anon2
-            (throw ':cond-let1 anon2))))))
+            (throw ':cond-let1 anon2)))
+        b)))
 
   (cond-let-test--macroexpansion nil 'shared
     (cond-let
@@ -432,9 +437,30 @@
     (let ((anon1 1))
       (when anon1 2))))
 
+(ert-deftest cond-let-test--105-expand--when$ ()
+  (cond-let-test--macroexpansion nil 3
+
+    (when$ (+ 0 1)
+      (+ $ 2))
+
+    (let (($ (+ 0 1)))
+      (when $
+        (+ $ 2))))
+
+  (cond-let-test--macroexpansion nil 4
+
+    (when$ (+ 0 1)
+      (cl-incf $)
+      (+ $ 2))
+
+    (let (($ (+ 0 1)))
+      (when $
+        (cl-incf $)
+        (+ $ 2)))))
+
 ;;; While
 
-(ert-deftest cond-let-test--111-expand--while-let* ()
+(ert-deftest cond-let-test--112-expand--while-let* ()
   (let ((n 5))
     (cond-let-test--macroexpansion nil nil
       (while-let* ((a (setq n (1- n)))
@@ -449,7 +475,7 @@
                 (print a)
               (throw ':while-let*2 nil))))))))
 
-(ert-deftest cond-let-test--112-expand--while-let ()
+(ert-deftest cond-let-test--113-expand--while-let ()
   (let ((n 5))
     (cond-let-test--macroexpansion nil nil
       (while-let ((a (setq n (1- n)))
@@ -474,6 +500,7 @@
 ;;   ("and>"      . "cond-let--and>")
 ;;   ("and-let"   . "cond-let--and-let")
 ;;   ("if-let"    . "cond-let--if-let")
+;;   ("when$"     . "cond-let--when$")
 ;;   ("when-let"  . "cond-let--when-let")
 ;;   ("while-let" . "cond-let--while-let"))
 ;; End:

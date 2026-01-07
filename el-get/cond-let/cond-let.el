@@ -1,6 +1,6 @@
 ;;; cond-let.el --- Additional and improved binding conditionals  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2025 Jonas Bernoulli
+;; Copyright (C) 2025-2026 Jonas Bernoulli
 
 ;; May contain traces of Emacs, which is
 ;; Copyright (C) 1985-2025 Free Software Foundation, Inc.
@@ -9,7 +9,7 @@
 ;; Homepage: https://github.com/tarsius/cond-let
 ;; Keywords: extensions
 
-;; Package-Version: 0.1.1
+;; Package-Version: 0.2.1
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -40,7 +40,7 @@
 
 ;; This package additionally provides more consistent and improved
 ;; implementations of the binding conditionals already provided by
-;; Emacs.  Merely loading this library does not shawow the built-in
+;; Emacs.  Merely loading this library does not shadow the built-in
 ;; implementations; this can optionally be done in the context of
 ;; an individual library, as described below.
 
@@ -87,34 +87,43 @@
 ;;; Code:
 ;;; Cond
 
-(defun cond-let--prepare-clauses (tag when let clauses)
+(defun cond-let--prepare-clauses (tag sequential clauses)
   "Used by macros `cond-let*' and `cond-let'."
   (let (body)
-    (setq clauses (nreverse clauses))
-    (while clauses
-      (let ((clause (pop clauses)))
-        (cond
-         ((vectorp clause)
-          (setq body
-                `((,(if (length= clause 1) 'let let)
-                   ,(mapcar (lambda (vec) (append vec nil)) clause)
-                   ,@body))))
-         ((let (varlist)
-            (while (vectorp (car clause))
-              (push (append (pop clause) nil) varlist))
-            (push (cond
+    (dolist (clause (nreverse clauses))
+      (cond
+        ((vectorp clause)
+         (setq body
+               `((,(if (and sequential (length> clause 1)) 'let* 'let)
+                  ,(mapcar (lambda (vec) (append vec nil)) clause)
+                  ,@body))))
+        ((let (varlist)
+           (while (vectorp (car clause))
+             (push (append (pop clause) nil) varlist))
+           (push (cond
                    (varlist
-                    `(,(if (length= varlist 1) 'cond-let--when-let when)
+                    `(,(pcase (list (and body t)
+                                    (and sequential (length> varlist 1)))
+                         ('(t   t ) 'cond-let--when-let*)
+                         (`(t   ,_) 'cond-let--when-let)
+                         ('(nil t ) 'cond-let--and-let*)
+                         (`(nil ,_) 'cond-let--and-let))
                       ,(nreverse varlist)
-                      (throw ',tag ,(macroexp-progn clause))))
+                      ,(if body
+                           `(throw ',tag ,(macroexp-progn clause))
+                         (macroexp-progn clause))))
                    ((length= clause 1)
-                    (let ((a (gensym "anon")))
-                      `(let ((,a ,(car clause)))
-                         (when ,a (throw ',tag ,a)))))
+                    (if body
+                        (let ((a (gensym "anon")))
+                          `(let ((,a ,(car clause)))
+                             (when ,a (throw ',tag ,a))))
+                      (car clause)))
+                   ((and (eq (car clause) t) (not body))
+                    (macroexp-progn (cdr clause)))
                    (t
                     `(when ,(pop clause)
                        (throw ',tag ,(macroexp-progn clause)))))
-                  body))))))
+                 body)))))
     body))
 
 (defmacro cond-let* (&rest clauses)
@@ -153,7 +162,7 @@ to the next clause."
                           (form body)])))
   (let ((tag (gensym ":cond-let*")))
     `(catch ',tag
-       ,@(cond-let--prepare-clauses tag 'cond-let--when-let* 'let* clauses))))
+       ,@(cond-let--prepare-clauses tag t clauses))))
 
 (defmacro cond-let (&rest clauses)
   "Try each clause until one succeeds.
@@ -185,10 +194,10 @@ remaining clauses and binding vectors.  Evaluate all VALUEFORMs before
 binding their respective SYMBOLs.  Unlike for the previous form, bind
 all SYMBOLs, even if a VALUEFORM yields nil.  Always proceed to the
 next clause."
-  (declare (indent 0) (debug cond-let))
+  (declare (indent 0) (debug cond-let*))
   (let ((tag (gensym ":cond-let")))
     `(catch ',tag
-       ,@(cond-let--prepare-clauses tag 'cond-let--when-let 'let clauses))))
+       ,@(cond-let--prepare-clauses tag nil clauses))))
 
 ;;; Common
 
@@ -431,6 +440,21 @@ and return nil.
            `(let ,bind
               (when ,lastvar
                 ,bodyform ,@body))))))
+
+(defmacro cond-let--when$ (varform bodyform &rest body)
+  "Bind variable `$' to value of VARFORM and conditionally evaluate BODY.
+
+If VARFORM yields a non-nil value, bind the symbol `$' to that value,
+evaluate BODY with that binding in effect, and return the value of the
+last form.  If VARFORM yields nil, do not evaluate BODY, and return nil.
+BODY must be one or more expressions.  If VARLIST is empty, do nothing
+and return nil.
+
+\(fn VARLIST BODY...)"
+  (declare (debug (form form)))
+  `(let (($ ,varform))
+     (when $
+       ,bodyform ,@body)))
 
 ;;; While
 
