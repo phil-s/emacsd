@@ -460,6 +460,17 @@ We deal only with `compilation-mode' itself, ignoring derivatives such as
   (tags-reset-tags-tables)
   (normal-mode))
 
+(define-advice etags-select-find-tag (:filter-args (args) my-prefix-reset)
+  "Call `my-reset-tags' if prefix \\[universal-argument] is used.
+
+Advice for `etags-select-find-tag'.  Remove with:
+\(advice-remove \\='etags-select-find-tag \\='etags-select-find-tag@my-prefix-reset)"
+  (interactive "P")
+  (when (equal args '((4)))
+    (my-reset-tags))
+  ;; Return no arguments.
+  nil)
+
 (define-advice visit-tags-table (:around (orig-fun &rest args) large-file-ok)
   "Suppress `large-file-warning-threshold' for `visit-tags-table'.
 
