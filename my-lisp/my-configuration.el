@@ -920,7 +920,7 @@ n.b. ffap-alternate-file is intended for interactive use only."
     ad-do-it)
   (ad-activate 'ffap-read-file-or-url))
 
-;; Deleting should not delete the region.
+;; Inserting should not delete the region.
 (delete-selection-mode 0)
 
 ;; Move point to top/bottom of buffer before signaling a scrolling error.
