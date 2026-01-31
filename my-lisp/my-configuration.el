@@ -32,6 +32,7 @@
   (defvar bookmark-default-file)
   (defvar bookmark-save-flag)
   (defvar browse-url-handlers)
+  (defvar calc-internal-prec)
   (defvar calc-kill-line-numbering)
   (defvar calc-make-windows-dedicated)
   (defvar calendar-date-display-form)
@@ -1794,6 +1795,18 @@ return to the save-some-buffers minibuffer prompt."
 (add-hook 'ediff-keymap-setup-hook 'my-ediff-keymap-setup-hook)
 
 ;; Calc.
+
+;; See also settings written to ~/.emacs.d/calc.el (and remember to copy changes
+;; to my calc sandbox).
+
+;; "m m" runs the command `calc-save-modes' which saves these settings.
+;; (Doing so will clobber all of the comments, so merge changes accordingly.)
+;;
+;; Example settings:
+;;
+;; ;; Use a much higher-than-normal float precision, to avoid surprises
+;; ;; or errors.  See (info "(calc) Precision")
+;; (setq calc-internal-prec 96)
 
 ;; Make windows displaying Calc buffers dedicated.
 (setq calc-make-windows-dedicated t)
