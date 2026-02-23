@@ -173,6 +173,13 @@
       kept-old-versions      10 ; ...and how many of the old.
       vc-make-backup-files   t) ; Make backups even for files under VCS.
 
+(defun my-backup-enable-predicate (filepath)
+  "Check `normal-backup-enable-predicate' and also /dev/shm"
+  (and (normal-backup-enable-predicate filepath)
+       (not (string-prefix-p "/dev/shm/" filepath))))
+
+(setq backup-enable-predicate #'my-backup-enable-predicate)
+
 (defvar my-backup-buffer-interval (* 60 60) ;; 1 hour.
   "Time threshold in seconds for resetting `buffer-backed-up' in a buffer.")
 
