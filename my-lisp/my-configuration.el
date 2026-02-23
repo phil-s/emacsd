@@ -1858,7 +1858,15 @@ when the file path is too long to show on one line."
 (defun my-grep-mode-hook ()
   "Used in `grep-mode-hook'."
   (setq truncate-lines t)
-  (local-set-key (kbd "<f5>") 'toggle-truncate-lines))
+  (local-set-key (kbd "<f5>") 'toggle-truncate-lines)
+  ;; I have no idea why the error-like overlays are appearing at
+  ;; seeming-random in grep results, but I can work around it...
+  (add-hook 'compilation-finish-functions
+            #'my-compilation-delete-all-overlays nil :local))
+
+(defun my-compilation-delete-all-overlays (buf _str)
+  "Used in `compilation-finish-functions' by `my-grep-mode-hook'."
+  (delete-all-overlays buf))
 
 ;; Don't rgrep/lgrep within certain file types. Will I regret this? :\
 (with-eval-after-load "grep"
