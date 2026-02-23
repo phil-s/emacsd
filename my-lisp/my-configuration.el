@@ -467,6 +467,7 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
 (add-hook 'diary-fancy-display-mode-hook #'my-diary-fancy-display-mode-hook)
 (defun my-diary-fancy-display-mode-hook ()
   "Called via `diary-fancy-display-mode-hook'."
+  (my-adaptive-visual-line-mode 1)
   (goto-address-mode 1)
   (my-diary-bug-reference-mode-enable))
 
