@@ -22,17 +22,7 @@
   (global-anzu-mode 1))
 
 ;; Local occur minor mode
-;(require 'loccur)
-
-(autoload 'loccur "loccur"
-  "Perform a simple grep in current buffer for the regular
-expression REGEX
-
-This command hides all lines from the current buffer except those
-containing the regular expression REGEX. A second call of the function
-unhides lines again"
-  t)
-(autoload 'loccur-current "loccur" "Call `loccur' for the current word." t)
+(setq loccur-prompt-current-word nil)
 (autoload 'loccur-previous-match "loccur" "Call `loccur' for the previously found word." t)
 
 ;; Sudo support for Unix-like systems

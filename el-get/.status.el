@@ -43,6 +43,7 @@
 :key-chord "installed"
 :lexbind-mode "installed"
 :llama "installed"
+:loccur "installed"
 :macrostep "installed"
 :magit "installed"
 :mo-git-blame "installed"

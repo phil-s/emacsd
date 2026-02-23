@@ -236,6 +236,10 @@
             :url "https://github.com/tarsius/llama.git"
             :build ("make")) ;; builds documentation.
 
+     (:name loccur
+            :type http
+            :url ,(my-local-repository-url-for "loccur"))
+
      (:name macrostep
             :type git
             :url "https://github.com/joddie/macrostep.git")

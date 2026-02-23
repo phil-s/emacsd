@@ -2173,6 +2173,42 @@ disabled.
 
 ;;;***
 
+;;;### (autoloads nil "loccur/loccur" "loccur/loccur.el" (0 0 0 0))
+;;; Generated autoloads from loccur/loccur.el
+
+(autoload 'loccur-current "loccur/loccur" "\
+Call `loccur' for the current word." t)
+
+(autoload 'loccur "loccur/loccur" "\
+Perform a simple grep in current buffer.
+
+This command hides all lines from the current buffer except those
+containing the regular expression REGEX.  A second call of the function
+unhides lines again.
+
+When called interactively, either prompts the user for REGEXP or,
+when called with an active region, uses the content of the
+region, unless called with the universal prefix (C-u)
+
+\(fn REGEX)" t)
+
+(autoload 'loccur-isearch "loccur/loccur" "\
+Incrementally filter buffer lines.
+
+Like Isearch, but hide buffer lines not matching the search
+string.  If Isearch is already active, toggle filtering on or
+off.
+
+MODE only has effect if called from outside Isearch, and has the
+same meaning as `search-default-mode'.  Interactively, that
+default value is used.
+
+\(fn &optional MODE)" t)
+
+(register-definition-prefixes "loccur/loccur" '("loccur-"))
+
+;;;***
+
 ;;;### (autoloads nil "macrostep/macrostep" "macrostep/macrostep.el"
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from macrostep/macrostep.el
