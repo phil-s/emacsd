@@ -278,6 +278,7 @@ static char * data[] = {
   (defvar magit-revision-fill-summary-line)
   (defvar magit-save-repository-buffers)
   (defvar magit-section-initial-visibility-alist)
+  (defvar magit-status-file-list-limit)
   (require 'eieio)
   (declare-function eieio-oref "eieio-core")
   (declare-function git-commit-setup-check-buffer "git-commit")
@@ -359,6 +360,9 @@ to ensure that this has happened."
     (require 'git-commit)
     (git-commit-setup-check-buffer)))
 
+;; Show more files.  (This is 100 by default.)
+(setq magit-status-file-list-limit 512)
+
 ;; Highlighting of too-long summary lines.
 ;; The default 50 chars is tiny, but let's still highlight summary lines
 ;; that exceed the standard maximum 72 chars for other log message lines
@@ -388,7 +392,7 @@ to ensure that this has happened."
 (setq magit-process-timestamp-format "%F %R")
 
 ;; Process ansi colour escape codes.
-(setq magit-process-finish-apply-ansi-colors t)
+(setq magit-process-apply-ansi-colors t)
 
 ;; Make the refs buffer show the remote name for remote branches.
 (setq magit-refs-show-remote-prefix t)
@@ -468,6 +472,15 @@ to ensure that this has happened."
 ;;   ;; ...but add a new Tags option to the popup, which does so. (y t)
 ;;   (magit-define-popup-action 'magit-show-refs-popup ?t
 ;;     "Insert tags section" 'my-magit-insert-tags))
+
+
+(defun my-magit-commit-config ()
+  "Called after loading `magit-commit'."
+  (transient-append-suffix 'magit-commit "w"
+    '("d" "Edit dates" magit-commit-reshelve)))
+
+(with-eval-after-load "magit-commit"
+  (my-magit-commit-config))
 
 (defun my-magit-push-config ()
   "Called after loading `magit-push'."
