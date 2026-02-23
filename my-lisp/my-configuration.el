@@ -1494,10 +1494,9 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
 
 ;; Enable <backtab> (kbd "S-TAB") for toggling visibility
 ;; in outline-minor-mode
-(add-hook 'outline-minor-mode-hook 'my-outline-minor-mode-hook)
-(defun my-outline-minor-mode-hook ()
-  "Used in `outline-minor-mode-hook'."
-  (local-set-key (kbd "<backtab>") 'outline-toggle-children))
+(with-eval-after-load "outline"
+  (define-key outline-minor-mode-map (kbd "<backtab>")
+              'outline-toggle-children))
 
 ;; Selective display.
 (define-advice set-selective-display (:filter-args (_arg) my-current-column)
