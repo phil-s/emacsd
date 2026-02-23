@@ -348,6 +348,13 @@ when `auto-save-mode' is invoked manually.")
 ;; to populate FUNCTIONS.
 (push '(reusable-frames . visible) (cdr display-buffer-base-action))
 
+;; Avoid displaying an already-displayed buffer in another window.
+;; Besides `switch-to-prev-buffer' (or next buffer), this affects
+;; behaviour when a window is quit or a buffer is buried or killed
+;; (e.g. `bury-buffer' `kill-buffer', `replace-buffer-in-windows',
+;; `quit-restore-window', among others).
+(setq switch-to-prev-buffer-skip 'this)
+
 ;; Disable bi-directional display support for performance reasons.
 ;; The performance implications of this feature are probably very
 ;; minor in most cases; but the likes of bug #23801, when combined
