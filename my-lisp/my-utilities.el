@@ -1913,10 +1913,14 @@ See also `my-copy-region-as-kill'."
 (defun my-fortune-set-initial-scratch-message ()
   "Set `initial-scratch-message' from `my-fortune-scratch-message'.
 
+Include a -*- lexical-binding: t -*- declaration for `eval-buffer'.
+
 Used with `after-init-hook'."
   (let ((fortune (my-fortune-scratch-message)))
-    (when fortune
-      (setq initial-scratch-message fortune))))
+    (setq initial-scratch-message
+          (if fortune
+              (format ";; -*- lexical-binding: t; -*-\n\n%s" fortune)
+            ";; -*- lexical-binding: t; -*-\n\n"))))
 
 (defun my-region-or-word (prompt)
   "Read a string from the minibuffer, prompting with PROMPT.
