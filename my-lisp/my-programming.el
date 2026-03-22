@@ -747,7 +747,12 @@ Advice for `visit-tags-table'."
     ;; Default postgres pattern was: "^\\w*=[#>] " (see `sql-product-alist').
     (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*=[#>] ")
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
-    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(][#>] ")
+    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(@][#>] ")
+
+    ;; Deal with psql's mad insistence on telling you what it's NOT doing
+    ;; when executing an "\if ... \else ... \endif" conditional expression.
+    (add-hook 'comint-preoutput-filter-functions
+              'my-sql-comint-preoutput-filter-if-then-else :append :local)
 
     ;; ;; Remove "Indexes" and "Check constraints" output in table details when
     ;; ;; using the psql "\d" command (as that is almost never useful to me; it
@@ -787,15 +792,37 @@ Alternatively, use \\d+ (for maximum information).
 
 This is an :input-filter function for `postgres' in `sql-product-alist'."
   ;; Make \d be \dt
-  (cond ((string-match "\\` *\\\\d *\n?\\'" input)
+  (cond ((string-match "\\`[ \n]*\\\\d *;? *\n?\\'"
+                       input)
          "\\dt")
         ;; \d <table> and \d <schema>.<table>
-        ((string-match "\\` *\\\\d +\\(?:\\([^ \n]+\\)\\.\\)?\\([^ \n]+\\) *\n?\\'" input)
+        ((string-match "\\`[ \n]*\\\\d +\\(\\(?:\\([^ ;\n]+\\)\\.\\)?\\([^ ;\n]+\\)\\) *;? *\n?\\'"
+                       input)
          ;; See https://stackoverflow.com/q/109325
          ;; FIXME: "Quote" the table-name to handle mixed case names?
          ;; Maybe not... else \d+ and \d will be inconsistent...
          ;; (message "%s"
-         (apply #'format "\
+         (let* ((schematable (match-string 1 input))
+                (schemacondition (if (match-string 2 input)
+                                     ;; <schema>.<table>
+                                     (format " AND table_schema = '%s'"
+                                             (match-string 2 input))
+                                   ;; <table>
+                                   ""))
+                (table (match-string 3 input)))
+           ;; This query selects a boolean value as "valid" and uses
+           ;; \gset to assign it to a variable :valid which we test in
+           ;; the conditional expression \if ... \else ... \endif.
+           ;; If the boolean :valid is false, we execute the original
+           ;; \d command instead of our custom query.
+           ;;
+           ;; Note that the conditional expression has a side-effect
+           ;; we hack around with another filter:
+           ;; `my-sql-comint-preoutput-filter-if-then-else'.
+           (apply #'format "\
+SELECT (COUNT(*) > 0) AS valid \
+FROM information_schema.columns \
+WHERE table_name = '%s'%s \\gset \\if :valid
 SELECT \
 column_name AS \"Column\", \
 CASE \
@@ -811,18 +838,26 @@ END AS \"Nullable\", \
 column_default AS \"Default\" \
 FROM information_schema.columns \
 WHERE table_name = '%s'%s \
-ORDER BY ordinal_position;"
-                (if (match-string 1 input)
-                    ;; <schema>.<table>
-                    (list (match-string 2 input)
-                          (format " AND table_schema = '%s'"
-                                  (match-string 1 input)))
-                  ;; <table>
-                  (list (match-string 2 input)
-                        ""))))
+ORDER BY ordinal_position;
+\\else
+    \\d %s
+\\endif
+"
+                  (list table schemacondition
+                        table schemacondition
+                        schematable))))
         ;;) ;;message
         (t
          input)))
+
+(defun my-sql-comint-preoutput-filter-if-then-else (output)
+  "Filter \"(command|query) ignored\" lines from psql \"\\if\" output.
+
+Runs before `my-sql-comint-preoutput-filter-prompts' in
+`comint-preoutput-filter-functions'."
+  (let ((regexp "\\(query\\|\\\\[^ ]+ command\\) ignored; use \
+\\\\endif or Ctrl-C to exit current \\\\if block\n"))
+    (replace-regexp-in-string regexp "" output)))
 
 ;; Deprecated, due to not handling buffered output.
 ;; Replaced by `my-sql-postgres-input-filter'.
@@ -877,7 +912,7 @@ Runs after `sql-interactive-remove-continuation-prompt' in
     ;; Otherwise filter all leading prompts from the output.
     ;; Store the buffer-local prompt patterns before changing buffers.
     (let ((main-prompt sql-prompt-regexp)
-          (any-prompt comint-prompt-regexp) ;; see `sql-interactive-mode'
+          (any-prompt comint-prompt-regexp) ;; see `sql--adjust-interactive-setup'
           (prefix-newline nil))
       (with-temp-buffer
         (insert output)
@@ -921,14 +956,21 @@ custom output filter.  (See `my-sql-comint-preoutput-filter-prompts'.)"
   ;; response, use `sql-redirect-value' instead of `comint-send-string'.
   (when (eq sql-product 'postgres)
     (let ((proc (get-buffer-process (current-buffer))))
-      ;; Display readable bytea data
-      (comint-send-string proc "SET bytea_output = 'escape';\n")
       ;; Terminate query with :G instead of ; to use expanded display
       (comint-send-string ; \set G '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
        proc "\\set G '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")
       ;; But actually :L is much easier to type, and a mnemonic for "long"
       (comint-send-string ; \set L '\\set QUIET 1\\x\\g\\x\\set QUIET 0'
-       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n"))))
+       proc "\\set L '\\\\set QUIET 1\\\\x\\\\g\\\\x\\\\set QUIET 0'\n")
+      ;; ;; Output each query before executing it. (n.b. this also avoids
+      ;; ;; the psql prompt breaking the alignment of query results.)
+      ;; ;; -- Available values are: none, errors, queries, all.
+      ;; ;; (i.e. type "\set ECHO none" to undo this.)
+      ;; (comint-send-string proc "\\set ECHO queries\n")
+      ;;
+      ;; Display readable bytea data
+      (comint-send-string proc "SET bytea_output = 'escape';\n")
+      )))
 
 (defun my-sqli-restart (&optional arg)
   "Restart inferior SQL process using existing settings.
