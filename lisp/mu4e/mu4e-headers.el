@@ -1160,16 +1160,18 @@ no user-interaction ongoing."
 (defun mu4e~headers-highlight (docid)
   "Highlight the header with DOCID, or do nothing if it's not found.
 Also, unhighlight any previously highlighted headers."
-  (with-current-buffer (mu4e-get-headers-buffer)
-    (save-excursion
-      ;; first, unhighlight the previously highlighted docid, if any
-      (when (and docid mu4e~highlighted-docid
-                 (mu4e~headers-goto-docid mu4e~highlighted-docid))
-        (hl-line-unhighlight))
-      ;; now, highlight the new one
-      (when (mu4e~headers-goto-docid docid)
-        (hl-line-highlight)))
-    (setq mu4e~highlighted-docid docid)))
+  (when-let* ((buf (mu4e-get-headers-buffer))
+              (win (get-buffer-window buf)))
+    (with-selected-window win
+      (save-excursion
+        ;; first, unhighlight the previously highlighted docid, if any
+        (when (and docid mu4e~highlighted-docid
+                   (mu4e~headers-goto-docid mu4e~highlighted-docid))
+          (hl-line-unhighlight))
+        ;; now, highlight the new one
+        (when (mu4e~headers-goto-docid docid)
+          (hl-line-highlight)))
+      (setq mu4e~highlighted-docid docid))))
 
 ;;; Misc 2
 
