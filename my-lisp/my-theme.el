@@ -95,7 +95,7 @@
     '(ediff-current-diff-C ((t (:background "#888833" :foreground "#333333"))))
     '(ediff-fine-diff-B ((t (:background "#22aa22" :foreground "#333333"))))
     '(error ((t (:foreground "orangered"))))
-    '(fill-column-indicator ((t (:foreground "grey27"))))
+    '(fill-column-indicator ((t (:foreground "#4a4a4a")))) ;; grey29
     '(ement-room-mention ((t (:extend t :background "grey12"))))
     '(ement-room-message-text ((t (:inherit variable-pitch))))
     '(ement-room-timestamp ((t (:inherit font-lock-comment-face :foreground "grey50" :height 0.8))))
