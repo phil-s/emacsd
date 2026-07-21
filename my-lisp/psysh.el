@@ -2,7 +2,7 @@
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
-;; Version: 0.5.2
+;; Version: 0.5.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 
 (declare-function eww-readable "eww")
 
-(defconst psysh--latest-version "0.5.2")
+(defconst psysh--latest-version "0.5.3")
 
 (defvar psysh-process-name "psysh"
   "Name for the comint process.")
@@ -363,6 +363,8 @@ of PsySH which includes the \\='completions\\=' command."
   (let ((map (nconc (make-sparse-keymap) comint-mode-map)))
     (define-key map "\t" 'completion-at-point)
     (define-key map "\C-m" 'psysh-comint-send-input-maybe)
+    ;; Use [remap comint-delchar-or-maybe-eof] instead of "\C-d" ?
+    (define-key map "\C-d" 'psysh-comint-delchar-or-maybe-exit)
     (define-key map [remap move-beginning-of-line]
       'psysh-move-beginning-of-line)
     ;; When there is no running process, 'g' starts a new one.
@@ -680,6 +682,27 @@ files will not be affected by changes to `psysh-temp-file-mode'."
 ;; Another useful variable is `comint-input-sender', which lets you
 ;; alter the input string mid-stream. Annoyingly its name is
 ;; inconsistent with the filter functions above.
+
+(defun psysh-comint-delchar-or-maybe-exit (arg)
+  "Delete ARG characters forward or send the \"exit\" command to PsySH.
+
+The \"exit\" command is sent if point is at the end of the buffer and
+there is no input at the prompt.  With a prefix argument, EOF is sent
+instead of \"exit\".
+
+This command is similar to `comint-delchar-or-maybe-eof' but sending
+\"exit\" instead of EOF.  We prefer \"exit\" because `comint-send-eof'
+causes the process to exit fully, whereas \"exit\" only does so when
+used in the top-level shell (which enables us to exit from recursive
+instances of the shell without ending the process)."
+  (interactive "P" psysh-mode)
+  (let ((proc (get-buffer-process (current-buffer))))
+    (if (and (eobp) proc (= (point) (marker-position (process-mark proc))))
+        (if arg
+            (comint-send-eof)
+          (comint-send-input t t)
+          (process-send-string proc "exit\n"))
+      (delete-char (prefix-numeric-value arg)))))
 
 (defvar psysh-process-mark-position nil
   "Remembers the process mark before `comint-send-input' is called.")
