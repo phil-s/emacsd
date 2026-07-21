@@ -2,7 +2,7 @@
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
-;; Version: 0.5.3
+;; Version: 0.5.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 
 (declare-function eww-readable "eww")
 
-(defconst psysh--latest-version "0.5.3")
+(defconst psysh--latest-version "0.5.4")
 
 (defvar psysh-process-name "psysh"
   "Name for the comint process.")
@@ -158,6 +158,7 @@ See also the \\='theme\\=' setting in `psysh-config'."
 
 (defvar psysh-remap-php-send-region)
 (defvar php-mode-map)
+(defvar php-ts-mode-map)
 
 (defun psysh-remap-php-send-region-setter (&optional option value)
   "Adds or removes remapping for `php-send-region' in `php-mode-map'."
@@ -165,9 +166,14 @@ See also the \\='theme\\=' setting in `psysh-config'."
     (set option value))
   (with-eval-after-load "php-mode"
     (define-key php-mode-map [remap php-send-region]
-      (if psysh-remap-php-send-region
-          'psysh-send-region
-        nil))))
+                (if psysh-remap-php-send-region
+                    'psysh-send-region
+                  nil)))
+  (with-eval-after-load "php-ts-mode"
+    (define-key php-ts-mode-map [remap php-ts-mode-send-region]
+                (if psysh-remap-php-send-region
+                    'psysh-send-region
+                  nil))))
 
 (defcustom psysh-remap-php-send-region t
   "Whether to remap bindings for `php-send-region' to `psysh-send-region'."
