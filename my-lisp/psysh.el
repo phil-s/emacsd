@@ -2,7 +2,7 @@
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018
-;; Version: 0.5.1
+;; Version: 0.5.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -58,7 +58,9 @@
 (require 'cc-mode) ;; `c-mode-syntax-table' is guaranteed to be available.
 (require 'php-mode nil :noerror) ;; Derives from c-mode; mightn't be installed.
 
-(defconst psysh--latest-version "0.5.1")
+(declare-function eww-readable "eww")
+
+(defconst psysh--latest-version "0.5.2")
 
 (defvar psysh-process-name "psysh"
   "Name for the comint process.")
@@ -567,10 +569,27 @@ files will not be affected by changes to `psysh-temp-file-mode'."
   ;; M-x ansi-color-for-comint-mode-off
   ;; M-x ansi-color-for-comint-mode-filter
 
+  ;; Handle URLs in documentation using `php-local-manual-search'.
+  (add-hook 'comint-output-filter-functions
+            'comint-osc-process-output nil :local)
+  (setq-local ansi-osc-handlers '(("8" . ansi-osc-hyperlink-handler)))
+  ;; (setq-local browse-url-secondary-browser-function 'eww-browse-url)
+  ;; `browse-url-handlers' is available since Emacs 28.1.
+  (when (boundp 'browse-url-handlers)
+    (unless (local-variable-p 'browse-url-handlers)
+      (make-local-variable 'browse-url-handlers)
+      (push '("\\`https://php\\.net/" . psysh-local-manual-browse-url)
+            browse-url-handlers)))
+
   ;; Re-format documentation AFTER converting the ansi colour escape
   ;; characters -- otherwise the indentations will be all wrong.
   (add-hook 'comint-output-filter-functions
             'psysh-comint-output-filter-docs :append :local)
+
+  ;; Assume certain text can be found in the online manual.
+  ;; PsySH issue #949 will hopefully render this unnecessary.
+  (add-hook 'comint-output-filter-functions
+            'psysh-comint-output-filter-hyperlink-docs :append :local)
 
   ;; Don't highlight whitespace.
   (setq show-trailing-whitespace nil)
@@ -894,6 +913,49 @@ Called via `comint-output-filter-functions'."
                    ;; Outer `while' loop condition:
                    (eql 0 (forward-line 1)))))))))
 
+(defun psysh-comint-output-filter-hyperlink-docs (output)
+  "Hyperlink likely-looking text to the manual.
+
+Called via `comint-output-filter-functions'."
+  (when (not (string-empty-p output))
+    (save-excursion
+      (goto-char comint-last-input-start)
+      (when (looking-at " *doc ")
+        (save-restriction
+          (narrow-to-region comint-last-input-end
+                            (marker-position
+                             (process-mark (get-buffer-process
+                                            (current-buffer)))))
+          (let ((function "\\_<\\([a-zA-Z0-9_]+\\)()")
+                (class "\\_<\\([A-Z][a-z]+[A-Z][A-Za-z0-9]+\\)\\_>"))
+            ;; Link function()
+            (goto-char (point-min))
+            (while (re-search-forward function nil t)
+              (make-text-button
+               (match-beginning 1) (match-end 1)
+               'type 'ansi-osc-hyperlink
+               'browse-url-data (format "https://php.net/%s"
+                                        (match-string 1))))
+            ;; Link Class
+            (goto-char (point-min))
+            (let ((case-fold-search nil))
+              (while (re-search-forward class nil t)
+                (make-text-button
+                 (match-beginning 1) (match-end 1)
+                 'type 'ansi-osc-hyperlink
+                 'browse-url-data (format "https://php.net/%s"
+                                          (match-string 1)))))))))))
+
+(add-hook 'eww-after-render-hook 'psysh-php-manual-make-readable)
+
+(defvar psysh-php-manual-make-readable nil)
+
+(defun psysh-php-manual-make-readable ()
+  "Call `eww-readable' if `psysh-php-manual-make-readable' is non-nil."
+  (when psysh-php-manual-make-readable
+    (eww-readable)
+    (setq-local psysh-php-manual-make-readable nil)))
+
 (defun psysh-sentinel (process _str)
   "Process signals from the psysh process."
   ;; Upon process exit, write `comint-input-ring' history file.
@@ -995,6 +1057,18 @@ Runs the PsySH command \\='completions\\=' for the current input."
       ;; (message "psysh-completion-at-point: '%s'"
       ;;          (buffer-substring-no-properties beginning end))
       (list beginning end table))))
+
+(defun psysh-local-manual-browse-url (url &rest args)
+  "Use `php-local-manual-search' when available."
+  (if (fboundp 'php-local-manual-search)
+      (let* ((urlobj (url-generic-parse-url url))
+             (urlpath (car (url-path-and-query urlobj)))
+             (word (substring urlpath 1)))
+        (or (php-local-manual-search word)
+            (apply #'browse-url url args)))
+    ;; Local search not available.
+    (setq-local psysh-php-manual-make-readable t)
+    (apply #'browse-url url args)))
 
 (defvar psysh-version psysh--latest-version
   "The loaded version of psysh.el.")
