@@ -689,7 +689,7 @@ files will not be affected by changes to `psysh-temp-file-mode'."
 
 We bind RET to this command in our keymap so a newline following a '}'
 does not send the input, but instead just inserts a literal newline."
-  (interactive)
+  (interactive nil psysh-mode)
   ;; Require a double-newline after a "}" to send the input, otherwise
   ;; we can very easily lose the 'else' clause from an if-then-else
   ;; statement.  (We can still lose it this way, but it's much less
@@ -965,13 +965,13 @@ Called via `comint-output-filter-functions'."
 (defun psysh-move-beginning-of-line ()
   "Move to the beginning of the line, respecting the prompt."
   ;; Derived from `comint-line-beginning-position'.
-  (interactive)
+  (interactive nil psysh-mode)
   (beginning-of-line)
   (comint-skip-prompt))
 
 (defun psysh-move-beginning-of-line-or-indentation ()
   "Move to beginning of line, or indentation, respecting the prompt."
-  (interactive)
+  (interactive nil psysh-mode)
   (if (not (bolp))
       ;; Find the end of the prompt (if any) on this line.
       (let ((eop (save-excursion
