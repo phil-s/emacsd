@@ -1236,14 +1236,17 @@ Advice for the `battery-status-function' function value."
   (setq undo-outer-limit 48000000))
 
 ;; Make large files read-only, and disable undo for the buffer
+;; (Use `my-large-buffer-ignore' to inhibit these mitigations.)
+(defvar my-large-buffer-ignore)
 (defun my-find-file-check-make-large-file-read-only-hook ()
   "If a file is over a given size, make the buffer read only."
-  (when (> (buffer-size) (* 1024 1024))
-    (setq buffer-read-only t
-          isearch-lazy-count nil)
-    (buffer-disable-undo)
-    (message "Buffer is set to read-only because it is large.  Undo also
-disabled.")))
+  (unless (bound-and-true-p my-large-buffer-ignore)
+    (when (> (buffer-size) (* 1024 1024))
+      (setq buffer-read-only t
+            isearch-lazy-count nil)
+      (buffer-disable-undo)
+      (message "Buffer is set to read-only because it is large.  \
+Undo also disabled."))))
 (add-hook 'find-file-hook
           'my-find-file-check-make-large-file-read-only-hook)
 
