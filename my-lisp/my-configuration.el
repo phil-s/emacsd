@@ -114,6 +114,7 @@
   (declare-function ediff-setup-windows-plain "ediff-wind")
   (declare-function erc-log-mode "erc-log")
   (declare-function global-visible-mark-mode "visible-mark")
+  (declare-function help-fns--analyze-function "help-fns")
   (declare-function ibuffer-pop-filter "ibuf-ext")
   (declare-function keep-buffers-mode "keep-buffers")
   (declare-function minibuffer-line-mode "minibuffer-line")
@@ -1931,6 +1932,31 @@ when the file path is too long to show on one line."
 (setq visible-mark-max 2)
 (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
 (global-visible-mark-mode 1)
+
+(defvar my-help-unbuttonise)
+
+(define-advice help-fns-function-description-header
+    (:around (orig-fun function) my-help-unbuttonise)
+  "Don't buttonise the function type.  It's pointless for me, and annoying.
+See also `make-text-button@my-help-unbuttonise'."
+  (pcase-let* ((`(,_real-function ,def ,aliased ,_real-def)
+                (help-fns--analyze-function function)))
+    (let ((my-help-unbuttonise (and (not aliased)
+                                    (not (and (consp def)
+                                              (symbolp (car def))))
+                                    (or (oclosure-type def)
+                                        (cl-type-of def)))))
+      (funcall orig-fun function))))
+
+(define-advice make-text-button
+    (:around (orig-fun &rest args) my-help-unbuttonise)
+  "See `help-fns-function-description-header@my-help-unbuttonise'."
+  (if (bound-and-true-p my-help-unbuttonise)
+      (progn
+        (setq my-help-unbuttonise nil)
+        ;; Just return the first argument un-modified.
+        (car args))
+    (apply orig-fun args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
