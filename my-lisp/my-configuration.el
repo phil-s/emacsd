@@ -1919,6 +1919,15 @@ when the file path is too long to show on one line."
     (defun enriched-decode-display-prop (start end &optional _param)
       (list start end))))
 
+;; Workaround for security problem:
+;; https://eshelyaron.com/posts/2026-08-06-emacs-arbitrary-code-execution-returns.html
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=80574
+(when (< emacs-major-version 31)
+  (defun suppress-shorthands (orig &rest args)
+    (let (read-symbol-shorthands) (apply orig args)))
+  (advice-add 'vc-find-backend-function :around #'suppress-shorthands)
+  (advice-add 'c-compose-keywords-list :around #'suppress-shorthands))
+
 (setq visible-mark-max 2)
 (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
 (global-visible-mark-mode 1)
