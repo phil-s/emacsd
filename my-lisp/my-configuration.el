@@ -460,6 +460,7 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
 (add-hook 'diary-mode-hook #'my-diary-mode-hook)
 (defun my-diary-mode-hook ()
   "Called via `diary-mode-hook'."
+  (auto-revert-mode 1)
   (electric-indent-local-mode 0)
   (goto-address-mode 1)
   (my-diary-bug-reference-mode-enable))
