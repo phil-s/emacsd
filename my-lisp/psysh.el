@@ -981,9 +981,10 @@ Called via `comint-output-filter-functions'."
 
 (defun psysh-php-manual-make-readable ()
   "Call `eww-readable' if `psysh-php-manual-make-readable' is non-nil."
-  (when psysh-php-manual-make-readable
-    (eww-readable)
-    (setq-local psysh-php-manual-make-readable nil)))
+  (with-current-buffer "*eww*"
+    (when psysh-php-manual-make-readable
+      (eww-readable)
+      (kill-local-variable 'psysh-php-manual-make-readable))))
 
 (defun psysh-sentinel (process _str)
   "Process signals from the psysh process."
@@ -1089,15 +1090,26 @@ Runs the PsySH command \\='completions\\=' for the current input."
 
 (defun psysh-local-manual-browse-url (url &rest args)
   "Use `php-local-manual-search' when available."
-  (if (fboundp 'php-local-manual-search)
-      (let* ((urlobj (url-generic-parse-url url))
-             (urlpath (car (url-path-and-query urlobj)))
-             (word (substring urlpath 1)))
-        (or (php-local-manual-search word)
-            (apply #'browse-url url args)))
-    ;; Local search not available.
-    (setq-local psysh-php-manual-make-readable t)
-    (apply #'browse-url url args)))
+  (let ((handlers (cl-loop
+                   for handler in browse-url-handlers
+                   unless (eq 'psysh-local-manual-browse-url (cdr handler))
+                   collect handler
+                   else collect (cons (car handler)
+                                      php-search-documentation-browser-function))))
+    (if (fboundp 'php-local-manual-search)
+        (let* ((urlobj (url-generic-parse-url url))
+               (urlpath (car (url-path-and-query urlobj)))
+               (word (substring urlpath 1)))
+          (or (php-local-manual-search word)
+              (let ((browse-url-handlers handlers))
+                (apply #'browse-url url args)
+                (with-current-buffer "*eww*"
+                  (setq-local psysh-php-manual-make-readable t)))))
+      ;; Local search not available.
+      (let ((browse-url-handlers handlers))
+        (apply #'browse-url url args)
+        (with-current-buffer "*eww*"
+          (setq-local psysh-php-manual-make-readable t))))))
 
 (defvar psysh-version psysh--latest-version
   "The loaded version of psysh.el.")
