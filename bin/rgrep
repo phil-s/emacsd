@@ -1,0 +1,578 @@
+#!/bin/bash
+
+# Author: Phil Sainty <psainty@orcon.net.nz>
+# Created: July 2026
+version=0.4
+
+
+### Commentary:
+#
+# Similar to M-x rgrep
+#
+# For usage details, run:
+# rgrep -h
+
+
+### Change Log:
+#
+# 0.4  - Locale-based performance enhancements.
+# 0.3  - Improved option handling.
+# 0.2  - Initial code.
+
+
+### Code
+
+# Functions to print argument + newline to stdout or stderr.
+stdout () {
+    printf %s\\n "$@"
+}
+stderr () {
+    printf %s\\n "$@" >&2
+}
+
+# Unset the variables which are only set conditionally.
+unset -v debug error help short_help use_colour verbose \
+      find_paths find_options find_ignore \
+      grep_options grep_regexp grep_literal
+
+# shellcheck disable=SC2034
+# SC2034: <varname> appears unused. Verify it or export it.
+newline='
+' # EOL
+
+exit_status=0
+
+# Determine how we establish canonical file paths.
+real_path () {
+    if [ -n "${gnu_readlink}" ]; then
+        ${gnu_readlink} -m "$1"
+    else
+        printf %s "$1"
+    fi
+}
+if command -v greadlink &>/dev/null; then
+    # e.g. If the GNU coreutils package is installed on FreeBSD (OSX too?)
+    gnu_readlink=greadlink
+elif command -v readlink &>/dev/null; then
+    # We want the -m option, which is a GNU extension.  Try to detect that.
+    if (readlink -m --version | grep GNU) &>/dev/null; then
+        gnu_readlink=readlink
+    fi
+fi
+
+# # Where did we run this script from?
+# # shellcheck disable=SC2034
+# # SC2034: <varname> appears unused. Verify it or export it.
+# initial_dir=$(pwd)
+#
+# # Is the CWD in a git repository?
+# # shellcheck disable=SC2034
+# # SC2034: <varname> appears unused. Verify it or export it.
+# gitroot=$(git rev-parse --show-toplevel 2>/dev/null)
+
+# Default settings.
+#
+# shellcheck disable=SC2086,SC2223
+# SC2086: Double quote to prevent globbing and word splitting.
+# SC2223: This default assignment may cause DoS due to globbing. Quote it.
+{
+    # Disable pathname expansion to avoid globbing DoS exploit.
+    # We could double-quote the whole argument, but inner quoting
+    # is fraught with so many issues that this approach is safer.
+    set -o noglob
+    # Default settings which cannot be null.
+    # : ${RGREP_FOO:='x'}
+    # Default settings which can be null.
+    # Ignore directories and files per default `grep-find-ignored-directories'
+    # and `grep-find-ignored-files' values in Emacs.
+    : ${RGREP_IGNORE=1}
+    # Default grep options
+    : ${RGREP_GREP_OPTIONS="--with-filename --line-number"}
+    # Re-enable pathname expansions.
+    set +o noglob
+}
+
+# Initial grep options.
+grep_options=${RGREP_GREP_OPTIONS}
+
+# Check if the terminal has colour capability.
+use_colour=${RGREP_COLOUR}
+if [ -z "${use_colour}" ]; then
+    if [ "${TERM%color}" != "$TERM" ]; then
+        # (xterm-color, xterm-256color, eterm-color, etc...)
+        use_colour=yes
+    elif command -v tput &>/dev/null && tput setaf 1 &>/dev/null; then
+        # We have colour support; assume it's compliant with ECMA-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and
+        # such a case would tend to support setf rather than setaf.)
+        use_colour=yes
+    else
+        use_colour=no
+    fi
+fi
+
+colourise () {
+    if [ "${use_colour}" = "yes" ] && [ -n "$1" ]; then
+        # Use colour $1 to display text $2.
+        printf "${1}%s${RGREP_COLOUR_RESET}" "$2"
+    else
+        # In the absence of colour, use quote character $3 to quote the
+        # value, as an alternative method of emphasis.
+        printf %s%s%s "$3" "$2" "$3"
+    fi
+}
+notice () {
+    colourise "${RGREP_COLOUR_NOTICE}" "$@"
+}
+warning () {
+    colourise "${RGREP_COLOUR_WARNING}" "$@"
+}
+error () {
+    colourise "${RGREP_COLOUR_ERROR}" "$@"
+}
+stderr_hl () {
+    for err in "$@"; do
+        stderr "$(error "${err}")"
+    done
+}
+
+# Helper functions for escaping input for processing by various different
+# programs.  Note that sed chomps the newline from each line, and therefore
+# one can't tell whether the *final* line was newline-terminated without
+# taking additional steps.  None of our use-cases are affected by this
+# issue, so our functions do not bother to handle it.
+
+# Escape substitutions in sed replacement strings.
+sed_escape () {
+    printf %s "$1" | sed 's/[\/&]/\\&/g;$!s/$/\\/g'
+}
+# Escape substitutions in sed pattern strings.
+sed_escape_pattern () {
+    printf %s "$1" | sed 's/[]\/$*.^|[]/\\&/g'
+}
+
+# Escape any regexp-special chars for grep.
+grep_escape_bre () {
+    printf %s "$1" | sed 's/[[\.*^$]/\\&/g'
+    # The GNU grep manual does not provide this list of characters in
+    # any single place; but it can be inferred from the overall text,
+    # and the function fgrep_to_grep_pattern() in src/grep.c provides
+    # confirmation:
+    # case '$': case '*': case '.': case '[': case '\\': case '^':
+}
+grep_escape_ere () {
+    printf %s "$1" | sed 's/[[\.*^$?+{|()]/\\&/g'
+    # This is based on grep_bre_escape() plus the info from the manual
+    # regarding how BRE syntax differs from ERE syntax:
+    #
+    # In basic regular expressions the meta-characters ‘?’, ‘+’, ‘{’, ‘|’,
+    # ‘(’, and ‘)’ lose their special meaning; instead use the backslashed
+    # versions ‘\?’, ‘\+’, ‘\{’, ‘\|’, ‘\(’, and ‘\)’.
+}
+
+shell_escape () {
+    local param
+    for param; do
+        # Strings containing only [-0-9a-zA-Z_./] can remain unquoted.
+        # (This char set is derived from shell-quote-argument in Emacs.)
+        # We ensure that any newlines are 'seen' by grep by converting
+        # them to another invalid character.
+        if [ -z "${param}" ]; then
+            param="''"
+        else
+            printf %s "${param}" \
+                | tr '\n' '!' \
+                | grep '^[-0-9a-zA-Z_./]\+$' >/dev/null 2>&1
+            # shellcheck disable=SC2181
+            # SC2181: Check exit code directly with e.g. 'if ! mycmd;'
+            if [ $? -ne 0 ]; then
+                # String contains invalid characters (or is empty), so requires
+                # quoting.  We can safely remove '' afterwards from the start or
+                # end of the string, but not otherwise (e.g. consider \''foo').
+                param=$(printf %s "${param}Z" \
+                            | sed -e "s/'/'\\\\''/g;1s/^/'/;\$s/Z\$/'/" \
+                                  -e "1s/^''//;\$s/''\$//")
+                if [ -z "${param}" ]; then
+                    param="''" # This is unreachable, yes?
+                fi
+            fi
+        fi
+        printf %s "${param}"
+        shift
+        if [ $# -gt 0 ]; then
+            printf ' '
+        fi
+    done
+}
+
+########################################### PAGEBREAK (C-x ] to page forward) ##
+
+# Process command-line options.
+argmissing () {
+    stderr_hl "rgrep: Missing mandatory argument for option $1"
+    # shellcheck disable=SC2034
+    # SC2034: <varname> appears unused. Verify it or export it.
+    error=1
+}
+# n.b. All variables which are only set conditionally must be included
+# in the 'unset' list above.
+option_phase=top
+while [ $# -gt 0 ]; do
+    remaining=$#
+    case "$option_phase" in
+        ( top ) {
+            case "$1" in
+                ( -- ) {
+                    grep_options="${grep_options} --"
+                    shift
+                    option_phase=regexp
+                    continue
+                };;
+                ( -h | --help ) help=1; short_help=1; shift; break;;
+                ( --version ) version_help=1; shift; break;;
+                ( --debug ) debug=1; shift;;
+                ( --verbose ) verbose=1; shift;;
+                ( --colour | --color ) use_colour=yes; shift;;
+                ( --no-colour | --no-color ) use_colour=no; shift;;
+                ( --all ) find_ignore=; shift;;
+                ( -* ) option_phase=grep_options; continue;;
+                ( * ) option_phase=regexp; continue;;
+            esac
+        };;
+        ( grep_options ) {
+            case "$1" in
+                ( -- ) {
+                    grep_options="${grep_options} --"
+                    shift
+                    option_phase=regexp
+                    continue
+                };;
+                ( -* ) {
+                    grep_options="${grep_options} $(shell_escape "$1")"
+                    # Check for --fixed-strings.  This doesn't catch
+                    # when "F" is within a multi-option argument, but
+                    # false-negatives are ok -- we're only using it
+                    # for an optional performance improvement.
+                    case "$1" in
+                        ( -F | --fixed-strings ) grep_literal=1;;
+                    esac
+                    shift
+                };;
+                ( * ) option_phase=regexp; continue;;
+            esac
+        };;
+        ( regexp ) {
+            grep_regexp=$(shell_escape "$1")
+            shift
+            option_phase=files
+            continue
+        };;
+        ( files ) {
+            case "$1" in
+                ( -- ) {
+                    shift
+                    option_phase=find_options
+                    continue
+                };;
+                ( -* ) {
+                    is_a_file=
+                    for opt in "$@"; do
+                        if [ "$opt" = "--" ]; then
+                            is_a_file=1
+                            break
+                        fi
+                    done
+                    if [ -n "${is_a_file}" ]; then
+                        find_paths="${find_paths} $(shell_escape "$1")"
+                        shift
+                    else
+                        option_phase=find_options
+                        continue
+                    fi
+                };;
+                ( * ) {
+                    find_paths="${find_paths} $(shell_escape "$1")"
+                    shift
+                    continue
+                };;
+            esac
+        };;
+        ( find_options ) {
+            find_options="${find_options} $(shell_escape "$1")"
+            shift
+        };;
+    esac
+    # shellcheck disable=SC2086,SC2223
+    # SC2086: Double quote to prevent globbing and word splitting.
+    # SC2223: This default assignment may cause DoS due to globbing. Quote it.
+    # (This loop sets remaining=$# explicitly.)
+    if [ $# -eq $remaining ]; then
+        # We failed to shift.  This will be a "shift 2" when $# -eq 1, which
+        # indicates that a mandatory argument was not supplied for the final
+        # parameter.  Break to prevent the infinite loop.
+        break
+    fi
+done
+
+# Colour?
+if [ "${use_colour}" = "yes" ]; then
+    grep_options="--color=auto ${grep_options}"
+fi
+
+# Display version.
+if [ -n "${version_help}" ] || [ -n "${help}" ]; then
+    printf "rgrep version %s\n" "${version}"
+    if [ -n "${version_help}" ]; then
+        stdout
+        ${RGREP_FIND:-find} --version
+        stdout
+        ${RGREP_GREP:-grep} --version
+        exit 0
+    fi
+fi
+
+# Display help.
+# Most of this should be in a man page / info node.
+if [ -n "${help}" ] || [ -n "${short_help}" ]; then
+    cat <<EOF
+Usage:
+  $(basename "$0") [OPTIONS] [GREP OPTIONS] [--] REGEXP [FILES] [--] [FIND OPTIONS]
+  $(basename "$0") [ --version ]
+  $(basename "$0") [ --help | -h ]
+
+EOF
+
+    if [ -n "${help}" ]; then
+        cat <<EOF
+Grep for the specifed REGEXP in the specified files and directories,
+recursively.  This is analogous to the Emacs command M-x rgrep.
+
+The immediate benefit of this over "grep -r" is the automatic ignoring
+of directories and files which are unlikely to be useful to search.
+The ignore lists are taken from the default values for the Emacs options
+'grep-find-ignored-directories' and 'grep-find-ignored-files'.
+
+Additionally, find(1) options may be supplied to filter the list of
+files to be searched in ways that grep(1) alone cannot specify.
+
+OPTIONS
+
+  --all
+        Do not ignore version control directories and and binary files.
+
+  --colour, --no-colour
+        Enforce or inhibit colour output.  (Overrides automatic detection.)
+
+  [GREP OPTIONS]
+        Passed to grep(1).
+
+  REGEXP
+        Regular expression for grep to search for.  If it begins with a
+        hyphen then preceed it with the argument '--' (otherwise it will
+        be treated as an option for the grep command).
+
+  [FILES]
+        Any number of file and directory paths to search (recursively).
+        If any path begins with a hyphen then append the argument '--'
+        as a final path (otherwise the path starting with a hyphen will
+        be treated as the first option for the find command).
+
+  [FIND OPTIONS]
+        Passed to find(1).  All argumentss following the first find option
+        (with a leading hyphen) are treated as find options.
+
+EXAMPLES
+
+  $(basename "$0") <regexp>
+  $(basename "$0") <regexp> <dir1> <dir2>
+  $(basename "$0") -il <regexp> <dir> -iname "*.txt"
+
+EOF
+    fi
+    exit ${exit_status-0}
+fi
+
+########################################### PAGEBREAK (C-x ] to page forward) ##
+
+if [ -z "${grep_regexp}" ]; then
+    stderr "rgrep: No regexp provided"
+    stdout "Use \"$(basename "$0") -h\" for documentation."
+    #short_help=1
+    #exit_status=1
+    exit 1
+fi
+
+# Set defaults for omitted options.
+#
+# shellcheck disable=SC2086,SC2223
+# SC2086: Double quote to prevent globbing and word splitting.
+# SC2223: This default assignment may cause DoS due to globbing. Quote it.
+{
+    # Disable pathname expansion to avoid globbing DoS exploit.
+    # We could double-quote the whole argument, but inner quoting
+    # is fraught with so many issues that this approach is safer.
+    set -o noglob
+    : ${find_ignore=${RGREP_IGNORE}}
+    # Re-enable pathname expansions.
+    set +o noglob
+}
+
+# Default to searching the current directory.
+find_paths=${find_paths:-.}
+
+# Remove leading and trailing spaces.
+for var in find_paths find_options grep_options; do
+    eval "${var}=\${${var}# }"
+    eval "${var}=\${${var}% }"
+done
+
+# Directory and file exclusions for find are copied from the Emacs variables
+# 'grep-find-ignored-directories' and 'grep-find-ignored-files' (used by the
+# Emacs 'rgrep' command).
+if [ -n "${find_ignore}" ]; then
+    # With the addition of:
+    #  -o -path \*/node_modules
+    # find_prune_dirs="\( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} -o -name node_modules -o -path \*/theme/\*/style \)"
+    # But then the *removal* of all VCS other than .git because that
+    # turns out to speeds things up considerably, and we just don't
+    # need the rest in practice.  Literally everything here uses Git
+    # for version control!
+    # Note that simply using -name instead of -path is ~20% faster:
+    # find_prune_dirs="\( -name SCCS -o -name RCS -o -name CVS -o -name MCVS -o -name .src -o -name .svn -o -name .git -o -name .hg -o -name .bzr -o -name _MTN -o -name _darcs -o -name \{arch\} -o -name node_modules -o -path \*/theme/\*/style \)"
+    # But ditching the redundant patterns is ~40% faster:
+    find_prune_dirs="\( -name .git -o -name node_modules -o -path \*/theme/\*/style \)"
+    # Note that GNU find 4.10.0 performs dramatically better than
+    # earlier versions, and the above percentages were based on
+    # the older version 4.8.0.  There is still a small benefit to
+    # be gained from the above adjustments to the options in newer
+    # versions; but the benefit of simply using a newer version is
+    # much greater.  (E.g. reducing the average run time for one of
+    # my test cases from 21.373s to 8.845s.)
+    #
+    # With the addition of:
+    # -o -name \*.css.map -o -name \*.js.map
+    find_prune_files="\( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.eln -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo -o -name \*.css.map -o -name \*.js.map \)"
+    find_options="-type d ${find_prune_dirs} -prune -o -type f \! ${find_prune_files} ${find_options}"
+else
+    find_options="-type f ${find_options}"
+fi
+
+# The find and grep commands can be overridden with the environment variables
+# RGREP_FIND and RGREP_GREP.
+#
+# An example of using ripgrep as a substitute for GNU grep:
+# RGREP_GREP='rg -uuu --max-depth=0 --no-heading --with-filename'
+
+find_cmd="${RGREP_FIND:-find} ${find_paths} ${find_options}"
+#grep_cmd="${RGREP_GREP:-grep} --line-buffered ${grep_options} ${grep_regexp}"
+grep_cmd="${RGREP_GREP:-grep} ${grep_options} ${grep_regexp}"
+
+
+# Remove leading and trailing spaces.
+for var in find_cmd grep_cmd; do
+    eval "${var}=\${${var}# }"
+    eval "${var}=\${${var}% }"
+done
+
+# A locale-based performance hack.
+#
+# (info "(grep)Performance") says:
+#
+# > Generally speaking ‘grep’ operates more efficiently in single-byte
+# > locales, since it can avoid the special processing needed for multi-byte
+# > characters.  If your patterns will work just as well that way, setting
+# > ‘LC_ALL’ to a single-byte locale can help performance considerably.
+# > Setting ‘LC_ALL='C'’ can be particularly efficient, as ‘grep’ is tuned
+# > for that locale.
+#
+# We're invariably assuming UTF-8, and so if the /pattern/ is single-byte,
+# then we may be able to run the pattern-matching as single-byte too.
+#
+# Because /none/ of the bytes in a UTF-8 multi-byte character can be within
+# the 7-bit ascii range (#x00-#x7f), searching solely for self-matching ascii
+# characters allows us to treat the file as single-byte for search purposes.
+# (Mostly for paranoia's sake, I'm further limiting it to only the /printable/
+# ascii characters.)
+#
+# In bash, ${#var} returns the length in /characters/, while
+# printf's %n feature can assign the /byte/ count to a variable.
+char_len=${#grep_regexp}
+printf -v _output %s%n "${grep_regexp}" byte_len
+# shellcheck disable=SC2154
+# SC2154: byte_len is referenced but not assigned.
+if [ "${char_len}" -eq "${byte_len}" ]; then
+    # This is a single-byte pattern.  We further restrict it to the
+    # printable ascii range.  As a side-note, the following seems like
+    # a good reference for the POSIX character class definition:
+    # https://en.wikibooks.org/wiki/Regular_Expressions/POSIX_Basic_Regular_Expressions
+    # Does bash implement these that way?  Probably, but I can't find
+    # it in the source code or documentation, and so I'm making the
+    # assumption that [:print:] *might* be more than just the ascii
+    # printable chars (and hence also testing [:ascii:]).
+    only_ascii="${grep_regexp//[^[:ascii:]]/}" # Delete non-ascii chars
+    only_printable_ascii="${only_ascii//[^[:print:]]/}" # Delete non-print chars
+    if [ "${grep_regexp}" = "${only_printable_ascii}" ]; then
+        # Now check whether it is a /literal/ regexp (as metacharacters
+        # such as "." would fail to match multi-byte characters if we have
+        # asserted that the file contains only single-byte characters).
+        #
+        # (info "(grep)Fundamental Structure") says:
+        #
+        # > In regular expressions, the characters ‘.?*+{|()[\^$’ are “special
+        # > characters” and have uses described below.  All other characters are
+        # > “ordinary characters”, and each ordinary character is a regular
+        # > expression that matches itself.
+        #
+        # https://www.pcre.org/current/doc/html/pcre2syntax.html suggests that
+        # applies to PCRE as well.
+        #
+        # If the [-F|--fixed-strings] grep option was supplied then we know that
+        # all characters in the pattern will be matched literally.  Otherwise,
+        # check whether the pattern contains only self-matching characters.
+        #
+        # (Not all metacharacters would be problematic -- commonly it would only
+        # be "." and "[" which cause problems -- but other problem sequences
+        # exist and can vary between regexp dialects, and so treating every
+        # metacharacter as unsafe is the simplest way to be certain.)
+        if [ -z "${grep_literal}" ]; then
+            without_metachars="${grep_regexp//[.?*+{|()[\\^$]/}"
+            if [ "${grep_regexp}" = "${without_metachars}" ]; then
+                grep_literal=1
+            fi
+        fi
+        if [ -n "${grep_literal}" ]; then
+            # Every character in the pattern is a self-matching character
+            # in the printable ascii range, so we can apply the locale hack.
+            grep_cmd="env LC_ALL=C ${grep_cmd}"
+        fi
+    fi
+fi
+
+# Respond to our --verbose and --debug options.
+if [ -n "${debug}${verbose}" ]; then
+    stderr "${find_cmd} -print0 | xargs -0r ${grep_cmd}"
+    if [ -n "${debug}" ]; then
+        exit 0
+    fi
+fi
+
+# set -x
+
+# How many files are we searching?
+# eval "${find_cmd} | wc"
+# exit
+
+# eval "${find_cmd} -print0 | xargs -0r ${grep_cmd}"
+# echo "${find_cmd} -print0 | xargs -0r ${grep_cmd}"
+# exit
+
+# Error output (stderr) is redirected to a sub-shell which ignores
+# broken pipe messages and sends any others back to stderr.  This
+# avoids the unwanted error if we pipe the output to the 'head'
+# command, for instance.
+# https://unix.stackexchange.com/a/104768/41789
+eval "${find_cmd} -print0 | xargs -P20 -0r ${grep_cmd}" \
+     2> >( grep -v '^xargs: .*: terminated by signal 13$' >&2 )
+
+# Or with the potential error message:
+# eval "${find_cmd} -print0 | xargs -0r ${grep_cmd}"
