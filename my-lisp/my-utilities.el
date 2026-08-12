@@ -3123,6 +3123,39 @@ Uses `my-hide-region-in-window'."
           (assq-delete-all w my-hide-window-overlays-alist))
     ;; (kill-local-variable 'global-disable-point-adjustment)
     ))
+
+(defvar my-rgrep-history nil)
+
+(defun my-rgrep (regexp &optional files dir confirm)
+  "Use my `rgrep' shell utility."
+  (interactive
+   (progn
+     (grep-compute-defaults)
+     (cond
+      ((equal current-prefix-arg '(16))
+       (list (read-from-minibuffer
+              "Run: " "rgrep --color=auto --null -i "
+              nil nil 'my-rgrep-history)))
+      (t (let* ((regexp (grep-read-regexp))
+                (files (grep-read-files regexp))
+                (dir (read-directory-name "Base directory: "
+                                          nil default-directory t))
+                (confirm (equal current-prefix-arg '(4))))
+           (list regexp files dir confirm))))))
+  (if (equal current-prefix-arg '(16))
+      (compilation-start regexp #'grep-mode)
+    (let ((command (concat "rgrep --color=auto --null -i "
+                           (shell-quote-argument regexp)
+                           (unless (equal files "*")
+                             (format " -iname %s"
+                                     (shell-quote-argument files))))))
+      (if confirm
+          (setq command (read-from-minibuffer
+                         "Confirm: " command nil nil 'my-rgrep-history))
+        (add-to-history 'my-rgrep-history command))
+      ;; Run rgrep shell utility.
+      (let ((default-directory dir))
+        (compilation-start command #'grep-mode)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
