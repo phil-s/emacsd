@@ -11,6 +11,7 @@
   (defvar deft-extension)
   (defvar deft-text-mode)
   (defvar doc-view-mupdf-use-svg)
+  (declare-function default-generic-mode "generic-x")
   (declare-function jinx-correct "jinx")
   (declare-function jinx-mode "jinx")
   )
@@ -34,6 +35,11 @@ zero or negative, then disable both modes."
     (visual-line-mode state)
     (when (fboundp 'adaptive-wrap-prefix-mode)
       (adaptive-wrap-prefix-mode state))))
+
+(define-derived-mode my-adaptive-visual-line-generic-mode
+  default-generic-mode "AWrap"
+  "Like `default-generic-mode' with `my-adaptive-visual-line-mode'."
+  (my-adaptive-visual-line-mode 1))
 
 (require 'delight)
 (delight '((adaptive-wrap-prefix-mode "" adaptive-wrap)
