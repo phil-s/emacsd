@@ -1031,6 +1031,8 @@
     (auto-compile-on-save-mode 1)
     (auto-compile-on-load-mode 1)))
 
+(my-init-time-elapsed 1)
+
 ;; Load 'customized' variables and faces.
 (setq custom-file (expand-file-name "~/.emacs.d/custom.el"))
 (load custom-file)
@@ -1081,8 +1083,32 @@
 ;; White space
 (require 'my-whitespace)
 
+(my-init-time-elapsed 2)
+
 ;; Basic configuration
+;; TODO: Perf:
+;; 02: Elapsed: 0.24s
+;; Loading /home/phil/.emacs.d/recentf...done
+;; Cleaning up the recentf list...done (0 removed)
+;; Repeat mode is enabled for 21 commands and 11 keymaps; see `describe-repeat-maps'
+;; 03: Elapsed: 0.52s
+;; - Previously 0.90s, and /that/ difference was from activating the
+;;   diary/appointment notifications:
+;;   (when (file-exists-p diary-file) (appt-activate 1))
+;;   We do need that, but simply /deferring/ it slightly smooths
+;;   things out (for a 0.39 reduction).
+;; - Without the 12 (occur "^(.+-mode 1)") cases: Elapsed: 0.76s
+;;   which is a further 0.14s reduction.
+;; - I wonder how much time the advice.el calls take?
+;;   (Answer: Virtually none at all.)
+;; - And testing _my-configuration.el.stripped.el we get:
+;;   03: Elapsed: 0.20s
+;;   which is the above^ + not `require'ing anything at the top
+;;   level (which, it turns out, there was quite a bit of).
+;; - _my-configuration.el.stripped[23].el do not help any further.
 (require 'my-configuration)
+
+(my-init-time-elapsed 3)
 
 ;; Custom utilities
 (require 'my-utilities)
@@ -1094,6 +1120,8 @@
 
 ;; Non-programming text modes
 (require 'my-text)
+
+(my-init-time-elapsed 4)
 
 ;; Version control systems
 (require 'my-version-control)
@@ -1112,6 +1140,8 @@
 
 ;; Org-Mode
 (require 'my-org)
+
+(my-init-time-elapsed 5)
 
 ;; Bug fix for SHR/EWW.
 ;; This is shr.el from Emacs 27.2 and byte-compiled in Emacs 28.2.
@@ -1141,6 +1171,8 @@
 ;; I think this gets a let-binding on account of the support for
 ;; --debug-init and so we need to do this instead of plain setq:
 (set-default-toplevel-value 'debug-on-error nil)
+
+(my-init-time-elapsed 6)
 
 ;;; Local Variables:
 ;;; page-delimiter: ";;;; "
