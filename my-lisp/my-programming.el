@@ -528,8 +528,8 @@ Advice for `visit-tags-table'."
     (lexbind-mode 1)))
 
 ;; Highlight current sexp.
-;; (remove-hook 'emacs-lisp-mode-hook 'my-hl-sexp-mode)
-(add-hook 'emacs-lisp-mode-hook 'my-hl-sexp-mode)
+;; (remove-hook 'lisp-data-mode-hook 'my-hl-sexp-mode)
+(add-hook 'lisp-data-mode-hook 'my-hl-sexp-mode)
 (defun my-hl-sexp-mode ()
   (when (require 'hl-sexp nil 'noerror)
     (hl-sexp-mode 1)))
