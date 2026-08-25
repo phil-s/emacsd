@@ -795,9 +795,11 @@ nothing."
       (mu4e-update-index))
     (when (and mu4e-update-interval (null mu4e~update-timer))
       (setq mu4e~update-timer
-            (run-at-time 0 mu4e-update-interval
-                         (lambda () (mu4e-update-mail-and-index
-                                     mu4e-index-update-in-background)))))))
+            (run-at-time 0 mu4e-update-interval #'mu4e-update-callback)))))
+
+(defun mu4e-update-callback ()
+  "Callback for the timer run by `mu4e~pong-handler'."
+  (mu4e-update-mail-and-index mu4e-index-update-in-background))
 
 (defun mu4e-last-query-results ()
   "Get the results (counts) of the last cached queries.
