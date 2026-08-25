@@ -1,4 +1,4 @@
-;;; ztree-diff-model.el --- diff model for directory trees
+;;; ztree-diff-model.el --- diff model for directory trees  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013 Alexey Veretennikov
 ;;

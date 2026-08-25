@@ -1,4 +1,4 @@
-;;; fm.el --- follow mode for compilation/output buffers
+;;; fm.el --- follow mode for compilation/output buffers  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 1997 Stephen Eglen
 

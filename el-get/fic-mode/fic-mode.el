@@ -1,4 +1,4 @@
-;;; fic-mode.el --- Show FIXME/TODO/BUG(...) in special face only in comments and strings
+;;; fic-mode.el --- Show FIXME/TODO/BUG(...) in special face only in comments and strings  -*- lexical-binding: nil; -*-
 ;;--------------------------------------------------------------------
 ;;
 ;; Copyright (C) 2010, Trey Jackson <bigfaceworm(at)gmail(dot)com>

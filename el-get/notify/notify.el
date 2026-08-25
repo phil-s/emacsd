@@ -1,4 +1,4 @@
-;;; notify.el --- notification front-end
+;;; notify.el --- notification front-end  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2008  Mark A. Hershberger
 

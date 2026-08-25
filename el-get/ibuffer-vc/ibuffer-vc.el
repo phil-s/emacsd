@@ -1,4 +1,4 @@
-;;; ibuffer-vc.el --- Group ibuffer's list by VC project, or show VC status
+;;; ibuffer-vc.el --- Group ibuffer's list by VC project, or show VC status  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2011-2014 Steve Purcell
 ;;

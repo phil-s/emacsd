@@ -1,4 +1,4 @@
-;;; rainbow-mode.el --- Displays color names with colored background.
+;;; rainbow-mode.el --- Displays color names with colored background.  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2010 Free Software Foundation, Inc
 

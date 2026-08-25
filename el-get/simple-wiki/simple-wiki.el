@@ -1,4 +1,4 @@
-;;; simple-wiki.el --- edit local raw wiki pages
+;;; simple-wiki.el --- edit local raw wiki pages  -*- lexical-binding: nil; -*-
 
 ;; This is a modified copy of simple-wiki.el from http-emacs:
 ;; cvs -d :pserver:anonymous@cvs.savannah.nongnu.org:/sources/http-emacs \

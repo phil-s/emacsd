@@ -1,4 +1,4 @@
-;;; https://www.varnish-cache.org/svn/trunk/varnish-tools/emacs/vcl-mode.el
+;;; https://www.varnish-cache.org/svn/trunk/varnish-tools/emacs/vcl-mode.el  -*- lexical-binding: nil; -*-
 ;;;
 ;;; vcl-mode.el - Syntax highlighting for Varnish Command Language
 ;;;

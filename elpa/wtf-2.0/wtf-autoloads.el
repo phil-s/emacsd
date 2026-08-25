@@ -1,4 +1,4 @@
-;;; wtf-autoloads.el --- automatically extracted autoloads
+;;; wtf-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: nil; -*-
 ;;
 ;;; Code:
 

@@ -1,4 +1,4 @@
-;;; windcycle.el --- Window cycling for Emacs
+;;; windcycle.el --- Window cycling for Emacs  -*- lexical-binding: nil; -*-
 
 ;; This is a modified (reduced) version of:
 ;; https://raw.github.com/troydm/emacs-stuff/master/windcycle.el

@@ -1,4 +1,4 @@
-;;; geben.el --- DBGp protocol frontend, a script debugger
+;;; geben.el --- DBGp protocol frontend, a script debugger  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2005-2010  reedom <fujinaka.tohru@gmail.com>
 ;; Copyright (C) 2016  Matthew Carter

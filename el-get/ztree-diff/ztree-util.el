@@ -1,4 +1,4 @@
-;;; ztree-util.el --- Auxulary utilities for the ztree package
+;;; ztree-util.el --- Auxulary utilities for the ztree package  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013 Alexey Veretennikov
 ;;

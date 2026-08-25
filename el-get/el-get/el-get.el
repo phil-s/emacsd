@@ -1,4 +1,4 @@
-;;; el-get.el --- Manage the external elisp bits and pieces you depend upon
+;;; el-get.el --- Manage the external elisp bits and pieces you depend upon  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2010 Dimitri Fontaine
 ;;

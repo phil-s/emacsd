@@ -1,4 +1,4 @@
-;;; sdcv-mode.el --- major mode to do dictionary query through sdcv
+;;; sdcv-mode.el --- major mode to do dictionary query through sdcv  -*- lexical-binding: nil; -*-
 
 ;; Copyright 2006~2008 pluskid,
 ;;           2011 gucong

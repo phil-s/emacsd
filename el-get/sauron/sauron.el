@@ -1,4 +1,4 @@
-;;; sauron.el --- a frame tracking events inside and outside your emacs buffers
+;;; sauron.el --- a frame tracking events inside and outside your emacs buffers  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2011-2012 Dirk-Jan C. Binnema
 

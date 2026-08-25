@@ -1,4 +1,4 @@
-;; sudo.el -- sudo wrapper for saving / opening files
+;; sudo.el -- sudo wrapper for saving / opening files  -*- lexical-binding: nil; -*-
 ;; Author: Scott Vokes <scott@silentbicycle.com>
 ;; Version: 0.5 -- 2007-07-14
 ;;

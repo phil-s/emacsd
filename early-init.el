@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (defvar my-early-init-load-start (current-time))
 
 ;; Replicate --debug-init (see also the end of init.el).

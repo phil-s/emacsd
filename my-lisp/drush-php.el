@@ -1,4 +1,4 @@
-;;; drush-php.el --- Drush PHP integration for psysh.el
+;;; drush-php.el --- Drush PHP integration for psysh.el  -*- lexical-binding: nil; -*-
 ;;
 ;; Author: Phil Sainty
 ;; Created: April 2018

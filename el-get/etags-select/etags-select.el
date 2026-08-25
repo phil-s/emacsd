@@ -1,4 +1,4 @@
-;;; etags-select.el --- Select from multiple tags
+;;; etags-select.el --- Select from multiple tags  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2007  Scott Frazer
 

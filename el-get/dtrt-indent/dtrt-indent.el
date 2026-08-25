@@ -1,4 +1,4 @@
-;;; dtrt-indent.el --- Adapt to foreign indentation offsets
+;;; dtrt-indent.el --- Adapt to foreign indentation offsets  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2003, 2007, 2008 Julian Scheid
 

@@ -1,4 +1,4 @@
-;;; iedit.el --- Edit multiple regions with the same content simultaneously.
+;;; iedit.el --- Edit multiple regions with the same content simultaneously.  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2010, 2011 Victor Ren
 

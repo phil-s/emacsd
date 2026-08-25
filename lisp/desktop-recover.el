@@ -1,4 +1,4 @@
-;;; desktop-recover.el ---
+;;; desktop-recover.el ---  -*- lexical-binding: nil; -*-
 
 ;; Copyright 2009 Joseph Brenner
 ;;

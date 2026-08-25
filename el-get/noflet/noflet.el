@@ -1,4 +1,4 @@
-;;; noflet.el --- locally override functions
+;;; noflet.el --- locally override functions  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013  Nic Ferrier
 

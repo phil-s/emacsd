@@ -1,4 +1,4 @@
-;;; mo-git-blame --- An interactive, iterative 'git blame' mode for Emacs
+;;; mo-git-blame --- An interactive, iterative 'git blame' mode for Emacs  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2009, 2010  Moritz Bunkus <moritz@bunkus.org>
 ;; Copyright (C) 2010  Štěpán Němec <stepnem@gmail.com>

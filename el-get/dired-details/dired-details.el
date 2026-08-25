@@ -1,4 +1,4 @@
-;;; dired-details.el --- Make file details hide-able in dired
+;;; dired-details.el --- Make file details hide-able in dired  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2003-2011 Rob Giardina
 

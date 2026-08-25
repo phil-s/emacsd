@@ -1,4 +1,4 @@
-;;; image-dimensions-minor-mode.el
+;;; image-dimensions-minor-mode.el  -*- lexical-binding: t; -*-
 ;;
 ;; Display the image dimensions in the mode line, when viewing an image.
 ;;

@@ -1,4 +1,4 @@
-;;; php-eldoc.el --- eldoc-mode plugin for PHP source code
+;;; php-eldoc.el --- eldoc-mode plugin for PHP source code  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2012  Zeno Zeng
 

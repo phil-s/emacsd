@@ -1,4 +1,4 @@
-;;; .loaddefs.el --- automatically extracted autoloads
+;;; .loaddefs.el --- automatically extracted autoloads  -*- lexical-binding: t; -*-
 ;;
 ;;; Code:
 

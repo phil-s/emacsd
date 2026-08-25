@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (defun outline-copy-visible (keepp)
   "Create a copy of the visible part of the current buffer and add
 it to the kill ring so it can be copied into other buffers or programs.

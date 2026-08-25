@@ -1,4 +1,4 @@
-;;; highlight-parentheses.el --- highlight surrounding parentheses
+;;; highlight-parentheses.el --- highlight surrounding parentheses  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2007, 2009 Nikolaj Schumacher
 ;;

@@ -1,4 +1,4 @@
-;;; dbgp.el --- DBGp protocol interface
+;;; dbgp.el --- DBGp protocol interface  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2005-2010  reedom <fujinaka.tohru@gmail.com>
 ;; Copyright (C) 2016  Matthew Carter

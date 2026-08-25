@@ -1,4 +1,4 @@
-;;; wrap-region.el --- Wrap text with punctation or tag
+;;; wrap-region.el --- Wrap text with punctation or tag  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2008-2012 Johan Andersson
 

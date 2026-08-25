@@ -1,4 +1,4 @@
-;;; idle-highlight-mode.el --- highlight the word the point is on
+;;; idle-highlight-mode.el --- highlight the word the point is on  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2008-2011 Phil Hagelberg, Cornelius Mika
 
