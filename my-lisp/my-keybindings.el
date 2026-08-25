@@ -29,6 +29,10 @@
 ;; Content menus on Shift + right-click
 (global-set-key (kbd "S-<mouse-3>") 'context-menu-open)
 
+;; Extend region selection with S-<mouse-1> (31+)
+(when (fboundp 'mouse-shift-adjust-mode)
+  (mouse-shift-adjust-mode 1))
+
 ;; Global bindings, for when I'm happy for other modes to over-ride them.
 (global-set-key (kbd "C-a") 'my-beginning-of-line-or-indentation)
 ;; (global-set-key (kbd "M-/") 'hippie-expand) ; In place of dabbrev-expand
