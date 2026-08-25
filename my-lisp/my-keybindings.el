@@ -402,6 +402,13 @@ does not run, and therefore no globalized modes take effect).
   :init-value t
   :keymap my-keys-local-minor-mode-map)
 
+;; FIXME:
+;; Emacs 31 transition workaround.  I can't remove this until I am exclusively
+;; using Emacs 31+, as the byte-compiled minor modes are incompatible enough to
+;; cause errors.
+(unless (boundp 'my-keys-local-minor-mode--set-explicitly)
+  (defvar my-keys-local-minor-mode--set-explicitly nil))
+
 ;; Also make it possible to disable my keys.
 (define-globalized-minor-mode my-global-keys-local-minor-mode
   my-keys-local-minor-mode my-keys-local-minor-mode
