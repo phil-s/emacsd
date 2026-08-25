@@ -970,6 +970,10 @@ n.b. ffap-alternate-file is intended for interactive use only."
 ;; Full-screen by default.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; I had to comment out the `signal' call here -- in Emacs 31 it was
+;; triggering for minibuffer mode changes, putting Emacs into an
+;; unusable state.
+;;
 ;; Make errors during mode hooks more apparent.
 ;; (advice-remove 'run-mode-hooks 'run-mode-hooks@handle-error)
 (define-advice run-mode-hooks (:around (orig-fun &rest hooks) handle-error)
@@ -981,7 +985,8 @@ n.b. ffap-alternate-file is intended for interactive use only."
            `(:propertize ,mode-name face error
                          help-echo ,(format "%s during run-mode-hooks"
                                             (error-message-string err))))
-     (funcall #'signal (car err) (cdr err)))))
+     ;; (funcall #'signal (car err) (cdr err))
+     (warn "%s: %s" (car err) (cdr err)))))
 
 ;; The visible bell is usually fine, but still horrid in certain terminals.
 ;; We can make a nicer version.
