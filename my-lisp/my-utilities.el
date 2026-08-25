@@ -3082,7 +3082,17 @@ and map delete-window across the resulting list."
 (advice-add 'delete-other-windows-vertically
             :override #'my/delete-other-windows-on-same-side-as)
 
+(defun my-atom-window-decompose (&optional win)
+  "Disolve any atomic window hierarchy to which WIN belongs.
+WIN defaults to `selected-window'."
+  (interactive)
+  (when-let ((root (window-atom-root (or win (selected-window)))))
+    (walk-window-subtree
+     (lambda (w)
+       (set-window-parameter w 'window-atom nil))
+     root t)))
 
+
 ;; D'oh.  `delete-all-overlays' exists :)
 (defun my-delete-all-overlays ()
   (interactive)
