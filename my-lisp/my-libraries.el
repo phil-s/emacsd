@@ -3,6 +3,8 @@
 (eval-when-compile
   (defvar anzu-mode-lighter)
   (defvar framemove-hook-into-windmove)
+  (defvar loccur-current-search)
+  (defvar loccur-mode)
   (defvar sudo-clear-password-always)
   (declare-function global-anzu-mode "anzu")
   (declare-function sudo-chown-file "sudo")
@@ -24,6 +26,22 @@
 ;; Local occur minor mode
 (setq loccur-prompt-current-word nil)
 (autoload 'loccur-previous-match "loccur" "Call `loccur' for the previously found word." t)
+
+(defvar-local my-loccur-original-header-line-format nil
+  "Remember the original `header-line-format' for `my-loccur-mode-hook'.")
+
+(defun my-loccur-mode-hook ()
+  "Added to `loccur-mode-hook'."
+  (if loccur-mode
+      (progn
+        (unless (string-prefix-p "Loccur:" header-line-format)
+          (setq my-loccur-original-header-line-format header-line-format))
+        (setq header-line-format
+              (list :propertize (format "Loccur: %s" loccur-current-search)
+                    'face 'mode-line-emphasis)))
+    (setq header-line-format my-loccur-original-header-line-format)))
+
+(add-hook 'loccur-mode-hook #'my-loccur-mode-hook)
 
 ;; Sudo support for Unix-like systems
 ;; (should this include (eq system-type 'cygwin) ??)
