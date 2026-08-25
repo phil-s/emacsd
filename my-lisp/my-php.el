@@ -231,3 +231,8 @@ s|</head>
              '( :max_children 128
                 :max_data 65536
                 :max_depth 16 )))
+
+;; Behat
+(with-eval-after-load "feature-mode"
+  ;; Needed by `feature-minor-modes'.
+  (require 'org-table))
