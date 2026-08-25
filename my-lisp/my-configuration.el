@@ -432,6 +432,19 @@ Advice for `org-agenda-diary-entry' and `diary-insert-entry'."
                    (string-to-number day) (string-to-number month) year))))
     (apply orig-fun args)))
 
+(defun my-after-load-diary-lib ()
+  "Called via (with-eval-after-load \"diary-lib\" ...)"
+  ;; I don't need keybindings for the calendar systems I don't use.
+  ;; (progn
+  ;;   (define-key calendar-mode-map (kbd "i h") nil)
+  ;;   (define-key calendar-mode-map (kbd "i i") nil)
+  ;;   (define-key calendar-mode-map (kbd "i B") nil)
+  ;;   (define-key calendar-mode-map (kbd "i C") nil))
+  nil)
+
+(with-eval-after-load "diary-lib"
+  (my-after-load-diary-lib))
+
 ;; The week begins on Monday, not Sunday.
 ;; (It's right there in the name: WeekEND.)
 (setq calendar-week-start-day 1)
