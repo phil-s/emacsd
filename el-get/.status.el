@@ -47,7 +47,6 @@
 :macrostep "installed"
 :magit "installed"
 :mo-git-blame "installed"
-:multiple-cursors "installed"
 :noflet "installed"
 :notify "installed"
 :php-eldoc "installed"

@@ -256,10 +256,6 @@
 
      (:name mo-git-blame)
 
-     (:name multiple-cursors
-            :type git
-            :url "https://github.com/magnars/multiple-cursors.el.git")
-
      (:name noflet
             :type git
             :url "https://github.com/nicferrier/emacs-noflet.git")
