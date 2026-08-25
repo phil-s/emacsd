@@ -141,6 +141,8 @@
 (windmove-display-default-keybindings 'super)
 ;; (plus my own s-<insert> binding for windmove-display-same-window)
 (global-set-key (kbd "s-<insert>") 'windmove-display-same-window)
+;; "s-t" doesn't work (Xmonad?).  using s-<end> instead.
+(global-set-key (kbd "s-<end>") 'windmove-display-new-tab)
 
 ;;;; * Translation keymaps
 
