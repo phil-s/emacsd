@@ -179,6 +179,15 @@ s|</head>
   (setq-local comment-padding " ")
   (setq-local comment-end "")
 
+  ;; There are serious performance issues in large files, and it's
+  ;; all because of the syntax-propertize functions (which provide
+  ;; niche benefits which are vastly outweighed by the consequent
+  ;; problems).  Suppress this entirely:
+  (setq-local syntax-propertize-function nil)
+  (remove-hook 'syntax-propertize-extend-region-functions
+               #'php-syntax-propertize-extend-region :local)
+  (advice-add 'php--syntax-propertize-quotes-in-comment :override #'ignore)
+
   ;; This is bugging out recently. Not sure why. Thought it
   ;; was a conflict with (my-coding-config), but not certain
   ;; any longer. Commenting out for now.
