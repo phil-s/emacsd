@@ -14,6 +14,7 @@
   (defvar mu4e-headers-time-format)
   (defvar mu4e-view-actions)
   (defvar mu4e-view-actions)
+  (defvar mu4e-view-active-urls-keymap)
   (defvar mu4e-view-html-plaintext-ratio-heuristic)
   (defvar mu4e-view-mode-map)
   (defvar mu4e-view-show-addresses)
@@ -78,12 +79,15 @@
 (add-hook 'mu4e-headers-mode-hook 'my-mu4e-headers-mode-hook)
 (defun my-mu4e-headers-mode-hook ()
   "Custom `mu4e-headers-mode' behaviours.  Used in `mu4e-headers-mode-hook'."
+  ;; Scroll before reaching the first or last line of the window, so we
+  ;; can always see what we're about to read when cycling through messages.
+  (setq-local scroll-margin 1)
   ;; Account for the fringe and other spacing in the header line.
   (header-line-indent-mode 1)
   (push (propertize " " 'display '(space :align-to header-line-indent-width))
         header-line-format)
   ;; Ensure the header line scales with the headers themselves.
-  (face-remap-add-relative 'header-line '(:inherit default)))
+  (face-remap-add-relative 'header-line '(:inherit mu4e-header-face)))
 
 (setq mu4e-bookmarks
       '(("flag:unread AND NOT flag:trashed AND NOT maildir:\"/Trash\""
@@ -98,12 +102,12 @@
          "Inbox"                ?i))
       ;; headers listing
       mu4e-headers-time-format "%X"
-      mu4e-headers-date-format "%x %X"
+      mu4e-headers-date-format "%x %H:%M"
       mu4e-headers-fields
-      '((:human-date . 18)
+      '((:human-date . 15)
         (:flags . 6)
         (:mailing-list . 10)
-        (:from . 22)
+        (:from . 16)
         (:subject))
       ;; viewing mail
       mu4e-view-show-addresses t
