@@ -237,9 +237,21 @@
 ;; https://alpha.gnu.org/gnu/emacs/
 
 ;; Pre-requisites:
-;; # Auto?: sudo apt-get build-dep emacs24
-;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls28-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev librsvg2-dev libtiff-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev libjansson-dev libgccjit-7-dev make ncurses-term info texinfo texinfo-doc-nonfree ttf-ancient-fonts sdcv fortune-mod fortunes ispell ibritish wbritish meson gmime-3.0 libxapian-dev
-;; # ^ Includes...
+;; # Auto?: sudo apt-get build-dep emacs30
+;; # Manual: sudo apt-get install -s autoconf automake g++ gcc gnu-standards libdbus-1-dev libfreetype6-dev libgif-dev libgnutls28-dev libgpm-dev libjpeg-dev libmagickcore-dev libmagickwand-dev libncurses-dev libpng-dev libpoppler-glib-dev libpoppler-private-dev poppler-utils mupdf-tools librsvg2-dev libtiff-dev libwebp-dev libharfbuzz-dev libxaw7-dev libxft-dev libxml2-dev libxpm-dev libz-dev libtree-sitter-dev libsqlite3-dev make ncurses-term info texinfo texinfo-doc-nonfree fontconfig ttf-ancient-fonts sdcv fortune-mod fortunes ispell ibritish wbritish libenchant-2-dev wget xauth firefox-geckodriver meson gmime-3.0 libxapian-dev"
+;;
+;; # Get the appropriate libgccjit-N-dev:
+;; libgccjit=$(ls -l $(which gcc) \
+;;                 | sed -n '/.* -> /s///p' \
+;;                 | sed -e 's/.* //' \
+;;                       -e 's/^gcc-\(.*\)/libgccjit-\1-dev/')
+;; libgccjit_n=${libgccjit#libgccjit-}
+;; libgccjit_n=${libgccjit_n%-dev}
+;; if test "${libgccjit_n}" -gt 0 2>/dev/null; then
+;;     sudo apt-get -qq install -y --ignore-missing "${libgccjit}" >/dev/null 2>&1
+;; fi
+;;
+;; # ^ Package listing includes...
 ;; # Terminfo: ncurses-term
 ;; # PDF-tools packages: libpng-dev libz-dev libpoppler-glib-dev libpoppler-private-dev
 ;; # Fonts I use: ttf-ancient-fonts
@@ -278,14 +290,14 @@
 ;; to a pristine state, as if it were freshly cloned. If that’s not what you
 ;; want, please don’t run that command.
 
-;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs")
+;; # (cd $(readlink -e .) && mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --without-native-compilation --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs build (and installation) successful" now >/dev/null || echo "Emacs build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs" now >/dev/null || echo "Failed to build/install Emacs"))
 
 ;; Without duplicate message strings (but logic flow is less obvious):
-;; # mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg"
+;; # (cd $(readlink -e .) && mkdir -p $(readlink -e ..)/usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --without-native-compilation --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && msg="Emacs build (and installation) successful" || msg="Failed to build/install Emacs" && msg="$msg ($(basename $(pwd)))" && alias reminder >/dev/null 2>&1 && reminder "$msg" now >/dev/null || echo "$msg")
 
 ;; Secondary build/install --with-native-compilation:
 ;;
-;; # ./configure --prefix=$(readlink -e ../usr/local) --with-native-compilation=aot --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs NC build (and installation) successful" now >/dev/null || echo "Emacs NC build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs NC" now >/dev/null || echo "Failed to build/install Emacs NC")
+;; # (cd $(readlink -e .) && mkdir -p ../usr/local && ./autogen.sh 2>&1 | tee ../autogen.out && ./configure --prefix=$(readlink -e ../usr/local) --with-native-compilation=aot --with-x-toolkit=lucid --without-sound --program-transform-name='s/^ctags$/ctags_emacs/' 2>&1 | tee ../config.out && cp config.log ../ && make 2>&1 | tee ../make.out && make install 2>&1 | tee ../install.out && (alias reminder >/dev/null 2>&1 && reminder "Emacs NC build (and installation) successful" now >/dev/null || echo "Emacs NC build (and installation) successful") || (alias reminder >/dev/null 2>&1 && reminder "Failed to build/install Emacs NC" now >/dev/null || echo "Failed to build/install Emacs NC"))
 
 ;;
 ;; Configuration options:
