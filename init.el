@@ -1022,13 +1022,14 @@
   (setq my-init-time-marker (current-time)))
 
 ;; This should have happened in early-init.el, but just in case...
-(unless (featurep 'auto-compile)
-  (require 'compile) ;; Keep for paranoia, while bug#69467 is open.
-  (setq load-prefer-newer t)
-  (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
-  (require 'auto-compile)
-  (auto-compile-on-save-mode 1)
-  (auto-compile-on-load-mode 1))
+(when (eql emacs-major-version my-expected-emacs-major-version)
+  (unless (featurep 'auto-compile)
+    (require 'compile) ;; Keep for paranoia, while bug#69467 is open.
+    (setq load-prefer-newer t)
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
+    (require 'auto-compile)
+    (auto-compile-on-save-mode 1)
+    (auto-compile-on-load-mode 1)))
 
 ;; Load 'customized' variables and faces.
 (setq custom-file (expand-file-name "~/.emacs.d/custom.el"))

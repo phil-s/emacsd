@@ -3,6 +3,10 @@
 ;; Replicate --debug-init (see also the end of init.el).
 (setq debug-on-error t)
 
+(defconst my-expected-emacs-major-version 30
+  "The version of Emacs I expect to be using.
+Do not automatically byte-compile in other versions of Emacs.")
+
 ;; Temporary performance measures, to reduce start-up time.
 ;; Avoid garbage collection during start-up.
 ;; (defvar my-gc-cons-threshold-normal gc-cons-threshold) ;; Currently 800K.
@@ -26,10 +30,12 @@
 (require 'compile) ;; Keep for paranoia, while bug#69467 is open.  See also:
 ;; (browse-url (concat "https://" "github.com/emacscollective/auto-compile/issues/33"))
 (setq load-prefer-newer t)
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
-(require 'auto-compile)
-(auto-compile-on-save-mode 1)
-(auto-compile-on-load-mode 1)
+;; Only automatically byte-compile using my *expected* major version of Emacs.
+(when (eql emacs-major-version my-expected-emacs-major-version)
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/el-get/auto-compile"))
+  (require 'auto-compile)
+  (auto-compile-on-save-mode 1)
+  (auto-compile-on-load-mode 1))
 
 ;; Hide the tool bar.
 (tool-bar-mode -1)
