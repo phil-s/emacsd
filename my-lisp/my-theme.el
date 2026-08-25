@@ -170,6 +170,10 @@
 ;; ;; For Debian: apt-get install ttf-ancient-fonts
 ;; (set-fontset-font "fontset-default" nil (font-spec :size 20 :name "Symbola:"))
 
+;; Other fontset features:
+;; `use-default-font-for-symbols' would need to be disabled in order to use
+;; (set-fontset-font t 'symbol (font-spec ...))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; My 'standard' alternative theme.
