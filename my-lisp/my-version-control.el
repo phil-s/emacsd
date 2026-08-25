@@ -120,13 +120,15 @@ When called interactively with a prefix argument, prompts for LIMIT also."
 ;; Link to bug trackers.
 
 ;; Recognise various bug/issue identifiers.
+;; On update: (setq bug-reference-bug-regexp my-bug-reference-bug-regexp)
 (defvar my-bug-reference-bug-regexp
   (rx (group-n
           1 (seq (group-n
                      3 (or (regexp "[Ww][Rr][- ]?#?")
                            (regexp "[Rr][Mm][- ]?#?")
-                           (regexp "[Ii]ssue[- ]?#?")
                            (regexp "[Rr][Ff][Cc][- ]?#?")
+                           (regexp "\\(?:[Ss]ec\\(?:urity ?\\)?\\)?[Ii]ssue[- ]?#?")
+                           (regexp "!")
                            (regexp "[Bb]ug[- ]?#?")))
                  (group-n
                      2 (seq (one-or-more digit)
@@ -150,19 +152,26 @@ here, so that group 2 has the desired value in both scenarios.")
 ;; an auto-setup process via `bug-reference-auto-setup-functions'.
 (setq bug-reference-bug-regexp my-bug-reference-bug-regexp)
 
+;; FIXME: Make this build from an alist which can be updated piecemeal.
 (defun my-bug-reference-url-format ()
   "URL generator for `bug-reference-url-format' (see which)."
   (when-let ((type (match-string 3))
              (formatstring
+              ;; Listed in priority order for matching.
               (cond ((string-prefix-p "WR" type t)
                      "https://wrms.catalyst.net.nz/wr.php?request_id=%s")
                     ((string-prefix-p "RM" type t)
                      "https://redmine.catalyst.net.nz/issues/%s")
+                    ((string-prefix-p "RFC" type t)
+                     "https://www.rfc-editor.org/rfc/rfc%s.html")
+                    ;; Configurable cases.
                     ((string-prefix-p "Issue" type t)
                      (or (bound-and-true-p my-bug-reference-url-for-issues)
                          "https://git.mahara.org/catalyst/mahara/-/issues/%s"))
-                    ((string-prefix-p "RFC" type t)
-                     "https://www.rfc-editor.org/rfc/rfc%s.html")
+                    ((string-prefix-p "!" type t)
+                     (bound-and-true-p my-bug-reference-url-for-merge-requests))
+                    ((string-prefix-p "Sec\\(?:urity ?\\)?[Ii]ssue" type t)
+                     (bound-and-true-p my-bug-reference-url-for-security-issues))
                     ((string-prefix-p "Bug" type t)
                      (or (bound-and-true-p my-bug-reference-url-for-bugs)
                          "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=%s"))
