@@ -125,6 +125,7 @@
   (declare-function my-gc-cons-threshold-set-large "init")
   (declare-function my-gc-cons-threshold-set-normal "init")
   (declare-function my-isearch-delete "my-configuration")
+  (declare-function my-suppress-shorthands "my-configuration")
   (declare-function notify "notify")
   (declare-function outline-show-all "outline")
   (declare-function reminder "my-utilities")
@@ -1927,10 +1928,10 @@ when the file path is too long to show on one line."
 ;; https://eshelyaron.com/posts/2026-08-06-emacs-arbitrary-code-execution-returns.html
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=80574
 (when (< emacs-major-version 31)
-  (defun suppress-shorthands (orig &rest args)
+  (defun my-suppress-shorthands (orig &rest args)
     (let (read-symbol-shorthands) (apply orig args)))
-  (advice-add 'vc-find-backend-function :around #'suppress-shorthands)
-  (advice-add 'c-compose-keywords-list :around #'suppress-shorthands))
+  (advice-add 'vc-find-backend-function :around #'my-suppress-shorthands)
+  (advice-add 'c-compose-keywords-list :around #'my-suppress-shorthands))
 
 (setq visible-mark-max 2)
 (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
