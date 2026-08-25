@@ -3,6 +3,10 @@
 
 (eval-when-compile
   (declare-function my-goto-line "my-utilities")
+  (declare-function my-ibuffer-set-marked-char "my-utilities")
+  (declare-function completion-preview-next-candidate "completion")
+  (declare-function completion-preview-prev-candidate "completion")
+
   (defvar framemove-hook-into-windmove)
   (defvar git-commit-mode-map)
   (defvar magit-file-section-map)

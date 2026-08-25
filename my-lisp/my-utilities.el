@@ -6,6 +6,7 @@
 (eval-when-compile
   (defvar compare-windows-get-window-function)
   (defvar dired-mode-map)
+  (defvar ediff-temp-indirect-buffer)
   (defvar find-function-regexp-alist)
   (defvar find-grep-options)
   (defvar sort-fold-case)
@@ -20,6 +21,7 @@
   (defvar url-http-end-of-headers)
   (defvar url-http-target-url)
   (defvar view-exit-action)
+
   (declare-function aw-select "ace-window")
   (declare-function browse-url-encode-url "browse-url")
   (declare-function browse-url-interactive-arg "browse-url")
@@ -34,7 +36,10 @@
   (declare-function dired-move-to-filename "dired")
   (declare-function dired-nondirectory-p "dired-aux")
   (declare-function dired-virtual-mode "dired-x")
+  (declare-function ediff-make-cloned-buffer "ediff-util")
+  (declare-function ediff-regions-internal "ediff")
   (declare-function fileloop-continue "fileloop")
+  (declare-function hexl-maybe-dehexlify-buffer "hexl")
   (declare-function ibuffer-quit "ibuffer")
   (declare-function notifications-notify "notifications")
   (declare-function shr-render-buffer "shr")
@@ -1744,7 +1749,7 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
                       things nil :require-match nil nil
                       (symbol-name (car things))))))))
 
-(defun my-narrow-to-thing-at-point (thing &optional all)
+(defun my-narrow-to-thing-at-point (thing &optional _all)
   "Narrow to THING at point."
   (interactive (list (my-read-thing-at-point-thing nil current-prefix-arg)))
   (if-let ((bounds (bounds-of-thing-at-point thing)))
@@ -1762,7 +1767,7 @@ See `clone-indirect-buffer'."
     (pop-to-buffer buf)))
 
 (defun my-narrow-to-sexp-at-point ()
-  "Narrow to sexp at point."
+  "Narrow to the balanced expression at point."
   (interactive)
   (my-narrow-to-thing-at-point 'sexp))
 
@@ -2808,7 +2813,7 @@ With prefix-arg copies hash to kill-ring, otherwise inserts it."
 (defun my-crontab-edit ()
   "Edit crontab."
   (interactive)
-  (eval-and-compile (require 'with-editor))
+  (eval-and-compile (require 'with-editor nil :noerror))
   (with-editor-async-shell-command "crontab -e"))
 
 ;; https://fuco1.github.io/2017-05-06-Enhanced-beginning--and-end-of-buffer-in-special-mode-buffers-%28dired-etc.%29.html
@@ -3124,6 +3129,9 @@ Uses `my-hide-region-in-window'."
     ;; (kill-local-variable 'global-disable-point-adjustment)
     ))
 
+(declare-function grep-read-files "grep")
+(declare-function grep-read-regexp "grep")
+
 (defvar my-rgrep-history nil)
 
 (defun my-rgrep (regexp &optional files dir confirm)

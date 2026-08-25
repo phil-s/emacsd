@@ -43,7 +43,8 @@
 (setq mumamo-background-colors nil)
 
 (defface my-highlight-1 '((t :inherit dired-broken-symlink))
-  "Readable highlighting for `highlight-regexp'.")
+  "Readable highlighting for `highlight-regexp'."
+  :group 'hi-lock-faces)
 
 (defun my-theme-custom-faces-apply (theme faces)
   ;; Must be defined before it's called.

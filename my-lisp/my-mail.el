@@ -26,8 +26,12 @@
   (declare-function ecomplete-get-matches "ecomplete")
   (declare-function ecomplete-highlight-match-line "ecomplete")
   (declare-function ecomplete-save "ecomplete")
+  (declare-function jinx-correct "jinx")
+  (declare-function jinx-mode "jinx")
   (declare-function mu4e-view-raw-message "mu4e-view")
+  (declare-function mu4e~view-browse-url-from-binding "mu4e-view-common")
   (declare-function mu4e~write-body-to-html "mu4e-actions")
+  (declare-function my-adaptive-visual-line-mode "my-text")
   )
 
 ;; mu4e
@@ -187,8 +191,8 @@
   (interactive
    (list (completing-read "Email address: "
                           (ecomplete-completion-table 'mail))))
-  (when-let ((email (cdr (my-mail--name+address email)))
-             (entry (ecomplete-get-item 'mail email)))
+  (when-let* ((email (cdr (my-mail--name+address email)))
+              (entry (ecomplete-get-item 'mail email)))
     (setf (cdr (assq 'mail ecomplete-database))
           (remove entry (cdr (assq 'mail ecomplete-database))))
     (ecomplete-save)))

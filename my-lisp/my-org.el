@@ -13,6 +13,9 @@
   (declare-function org-timer--get-timer-title "org-timer")
   (declare-function org-timer-set-timer "org-timer")
   (declare-function org-timer-value-string "org-timer")
+  (declare-function org-agenda-next-date-line "org-agenda")
+  (declare-function org-agenda-previous-date-line "org-agenda")
+  (declare-function reminder--frame-1 "my-utilities")
 
   (defvar org-adapt-indentation)
   (defvar org-agenda-files)
