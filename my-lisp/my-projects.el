@@ -96,7 +96,7 @@
                        ("/composer.patches.json\\'" . my-mahara-composer-patches-mode)))
    (nil . ((indent-tabs-mode . nil)
            (tab-width . 8)
-           (fill-column . 76)
+           (fill-column . 80)
            (ffip-patterns . ("*.php" "*.inc" "*.module" "*.install" "*.info"
                              "*.js" "*.css" ".htaccess" "*.engine" "*.txt"
                              "*.profile" "*.xml" "*.test" "*.theme" "*.ini"
@@ -123,6 +123,8 @@
    (mahara-mode . ((c-basic-offset . 4)
                    (psysh-buffer-name . "*Mahara-PHP*")
                    ;; (flymake-phpcs-standard . "Mahara")
+                   (eval . (when (require 'visual-wrap-comments nil t)
+                             (visual-wrap-comments-mode 1)))
                    ))
    (css-mode . ((css-indent-offset . 4)))
    (scss-mode . ((css-indent-offset . 4)
@@ -133,11 +135,14 @@
                            (setq default-directory
                                  (expand-file-name "../" (file-name-directory
                                                           buffer-file-name)))))))
-   (js-mode . ((js-indent-level . 4)))
+   (js-mode . ((js-indent-level . 4)
+               (eval . (when (require 'visual-wrap-comments nil t)
+                         (visual-wrap-comments-mode 1)))))
    (web-mode . ((web-mode-code-indent-offset . 4)
                 (web-mode-css-indent-offset . 4)
                 (web-mode-markup-indent-offset . 4)
-                (web-mode-sql-indent-offset . 4)))
+                (web-mode-sql-indent-offset . 4)
+                (web-mode-script-padding . 4)))
    (makefile-gmake-mode . ((eval . (when (string= "make" (file-name-extension
                                                           buffer-file-name))
                                      (progn (conf-mode)
@@ -161,7 +166,19 @@
                 (eval . (setq-local syntax-propertize-function #'ignore))
                 (eval . (remove-hook 'syntax-propertize-extend-region-functions
                                      #'php-syntax-propertize-extend-region t))
-                ))))
+                ))
+   (js-mode . ((js-indent-level . 4)
+               (indent-tabs-mode . nil)
+               (fill-column . 80)
+               (eval . (when (require 'visual-wrap-comments nil t)
+                         (visual-wrap-comments-mode 1)))
+               ))
+   (web-mode . ((web-mode-code-indent-offset . 4)
+                (web-mode-css-indent-offset . 4)
+                (web-mode-markup-indent-offset . 4)
+                (web-mode-sql-indent-offset . 4)
+                (web-mode-script-padding . 4)))
+   ))
 
 ;; Drupal
 (dir-locals-set-class-variables
@@ -212,7 +229,8 @@
    (web-mode . ((web-mode-code-indent-offset . 2)
                 (web-mode-css-indent-offset . 2)
                 (web-mode-markup-indent-offset . 2)
-                (web-mode-sql-indent-offset . 2)))
+                (web-mode-sql-indent-offset . 2)
+                (web-mode-script-padding . 4)))
    (makefile-gmake-mode . ((eval . (when (string= "make" (file-name-extension
                                                           buffer-file-name))
                                      (progn (conf-mode)
