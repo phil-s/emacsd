@@ -23,6 +23,7 @@
   (defvar sql-product)
   (defvar sql-prompt-cont-regexp)
   (defvar sql-prompt-regexp)
+  (defvar sqlind-basic-offset)
   (defvar web-mode-autocompletes)
   (defvar web-mode-tag-auto-close-style)
   (defvar visual-wrap-comments-column)
@@ -49,6 +50,7 @@
   (declare-function shr-ensure-newline "shr")
   (declare-function shr-generic "shr")
   (declare-function sql-get-product-feature "sql")
+  (declare-function sql-indent-enable "sql")
   (declare-function sql-send-string "sql")
   (declare-function sql-set-product-feature "sql")
   (declare-function sql-upcase-mode "sql-upcase")
@@ -699,6 +701,9 @@ Advice for `visit-tags-table'."
 (defun my-sql-mode-hook ()
   "Custom SQL mode behaviours. See `sql-mode-hook'."
   (setq show-trailing-whitespace nil)
+  ;; Indentation via `sqlind-minor-mode'.
+  (sql-indent-enable)
+  (setq sqlind-basic-offset 5)
   ;; Automatically upcase SQL keywords.
   (sql-upcase-mode 1))
 
