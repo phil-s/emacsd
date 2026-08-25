@@ -82,6 +82,10 @@
   (define-key completion-preview-active-mode-map
               (kbd "M-p") #'completion-preview-prev-candidate))
 
+;; Ibuffer
+(with-eval-after-load "ibuffer"
+  (define-key ibuffer-mode-map (kbd "* >") #'my-ibuffer-set-marked-char))
+
 ;; Occur.
 (with-eval-after-load "occur"
   (define-key occur-mode-map (kbd "n") #'next-error-no-select)

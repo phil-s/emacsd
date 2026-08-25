@@ -2360,6 +2360,13 @@ current window even if another window is also displaying it."
         (if (window-live-p win)
             (select-window win)
           (ibuffer))))))
+
+(declare-function ibuffer-update "ibuffer")
+(defun my-ibuffer-set-marked-char (char)
+  "Change `ibuffer-marked-char' to the typed CHAR."
+  (interactive "cType new ibuffer mark character:")
+  (setq ibuffer-marked-char char)
+  (ibuffer-update nil))
 
 (defun eval-and-replace ()
   "Replace the preceding sexp with its value.
