@@ -201,6 +201,9 @@
   (require 'cl)
   (require 'derived))
 
+(declare-function browse-kill-ring-propertize "browse-kill-ring")
+(declare-function browse-kill-ring-fit-window "browse-kill-ring")
+
 (when (featurep 'xemacs)
   (require 'overlay))
 
@@ -343,8 +346,8 @@ when you call `kill-new'.
 If you set this variable via customize, the advice will be activated
 or deactivated automatically.  Otherwise, to enable the advice, add
 
- (ad-enable-advice 'kill-new 'around 'browse-kill-ring-no-kill-new-duplicates)
- (ad-activate 'kill-new)
+ (ad-enable-advice \\='kill-new \\='around \\='browse-kill-ring-no-kill-new-duplicates)
+ (ad-activate \\='kill-new)
 
 to your init file."
   :type 'boolean
@@ -602,9 +605,9 @@ of the *Kill Ring*."
 						     'browse-kill-ring-extra)))
 	      ;; This is some voodoo.
 	      (when prev
-		(incf prev))
+		(cl-incf prev))
 	      (when next
-		(incf next))
+		(cl-incf next))
 	      (delete-region (or prev (point-min))
 			     (or next (point-max))))))
       (setq buffer-read-only t)))
@@ -646,7 +649,7 @@ of the *Kill Ring*."
   (while (not (zerop arg))
     (if (< arg 0)
 	(progn
-	  (incf arg)
+	  (cl-incf arg)
 	  (if (overlays-at (point))
 	      (progn
 		(goto-char (overlay-start (car (overlays-at (point)))))
@@ -657,7 +660,7 @@ of the *Kill Ring*."
 	      (unless (bobp)
 		(goto-char (overlay-start (car (overlays-at (point)))))))))
       (progn
-	(decf arg)
+        (cl-decf arg)
 	(if (overlays-at (point))
 	    (progn
 	      (goto-char (overlay-end (car (overlays-at (point)))))
@@ -735,7 +738,7 @@ entry."
 (defun browse-kill-ring-quit ()
   "Take the action specified by `browse-kill-ring-quit-action'."
   (interactive)
-  (case browse-kill-ring-quit-action
+  (cl-case browse-kill-ring-quit-action
     (save-and-restore
      (let (buf (current-buffer))
        (set-window-configuration browse-kill-ring-original-window-config)
@@ -924,7 +927,7 @@ directly; use `browse-kill-ring' instead.
   (interactive
    (list
     (browse-kill-ring-read-regexp "Display kill ring entries matching")))
-  (assert (eq major-mode 'browse-kill-ring-mode))
+  (cl-assert (eq major-mode 'browse-kill-ring-mode))
   (browse-kill-ring-setup (current-buffer)
 			  browse-kill-ring-original-window
 			  regexp)
@@ -956,7 +959,7 @@ directly; use `browse-kill-ring' instead.
 (defun browse-kill-ring-update ()
   "Update the buffer to reflect outside changes to `kill-ring'."
   (interactive)
-  (assert (eq major-mode 'browse-kill-ring-mode))
+  (cl-assert (eq major-mode 'browse-kill-ring-mode))
   (browse-kill-ring-setup (current-buffer)
 			  browse-kill-ring-original-window)
   (browse-kill-ring-resize-window))
@@ -990,8 +993,8 @@ directly; use `browse-kill-ring' instead.
 	      ;; I'm not going to rewrite `delete-duplicates'.  If
 	      ;; someone really wants to rewrite it here, send me a
 	      ;; patch.
-	      (require 'cl)
-	      (setq items (delete-duplicates items :test #'equal)))
+              (require 'cl-lib)
+              (setq items (cl-delete-duplicates items :test #'equal)))
 	    (when (stringp regexp)
 	      (setq items (delq nil
 				(mapcar

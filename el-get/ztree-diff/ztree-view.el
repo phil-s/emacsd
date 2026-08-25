@@ -81,7 +81,7 @@ in order to not to use cl package and lexical-let")
 (make-variable-buffer-local 'ztree-count-subsequent-bs)
 
 (defvar ztree-line-tree-properties nil
-  "Hash with key - line number, value - property ('left, 'right, 'both).
+  "Hash with key - line number, value - property (\\='left, \\='right, \\='both).
 Used for 2-side trees, to determine if the node exists on left or right
 or both sides")
 (make-variable-buffer-local 'ztree-line-tree-properties)
@@ -110,7 +110,7 @@ for example if the node is a directory")
 (make-variable-buffer-local 'ztree-node-contents-fun)
 
 (defun ztree-node-side-fun nil
-  "Function returning position of the node: 'left, 'right or 'both.
+  "Function returning position of the node: \\='left, \\='right or \\='both.
 If not defined(by default) - using single screen tree, otherwise
 the buffer is split to 2 trees")
 (make-variable-buffer-local 'ztree-node-side-fun)
@@ -569,13 +569,12 @@ list of leafs"
     ;; used in 2-side tree mode
     (when ztree-node-side-fun
       (setq ztree-line-tree-properties (make-hash-table)))
-    (toggle-read-only)
-    (erase-buffer)
-    (funcall ztree-tree-header-fun)
-    (setq ztree-start-line (line-number-at-pos (point)))
-    (ztree-insert-node-contents ztree-start-node)
-    (scroll-to-line (if line line ztree-start-line))
-    (toggle-read-only)))
+    (let (buffer-read-only)
+      (erase-buffer)
+      (funcall ztree-tree-header-fun)
+      (setq ztree-start-line (line-number-at-pos (point)))
+      (ztree-insert-node-contents ztree-start-node)
+      (scroll-to-line (if line line ztree-start-line)))))
 
 
 (defun ztree-view (

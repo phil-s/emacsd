@@ -43,8 +43,8 @@ Taken from http://www.emacswiki.org/emacs/ElispCookbook#toc39"
 
 
 (defun printable-string (string)
-  "Strip newline character from file names, like 'Icon\n'"
-  (replace-regexp-in-string "\n" "" string))  
+  "Strip newline character from file names, like \"Icon\n\""
+  (replace-regexp-in-string "\n" "" string))
 
 (defun file-short-name (file)
   "Base file/directory name. Taken from

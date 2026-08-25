@@ -106,7 +106,7 @@ Some may also be erased, which is undo-able."
 (defcustom keep-buffers-protected-alist
   '(("\\`\\*scratch\\*\\'" . erase)
     ("\\`\\*Messages\\*\\'" . nil))
-  "an alist '((\"regex1\" . 'erase) (\"regex2\" . nil))
+  "an alist \\='((\"regex1\" . \\='erase) (\"regex2\" . nil))
 
 CAR of each cons cell is the buffer matching regexp.  If CDR is
 not nil then the matching buffer is erased then buried.
@@ -120,7 +120,7 @@ If the CDR is nil, then the buffer is only buried."
 ;;;###autoload
 (defun keep-buffers-query ()
   "The query function that disable deletion of buffers we protect."
-  (let ((crit (some (lambda (crit)
+  (let ((crit (cl-some (lambda (crit)
                       (when (string-match (car crit) (buffer-name))
                         crit))
                     keep-buffers-protected-alist)))

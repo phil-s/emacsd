@@ -100,7 +100,7 @@ to connect to DBGp listener of this address."
       (set-process-plist proc (list prop val)))))
 
 (defsubst dbgp-xml-get-error-node (xml)
-  "Return the first node of XML whose child-name is 'error."
+  "Return the first node of XML whose child-name is \\='error."
   (car
    (xml-get-children xml 'error)))
 

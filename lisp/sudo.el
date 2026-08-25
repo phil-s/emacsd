@@ -37,11 +37,11 @@
 ;; * sudo-kill-password-timeout - close the window in which sudo can be used
 ;;                                without a password, if normally required
 ;;                                (same as "sudo -K")
-;;  _______________________________________ 
+;;  _______________________________________
 ;; / Suggested usage:                      \
 ;; | bind C-x M-s to sudo-unset-ro-or-save |
 ;; \ bind C-x M-f to sudo-find-file        /
-;;  --------------------------------------- 
+;;  ---------------------------------------
 ;;         \   A__^
 ;;          \  (o#)\_______
 ;;             (__)\       )\/\
@@ -102,7 +102,7 @@ sudo-save-current-buffer."
   (interactive)
   (if buffer-read-only
       ;(sudo-unset-read-only)
-      (toggle-read-only)
+      (setq buffer-read-only nil)
     (sudo-save-current-buffer)))
 
 (defun sudo-kill-password-timeout ()
@@ -152,7 +152,7 @@ Returns nil when succesful, otherwise an error occured."
            (if (sudo-wants-password-p) ;does it want a password?
                (progn
                  (sudo-send-sudo-process-password sudo-process)
-                 (while (eq (process-status sudo-process) "run")
+                 (while (eq (process-status sudo-process) 'run)
                    (sleep-for .25))       ;wait for sudo to finish...
                                         ;FIXME can we avoid an infinite loop?
                  (sudo-process-exited sudo-process))
@@ -191,7 +191,7 @@ or sudo-keep-output-buffer is t."
                        (concat
                         (sudo-get-password)
                         "")))
-  
+
 (defun sudo-get-password ()
   "Prompt for sudo password, caching it if desired."
   (if sudo-cache-password

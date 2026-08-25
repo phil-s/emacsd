@@ -24,7 +24,7 @@
 ;;    (require 'framemove)
 ;;    (windmove-default-keybindings)
 ;;    (setq framemove-hook-into-windmove t)
-;; 
+;;
 
 (defvar framemove-hook-into-windmove nil
   "When non-nil, try moving frames if moving windows fails.")
@@ -77,7 +77,7 @@
           (+ (cadr frame-bbox) (cdr rel-x-y)))))
 
 (defun fm-frame-relative-coordinates (position)
-  "Return frame-relative coordinates from POSITION."
+  "Frame-relative coordinates from POSITION."
   (let* ((x-y (posn-x-y position))
          (window (posn-window position))
          (edges (window-inside-pixel-edges window)))
@@ -102,21 +102,21 @@
          (coords-projected-in-dir (fm-project current-coords thisframe dir))
          (possible-frames
           (sort
-           (remove-if-not
+           (cl-remove-if-not
             (lambda (f) (fm-frame-is-to-dir-of f dir thisframe))
             (visible-frame-list))
            (lambda (f1 f2) (fm-frame-is-to-dir-of f1 (fm-opposite dir) f2)))))
     (if possible-frames
         (let ((frames-in-line-of-cursor
                ;; try to find frame in line with cursor
-               (remove-if-not
+               (cl-remove-if-not
                 (lambda (f) (fm-coord-in-range current-coords dir f))
                 possible-frames))
               (frames-in-line-of-frame
                ;; find frame that overlaps current frame
                ;; need to sort by distance from cursor
                (sort
-                (remove-if-not
+                (cl-remove-if-not
                  (lambda (f) (fm-range-overlap thisframe f dir))
                  possible-frames)
                 (lambda (f1 f2)
@@ -146,7 +146,7 @@
            x-dist)
           ((sqrt (+ (expt x-dist 2)
                     (expt y-dist 2)))))))
-              
+
 (defun fm-v-in-range (v range)
   (and (> v (car range))
        (< v (cdr range))))
@@ -159,7 +159,8 @@
           (fm-frame-coord box 'right))))
 
 (defun fm-range-overlap (f1 f2 dir)
-  "return true if the bbox'es of the two frames overlap using coords perpendicular to dir"
+  "Non-nil if the bbox'es of the two frames overlap
+using coords perpendicular to dir"
   (let ((perp (if (memq dir '(up down)) 'left 'up))
         (f1box (fm-frame-bbox f1))
         (f2box (fm-frame-bbox f2)))
@@ -169,7 +170,7 @@
         (fm-v-in-range (fm-frame-coord f2 (fm-opposite perp)) (fm-bbox-range perp f1)))))
 
 (defun fm-coord-in-range (coord dir frame)
-  "return true if the coord can be projected in orientation of dir
+  "Non-nil if the coord can be projected in orientation of dir
 onto the bbox of the frame, or more simply, is the part of the coord
 perpendicular to DIR between the edges of frame perpendicular to DIR"
   (let ((n (if (memq dir '(up down)) (car coord) (cdr coord)))
@@ -206,7 +207,7 @@ perpendicular to DIR between the edges of frame perpendicular to DIR"
 (defun framemove-default-keybindings (&optional modifier)
   "Set up keybindings for `framemove'.
 Keybindings are of the form MODIFIER-{left,right,up,down}.
-Default MODIFIER is 'meta."
+Default MODIFIER is `meta'."
   (interactive)
   (unless modifier (setq modifier 'meta))
 

@@ -42,7 +42,7 @@ Used by `noflet' to expand it's contents.
 Example:
 
  (noflet|expand
-  '((find-file-noselect (file-name)
+  \\='((find-file-noselect (file-name)
            (if t
                (this-fn \"/tmp/mytest\")
                (this-fn file-name)))
@@ -50,7 +50,7 @@ Example:
      (if t
          (concat \"/tmp/\" file-name)
          (funcall this-fn file-name thing))))
-  '(progn (expand-file-name \"/home/nferrier/thing\")))
+  \\='(progn (expand-file-name \"/home/nferrier/thing\")))
 
 It should not be necessary ever to call this.  Hence the exotic
 name."

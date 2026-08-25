@@ -32,6 +32,9 @@
 ;; 'notify-via-libnotify or 'notify-via-message
 ;;; Code:
 
+(declare-function dbus-ping "dbus")
+(declare-function dbus-call-method "dbus")
+
 (defvar notify-defaults (list :app "Emacs" :icon "emacs" :timeout 5000
 			      :urgency "low"
 			      :category "emacs.message")
@@ -41,8 +44,8 @@ May be overridden with key-value additional arguments to `notify'.")
   "Minimum time allowed between notifications in time format.")
 (defvar notify-last-notification '(0 0 0) "Time of last notification.")
 (defvar notify-method nil "Notification method among
-'notify-via-dbus, 'notify-via-libnotify, 'notify-via-message or 
-'notify-via-growl")
+`notify-via-dbus', `notify-via-libnotify', `notify-via-message' or
+`notify-via-growl'.")
 
 ;; determine notification method unless already set
 ;; prefer growl > D-Bus > libnotify > message

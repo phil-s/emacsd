@@ -199,6 +199,7 @@
 
 (eval-when-compile
   (require 'cl)
+  (require 'cl-lib)
   (require 'derived))
 
 (when (featurep 'xemacs)
@@ -343,8 +344,8 @@ when you call `kill-new'.
 If you set this variable via customize, the advice will be activated
 or deactivated automatically.  Otherwise, to enable the advice, add
 
- (ad-enable-advice 'kill-new 'around 'browse-kill-ring-no-kill-new-duplicates)
- (ad-activate 'kill-new)
+ (ad-enable-advice \\='kill-new \\='around \\='browse-kill-ring-no-kill-new-duplicates)
+ (ad-activate \\='kill-new)
 
 to your init file."
   :type 'boolean
@@ -672,9 +673,9 @@ of the *Kill Ring*."
 	     (overlays-at (point)))
     (let ((overs (overlay-lists))
 	  (current-overlay (car (overlays-at (point)))))
-      (mapcar #'(lambda (o)
-		  (overlay-put o 'face nil))
-	      (nconc (car overs) (cdr overs)))
+      (mapc #'(lambda (o)
+                (overlay-put o 'face nil))
+            (nconc (car overs) (cdr overs)))
       (overlay-put current-overlay 'face 'highlight)))
   (when browse-kill-ring-recenter
     (recenter 1)))
@@ -735,7 +736,7 @@ entry."
 (defun browse-kill-ring-quit ()
   "Take the action specified by `browse-kill-ring-quit-action'."
   (interactive)
-  (case browse-kill-ring-quit-action
+  (cl-case browse-kill-ring-quit-action
     (save-and-restore
      (let (buf (current-buffer))
        (set-window-configuration browse-kill-ring-original-window-config)
@@ -924,7 +925,7 @@ directly; use `browse-kill-ring' instead.
   (interactive
    (list
     (browse-kill-ring-read-regexp "Display kill ring entries matching")))
-  (assert (eq major-mode 'browse-kill-ring-mode))
+  (cl-assert (eq major-mode 'browse-kill-ring-mode))
   (browse-kill-ring-setup (current-buffer)
 			  browse-kill-ring-original-window
 			  regexp)
@@ -956,7 +957,7 @@ directly; use `browse-kill-ring' instead.
 (defun browse-kill-ring-update ()
   "Update the buffer to reflect outside changes to `kill-ring'."
   (interactive)
-  (assert (eq major-mode 'browse-kill-ring-mode))
+  (cl-assert (eq major-mode 'browse-kill-ring-mode))
   (browse-kill-ring-setup (current-buffer)
 			  browse-kill-ring-original-window)
   (browse-kill-ring-resize-window))

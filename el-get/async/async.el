@@ -84,13 +84,13 @@ It is intended to be used as follows:
 
     (async-start
        `(lambda ()
-          (require 'smtpmail)
+          (require \\='smtpmail)
           (with-temp-buffer
             (insert ,(buffer-substring-no-properties (point-min) (point-max)))
             ;; Pass in the variable environment for smtpmail
             ,(async-inject-variables \"\\`\\(smtpmail\\|\\(user-\\)?mail\\)-\")
             (smtpmail-send-it)))
-       'ignore)"
+       \\='ignore)"
   `(setq
     ,@(let (bindings)
         (mapatoms
@@ -310,7 +310,7 @@ will leave *emacs* process buffers hanging around):
     (async-start
      (lambda ()
        (delete-file \"a remote file on a slow link\" nil))
-     'ignore)
+     \\='ignore)
 
 Note: Even when FINISH-FUNC is present, a future is still
 returned except that it yields no value (since the value is

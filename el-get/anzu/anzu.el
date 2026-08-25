@@ -325,6 +325,13 @@ Set to nil if you put anzu in your mode-line manually."
     (remove-hook 'isearch-mode-end-hook #'anzu--reset-mode-line t)
     (anzu--reset-mode-line)))
 
+;; FIXME:
+;; Emacs 31 transition workaround.  I can't remove this until I am exclusively
+;; using Emacs 31+, as the byte-compiled minor modes are incompatible enough to
+;; cause errors.
+(unless (boundp 'anzu-mode--set-explicitly)
+  (defvar anzu-mode--set-explicitly nil))
+
 (defun anzu--turn-on ()
   (unless (minibufferp)
     (anzu-mode +1)))

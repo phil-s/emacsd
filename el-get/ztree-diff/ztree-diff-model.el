@@ -156,7 +156,7 @@
            'diff))))))
 
 (defun ztree-diff-model-subtree (parent path side)
-  "Creates a subtree for the given path for either 'left or 'right sides"
+  "Creates a subtree for the given path for either \\='left or \\='right sides"
   (let ((files (ztree-directory-files path))
         (result nil))
     (dolist (file files)
@@ -209,7 +209,7 @@
 
 (defun ztree-diff-node-traverse (parent path1 path2)
   "Function traversing 2 paths returning the list where the
-first element is the difference status (nil, 'diff, 'new') and
+first element is the difference status (nil, \\='diff, \\='new) and
 the rest is the combined list of nodes"
   (let ((list1 (ztree-directory-files path1))
         (list2 (ztree-directory-files path2))

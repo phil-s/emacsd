@@ -94,9 +94,9 @@ For other notes, see `desktop-recover-doc-toc'.")
   "Setup:
    (1) Put the desktop-recover.el file somewhere in your load-path\n
    (2) Add the following lines to your ~/.emacs:
-     (require 'desktop-recover)
+     (require \\='desktop-recover)
      ;; Highly recommended to keep emacs from bugging you about coding systems:
-     (prefer-coding-system 'utf-8)
+     (prefer-coding-system \\='utf-8)
      ;; Optional settings:
      ;;   if you'd like to specify where the desktop should be saved:
        (setq desktop-recover-location
@@ -518,8 +518,8 @@ Returns a list of buffer objects."
 ;; and hence by desktop-recover-save-with-danglers
 (defun desktop-recover-list-ordinary-buffers ()
   "List buffers, skips: dired, shell, debugger, internal and display buffers.
-Returns a list of buffer objects.  Note that 'ordinary' buffers include
-'dangling' buffers without associated files."
+Returns a list of buffer objects.  Note that \"ordinary\" buffers include
+\"dangling\" buffers without associated files."
   (interactive)
   (let* ((initial-buffer (current-buffer))
          (output-list)
@@ -735,7 +735,7 @@ begin with a leading asterix."
 
 (defun desktop-recover-parse-buffer-section (buffer-section)
   "Associate file system names with desktop-create-buffer code.
-Parses the 'buffer section' of a .emacs.desktop file (passed in
+Parses the \"buffer section\" of a .emacs.desktop file (passed in
 as the string BUFFER-SECTION) subdividing it into desktop-create-buffer
 function calls, and picking out names from them to use for user
 confirmation.  Returns the desktop-list, a list of lists, with
@@ -838,12 +838,12 @@ also any leading single-quotes."
     string))
 
 (defun desktop-recover-snag-first-item (list-string)
-  "Get's the first item out of the list stored in LIST-STRING.
-Intended to deal with the 'desktop-buffer-misc' field of a
+  "Gets the first item out of the list stored in LIST-STRING.
+Intended to deal with the `desktop-buffer-misc' field of a
 desktop-create-buffer call.
 This may look something like:
-  '(\"/home/doom/End/Pit/\")
-Note: This is not just a wrapper around \"car\", it does the
+  \\='(\"/home/doom/End/Pit/\")
+Note: This is not just a wrapper around `car', it does the
 conversion from string to list first."
   (let* ((list (eval (read list-string)))
          (first-item (car list))

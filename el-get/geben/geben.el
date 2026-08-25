@@ -696,7 +696,7 @@ the string formatter function `format'."
 
 (defun geben-dbgp-send-command (session operand &rest params)
   "Send a command to a debugger engine for SESSION.
-OPERAND and PARAMS will be passed along to 'geben-session-cmd-make.
+OPERAND and PARAMS will be passed along to \\='geben-session-cmd-make.
 Return a cmd list."
   (if (geben-session-active-p session)
       (let ((cmd (geben-session-cmd-make session operand params)))

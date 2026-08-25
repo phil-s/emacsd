@@ -81,7 +81,7 @@ nick. Must be < 65536")
      ( message    . nil))
 "An alist with elements (FIELD . WIDTH) which describes the columns to
   show. The fields are truncated to fit in WIDTH characters, with
-  'nil' meaning 'no limit', so that one's should be reserverd for
+  `nil' meaning \"no limit\", so that one's should be reserverd for
   the last field. Also, the width should be >= 3.")
 
 (defvar sauron-timestamp-format "%Y-%m-%d %H:%M:%S"
@@ -115,7 +115,7 @@ when new events arrive. Set to nil to prevent this.")
 hooked functions return nil, the event is allowed to be added. The
 function takes the following arguments:
   (ORIGIN MSG PROPS), where:
-ORIGIN is a symbol denoting the source of the event (ie.,'erc or 'dbus)
+ORIGIN is a symbol denoting the source of the event (ie.,\\='erc or \\='dbus)
 MSG is the message for this event
 PROPS is a backend-specific plist.
 If the hook is not set, all events are allowed.")
@@ -125,7 +125,7 @@ If the hook is not set, all events are allowed.")
 functions return non-nil, the event is blocked from being
 added. The hook function takes the following arguments:
   (ORIGIN MSG PROPS), where:
-ORIGIN is a symbol denoting the source of the event (ie.,'erc or 'dbus)
+ORIGIN is a symbol denoting the source of the event (ie.,\\='erc or \\='dbus)
 MSG is the message for this event
 PROPS is a backend-specific plist.")
 
@@ -223,7 +223,7 @@ e.g. when using ERC.")
   "*internal* Name of the sauron log buffer.")
 
 (defvar sr-nick-event-hash nil
-  "*internal* hash of nicks and the last time we raised an 'event'
+  "*internal* hash of nicks and the last time we raised an \"event\"
   for that at >= `sauron-min-priority'.")
 
 ;; not all versions of emacs define 'fringe-columns
@@ -318,7 +318,7 @@ otherwise return nil. CMPFUNC is the comparison function."
 
 
 (defun sr-fresh-nick-event (nick)
-  "Whether we have triggered an 'event' for NICK in the last
+  "Whether we have triggered an \"event\" for NICK in the last
 `sauron-nick-insensitivity' SECS. If so, return t and do nothing;
 otherwise, return nil, and update the table with the NICK and a
 timestamp."
@@ -408,7 +408,7 @@ For debugging purposes."
 ;; the main work horse function
 (defun sauron-add-event (origin prio msg &optional func props)
   "Add a new event to the Sauron log with:
-ORIGIN the source of the event (e.g., 'erc or 'dbus or 'org)
+ORIGIN the source of the event (e.g., \\='erc or \\='dbus or \\='org)
 PRIO the priority of the event, integer [0..5]
 MSG a string describing the event.
 Then, optionally:
@@ -640,8 +640,8 @@ sauron buffer."
 (defun sauron-alert-el-adapter (origin prio msg &optional props)
   "A handler function to feed sauron events through John Wiegley's
 alert.el (https://github.com/jwiegley/alert). You can use it like:
-  (add-hook 'sauron-event-added-functions 'sauron-alert-el-adapter)
-Obviously, 'alert.el' must be loaded for this to work."
+  (add-hook \\='sauron-event-added-functions \\='sauron-alert-el-adapter)
+Obviously, \"alert.el\" must be loaded for this to work."
   ;; sauron priorities [0..5] mapping alert severities
   (when (fboundp 'alert)
     (let ((sev (nth prio '(trivial trivial low normal moderate high urgent)))

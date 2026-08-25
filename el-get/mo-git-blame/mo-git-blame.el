@@ -124,8 +124,8 @@ option if this variable is non-nil."
                  (const :tag "Don't use --incremental" nil)))
 
 (defcustom mo-git-blame-blame-window-width 45
-  "The width of the 'blame' window leaving the rest for the
-'content' window."
+  "The width of the \"blame\" window leaving the rest for the
+\"content\" window."
   :group 'mo-git-blame
   :type 'integer)
 
@@ -337,12 +337,12 @@ git is already/still running."
     (display-buffer buffer)))
 
 (defun mo-git-blame-log-for-revision-at ()
-  "Calls 'git log' for revision in the current line."
+  "Calls \"git log\" for revision in the current line."
   (interactive)
   (mo-git-blame-log-for-revision (mo-git-blame-revision-at-point)))
 
 (defun mo-git-blame-log-for-current-revision ()
-  "Calls 'git log' for the buffer's current revision and file."
+  "Calls \"git log\" for the buffer's current revision and file."
   (interactive)
   (mo-git-blame-log-for-revision (plist-get mo-git-blame-vars :current-revision)))
 
@@ -356,17 +356,17 @@ git is already/still running."
     (display-buffer buffer)))
 
 (defun mo-git-blame-show-revision-at ()
-  "Calls 'git show' for the revision in the current line."
+  "Calls \"git show\" for the revision in the current line."
   (interactive)
   (mo-git-blame-show-revision (mo-git-blame-revision-at-point)))
 
 (defun mo-git-blame-show-current-revision ()
-  "Calls 'git show' for the current revision."
+  "Calls \"git show\" for the current revision."
   (interactive)
   (mo-git-blame-show-revision (plist-get mo-git-blame-vars :current-revision)))
 
 (defun mo-git-blame-content-for-revision-at ()
-  "Calls 'git cat-file' for the revision in the current line."
+  "Calls \"git cat-file\" for the revision in the current line."
   (interactive)
   (let ((info (mo-git-blame-parse-blame-line))
         (buffer (mo-git-blame-get-output-buffer)))
@@ -386,21 +386,21 @@ git is already/still running."
           (goto-char (point-min))))))
 
 (defun mo-git-blame-overwrite-file-with-revision-at ()
-  "Calls 'git cat-file' for the revision in the current line and overwrites
+  "Calls \"git cat-file\" for the revision in the current line and overwrites
 the original file's content. The file is not saved but left modified in an
 open buffer."
   (interactive)
   (mo-git-blame-overwrite-file-with-revision (mo-git-blame-revision-at-point)))
 
 (defun mo-git-blame-overwrite-file-with-current-revision ()
-  "Calls 'git cat-file' for the current revision and overwrites
+  "Calls \"git cat-file\" for the current revision and overwrites
 the original file's content. The file is not saved but left modified in an
 open buffer."
   (interactive)
   (mo-git-blame-overwrite-file-with-revision (plist-get mo-git-blame-vars :current-revision)))
 
 (defun mo-git-blame-reblame-for-ancestor-of-revision-at (&optional arg)
-  "Calls 'git blame' for the ancestor of the revision in the current line.
+  "Calls \"git blame\" for the ancestor of the revision in the current line.
 
 With a numeric prefix argument ARG only the ARG lines before and
 after point are blamed by using git blame's `-L'
@@ -409,7 +409,7 @@ option. Otherwise the whole file is blamed."
   (mo-git-blame-reblame-for-specific-revision (mo-git-blame-parse-rev (concat (plist-get (mo-git-blame-parse-blame-line) :hash) "~")) arg))
 
 (defun mo-git-blame-reblame-for-ancestor-of-current-revision (&optional arg)
-  "Calls 'git blame' for the ancestor of the current revision.
+  "Calls \"git blame\" for the ancestor of the current revision.
 
 With a numeric prefix argument ARG only the ARG lines before and
 after point are blamed by using git blame's `-L'
@@ -418,7 +418,7 @@ option. Otherwise the whole file is blamed."
   (mo-git-blame-reblame-for-specific-revision (mo-git-blame-parse-rev (concat (plist-get mo-git-blame-vars :current-revision) "~")) arg))
 
 (defun mo-git-blame-reblame-for-revision-at (&optional arg)
-  "Calls 'git blame' for the revision in the current line.
+  "Calls \"git blame\" for the revision in the current line.
 
 With a numeric prefix argument ARG only the ARG lines before and
 after point are blamed by using git blame's `-L'
@@ -431,7 +431,7 @@ option. Otherwise the whole file is blamed."
     (mo-git-blame-file (concat (plist-get mo-git-blame-vars :top-dir) (plist-get info :file-name)) revision (plist-get mo-git-blame-vars :original-file-name) arg)))
 
 (defun mo-git-blame-reblame-for-specific-revision (&optional revision arg)
-  "Calls 'git blame' for a specific REVISION.
+  "Calls \"git blame\" for a specific REVISION.
 
 With a numeric prefix argument ARG only the ARG lines before and
 after point are blamed by using git blame's `-L'
@@ -443,7 +443,7 @@ option. Otherwise the whole file is blamed."
   (mo-git-blame-file (concat (plist-get mo-git-blame-vars :top-dir) (plist-get mo-git-blame-vars :file-name)) revision (plist-get mo-git-blame-vars :original-file-name) arg))
 
 (defun mo-git-blame-reblame-for-prior-revision (&optional arg)
-  "Calls 'git blame' for the revision shown before the current
+  "Calls \"git blame\" for the revision shown before the current
 one (see `prior revisions' in the info output of
 `mo-git-blame-display-info').
 
@@ -490,13 +490,13 @@ option. Otherwise the whole file is blamed."
       (line-number-at-pos))))
 
 (defun mo-git-blame-mode ()
-  "Show the output of 'git blame' and the content of the file in
+  "Show the output of \"git blame\" and the content of the file in
 two frames side-by-side. Allows iterative re-blaming for specific
-revisions. Can show the output of 'git log' and 'git show'. Can
+revisions. Can show the output of \"git log\" and \"git show\". Can
 overwrite the file with the content of specific revisions by
-calling 'git cat-file blob ...'.
+calling \"git cat-file blob ...\".
 
-Use 'mo-git-blame-current' interactively or 'mo-git-blame-file'
+Use `mo-git-blame-current' interactively or `mo-git-blame-file'
 from elisp.
 
 \\{mo-git-blame-mode-map}"
@@ -589,7 +589,7 @@ the value of `mo-git-blame-use-ido'."
 (defun mo-git-blame-file (&optional file-name revision original-file-name num-lines-to-blame)
   "Calls `git blame' for REVISION of FILE-NAME or `HEAD' if
 REVISION is not given. Initializes the two windows that will show
-the output of 'git blame' and the content.
+the output of \"git blame\" and the content.
 
 If FILE-NAME is missing it will be read with `find-file' in
 interactive mode.
