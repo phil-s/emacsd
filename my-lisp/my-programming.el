@@ -637,6 +637,9 @@ Advice for `visit-tags-table'."
 (add-to-list 'auto-mode-alist '("\\.jar\\'" . archive-mode))
 (add-to-list 'auto-coding-alist '("\\.jar\\'" . no-conversion))
 
+;; JSONL
+(add-to-list 'auto-mode-alist '("\\.jsonl\\'" . json-mode))
+
 ;; Javascript
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 
