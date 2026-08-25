@@ -17,6 +17,7 @@
   (declare-function c-mark-function "cc-cmds")
   (declare-function find-tag-interactive "etags")
   (declare-function json-mode "json-mode")
+  (declare-function my-atom-window-decompose "my-utilities")
   (declare-function php-mode "php-mode")
   (declare-function term-char-mode "term")
   (declare-function term-mode "term")
@@ -27,6 +28,7 @@
 (add-to-list 'auto-mode-alist '("\\.twig\\'" . web-mode))
 
 ;;;###autoload
+(makunbound 'mahara-mode-map)
 (define-derived-mode mahara-mode php-mode "Mahara"
   "Major mode for Mahara coding.\n\n\\{mahara-mode-map}"
   ;; PHP configuration for Mahara
@@ -38,11 +40,17 @@
         show-trailing-whitespace t
         ;; Don't clobber (too badly) doxygen comments when using fill-paragraph
         paragraph-start          (concat paragraph-start "\\| \\* @[a-z]+")
+        ;; paragraph-separate       "$\\| *\\* *$"
         paragraph-separate       "$"
         )
 
+  ;; See also my-local.el where I'm (currently) wholesale replacing
+  ;; `my-bug-reference-url-format' because it's not sufficiently
+  ;; customisable).
   (setq-local my-bug-reference-url-for-issues
               "https://git.mahara.org/catalyst/mahara/-/issues/%s"
+              my-bug-reference-url-for-security-issues
+              "https://git.mahara.org/catalyst-security/mahara-security/-/issues/%s"
               my-bug-reference-url-for-bugs
               "https://bugs.launchpad.net/mahara/+bug/%s")
 
@@ -104,7 +112,18 @@
 ;; Ignore nodejs modules -- when present, they tend to be both
 ;; enormous and also entirely irrelevant to our own code.
 (with-eval-after-load "grep"
-  (add-to-list 'grep-find-ignored-directories "node_modules"))
+  (require 'seq)
+  (progn
+    ;; Remove all VCS systems except .git, as they slow down the 'find' command
+    ;; by an appreciable amount, and we don't need them.
+    (setq grep-find-ignored-directories
+          (seq-difference grep-find-ignored-directories
+                          (remove ".git" vc-directory-exclusion-list)))
+    ;; Add custom paths.
+    (add-to-list 'grep-find-ignored-directories "node_modules")
+    ;; This doesn't work?  (How about the other similar entries?)
+    ;; (add-to-list 'grep-find-ignored-directories "htdocs/theme/*/style")
+    (add-to-list 'grep-find-ignored-directories "theme/*/style")))
 
 
 ;; ;; SQL support
@@ -201,13 +220,15 @@
       "                -o -iregex %s -print \\)" ;pattern
       " | ctags -e --php-kinds=-van --language-force=php -f TAGS.new -L -"
       " && ! cmp --silent TAGS TAGS.new"
+      " && test -f TAGS.new"
       " && mv -f TAGS.new TAGS"
       " ; rm -f TAGS.new"
-      " ; touch TAGS")
+      " ; [ -f TAGS ] && touch TAGS && chown %s TAGS")
     (shell-quote-argument mahara-tags-autoupdate-dir)
     (shell-quote-argument mahara-tags-autoupdate-prune)
     (shell-quote-argument mahara-tags-autoupdate-ignore)
-    (shell-quote-argument mahara-tags-autoupdate-pattern))
+    (shell-quote-argument mahara-tags-autoupdate-pattern)
+    (shell-quote-argument user-login-name))
   "A shell command to update TAGS.
 Do not replace the original file unless there are differences.
 
@@ -216,6 +237,7 @@ See function `mahara-tags-autoupdate-command' for details.")
 
 (defun mahara-tags-autoupdate-command (dir)
   "Regenerate TAGS."
+  (message "mahara-tags-autoupdate-command: %s" dir)
   (if (consp mahara-tags-autoupdate-command)
       (let ((mahara-tags-autoupdate-dir dir))
         (apply 'format (mapcar 'eval mahara-tags-autoupdate-command)))
@@ -311,6 +333,12 @@ files are not relevant.")
               (bury-buffer mahara-tags-autoupdate-buffer)
               (unless (verify-visited-file-modtime (get-file-buffer tags-file-name))
                 (setq tags-completion-table nil)))))))))
+
+;; (mapatoms (lambda (sym)
+;;             (when (and (functionp sym)
+;;                        (string-prefix-p "mahara-tags-autoupdate"
+;;                                         (symbol-name sym)))
+;;               (trace-function sym))))
 
 (defun mahara-tags-autoupdate-start ()
   "Start (or re-start) the TAGS file autoupdate mechanism.
@@ -441,6 +469,58 @@ The update interval is set according to `mahara-tags-autoupdate-interval'."
 ;; (define-advice my-sql-console (:around (orig-fun &rest args) docker)
 ;;   (let ((default-directory "/docker:USER@DATABASE.HOST:/"))
 ;;     (apply orig-fun args)))
+
+
+;;; Behat
+
+(define-derived-mode behat-ansi-output-mode view-mode "Behat Log"
+  "Mode for Behat test output log files."
+  (ansi-color-apply-on-region (point-min) (point-max) t)
+  (setq truncate-lines t)
+  ;; Delete existing *Behat-Occur* buffer(s)
+  ;; (decomposing the atomic windows).
+  ;; Make sure that any window deletions happen *outside* of the
+  ;; `window-configuration-change-hook' function below!
+  (when-let ((buf (get-buffer "*Behat-Occur*")))
+    (when-let ((win (get-buffer-window buf)))
+      (my-atom-window-decompose win)
+      (delete-window win))
+    (when (buffer-live-p buf)
+      (kill-buffer buf)))
+  (kill-matching-buffers "\\*Behat-Occur\\*" nil t)
+  ;; Display any errors in an atomic window, after display.
+  (cl-labels ((myeob ()
+                ;; This file doesn't use lexical-binding, so I can't do:
+                ;; (remove-hook 'window-configuration-change-hook #'myeob t)
+                ;; For now, we'll just do this instead:
+                (setq-local window-configuration-change-hook nil)
+                ;; Show the results at the end of the log.
+                (goto-char (point-max))
+                ;; Find all red text (but do this outside of w-c-c-h).
+                (run-with-timer
+                 0 nil
+                 (lambda ()
+                   (let ((display-buffer-alist
+                          '(("*Behat-Occur*"
+                             ;; Not working well yet.
+                             ;; (info "(elisp) Atomic Windows")
+                             . (display-buffer-in-atom-window
+                                . ((side . below)))))))
+                     (occur-1 "\e\\[31m" nil (list (current-buffer))
+                              "*Behat-Occur*")
+                     (when-let ((buf (get-buffer "*Behat-Occur*")))
+                       (when (buffer-live-p buf)
+                         (with-current-buffer buf
+                           (if-let ((w (get-buffer-window buf)))
+                               (message "atom-window in %S: %S" w (window-parameter w 'atom-window)))
+                           (ansi-color-apply-on-region (point-min) (point-max) t)
+                           (text-scale-increase -1)
+                           (setq-local truncate-lines t)
+                           (shrink-window-if-larger-than-buffer (get-buffer-window
+                                                                 buf))
+                           (add-hook 'quit-window-hook #'my-atom-window-decompose
+                                     nil :local)))))))))
+    (add-hook 'window-configuration-change-hook #'myeob nil t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
