@@ -161,7 +161,7 @@
 (with-demoted-errors "Error: %S"
   ;; (when (require-theme 'zenburn-theme t) ;; we would be loading it twice
   ;; (mapc #'disable-theme custom-enabled-themes) ;; will be nil
-  (load-theme 'zenburn t)
+  (load-theme 'zenburn :no-confirm)
   (my-zenburn-theme-config))
 
 ;; Emacs supports Symbola by default, nowadays, if when it is installed.
@@ -256,32 +256,37 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun my-replace-theme (theme)
+(defun my-replace-theme (theme &optional reqtheme)
   "Replace current theme with THEME."
   (mapc #'disable-theme custom-enabled-themes)
   (let ((setfaces (intern (concat "my-theme-custom-faces-for-"
                                   (symbol-name theme)))))
+    ;; Call `require-theme' if requested.
+    (when reqtheme
+      (require-theme reqtheme))
+    ;; Enable the theme.  Finding out whether or not we can
+    ;; `enable-theme' rather than `load-theme' has become quite
+    ;; cumbersome for the in-built modus-themes (vs ELPA), and as
+    ;; I won't call this very often, let's just keep it simple.
+    (load-theme theme)
+    ;; Custom faces.
     (when (fboundp setfaces)
-      (funcall setfaces)))
-  (enable-theme theme))
+      (funcall setfaces))))
 
 (defun my-theme-modus-operandi ()
   "Replace current theme with `modus-operandi'."
   (interactive)
-  (require 'modus-operandi-theme)
-  (my-replace-theme 'modus-operandi))
+  (my-replace-theme 'modus-operandi 'modus-themes))
 
 (defun my-theme-modus-vivendi ()
   "Replace current theme with `modus-vivendi'."
   (interactive)
-  (require 'modus-vivendi-theme)
-  (my-replace-theme 'modus-vivendi))
+  (my-replace-theme 'modus-vivendi 'modus-themes))
 
 (defun my-theme-zenburn ()
   "Replace current theme with `zenburn'."
   (interactive)
-  (require 'zenburn-theme)
-  (my-replace-theme 'zenburn)
+  (my-replace-theme 'zenburn 'zenburn-theme)
   (my-zenburn-theme-config))
 
 
