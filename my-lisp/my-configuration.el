@@ -1497,14 +1497,7 @@ n.b. It works in a sandbox, so it seems that something in my config breaks it."
       tramp-default-user   "phil")
 
 ;; Enable directory local variables with remote files.
-(defadvice hack-dir-local-variables (around my-remote-dir-local-variables)
-  "Allow dir-locals.el with remote files, by temporarily redefining
-`file-remote-p' to return nil unconditionally."
-  (require 'cl-lib)
-  (cl-letf (((symbol-function 'file-remote-p)
-             (lambda (&rest _) nil)))
-    ad-do-it))
-(ad-activate 'hack-dir-local-variables)
+(setq enable-remote-dir-locals t)
 
 ;; 28.1: `ignored-local-variable-values' is new and useful.
 
