@@ -876,14 +876,32 @@ Can be tested with (signal-process (emacs-pid) \\='sigusr1)"
 ;; Configure ibuffer columns
 (setq ibuffer-formats '((mark modified read-only " " (name 30 60 :left :elide) " " (size 9 -1 :right) " " (mode 16 16 :left :elide) " " filename-and-process) (mark " " (name 16 -1) " " filename)))
 
+;; Support indirect buffers when filtering on buffer file names.
+(define-advice ibuffer-buffer-file-name (:override () my-indirect-file-name)
+  "Advice for `ibuffer-buffer-file-name'.
+
+Support indirect buffers when filtering on buffer file names.
+
+Remove with:
+\(advice-remove \\='ibuffer-buffer-file-name
+               \\='ibuffer-buffer-file-name@my-indirect-file-name)"
+  (cond
+   ((buffer-file-name (buffer-base-buffer)))
+   ((bound-and-true-p list-buffers-directory))
+   ((let ((dirname (and (boundp 'dired-directory)
+                        (if (stringp dired-directory)
+                            dired-directory
+                          (car dired-directory)))))
+      (and dirname (expand-file-name dirname))))))
+
 ;; Enable ibuffer-filter-by-filename to filter on directory names too.
 (with-eval-after-load "ibuf-ext"
   (define-ibuffer-filter filename
     "Toggle current view to buffers with file or directory name matching QUALIFIER."
     (:description "filename"
      :reader (read-from-minibuffer "Filter by file/directory name (regexp): "))
-    (when-let ((it (or (buffer-local-value 'buffer-file-name buf)
-                       (buffer-local-value 'dired-directory buf))))
+    (when-let* ((it (or (with-current-buffer buf (ibuffer-buffer-file-name))
+                        (buffer-local-value 'dired-directory buf))))
       (string-match qualifier it))))
 
 ;; Ensure ibuffer opens with point at the current buffer's entry.
