@@ -314,6 +314,9 @@ static char * data[] = {
 
 (defun my-magit-config ()
   "Called after loading `magit'."
+  ;; Display worktrees in the status buffer.
+  (magit-add-section-hook 'magit-status-sections-hook #'magit-insert-worktrees nil t)
+  ;; Make certain we're using Magit's automated WIP commits.
   (my-magit-wip-mode-ensure))
 
 (with-eval-after-load "magit"
