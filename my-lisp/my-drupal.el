@@ -56,7 +56,7 @@
   "Search Drupal core change records for PHRASE"
   (interactive
    (list (read-string (format "Search Drupal change records%s: "
-                              (if-let ((sap (symbol-at-point)))
+                              (if-let* ((sap (symbol-at-point)))
                                   (format " (%s)" sap)
                                 ""))
                       nil nil (thing-at-point 'symbol))))

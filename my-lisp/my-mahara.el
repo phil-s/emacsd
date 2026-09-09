@@ -481,8 +481,8 @@ The update interval is set according to `mahara-tags-autoupdate-interval'."
   ;; (decomposing the atomic windows).
   ;; Make sure that any window deletions happen *outside* of the
   ;; `window-configuration-change-hook' function below!
-  (when-let ((buf (get-buffer "*Behat-Occur*")))
-    (when-let ((win (get-buffer-window buf)))
+  (when-let* ((buf (get-buffer "*Behat-Occur*")))
+    (when-let* ((win (get-buffer-window buf)))
       (my-atom-window-decompose win)
       (delete-window win))
     (when (buffer-live-p buf)
@@ -508,10 +508,10 @@ The update interval is set according to `mahara-tags-autoupdate-interval'."
                                 . ((side . below)))))))
                      (occur-1 "\e\\[31m" nil (list (current-buffer))
                               "*Behat-Occur*")
-                     (when-let ((buf (get-buffer "*Behat-Occur*")))
+                     (when-let* ((buf (get-buffer "*Behat-Occur*")))
                        (when (buffer-live-p buf)
                          (with-current-buffer buf
-                           (if-let ((w (get-buffer-window buf)))
+                           (if-let* ((w (get-buffer-window buf)))
                                (message "atom-window in %S: %S" w (window-parameter w 'atom-window)))
                            (ansi-color-apply-on-region (point-min) (point-max) t)
                            (text-scale-increase -1)

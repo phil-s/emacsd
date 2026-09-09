@@ -6,9 +6,11 @@
 (eval-when-compile
   (defvar compare-windows-get-window-function)
   (defvar dired-mode-map)
+  (defvar ediff-quit-hook)
   (defvar ediff-temp-indirect-buffer)
   (defvar find-function-regexp-alist)
   (defvar find-grep-options)
+  (defvar ibuffer-marked-char)
   (defvar sort-fold-case)
   (defvar sql-buffer)
   (defvar sql-database)
@@ -18,6 +20,7 @@
   (defvar tags-loop-scan)
   (defvar term-ansi-buffer-name)
   (defvar term-prompt-regexp)
+  (defvar thing-at-point-provider-alist)
   (defvar url-http-end-of-headers)
   (defvar url-http-target-url)
   (defvar view-exit-action)
@@ -35,6 +38,8 @@
   (declare-function dired-get-marked-files "dired")
   (declare-function dired-move-to-filename "dired")
   (declare-function dired-nondirectory-p "dired-aux")
+  (declare-function dired-toggle-marks "dired")
+  (declare-function dired-unmark-all-marks "dired")
   (declare-function dired-virtual-mode "dired-x")
   (declare-function ediff-make-cloned-buffer "ediff-util")
   (declare-function ediff-regions-internal "ediff")
@@ -345,13 +350,6 @@ any numeric prefix argument is passed to `occur' as nlines."
                     (add-to-list 'visible-buffers (window-buffer window))))
     (multi-occur visible-buffers regexp)))
 
-(eval-when-compile
-  (declare-function term-send-raw-string "term" (chars))
-  (declare-function term-mode "term" ())
-  (declare-function term-char-mode "term" ())
-  (require 'term) ;; `term-in-char-mode' is a macro.
-  )
-
 (defun my-forward-word-or-buffer-or-windows (&optional arg)
   "Enable <C-left> to call `next-buffer' if the last command was
 `next-buffer' or `previous-buffer', and `tab-bar-history-forward' if the
@@ -365,7 +363,7 @@ last command was `tab-bar-history-back' or `tab-bar-history-forward'."
          (progn (tab-bar-history-forward)
                 (setq this-command 'tab-bar-history-forward)))
         ((and (derived-mode-p 'term-mode)
-              (require 'term)      ; for byte-compilation
+              (eval-when-compile (require 'term)) ; for byte-compilation
               (term-in-char-mode)) ; <- macro expansion
          (term-send-raw-string "f"))
         (t ;else
@@ -385,7 +383,7 @@ last command was `tab-bar-history-back' or `tab-bar-history-forward'."
          (progn (tab-bar-history-back)
                 (setq this-command 'tab-bar-history-back)))
         ((and (derived-mode-p 'term-mode)
-              (require 'term)      ; for byte-compilation
+              (eval-when-compile (require 'term)) ; for byte-compilation
               (term-in-char-mode)) ; <- macro expansion
          (term-send-raw-string "b"))
         (t ;else

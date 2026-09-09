@@ -9,9 +9,6 @@
   (declare-function diff-hl-flydiff-mode "diff-hl-flydiff")
   (declare-function global-diff-hl-mode "diff-hl")
   (declare-function my-spell-check-enable "my-text")
-  (declare-function pcomplete--here "pcomplete")
-  (declare-function pcomplete-entries "pcomplete")
-  (declare-function pcomplete-match "pcomplete")
   (declare-function vc-deduce-backend "vc")
   (declare-function vc-deduce-fileset "vc")
   (declare-function vc-find-revision "vc")
@@ -279,6 +276,7 @@ static char * data[] = {
   (defvar magit-diff-refine-ignore-whitespace)
   (defvar magit-log-buffer-file-locked)
   (defvar magit-mode-map)
+  (defvar magit-process-apply-ansi-colors)
   (defvar magit-process-finish-apply-ansi-colors)
   (defvar magit-process-log-max)
   (defvar magit-process-timestamp-format)
@@ -288,6 +286,7 @@ static char * data[] = {
   (defvar magit-save-repository-buffers)
   (defvar magit-section-initial-visibility-alist)
   (defvar magit-status-file-list-limit)
+  (defvar magit-view-git-manual-method)
   (require 'eieio)
   (declare-function eieio-oref "eieio-core")
   (declare-function git-commit-setup-check-buffer "git-commit")
@@ -301,6 +300,7 @@ static char * data[] = {
   (declare-function magit-get-current-branch "magit-git")
   (declare-function magit-get-section "magit-section")
   (declare-function magit-get-upstream-branch "magit-git")
+  (declare-function magit-insert-worktrees "magit-worktree")
   (declare-function magit-push-current-to-upstream@query-yes-or-no "my-version-control")
   (declare-function magit-push-tag "magit-push")
   (declare-function magit-read-branch "magit-git")
@@ -570,7 +570,7 @@ to ensure that this has happened."
       ;; (It's actually difficult to establish magit's version!)
       (define-advice magit-push-current-to-upstream (:before (args) query-yes-or-no)
         "Prompt for confirmation before permitting a push to upstream."
-        (when-let ((branch (magit-get-current-branch)))
+        (when-let* ((branch (magit-get-current-branch)))
           (unless (yes-or-no-p (format "Push %s branch upstream to %s? "
                                        branch
                                        (or (magit-get-upstream-branch branch)
@@ -654,13 +654,6 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 (setq magit-revision-fill-summary-line 80)
 
 ;; pcomplete support for git.
-;;
-;; Silence compiler warnings
-(eval-when-compile
-  (declare-function pcomplete-here* "pcomplete")
-  (declare-function pcomplete-match "pcomplete")
-  (declare-function pcomplete-here, "pcomplete")
-  (declare-function pcomplete-entries "pcomplete"))
 
 ;; pcomplete support from: http://www.masteringemacs.org/articles/2012/01/16/pcomplete-context-sensitive-completion-emacs/
 (defconst pcmpl-git-commands
@@ -683,9 +676,10 @@ Advice to `magit-push-current-to-upstream' triggers this query."
         (add-to-list 'ref-list (match-string 1)))
       ref-list)))
 
-(eval-when-compile (require 'pcomplete))
 (defun pcomplete/git ()
   "Completion for `git'"
+  ;; pcomplete-here and -here* are macros.
+  (eval-and-compile (require 'pcomplete))
   ;; Completion for the command argument.
   (pcomplete-here* pcmpl-git-commands)
   ;; complete files/dirs forever if the command is `add' or `rm'
