@@ -1,0 +1,15 @@
+#!/bin/sh
+find "${@:-.}" -type f \
+     \( -name ".dir-locals*" -o -name "*-pkg.el" \) -prune \
+     -o -name "*.el" -print0 \
+    | xargs -0r -L1 sed -n -e '1{/\blexical-binding\b/!F}' \
+    | tr '\n' '\0' \
+    | xargs -0r emacs -Q --batch --eval '(add-hook (quote find-file-hook)
+      (lambda ()
+        (when (eq major-mode (quote emacs-lisp-mode))
+          (let* ((prop-vars (hack-local-variables-prop-line))
+                 (cookie (assq (quote lexical-binding) prop-vars)))
+            (unless cookie
+              (message "%s" buffer-file-name)
+              (add-file-local-variable-prop-line (quote lexical-binding) nil)
+              (save-buffer))))))' --
