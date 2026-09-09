@@ -3170,7 +3170,7 @@ Uses `my-hide-region-in-window'."
            (list regexp files dir confirm))))))
   (if (equal current-prefix-arg '(16))
       (compilation-start regexp #'grep-mode)
-    (let ((command (concat "rgrep --color=auto --null -i "
+    (let ((command (concat "rgrep --color=auto --null -i -- "
                            (shell-quote-argument regexp)
                            (unless (equal files "*")
                              (format " -iname %s"
