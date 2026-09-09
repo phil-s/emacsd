@@ -1,4 +1,4 @@
-;;; ALPHA ALPHA ALPHA
+;;; ALPHA ALPHA ALPHA  -*- lexical-binding: nil; -*-
 ;;;
 ;;; load and eval this buffer (i.e. in your .emacs) to enable
 ;;; html-helper-mode customization even if the mode is not loaded.

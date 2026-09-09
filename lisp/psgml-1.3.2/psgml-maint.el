@@ -1,4 +1,4 @@
-;;; psgml-maint.el --- Help functions to maintain PSGML source
+;;; psgml-maint.el --- Help functions to maintain PSGML source  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 1996 Lennart Staflin
 

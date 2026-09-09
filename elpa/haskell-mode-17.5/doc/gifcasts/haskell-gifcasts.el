@@ -1,4 +1,4 @@
-;;
+;;  -*- lexical-binding: nil; -*-
 ;;
 ;; This files is supposed to be run from command line like this:
 ;;

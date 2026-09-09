@@ -1,4 +1,4 @@
-;;; sauron-dbus.el --- a dbus tracking module, part of sauron
+;;; sauron-dbus.el --- a dbus tracking module, part of sauron  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2011 Dirk-Jan C. Binnema
 

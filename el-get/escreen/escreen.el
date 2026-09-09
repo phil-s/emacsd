@@ -1,4 +1,4 @@
-;;; escreen.el --- emacs window session manager
+;;; escreen.el --- emacs window session manager  -*- lexical-binding: nil; -*-
 
 ;;; Copyright (C) 1992, 94, 95, 97, 2001, 2005 Noah S. Friedman
 

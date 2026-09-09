@@ -1,4 +1,4 @@
-;;; sauron-notifications.el --- a notifications tracking module, part of sauron
+;;; sauron-notifications.el --- a notifications tracking module, part of sauron  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2012 Dirk-Jan C. Binnema
 ;; Copyright (C) 2012 Takafumi Arakaki

@@ -1,4 +1,4 @@
-;; auto-generated
+;; auto-generated  -*- lexical-binding: nil; -*-
 (defconst mu4e-mu-version "1.6.10"
   "Required mu binary version; mu4e's version must agree with this.")
 

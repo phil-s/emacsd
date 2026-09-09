@@ -1,4 +1,4 @@
-;;; sym-comp.el --- mode-dependent symbol completion
+;;; sym-comp.el --- mode-dependent symbol completion  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2004  Dave Love
 

@@ -1,4 +1,4 @@
-;;; Here is the sort of configuration to use to add scratch into one's
+;;; Here is the sort of configuration to use to add scratch into one's  -*- lexical-binding: nil; -*-
 ;;; configuration if using el-get
 ;;; http://www.emacswiki.org/emacs/el-get.el
 

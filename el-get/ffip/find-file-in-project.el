@@ -1,4 +1,4 @@
-;;; find-file-in-project.el --- Find file/directory and review Diff/Patch/Commit efficiently everywhere
+;;; find-file-in-project.el --- Find file/directory and review Diff/Patch/Commit efficiently everywhere  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2006-2009, 2011-2012, 2015, 2016, 2017
 ;;   Phil Hagelberg, Doug Alcorn, Will Farrington, Chen Bin

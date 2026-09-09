@@ -1,4 +1,4 @@
-;;; second-sel.el --- Secondary selection commands
+;;; second-sel.el --- Secondary selection commands  -*- lexical-binding: nil; -*-
 ;;
 ;; Filename: second-sel.el
 ;; Description: Secondary selection commands

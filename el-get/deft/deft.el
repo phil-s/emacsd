@@ -1,4 +1,4 @@
-;;; deft.el --- quickly browse, filter, and edit plain text notes
+;;; deft.el --- quickly browse, filter, and edit plain text notes  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2011 Jason R. Blevins <jrblevin@sdf.org>
 ;; All rights reserved.

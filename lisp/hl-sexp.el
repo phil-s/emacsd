@@ -1,4 +1,4 @@
-;;; hl-sexp.el --- highlight the current sexp
+;;; hl-sexp.el --- highlight the current sexp  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 1998, 2000, 2001 Free Software Foundation, Inc.
 ;; Copyright (C) 2002 Edward O'Connor <ted@oconnor.cx>

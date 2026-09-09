@@ -1,4 +1,4 @@
-;;; php-extras-gen-eldoc.el --- Extra features for `php-mode'
+;;; php-extras-gen-eldoc.el --- Extra features for `php-mode'  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2012 Arne Jørgensen
 

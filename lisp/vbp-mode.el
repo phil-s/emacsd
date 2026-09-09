@@ -1,4 +1,4 @@
-;; vbp-mode.el --- A mode for editing Visual Basic project files.
+;; vbp-mode.el --- A mode for editing Visual Basic project files.  -*- lexical-binding: nil; -*-
 
 ;; Very little specialised editing here.  The real point is to load
 ;; all the files named in the vbp file.

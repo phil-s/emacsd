@@ -1,4 +1,4 @@
-;;; jump-char.el --- navigation by char
+;;; jump-char.el --- navigation by char  -*- lexical-binding: nil; -*-
 
 ;; this file is not part of Emacs
 

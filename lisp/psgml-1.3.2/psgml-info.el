@@ -1,4 +1,4 @@
-;;;; psgml-info.el
+;;;; psgml-info.el  -*- lexical-binding: nil; -*-
 ;;; Last edited: 2000-11-09 19:23:50 lenst
 ;;; $Id: psgml-info.el,v 2.16 2005/02/27 17:12:05 lenst Exp $
 

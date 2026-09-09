@@ -1,4 +1,4 @@
-;; visual-basic-mode.el --- A mode for editing Visual Basic programs.
+;; visual-basic-mode.el --- A mode for editing Visual Basic programs.  -*- lexical-binding: nil; -*-
 ;; Modified version of Fred White's visual-basic-mode.el
 
 ;; Copyright (C) 1996 Fred White <fwhite@alum.mit.edu>

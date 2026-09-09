@@ -1,4 +1,4 @@
-;;;; psgml-parse.el --- Parser for SGML-editing mode with parsing support
+;;;; psgml-parse.el --- Parser for SGML-editing mode with parsing support  -*- lexical-binding: nil; -*-
 ;; $Id: psgml-parse.el,v 2.99 2005/02/27 17:13:07 lenst Exp $
 
 ;; Copyright (C) 1994, 1995, 1996, 1997, 1998 Lennart Staflin

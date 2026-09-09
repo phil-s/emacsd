@@ -1,4 +1,4 @@
-;;; psvn.el --- Subversion interface for emacs
+;;; psvn.el --- Subversion interface for emacs  -*- lexical-binding: nil; -*-
 ;; Copyright (C) 2002-2011 by Stefan Reichoer
 
 ;; Author: Stefan Reichoer <stefan@xsteve.at>

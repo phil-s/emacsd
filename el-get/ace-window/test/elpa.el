@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (setq package-user-dir
       (expand-file-name (format "~/.elpa/%s/elpa" emacs-version)))
 (package-initialize)

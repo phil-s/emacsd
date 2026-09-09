@@ -1,4 +1,4 @@
-;;;; psgml-charent.el
+;;;; psgml-charent.el  -*- lexical-binding: nil; -*-
 ;;; Last edited: 1999-12-18 18:54:53 lenst
 ;;; $Id: psgml-charent.el,v 1.7 2002/04/25 20:50:27 lenst Exp $
 

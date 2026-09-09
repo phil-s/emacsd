@@ -1,4 +1,4 @@
-;;; php-mode-test.el --- Tests for php-mode
+;;; php-mode-test.el --- Tests for php-mode  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2018-2019  Friends of Emacs-PHP development
 ;; Copyright (C) 2013 Daniel Hackney

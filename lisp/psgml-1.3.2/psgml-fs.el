@@ -1,4 +1,4 @@
-;;; psgml-fs.el --- Format a SGML-file according to a style file
+;;; psgml-fs.el --- Format a SGML-file according to a style file  -*- lexical-binding: nil; -*-
 ;; Copyright (C) 1995, 2000 Lennart Staflin
 
 ;; Author: Lennart Staflin <lenst@lysator.liu.se>

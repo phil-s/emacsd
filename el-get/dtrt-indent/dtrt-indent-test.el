@@ -1,4 +1,4 @@
-;;; dtrt-indent-test.el --- Tests for dtrt-indent.el
+;;; dtrt-indent-test.el --- Tests for dtrt-indent.el  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2003, 2007, 2008 Julian Scheid
 

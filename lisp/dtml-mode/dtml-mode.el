@@ -1,4 +1,4 @@
-;;; Author:        Alastair D. Burt (burt@dfki.de)
+;;; Author:        Alastair D. Burt (burt@dfki.de)  -*- lexical-binding: nil; -*-
 ;;; File:          dtml-mode.el
 ;;; Purpose:       Major mode for editing files Zope's DTML syntax
 ;;; Created:       Sep 23, 1999

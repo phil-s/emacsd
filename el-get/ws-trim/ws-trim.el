@@ -1,4 +1,4 @@
-;;; ws-trim.el --- Tools and minor mode to trim whitespace on text lines
+;;; ws-trim.el --- Tools and minor mode to trim whitespace on text lines  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 1997-2012 Martin Stjernholm
 

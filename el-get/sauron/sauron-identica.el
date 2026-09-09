@@ -1,4 +1,4 @@
-;;; sauron-identica.el --- Identica notifications for sauron
+;;; sauron-identica.el --- Identica notifications for sauron  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2012 Tom Willemsen <tom@ryuslash.org>
 

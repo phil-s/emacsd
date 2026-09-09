@@ -1,4 +1,4 @@
-;; Tests for git-link
+;; Tests for git-link  -*- lexical-binding: nil; -*-
 
 (require 'ert)
 (require 'git-link)

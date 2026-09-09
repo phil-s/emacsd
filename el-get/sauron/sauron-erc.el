@@ -1,4 +1,4 @@
-;;; sauron-erc.el --- an ERC tracking module, part of sauron
+;;; sauron-erc.el --- an ERC tracking module, part of sauron  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2011 Dirk-Jan C. Binnema
 

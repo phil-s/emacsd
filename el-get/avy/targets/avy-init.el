@@ -1,4 +1,4 @@
-;;; avy-init.el --- bare avy init
+;;; avy-init.el --- bare avy init  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2015  Free Software Foundation, Inc.
 

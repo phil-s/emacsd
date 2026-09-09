@@ -1,4 +1,4 @@
-;;; sauron-org.el --- an org-mode (appt) tracking module, part of sauron
+;;; sauron-org.el --- an org-mode (appt) tracking module, part of sauron  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2011-2012 Dirk-Jan C. Binnema
 

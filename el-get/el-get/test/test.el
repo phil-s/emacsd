@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (setq debug-on-error t)
 (setq message-log-max t)
 (setq eval-expression-debug-on-error t)

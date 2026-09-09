@@ -1,4 +1,4 @@
-;;; scratch.el --- Mode-specific scratch buffers
+;;; scratch.el --- Mode-specific scratch buffers  -*- lexical-binding: nil; -*-
 
 ;; Author: Ian Eure <ian.eure@gmail.com>
 

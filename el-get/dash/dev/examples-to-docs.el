@@ -1,4 +1,4 @@
-;;; examples-to-docs.el --- Extract dash.el's doc from examples.el
+;;; examples-to-docs.el --- Extract dash.el's doc from examples.el  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 

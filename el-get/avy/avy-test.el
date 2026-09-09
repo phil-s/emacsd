@@ -1,4 +1,4 @@
-;;; avy-test.el --- Tests for avy
+;;; avy-test.el --- Tests for avy  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2015  Free Software Foundation, Inc.
 

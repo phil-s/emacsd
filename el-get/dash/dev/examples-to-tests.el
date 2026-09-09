@@ -1,4 +1,4 @@
-;;; examples-to-tests.el --- Extract dash.el's tests from examples.el
+;;; examples-to-tests.el --- Extract dash.el's tests from examples.el  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 

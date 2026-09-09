@@ -1,4 +1,4 @@
-;;; find-file-in-tags.el --- directly open files referenced in TAGS files
+;;; find-file-in-tags.el --- directly open files referenced in TAGS files  -*- lexical-binding: nil; -*-
 ;;;
 ;;; Copyright (C) 2010 Trey Jackson
 ;;;

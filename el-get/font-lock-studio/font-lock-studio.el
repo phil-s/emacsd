@@ -1,4 +1,4 @@
-;;; font-lock-studio.el --- interactive debugger for Font Lock keywords.
+;;; font-lock-studio.el --- interactive debugger for Font Lock keywords.  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013-2014 Anders Lindgren
 

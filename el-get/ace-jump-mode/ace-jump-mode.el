@@ -1,4 +1,4 @@
-;;; ace-jump-mode.el --- a quick cursor location minor mode for emacs -*- coding: utf-8-unix -*-
+;;; ace-jump-mode.el --- a quick cursor location minor mode for emacs -*- coding: utf-8-unix; lexical-binding: nil; -*-
 
 ;; Copyright (C) 2012 Free Software Foundation, Inc.
 

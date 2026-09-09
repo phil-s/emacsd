@@ -1,4 +1,4 @@
-;;; ztree-diff.el --- Text mode diff for directory trees
+;;; ztree-diff.el --- Text mode diff for directory trees  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013 Alexey Veretennikov
 ;;

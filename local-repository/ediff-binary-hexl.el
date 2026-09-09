@@ -1,4 +1,4 @@
-;;; ediff-binary-hexl --- Use hexl-mode to diff binary files from ediff
+;;; ediff-binary-hexl --- Use hexl-mode to diff binary files from ediff  -*- lexical-binding: nil; -*-
 
 ;; Author: Trey Jackson
 ;; URL: http://trey-jackson.blogspot.com/2010/10/emacs-tip-38-automatically-diff-binary.html

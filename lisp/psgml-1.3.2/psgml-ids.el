@@ -1,4 +1,4 @@
-;;; psgml-ids.el --- Management of ID/IDREFS for PSGML
+;;; psgml-ids.el --- Management of ID/IDREFS for PSGML  -*- lexical-binding: nil; -*-
 ;; $Id: psgml-ids.el,v 2.1 2005/02/09 15:29:09 lenst Exp $
 
 ;; Copyright (C) 1999 Jean-Daniel Fekete

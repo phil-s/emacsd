@@ -1,4 +1,4 @@
-;;; ztree-dir.el --- Text mode directory tree
+;;; ztree-dir.el --- Text mode directory tree  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013 Alexey Veretennikov
 ;;

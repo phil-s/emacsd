@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (require 'ert)
 (require 'dash)
 (require 's)

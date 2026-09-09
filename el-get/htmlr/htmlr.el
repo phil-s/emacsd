@@ -1,4 +1,4 @@
-;;; htmlr.el -- HTML rendering in Elisp
+;;; htmlr.el -- HTML rendering in Elisp  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2002  Alex Schroeder
 

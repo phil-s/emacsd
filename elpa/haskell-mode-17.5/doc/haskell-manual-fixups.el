@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 
 
 (defun get-gif-dimensions (filename)

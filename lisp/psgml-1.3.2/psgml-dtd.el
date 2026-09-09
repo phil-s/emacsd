@@ -1,4 +1,4 @@
-;;;; psgml-dtd.el --- DTD parser for SGML-editing mode with parsing support
+;;;; psgml-dtd.el --- DTD parser for SGML-editing mode with parsing support  -*- lexical-binding: nil; -*-
 ;; $Id: psgml-dtd.el,v 2.30 2003/03/25 19:46:09 lenst Exp $
 
 ;; Copyright (C) 1994 Lennart Staflin

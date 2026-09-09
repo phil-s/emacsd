@@ -1,4 +1,4 @@
-;;; w32-symlinks.el --- MS Windows symbolic link (shortcut) support
+;;; w32-symlinks.el --- MS Windows symbolic link (shortcut) support  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2002, 2003 Francis J. Wright, 2005 Lars Hansen
 

@@ -1,4 +1,4 @@
-;;; async-test.el --- async.el-related tests
+;;; async-test.el --- async.el-related tests  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2012-2016 Free Software Foundation, Inc.
 

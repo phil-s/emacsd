@@ -1,4 +1,4 @@
-;;; wtf.el --- Look up conversational and computing acronyms
+;;; wtf.el --- Look up conversational and computing acronyms  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2005, 2006, 2007 Michael Olson
 

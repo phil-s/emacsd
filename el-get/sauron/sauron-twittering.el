@@ -1,4 +1,4 @@
-;;; sauron-twittering.el --- a twittering-mode tracking module, part of sauron
+;;; sauron-twittering.el --- a twittering-mode tracking module, part of sauron  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2012 Dirk-Jan C. Binnema, Joel McCracken
 

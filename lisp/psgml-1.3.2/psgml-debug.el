@@ -1,4 +1,4 @@
-;;;;\filename psgml-debug.el
+;;;;\filename psgml-debug.el  -*- lexical-binding: nil; -*-
 ;;;\Last edited: 2001-03-10 00:32:00 lenst
 ;;;\RCS $Id: psgml-debug.el,v 2.31 2005/03/02 19:43:45 lenst Exp $
 ;;;\author {Lennart Staflin}

@@ -1,4 +1,4 @@
-;;; psgml.el --- SGML-editing mode with parsing support
+;;; psgml.el --- SGML-editing mode with parsing support  -*- lexical-binding: nil; -*-
 ;; $Id: psgml.el,v 2.70 2005/03/02 19:44:04 lenst Exp $
 
 ;; Copyright (C) 1993-2002 Lennart Staflin

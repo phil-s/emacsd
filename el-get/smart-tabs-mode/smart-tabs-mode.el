@@ -1,4 +1,4 @@
-;;; smart-tabs-mode.el --- Intelligently indent with tabs, align with spaces!
+;;; smart-tabs-mode.el --- Intelligently indent with tabs, align with spaces!  -*- lexical-binding: nil; -*-
 
 ;; Copyright © 2011 John Croisant <jacius@gmail.com>
 ;; Copyright © 2011 Joel C. Salomon <joelcsalomon@gmail.com>

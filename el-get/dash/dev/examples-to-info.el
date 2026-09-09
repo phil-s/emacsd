@@ -1,4 +1,4 @@
-;;; examples-to-info.el --- Extract dash.el's Info from examples.el
+;;; examples-to-info.el --- Extract dash.el's Info from examples.el  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 

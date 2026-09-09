@@ -1,4 +1,4 @@
-;;; let-while-tests.el -- tests for the let-while macro
+;;; let-while-tests.el -- tests for the let-while macro  -*- lexical-binding: nil; -*-
 
 
 (defun let-while-test ()

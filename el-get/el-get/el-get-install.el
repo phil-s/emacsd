@@ -1,4 +1,4 @@
-;;; el-get-install.el --- installer for the lazy
+;;; el-get-install.el --- installer for the lazy  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (C) 2010 Dimitri Fontaine
 ;;

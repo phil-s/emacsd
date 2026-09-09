@@ -1,4 +1,4 @@
-;;; w32-utl.el --- small utility functions implemented using vbscript
+;;; w32-utl.el --- small utility functions implemented using vbscript  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2005 Mathias Dahl
 

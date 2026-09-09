@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 
 (require 'browse-at-remote)
 

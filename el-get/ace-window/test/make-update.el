@@ -1,4 +1,4 @@
-;;* list of the all dependencies
+;;* list of the all dependencies  -*- lexical-binding: nil; -*-
 (defvar dev-packages '(avy))
 
 ;;* initialize package.el

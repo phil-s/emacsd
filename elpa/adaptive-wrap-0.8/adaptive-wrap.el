@@ -1,4 +1,4 @@
-;;; adaptive-wrap.el --- Smart line-wrapping with wrap-prefix
+;;; adaptive-wrap.el --- Smart line-wrapping with wrap-prefix  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2011-2021  Free Software Foundation, Inc.
 

@@ -1,4 +1,4 @@
-;;; ztree-view.el --- Text mode tree view (buffer)
+;;; ztree-view.el --- Text mode tree view (buffer)  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013 Alexey Veretennikov
 ;;

@@ -1,4 +1,4 @@
-;;; ediff-trees.el --- Recursively ediff two directory trees 
+;;; ediff-trees.el --- Recursively ediff two directory trees  -*- lexical-binding: nil; -*-
 ;;;----------------------------------------------------------------------
 ;; Author: Joao Cachopo <joao.cachopo@inesc-id.pt>
 ;; Created on: Wed May 10 17:30:49 2006

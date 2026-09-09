@@ -1,4 +1,4 @@
-;;; sauron-jabber.el --- Jabber notifications for sauron
+;;; sauron-jabber.el --- Jabber notifications for sauron  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2012 Tom Willemsen <tom@ryuslash.org>
 

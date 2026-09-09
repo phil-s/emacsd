@@ -1,4 +1,4 @@
-;;; ace-link.el --- Quickly follow links using `ace-jump-mode'
+;;; ace-link.el --- Quickly follow links using `ace-jump-mode'  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2014 Oleh Krehel
 

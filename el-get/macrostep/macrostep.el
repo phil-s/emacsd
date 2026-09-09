@@ -1,4 +1,4 @@
-;;; macrostep.el --- interactive macro stepper for Emacs Lisp
+;;; macrostep.el --- interactive macro stepper for Emacs Lisp  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2012-2014 Jonathan Oddie <j.j.oddie@gmail.com>
 

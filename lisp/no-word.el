@@ -1,4 +1,4 @@
-;;; no-word.el --- use antiword program to view word documents in emacs
+;;; no-word.el --- use antiword program to view word documents in emacs  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2002  by Free Software Foundation, Inc.
 

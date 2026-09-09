@@ -1,4 +1,4 @@
-;;; html-helper-mode.el --- Major mode for composing html files.
+;;; html-helper-mode.el --- Major mode for composing html files.  -*- lexical-binding: nil; -*-
 ;;; v 3.0.4jolly
 
 ;; Mantainer : Gian Uberto "Saint" Lauri <saint@eng.it>

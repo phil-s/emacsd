@@ -1,4 +1,4 @@
-;;; macrostep-test.el --- tests for macrostep.el
+;;; macrostep-test.el --- tests for macrostep.el  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2014 Jon Oddie <j.j.oddie@gmail.com>
 

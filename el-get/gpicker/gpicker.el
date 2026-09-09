@@ -1,4 +1,4 @@
-;;; gpicker.el --- gpicker integration for Emacs
+;;; gpicker.el --- gpicker integration for Emacs  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2008 Aliaksey Kandratsenka
 

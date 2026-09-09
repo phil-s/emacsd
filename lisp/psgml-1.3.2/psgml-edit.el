@@ -1,4 +1,4 @@
-;;; psgml-edit.el --- Editing commands for SGML-mode with parsing support
+;;; psgml-edit.el --- Editing commands for SGML-mode with parsing support  -*- lexical-binding: nil; -*-
 ;;
 ;; $Id: psgml-edit.el,v 2.73 2005/03/02 19:46:31 lenst Exp $
 

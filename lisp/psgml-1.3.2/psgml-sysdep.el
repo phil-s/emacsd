@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 
 (provide 'psgml-sysdep)
 
