@@ -1179,7 +1179,7 @@ Adds a warning face for \\='low\\=' battery in Emacs versions <= 27."
   "Round the battery percentage (%p) value, to save some characters.
 
 Advice for the `battery-status-function' function value."
-  (when-let ((p (assq ?p battery-status)))
+  (when-let* ((p (assq ?p battery-status)))
     (setcdr p (number-to-string (round (string-to-number (cdr p))))))
   battery-status)
 

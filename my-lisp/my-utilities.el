@@ -128,7 +128,7 @@ The optional argument can be generated with `make-hippie-expand-function'."
 using the specified hippie-expand function."
   `(lambda (&optional selection)
      (interactive
-      (when-let ((options (my-hippie-expand-completions ,hippie-expand-function)))
+      (when-let* ((options (my-hippie-expand-completions ,hippie-expand-function)))
         (list (let ((minibuffer-visible-completions t)
                     (completion-auto-help 'always)
                     (completion-extra-properties
@@ -160,7 +160,7 @@ using the specified hippie-expand function."
   "Group the completions by `hippie-expand-try-functions-list'."
   (if transform
       completion
-    (if-let ((group (get-text-property 0 'my-group completion)))
+    (if-let* ((group (get-text-property 0 'my-group completion)))
         (symbol-name group)
       "ungrouped")))
 
@@ -1752,7 +1752,7 @@ By Nikolaj Schumacher, 2008-10-20. Licensed under GPL."
 (defun my-narrow-to-thing-at-point (thing &optional _all)
   "Narrow to THING at point."
   (interactive (list (my-read-thing-at-point-thing nil current-prefix-arg)))
-  (if-let ((bounds (bounds-of-thing-at-point thing)))
+  (if-let* ((bounds (bounds-of-thing-at-point thing)))
       (narrow-to-region (car bounds) (cdr bounds))
     (user-error "No %s at point" thing)))
 
@@ -2121,7 +2121,7 @@ instead of `browse-url-new-window-flag'."
   "Switch to a `shell' buffer (creating it if necessary)."
   (interactive "P")
   (require 'shell)
-  (unless (when-let ((buf (get-buffer "*shell*")))
+  (unless (when-let* ((buf (get-buffer "*shell*")))
             (get-buffer-process buf))
     (call-interactively 'shell))
   (pop-to-buffer "*shell*" '((display-buffer-reuse-window
@@ -2729,7 +2729,8 @@ pop-up frame float over the other windows rather than being tiled:
         (set-frame-parameter (selected-frame) 'visibility nil)
         (redisplay)
         (sleep-for 1)
-        (delete-frame)))))
+        (let ((x-auto-preserve-selections nil))
+          (delete-frame))))))
 
 (defun my-passwd-read-insert-dots ()
   "`read-passwd' and insert in buffer using dots for display replacement."
@@ -3086,7 +3087,7 @@ and map delete-window across the resulting list."
   "Disolve any atomic window hierarchy to which WIN belongs.
 WIN defaults to `selected-window'."
   (interactive)
-  (when-let ((root (window-atom-root (or win (selected-window)))))
+  (when-let* ((root (window-atom-root (or win (selected-window)))))
     (walk-window-subtree
      (lambda (w)
        (set-window-parameter w 'window-atom nil))
@@ -3115,7 +3116,7 @@ See also `my-unhide-in-window'."
         (w (or window (selected-window))))
     (overlay-put o 'window w)
     (overlay-put o 'display "")
-    (if-let ((windowoverlays (assq w my-hide-window-overlays-alist)))
+    (if-let* ((windowoverlays (assq w my-hide-window-overlays-alist)))
         (push o (cdr windowoverlays))
       (push (cons w (list o)) my-hide-window-overlays-alist)))
   ;; ;; Seems to be necessary, due to (info "(elisp)Adjusting Point")
