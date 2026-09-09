@@ -3182,6 +3182,21 @@ Uses `my-hide-region-in-window'."
       ;; Run rgrep shell utility.
       (let ((default-directory dir))
         (compilation-start command #'grep-mode)))))
+
+(defun my-native-compile-directory (directory)
+  "Native compile if necessary all the .el files present in DIRECTORY.
+Each .el file is native-compiled if the corresponding .eln file is not
+found in any directory mentioned in `native-comp-eln-load-path'.
+The search within DIRECTORY is performed recursively."
+  (interactive "DDirectory: ")
+  (mapc (lambda (file)
+          (unless (comp-lookup-eln file)
+            (ignore-errors
+              (native-compile file))))
+        (cl-delete-if-not #'file-exists-p
+                          (mapcar (lambda (f) (substring f 0 (1- (length f))))
+                                  (directory-files-recursively
+                                   directory ".+\\.elc\\'")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
