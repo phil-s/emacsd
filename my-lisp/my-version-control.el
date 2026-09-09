@@ -429,6 +429,8 @@ to ensure that this has happened."
 
 (defun my-magit-log-config ()
   "Called after loading `magit-log'."
+  (transient-append-suffix 'magit-log "-A"
+    '("-C" "Limit to committer" (nil "--committer=")))
   (transient-append-suffix 'magit-log "=u"
     '("=r" "Limit to commits from remote" (nil "--remotes="))))
 
