@@ -1,15 +1,111 @@
 #!/bin/sh
-find "${@:-.}" -type f \
-     \( -name ".dir-locals*" -o -name "*-pkg.el" \) -prune \
-     -o -name "*.el" -print0 \
-    | xargs -0r -L1 sed -n -e '1{/\blexical-binding\b/!F}' \
-    | tr '\n' '\0' \
-    | xargs -0r emacs -Q --batch --eval '(add-hook (quote find-file-hook)
-      (lambda ()
-        (when (eq major-mode (quote emacs-lisp-mode))
-          (let* ((prop-vars (hack-local-variables-prop-line))
-                 (cookie (assq (quote lexical-binding) prop-vars)))
-            (unless cookie
-              (message "%s" buffer-file-name)
-              (add-file-local-variable-prop-line (quote lexical-binding) nil)
-              (save-buffer))))))' --
+lex=nil
+force=nil
+help=
+dry_run=
+
+opts=$(getopt -o hf -l nil,t,help,force,dry-run -a -n "$(basename "$0")" -- "$@")
+error=$?
+
+if [ "${error}" != "0" ]; then
+    printf "\n"
+    short_help=1
+else
+    eval set -- ${opts}
+    for param; do
+        case $param in
+            --t ) lex=t; shift;;
+            --nil ) lex=nil; shift;;
+            --force | -f ) force=t; shift;;
+            --help | -h ) help=1; shift;;
+            --dry-run ) dry_run=1; shift;;
+            -- ) shift; break;;
+        esac
+    done
+fi
+
+if [ -n "${short_help}" ] || [ -n "${help}" ]; then
+    cat <<EOF
+Usage:
+$(basename "$0") [-nil|-t] [-f|--force] [--dry-run] [-h|--help] [--] [PATHS...]
+
+EOF
+
+    if [ -n "${help}" ]; then
+        cat <<EOF
+Adds a -*- lexical-binding -*- cookie to every *.el file within PATHS which
+does not have one already.  If PATHS is omitted then the current directory
+is used.  Directories are processed recursively to find *.el files.
+
+The cookie is added as -*- lexical-binding: nil; -*- by default, so that the
+behaviour of the lisp code is not changed.
+
+OPTIONS
+
+  -nil
+        Set -*- lexical-binding: nil; -*-.  This is the default, so this
+        argument is optional.
+
+  -t
+        Set -*- lexical-binding: t; -*-.  This might necessitate additional
+        changes to the files to properly convert them to lexical-binding.
+
+  -f, --force
+        Also process files with an existing cookie (as well as those without),
+        replacing the old lexical-binding values with the new value.
+
+  --dry-run
+        Show the files which would be modifed without making any changes.
+
+  -h, --help
+        Display this help.
+
+  --
+        Marks the end of the options, in case any PATHS begin with a hypen.
+
+  PATHS...
+        The files and directories to process.  Files matching ".dir-locals*"
+        or "*-pkg.el" are always skipped (even if --force is used).
+EOF
+    fi
+    exit ${error-0}
+fi
+
+if [ "${force}" = "t" ]; then
+    # Retain all found files.
+    filter() {
+        cat
+    }
+else
+    # Filter out files which already have a cookie.
+    filter() {
+        xargs -0r -L1 sed -n -e '1{/\blexical-binding\b/!F}' \
+            | tr '\n' '\0'
+    }
+fi
+
+if [ -n "${dry_run}" ]; then
+    process() {
+        xargs -0r printf "%s\n"
+    }
+else
+    process() {
+        xargs -0r emacs -Q --batch --eval '(add-hook (quote find-file-hook)
+          (lambda ()
+            (when (eq major-mode (quote emacs-lisp-mode))
+              (let* ((prop-vars (hack-local-variables-prop-line))
+                     (cookie (assq (quote lexical-binding) prop-vars)))
+                (when (or '"${force}"' (not cookie))
+                  (princ (format "%s\n" buffer-file-name))
+                  (add-file-local-variable-prop-line (quote lexical-binding)
+                                                     '"${lex}"')
+                  (save-buffer))))))' --
+    }
+fi
+
+#set -x
+find "${@:-.}" -type f \( \
+     \( \( -name ".dir-locals*" -o -name "*-pkg.el" \) -prune \) \
+     -o \( -name "*.el" -print0 \) \) \
+    | filter \
+    | process
