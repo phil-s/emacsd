@@ -1966,6 +1966,22 @@ when the file path is too long to show on one line."
 (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
 (global-visible-mark-mode 1)
 
+;; Do not show function type details like: "Inferred type: (function nil t)"
+;; in *Help* buffers.  This is not useful to me.
+(setq help-display-function-type t)
+
+;; Do not *link* `native-comp-function' (nor other type strings) in *Help*
+;; buffers.  The links take us to another *Help* buffer with more information
+;; that I do not have any use for, and they mess with my muscle memory for
+;; "TAB RET" to follow what used to be the first link, which is the source
+;; code location (which *is* useful).  An example of what we're suppressing:
+;;
+;; native-comp-function is a type (of kind ‘built-in-class’).
+;;  Inherits from ‘subr’, ‘compiled-function’.
+;; This is a built-in type.
+;;
+;; Type of functions that have been compiled by the native compiler.
+
 (defvar my-help-unbuttonise)
 
 (define-advice help-fns-function-description-header
