@@ -108,7 +108,9 @@
         (:flags . 6)
         (:mailing-list . 10)
         (:from . 16)
-        (:subject))
+        (:subject)
+        (:tags)
+        (:size . 10))
       ;; viewing mail
       mu4e-view-show-addresses t
       mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum
