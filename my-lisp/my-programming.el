@@ -760,6 +760,12 @@ Advice for `visit-tags-table'."
     (setq sql-prompt-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*=[#>] ")
     ;; Ditto for continuation prompt: "^\\w*[-(][#>] "
     (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\|-\\)*[-(@][#>] ")
+    ;; `sql--adjust-interactive-setup' then does this:
+    ;; (setq comint-prompt-regexp
+    ;;       (if sql-prompt-cont-regexp
+    ;;           (concat "\\(?:\\(?:" sql-prompt-regexp "\\)"
+    ;;                   "\\|\\(?:" sql-prompt-cont-regexp "\\)\\)")
+    ;;         sql-prompt-regexp))
 
     ;; Deal with psql's mad insistence on telling you what it's NOT doing
     ;; when executing an "\if ... \else ... \endif" conditional expression.
