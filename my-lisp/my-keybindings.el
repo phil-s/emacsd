@@ -307,7 +307,8 @@
   ;; Terminals / Shells / REPLs
   (define-key keymap (kbd "C-c s s")   'my-terminal)
   (define-key keymap (kbd "C-c s S")   'my-shell)
-  (define-key keymap (kbd "C-c s d")   'my-drush-console)
+  ;; (define-key keymap (kbd "C-c s d")   'my-drush-console)
+  (define-key keymap (kbd "C-c s d")   'run-psysh)
   (define-key keymap (kbd "C-c s q")   'my-sql-console)
   (define-key keymap (kbd "C-c s h")   'my-ssh)
   (define-key keymap (kbd "C-c s !")   'my-terminal-run)
