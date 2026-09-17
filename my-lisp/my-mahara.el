@@ -318,9 +318,11 @@ files are not relevant.")
         ;; our shell commands will be running on the remote server, and
         ;; that may not be the intended server.
         (when (let ((max-mini-window-height 1))
+                (kill-buffer " *mahara-tags-autoupdate*")
                 (eq 0 (shell-command
                        (format "stat --printf='' %s >/dev/null 2>&1"
-                               (shell-quote-argument tags-file-local-name)))))
+                               (shell-quote-argument tags-file-local-name))
+                       " *mahara-tags-autoupdate*")))
           (let ((dir (file-name-directory tags-file-local-name)))
             (when (mahara-tags-autoupdate-tree-modified dir)
               (save-window-excursion
