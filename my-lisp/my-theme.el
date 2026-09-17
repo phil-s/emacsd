@@ -162,6 +162,12 @@
   ;; (when (require-theme 'zenburn-theme t) ;; we would be loading it twice
   ;; (mapc #'disable-theme custom-enabled-themes) ;; will be nil
   (load-theme 'zenburn :no-confirm)
+  ;; ;; Ooh.  Maybe I really *do* need to load it twice?!  I'm having weird issues
+  ;; ;; with `my-theme-custom-faces-for-zenburn' not sticking unless I call it both
+  ;; ;; before *and* after `load-theme', but I don't think I can call it before the
+  ;; ;; iniitial load, so... load twice?!?!  This is daft, so there has to be a
+  ;; ;; better way.  But for now...
+  ;; (load-theme 'zenburn :no-confirm)
   (my-zenburn-theme-config))
 
 ;; Emacs supports Symbola by default, nowadays, if when it is installed.
@@ -264,6 +270,14 @@
     ;; Call `require-theme' if requested.
     (when reqtheme
       (require-theme reqtheme))
+    ;; FIXME: Surely I don't actually need to do this both before and after
+    ;; loading the theme?!  I've been seeing problems either way while migrating
+    ;; to Emacs 31 though.  My working (so I thought) code for Emacs 30 had only
+    ;; the 'before' setfaces call.  Keeping both in place for the moment.
+    ;;
+    ;; Custom faces.
+    (when (fboundp setfaces)
+      (funcall setfaces))
     ;; Enable the theme.  Finding out whether or not we can
     ;; `enable-theme' rather than `load-theme' has become quite
     ;; cumbersome for the in-built modus-themes (vs ELPA), and as
