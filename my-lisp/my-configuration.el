@@ -250,8 +250,19 @@ when `auto-save-mode' is invoked manually.")
         )
   (mapcar (apply-partially #'add-to-list 'atomic-chrome-frame-parameters)
           '((title . "atomic-chrome")
-            (top . 64)
-            (left . (- 16)))))
+            (top . 90)
+            ;; Per (info "(elisp)Position Parameters") the following should
+            ;; position the right-hand edge of the frame 16px inside of the
+            ;; right-hand edge of the display.  This used to work, but it has
+            ;; started iconifying the frame (which I have been unable to prevent
+            ;; with (visibility . t)).  I'm working around this with an offset
+            ;; from the left.  This is not ideal as it assumes my resolution;
+            ;; but I don't expect it to change in practice, so it'll do the job.
+            ;;
+            ;; (left . (- 16))
+            (left . 1166)
+            (height . 40)
+            (user-size . t))))
 
 ;; No splash screen or start-up message.
 (setq inhibit-startup-screen t)
