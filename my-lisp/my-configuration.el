@@ -141,6 +141,15 @@
 (setq elisp-fontify-semantically t
       elisp-add-help-echo t)
 
+;; Trust only my own lisp code and core Emacs lisp files.
+(setq trusted-content
+      (list (expand-file-name "my-lisp/" user-emacs-directory)
+            lisp-directory
+            (expand-file-name "~/emacs/repository/lisp/")
+            (expand-file-name (format "~/emacs/%d.x/repository/lisp/" emacs-major-version))
+            (expand-file-name (format "~/emacs/%d.x.nc/repository/lisp/" emacs-major-version))
+            ))
+
 ;; Set a preferred coding system
 ;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
 (prefer-coding-system 'utf-8)
