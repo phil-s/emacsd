@@ -137,6 +137,10 @@
 (setq custom-unlispify-tag-names nil
       custom-unlispify-remove-prefixes nil)
 
+;; Highlight symbols according to their semantic meaning in elisp code.
+(setq elisp-fontify-semantically t
+      elisp-add-help-echo t)
+
 ;; Set a preferred coding system
 ;; http://www.masteringemacs.org/articles/2012/08/09/working-coding-systems-unicode-emacs/
 (prefer-coding-system 'utf-8)
