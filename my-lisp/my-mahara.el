@@ -126,6 +126,33 @@
     (add-to-list 'grep-find-ignored-directories "theme/*/style")))
 
 
+;; ffip
+;;
+;; FIXME: Shouldn't be global, but that'll do for the moment.
+(with-eval-after-load "find-file-in-project"
+  (my-mahara-ffip-config))
+
+(defun my-mahara-ffip-config ()
+  "Tweak the pruning to improve performance for the Mahara codebase."
+  (setq ffip-prune-patterns
+        '("*.log" "*/tags" "*/TAGS" "*min.js" "*min.css" "*.js.map" "*.css.map"
+          "*.png" "*.jpg" "*.jpeg" "*.gif" "*.bmp" "*.svg" "*.tiff" "*.ico"
+          "*.doc" "*.docx" "*.pdf" "*.obj" "*.o" "*.a" "*.dylib" "*.lib" "*.d"
+          "*.dll" "*.exe" "*/.metadata*" "*.class" "*.war" "*.jar" "*flymake"
+          "*/#*#" ".#*" "*.swp" "*~" "*.elc" "*.pyc" "*.bcmap" "*.pgdump"
+          "*.rej"))
+
+  (defun ffip--prune-patterns ()
+    "Turn `ffip-prune-patterns' into a string that `find' can use."
+    (concat "-type d \\( -iname \".git\" -o -iname \"node_modules\""
+            " -o -iname \".npm\" -o -iname \".sass-cache\""
+            " -o -iname \"vendor\" \\)"
+            " -o -type f \\( "
+            (mapconcat (lambda (pat) (format "-ipath \"%s\"" pat))
+                       ffip-prune-patterns " -or ")
+            " \\)")))
+
+
 ;; ;; SQL support
 ;; (defun my-mahara-db-name ()
 ;;   "Directory-local value for `my-sql-db-name-getter'."
