@@ -299,4 +299,47 @@ Adapted from `dir-locals-set-directory-class'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;; (with-eval-after-load 'project
+;;   (my-project-config))
+;;
+;; (defun my-project-config ()
+;;   "Configuration for project.el"
+;; )
+
+(defun my-project-find-file (&optional include-all)
+  ;; Modified `project-find-file' to make the `thing-at-pt' be the first
+  ;; future history element (which is what the docstring /claimed/ for the
+  ;; original function, but it's wrong).
+  "Visit a file (with completion) in the current project.
+
+The filename at point (determined by `thing-at-point'), if any,
+is available as part of \"future history\".  If none, the current
+buffer's file name is used.
+
+If INCLUDE-ALL is non-nil, or with prefix argument when called
+interactively, include all files under the project root, except
+for VCS directories listed in `vc-directory-exclusion-list'."
+  (interactive "P")
+  (let* ((pr (project-current t))
+         (root (project-root pr))
+         (dirs (list root))
+         (project-files-relative-names t)
+         (fileatpoint (thing-at-point 'filename :no-properties))
+         (smarty (string-match-p ":.*\\.tpl" fileatpoint)))
+    (project-find-file-in
+     (delq nil (list (if smarty
+                         ;; Mahara template fetch syntax foo:bar:baz.tpl
+                         (string-replace ":" "/" fileatpoint)
+                       fileatpoint)
+                     ;; Mahara template base name only.
+                     (and smarty
+                          (replace-regexp-in-string "\\`.*:" "" fileatpoint))
+                     ;; Current buffer's file.
+                     (and buffer-file-name (project--find-default-from
+                                            buffer-file-name pr))))
+     dirs pr include-all)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (provide 'my-projects)
