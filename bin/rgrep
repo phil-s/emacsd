@@ -2,7 +2,7 @@
 
 # Author: Phil Sainty <psainty@orcon.net.nz>
 # Created: July 2026
-version=0.4
+version=0.5
 
 
 ### Commentary:
@@ -10,11 +10,13 @@ version=0.4
 # Similar to M-x rgrep
 #
 # For usage details, run:
-# rgrep -h
+# rgrep --help
 
 
 ### Change Log:
 #
+# 0.5  - Bash-native shell_escape().
+#      - ~/.rgreprc config.
 # 0.4  - Locale-based performance enhancements.
 # 0.3  - Improved option handling.
 # 0.2  - Initial code.
@@ -170,7 +172,9 @@ grep_escape_ere () {
     # versions ‘\?’, ‘\+’, ‘\{’, ‘\|’, ‘\(’, and ‘\)’.
 }
 
-shell_escape () {
+# This version requires tr and grep processes to test.
+# We can do better in bash, natively.
+shell_escape0 () {
     local param
     for param; do
         # Strings containing only [-0-9a-zA-Z_./] can remain unquoted.
@@ -205,7 +209,61 @@ shell_escape () {
     done
 }
 
+# bash-native shell escape function.
+#
+# (Without this, processing find_ignore_dirs and find_ignore_files requires too
+# many external processes, with a noticeable performance hit.)
+shell_escape () {
+    local param
+    for param; do
+        # Strings containing only [-0-9a-zA-Z_./] can remain unquoted.
+        # (This char set is derived from shell-quote-argument in Emacs.)
+        # We ensure that any newlines are 'seen' by grep by converting
+        # them to another invalid character.
+        if [ -z "${param}" ]; then
+            param="''"
+        else
+            if [ -n "${param//[-0-9a-zA-Z_.\/]/}" ]; then
+                # String contains invalid characters, so requires quoting.
+                # We can safely remove '' afterwards from the start or end of
+                # the string, but not otherwise (e.g. consider \''foo').
+                param="'${param//\'/\'\\\'\'}'"
+                param="${param#\'\'}"
+                param="${param%\'\'}"
+                if [ -z "${param}" ]; then
+                    param="''" # This is unreachable, yes?
+                fi
+            fi
+        fi
+        printf %s "${param}"
+        shift
+        if [ $# -gt 0 ]; then
+            printf ' '
+        fi
+    done
+}
+
 ########################################### PAGEBREAK (C-x ] to page forward) ##
+
+# Source the config file.
+# We can't just use the environment, as bash arrays cannot be exported.
+# We need to read the config file before we have parsed other options,
+# so we need an early pass (which still needs to recognise all of rgrep's
+# own options (i.e. those in the 'top' option phase)).
+norc=
+for param; do
+    case "$param" in
+        ( --norc ) norc=1; break;;
+        # Continue to look for --norc while processing our own options.
+        ( --all | -h | --help | --version | --debug | --verbose);;
+        ( --colour | --color | --no-colour | --no-color );;
+        # Stop looking for --norc once we have reached grep/find options.
+        ( -- | -* | * ) break;;
+    esac
+done
+[ -z "${norc}" ] \
+    && [ -f "$HOME/.rgreprc" ] \
+    && . "$HOME/.rgreprc"
 
 # Process command-line options.
 argmissing () {
@@ -214,6 +272,7 @@ argmissing () {
     # SC2034: <varname> appears unused. Verify it or export it.
     error=1
 }
+
 # n.b. All variables which are only set conditionally must be included
 # in the 'unset' list above.
 option_phase=top
@@ -228,12 +287,14 @@ while [ $# -gt 0 ]; do
                     option_phase=regexp
                     continue
                 };;
-                ( -h | --help ) help=1; short_help=1; shift; break;;
+                ( -h ) short_help=1; shift; break;;
+                ( --help ) help=1; shift; break;;
                 ( --version ) version_help=1; shift; break;;
                 ( --debug ) debug=1; shift;;
                 ( --verbose ) verbose=1; shift;;
                 ( --colour | --color ) use_colour=yes; shift;;
                 ( --no-colour | --no-color ) use_colour=no; shift;;
+                ( --norc ) shift;; # already processed
                 ( --all ) find_ignore=; shift;;
                 ( -* ) option_phase=grep_options; continue;;
                 ( * ) option_phase=regexp; continue;;
@@ -331,6 +392,15 @@ if [ -n "${version_help}" ] || [ -n "${help}" ]; then
     fi
 fi
 
+if [ -z "${grep_regexp}" ] && [ -z "${help}" ] && [ -z "${short_help}" ]; then
+    stderr "rgrep: No regexp provided"
+    stderr "Use \"$(basename "$0") --help\" for documentation."
+    stderr
+    short_help=1
+    exit_status=1
+    #exit 1
+fi
+
 # Display help.
 # Most of this should be in a man page / info node.
 if [ -n "${help}" ] || [ -n "${short_help}" ]; then
@@ -338,7 +408,7 @@ if [ -n "${help}" ] || [ -n "${short_help}" ]; then
 Usage:
   $(basename "$0") [OPTIONS] [GREP OPTIONS] [--] REGEXP [FILES] [--] [FIND OPTIONS]
   $(basename "$0") [ --version ]
-  $(basename "$0") [ --help | -h ]
+  $(basename "$0") [ --help ]
 
 EOF
 
@@ -363,6 +433,12 @@ OPTIONS
   --colour, --no-colour
         Enforce or inhibit colour output.  (Overrides automatic detection.)
 
+  --norc
+        Ignore the ~/.rgreprc file.
+
+  --verbose, --debug
+        Display the command line.  (With --debug, do not run it.)
+
   [GREP OPTIONS]
         Passed to grep(1).
 
@@ -381,6 +457,16 @@ OPTIONS
         Passed to find(1).  All argumentss following the first find option
         (with a leading hyphen) are treated as find options.
 
+
+FILES
+  ~/.rgreprc
+        A bash script (sourced, unless the --norc option is given).  E.g.:
+        RGREP_GREP_OPTIONS="--with-filename --line-number"
+        # RGREP_IGNORE_DIRS=('.git' 'node_modules') # replace default paths
+        RGREP_IGNORE_DIRS_EXTRA=('vendor') # additional paths
+        # RGREP_IGNORE_FILES=('*.elc' '*.eln' '*~') # replace default paths
+        RGREP_IGNORE_FILES_EXTRA=('*.css.map' '*.js.map') # additional paths
+
 EXAMPLES
 
   $(basename "$0") <regexp>
@@ -393,14 +479,6 @@ EOF
 fi
 
 ########################################### PAGEBREAK (C-x ] to page forward) ##
-
-if [ -z "${grep_regexp}" ]; then
-    stderr "rgrep: No regexp provided"
-    stdout "Use \"$(basename "$0") -h\" for documentation."
-    #short_help=1
-    #exit_status=1
-    exit 1
-fi
 
 # Set defaults for omitted options.
 #
@@ -429,30 +507,74 @@ done
 # Directory and file exclusions for find are copied from the Emacs variables
 # 'grep-find-ignored-directories' and 'grep-find-ignored-files' (used by the
 # Emacs 'rgrep' command).
+#
+# Eliminating unnecessary RGREP_IGNORE_* patterns might improve performance
+# significantly when using GNU find versions < 4.10.  There is still a small
+# benefit to be gained in newer versions, but the benefit of simply using a
+# newer find version is much greater.  (E.g. reducing the average run time for
+# one of my test cases from 21.373s to 8.845s.)
 if [ -n "${find_ignore}" ]; then
-    # With the addition of:
-    #  -o -path \*/node_modules
-    # find_prune_dirs="\( -path \*/SCCS -o -path \*/RCS -o -path \*/CVS -o -path \*/MCVS -o -path \*/.src -o -path \*/.svn -o -path \*/.git -o -path \*/.hg -o -path \*/.bzr -o -path \*/_MTN -o -path \*/_darcs -o -path \*/\{arch\} -o -name node_modules -o -path \*/theme/\*/style \)"
-    # But then the *removal* of all VCS other than .git because that
-    # turns out to speeds things up considerably, and we just don't
-    # need the rest in practice.  Literally everything here uses Git
-    # for version control!
-    # Note that simply using -name instead of -path is ~20% faster:
-    # find_prune_dirs="\( -name SCCS -o -name RCS -o -name CVS -o -name MCVS -o -name .src -o -name .svn -o -name .git -o -name .hg -o -name .bzr -o -name _MTN -o -name _darcs -o -name \{arch\} -o -name node_modules -o -path \*/theme/\*/style \)"
-    # But ditching the redundant patterns is ~40% faster:
-    find_prune_dirs="\( -name .git -o -name node_modules -o -path \*/theme/\*/style \)"
-    # Note that GNU find 4.10.0 performs dramatically better than
-    # earlier versions, and the above percentages were based on
-    # the older version 4.8.0.  There is still a small benefit to
-    # be gained from the above adjustments to the options in newer
-    # versions; but the benefit of simply using a newer version is
-    # much greater.  (E.g. reducing the average run time for one of
-    # my test cases from 21.373s to 8.845s.)
-    #
-    # With the addition of:
-    # -o -name \*.css.map -o -name \*.js.map
-    find_prune_files="\( -name .\#\* -o -name \*.o -o -name \*\~ -o -name \*.bin -o -name \*.lbin -o -name \*.so -o -name \*.a -o -name \*.ln -o -name \*.blg -o -name \*.bbl -o -name \*.elc -o -name \*.eln -o -name \*.lof -o -name \*.glo -o -name \*.idx -o -name \*.lot -o -name \*.fmt -o -name \*.tfm -o -name \*.class -o -name \*.fas -o -name \*.lib -o -name \*.mem -o -name \*.x86f -o -name \*.sparcf -o -name \*.dfsl -o -name \*.pfsl -o -name \*.d64fsl -o -name \*.p64fsl -o -name \*.lx64fsl -o -name \*.lx32fsl -o -name \*.dx64fsl -o -name \*.dx32fsl -o -name \*.fx64fsl -o -name \*.fx32fsl -o -name \*.sx64fsl -o -name \*.sx32fsl -o -name \*.wx64fsl -o -name \*.wx32fsl -o -name \*.fasl -o -name \*.ufsl -o -name \*.fsl -o -name \*.dxl -o -name \*.lo -o -name \*.la -o -name \*.gmo -o -name \*.mo -o -name \*.toc -o -name \*.aux -o -name \*.cp -o -name \*.fn -o -name \*.ky -o -name \*.pg -o -name \*.tp -o -name \*.vr -o -name \*.cps -o -name \*.fns -o -name \*.kys -o -name \*.pgs -o -name \*.tps -o -name \*.vrs -o -name \*.pyc -o -name \*.pyo -o -name \*.css.map -o -name \*.js.map \)"
-    find_options="-type d ${find_prune_dirs} -prune -o -type f \! ${find_prune_files} ${find_options}"
+    # Directory and file paths for 'find' to ignore.
+    declare -a RGREP_IGNORE_DIRS
+    declare -a RGREP_IGNORE_DIRS_EXTRA
+    declare -a RGREP_IGNORE_FILES
+    declare -a RGREP_IGNORE_FILES_EXTRA
+
+    if [ ! -v RGREP_IGNORE_DIRS ]; then
+        # Based on 'grep-find-ignored-directories' in Emacs.
+        RGREP_IGNORE_DIRS=(
+            "SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".git" ".hg" ".bzr" "_MTN"
+            "_darcs" "{arch}" ".repo" ".jj"
+        )
+    fi
+    if [ ! -v RGREP_IGNORE_FILES ]; then
+        # Based on 'grep-find-ignored-files' in Emacs.
+        RGREP_IGNORE_FILES=(
+            '*.a' '*.aux' '*.bbl' '*.bin' '*.blg' '*.class' '*.cp' '*.cps'
+            '*.d64fsl' '*.dfsl' '*.dx32fsl' '*.dx64fsl' '*.dxl' '*.elc' '*.fas'
+            '*.fasl' '*.fmt' '*.fn' '*.fns' '*.fsl' '*.fx32fsl' '*.fx64fsl' '*.glo'
+            '*.gmo' '*.idx' '*.ky' '*.kys' '*.la' '*.lbin' '*.lib' '*.ln' '*.lo'
+            '*.lof' '*.lot' '*.lx32fsl' '*.lx64fsl' '*.mem' '*.mo' '*.o' '*.p64fsl'
+            '*.pfsl' '*.pg' '*.pgs' '*.pyc' '*.pyo' '*.so' '*.sparcf' '*.sx32fsl'
+            '*.sx64fsl' '*.tfm' '*.toc' '*.tp' '*.tps' '*.ufsl' '*.vr' '*.vrs'
+            '*.wx32fsl' '*.wx64fsl' '*.x86f' '*~' '.#*'
+        )
+    fi
+    if [ -v RGREP_IGNORE_DIRS_EXTRA ]; then
+        for path in "${RGREP_IGNORE_DIRS_EXTRA[@]}"; do
+            RGREP_IGNORE_DIRS+=("${path}")
+        done
+    fi
+    if [ -v RGREP_IGNORE_FILES_EXTRA ]; then
+        for path in "${RGREP_IGNORE_FILES_EXTRA[@]}"; do
+            RGREP_IGNORE_FILES+=("${path}")
+        done
+    fi
+
+    # Generate find syntax for pruned directories.
+    # Note that simply using -name instead of -path is ~20% faster.
+    find_ignore_dirs="\("
+    for path in "${RGREP_IGNORE_DIRS[@]}"; do
+        if [ "${path/\//}" != "${path}" ]; then # Contains a '/' character.
+            find_ignore_dirs="${find_ignore_dirs} -path $(shell_escape "${path}") -o"
+        else
+            find_ignore_dirs="${find_ignore_dirs} -name $(shell_escape "${path}") -o"
+        fi
+    done
+    find_ignore_dirs="${find_ignore_dirs% -o} \)"
+
+    # Generate find syntax for ignored files.
+    find_ignore_files="\("
+    for path in "${RGREP_IGNORE_FILES[@]}"; do
+        if [ "${path/\//}" != "${path}" ]; then # Contains a '/' character.
+            find_ignore_files="${find_ignore_files} -path $(shell_escape "${path}") -o"
+        else
+            find_ignore_files="${find_ignore_files} -name $(shell_escape "${path}") -o"
+        fi
+    done
+    find_ignore_files="${find_ignore_files% -o} \)"
+
+    find_options="-type d ${find_ignore_dirs} -prune -o -type f \! ${find_ignore_files} ${find_options}"
 else
     find_options="-type f ${find_options}"
 fi
