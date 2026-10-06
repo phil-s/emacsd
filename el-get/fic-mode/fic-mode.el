@@ -50,11 +50,19 @@
   :group 'faces)
 
 (defcustom fic-highlighted-words '("FIXME" "TODO" "BUG")
-  "Words to highlight"
+  "Words to highlight."
+  :type '(repeat string)
   :group 'fic-mode)
 
 (defcustom fic-author-name-regexp "[-a-zA-Z0-9_.]+"
   "Regexp describing FIXME/TODO author name"
+  :type 'regexp
+  :group 'fic-mode)
+
+(defcustom fic-activated-faces
+  '(font-lock-doc-face font-lock-string-face font-lock-comment-face)
+  "Faces to look for to highlight words."
+  :type '(repeat symbol)
   :group 'fic-mode)
 
 (defface fic-face
@@ -73,29 +81,39 @@
 
 (defvar fic-mode-font-lock-keywords '((fic-search-for-keyword
                                        (1 'fic-face t)
-                                       (2 'fic-author-face t t))) 
+                                       (2 'fic-author-face t t)))
   "Font Lock keywords for fic-mode")
 
+(defvar fic-saved-hash nil
+  "(`fic-highlighted-words' . `fic-author-name-regexp')")
+(defvar fic-saved-regexp nil
+  "Regexp cache for `fic-saved-hash'")
+
 (defun fic-search-re ()
-  "Regexp to search for"
-  (let ((fic-words-re (concat "\\_<"
-                              (regexp-opt fic-highlighted-words t)
-                              "\\_>")))
-    (concat fic-words-re "\\(?:(\\(" fic-author-name-regexp "\\))\\)?")))
+  "Regexp to search for."
+  (let ((hash (cons fic-highlighted-words fic-author-name-regexp)))
+    (if (and fic-saved-hash
+             (equal fic-saved-hash hash))
+        fic-saved-regexp
+      (let ((fic-words-re (concat "\\<"
+                                  (regexp-opt fic-highlighted-words t)
+                                  "\\>")))
+        (setq fic-saved-hash hash
+              fic-saved-regexp (concat fic-words-re "\\(?:(\\(" fic-author-name-regexp "\\))\\)?"))
+        fic-saved-regexp))))
 
 (defun fic-in-doc/comment-region (pos)
   (memq (get-char-property pos 'face)
-	(list font-lock-doc-face font-lock-string-face font-lock-comment-face)))
+        fic-activated-faces))
 
 (defun fic-search-for-keyword (limit)
-  (let ((match-data-to-set nil)
-	found)
+  (let (match-data-to-set)
     (save-match-data
       (while (and (null match-data-to-set)
-		  (re-search-forward (fic-search-re) limit t))
-	(if (and (fic-in-doc/comment-region (match-beginning 0))
-		 (fic-in-doc/comment-region (match-end 0)))
-	    (setq match-data-to-set (match-data)))))
+                  (re-search-forward (fic-search-re) limit t))
+        (if (and (fic-in-doc/comment-region (match-beginning 0))
+                 (fic-in-doc/comment-region (match-end 0)))
+            (setq match-data-to-set (match-data)))))
     (when match-data-to-set
       (set-match-data match-data-to-set)
       (goto-char (match-end 0))
@@ -108,10 +126,12 @@
   :group 'fic-mode
   (let ((kwlist fic-mode-font-lock-keywords))
     (if fic-mode
-	(font-lock-add-keywords nil kwlist 'append)
+        (font-lock-add-keywords nil kwlist 'append)
       (font-lock-remove-keywords nil kwlist))
     ;; The following is a huge initial performance hit for large files
     ;; (font-lock-fontify-buffer)
-    ))
+    ;; So instead:
+    (font-lock-flush)))
 
 (provide 'fic-mode)
+;;; fic-mode.el ends here

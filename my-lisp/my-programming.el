@@ -138,6 +138,9 @@
 
 ;; Highlighted keywords in strings and comments.
 (setq fic-highlighted-words '("TODO" "DEBUG" "FIXME" "BUG" "KLUDGE"))
+;; Enable fic-mode for TKS comments.
+(with-eval-after-load "fic-mode"
+  (add-to-list 'fic-activated-faces 'tks-comment-face))
 
 ;; Don't leave empty lines uncommented when commenting a region
 (setq comment-empty-lines 'eol)
