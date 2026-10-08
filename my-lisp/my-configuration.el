@@ -1739,9 +1739,13 @@ Advice for `notifications-notify'.  To remove:
 ;; there is output to show.
 (setq async-shell-command-display-buffer nil)
 
-;; Do not erase the output buffer between shell commands.
-;; Always set point to the start of the most-recent output.
-(setq shell-command-dont-erase-buffer '(beg-last-out))
+;; The problem with the following is that when a shell command has NO output,
+;; I'm shown the OLD output in the echo area.  Which is horribly confusing!
+;; Damned if you do, damned if you don't; but back to "don't" for now.
+;;
+;; ;; Do not erase the output buffer between shell commands.
+;; ;; Always set point to the start of the most-recent output.
+;; (setq shell-command-dont-erase-buffer '(beg-last-out))
 
 ;; Also, emacs doesn't deal with my usual cygwin prompt, so put:
 ;; export PS1="\n\u@\h \w\n\$ "
