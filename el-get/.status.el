@@ -70,7 +70,6 @@
 :web-mode "installed"
 :webdriver "installed"
 :wgrep "installed"
-:which-key "installed"
 :windcycle "installed"
 :winnow "installed"
 :with-editor "installed"
