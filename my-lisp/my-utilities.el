@@ -3211,6 +3211,18 @@ The search within DIRECTORY is performed recursively."
                           (mapcar (lambda (f) (substring f 0 (1- (length f))))
                                   (directory-files-recursively
                                    directory ".+\\.elc\\'")))))
+
+(defun my-delete-region-regardless (beginning end)
+  "Delete the marked region, ignoring read-only text properties."
+  (interactive "r")
+  (let ((inhibit-read-only t))
+    (delete-region beginning end)))
+
+(defun my-kill-region-regardless (beginning end)
+  "Kill the marked region, ignoring read-only text properties."
+  (interactive "r")
+  (let ((inhibit-read-only t))
+    (kill-region beginning end)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

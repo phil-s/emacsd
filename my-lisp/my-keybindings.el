@@ -483,6 +483,8 @@ Called via `after-load-functions', as well as `after-init-hook'."
 (defalias 'pom 'my-pomodoro)
 (defalias 'profiler-quit 'profiler-reset
   "Stop the profiler and purge the report data.")
+(defalias 'dr 'my-delete-region-regardless)
+(defalias 'kr 'my-kill-region-regardless)
 
 ;;;; * Miscellaneous / Helpers
 
