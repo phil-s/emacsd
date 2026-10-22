@@ -5,6 +5,7 @@
   (defvar ecomplete-database)
   (defvar mu4e-bookmarks)
   (defvar mu4e-completing-read-function)
+  (defvar mu4e-compose-forward-as-attachment)
   (defvar mu4e-confirm-quit)
   (defvar mu4e-header-info-custom)
   (defvar mu4e-header-info-custom)
@@ -48,6 +49,9 @@
 
 ;; Use the original/old message view.
 (setq mu4e-view-use-old t)
+
+;; Forward messages as attachments.
+(setq mu4e-compose-forward-as-attachment t)
 
 ;; Don't show threads.
 (setq mu4e-headers-show-threads nil)
