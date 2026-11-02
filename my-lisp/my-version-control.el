@@ -653,6 +653,28 @@ Advice to `magit-push-current-to-upstream' triggers this query."
 ;; In `magit-revision-mode' fill the summary line if it is long.
 (setq magit-revision-fill-summary-line 80)
 
+(defun my-magit-files-config ()
+  "Called after loading `magit-files'."
+  ;; These are terrible for me (as I regularly C-z n n n p p p)
+  ;;   "p" #'magit-blob-previous
+  ;;   "n" #'magit-blob-next
+  (define-key magit-blob-mode-map "n" nil)
+  (define-key magit-blob-mode-map "p" nil)
+  ;; These are less likely to happen, but no less surprising if they do.
+  ;;   "b" #'magit-blame-addition
+  ;;   "r" #'magit-blame-removal
+  ;;   "f" #'magit-blame-reverse
+  (define-key magit-blob-mode-map "b" nil)
+  (define-key magit-blob-mode-map "r" nil)
+  (define-key magit-blob-mode-map "f" nil)
+  ;; We can keep this one.  That's sufficiently normal.
+  ;;   "q" #'magit-bury-or-kill-buffer)
+  )
+
+(with-eval-after-load "magit-files"
+  (my-magit-files-config))
+
+
 ;; pcomplete support for git.
 
 ;; pcomplete support from: http://www.masteringemacs.org/articles/2012/01/16/pcomplete-context-sensitive-completion-emacs/
